@@ -5,6 +5,8 @@ from cosmo import cosmo
 from scipy.interpolate import interp1d
 from gama_limits import gama_limits
 from astropy.table import Table
+from cartesian import cartesian
+
 
 np.random.seed(314)
 
@@ -53,6 +55,15 @@ for field in gama_limits.keys():
 
     break
 
-randoms = Table(np.c_[ras, decs, zs, Vs], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
-random['RANDID'] = np.arange(len(randoms))
+
+randoms = Table(np.c_[ras, decs, zs, Vdraws], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
+randoms['RANDID'] = np.arange(len(randoms))
+
+xyz                    = cartesian(randoms['RANDOM_RA'].data, randoms['RANDOM_DEC'].data, randoms['Z'].data)
+randoms['CARTESIAN_X'] = xyz[:,0]
+randoms['CARTESIAN_Y'] = xyz[:,1]
+randoms['CARTESIAN_Z'] = xyz[:,1]
+
+randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand}
+
 randoms.write(fpath, format='fits', overwrite=True)

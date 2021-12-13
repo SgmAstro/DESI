@@ -1,3 +1,5 @@
+import astropy.units as u
+
 from    astropy.cosmology       import  FlatLambdaCDM
 
 # setting cosmological parameters

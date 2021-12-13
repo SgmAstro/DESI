@@ -5,6 +5,8 @@ from cosmo import cosmo
 from scipy.interpolate import interp1d
 from gama_limits import gama_limits
 from astropy.table import Table
+from cartesian import cartesian
+
 
 np.random.seed(314)
 
@@ -53,10 +55,15 @@ for field in gama_limits.keys():
 
     break
 
-randoms = Table(np.c_[ras, decs, zs, Vs], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
+ddeg = 2.*(1./3600)
+
+randoms = Table(np.c_[ras, decs, zs, Vdraws], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
 randoms['RANDID'] = np.arange(len(randoms))
 
-ddeg = 2.*(1./3600)
+xyz                    = cartesian(randoms['RANDOM_RA'].data, randoms['RANDOM_DEC'].data, randoms['Z'].data)
+randoms['CARTESIAN_X'] = xyz[:,0]
+randoms['CARTESIAN_Y'] = xyz[:,1]
+randoms['CARTESIAN_Z'] = xyz[:,2]
 
 randoms['IS_BOUNDARY'] = 0
 
@@ -64,4 +71,7 @@ randoms['IS_BOUNDARY'][randoms['RANDOM_RA'] > (ra_max - ddeg)] = 1
 randoms['IS_BOUNDARY'][randoms['RANDOM_RA'] < (ra_min + ddeg)] = 1
 randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > (dec_max - ddeg)] = 1
 randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < (dec_min + ddeg)] = 1
+
+randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand}
+
 randoms.write(fpath, format='fits', overwrite=True)

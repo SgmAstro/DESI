@@ -10,7 +10,7 @@ from cartesian import cartesian
 
 np.random.seed(314)
 
-nrand = np.int(1.e4)
+nrand = np.int(1.e6)
 # nrand = 1.e6
 
 dz   = 1.e-4

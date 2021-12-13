@@ -25,8 +25,7 @@ def cartesian(ras, decs, zs):
 
     rot   = R.from_rotvec((np.pi/2. - mean_theta) * np.array([0, 1, 0]))
     
-    resres   = rot.apply(res)
-
+    resres = rot.apply(res)
 
     return resres
 

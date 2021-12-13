@@ -5,5 +5,4 @@ python fillfactor.py
 
 python bound_dist.py
 
-
-python rand_slicer.py 
+# python rand_slicer.py 

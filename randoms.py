@@ -1,16 +1,17 @@
 import os
 import numpy as np
 
-from cosmo import cosmo
-from scipy.interpolate import interp1d
-from gama_limits import gama_limits
-from astropy.table import Table
-from cartesian import cartesian
-from fsky import fsky
+from   cosmo import cosmo
+from   scipy.interpolate import interp1d
+from   gama_limits import gama_limits
+from   astropy.table import Table
+from   cartesian import cartesian
+from   fsky import fsky
 
 
 np.random.seed(314)
 
+realz = 0
 field = 'G9'
 
 dz   = 1.e-4
@@ -19,16 +20,16 @@ zmin = 0.0
 zmax = 0.6
 
 # Assumse one gama field, of 60. sq. deg. 
-vol  = fsky(60.) * (cosmo.comoving_volume(zmax).value - cosmo.comoving_volume(zmin).value)
-rand_density = 5.e-2
+vol  = fsky(5. * 12.) * (cosmo.comoving_volume(zmax).value - cosmo.comoving_volume(zmin).value)
+rand_density = 1.e-1
 
 nrand = np.int(np.ceil(vol * rand_density))
 
 print(vol, rand_density, nrand / 1.e6)
 
-boundary_percent = 0.5
+boundary_percent = 1.
 
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms.fits'
+fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
 Vmin = cosmo.comoving_volume(zmin).value
 Vmax = cosmo.comoving_volume(zmax).value
@@ -62,14 +63,25 @@ ras       = np.random.uniform(ra_min, ra_max, nrand)
 
 print('Solved {:d} for field {}'.format(nrand, field))
 
+print('Applying rotation.')
+
+xyz                    = cartesian(ras, decs, zs)
+
+ras = ras.astype(np.float32)
+decs= decs.astype(np.float32)
+zs = zs.astype(np.float32)
+Vdraws = Vdraws.astype(np.float32)
+xyz=xyz.astype(np.float32)
+
 randoms = Table(np.c_[ras, decs, zs, Vdraws], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
 randoms['RANDID'] = np.arange(len(randoms))
 randoms['FIELD'] = field
 
-xyz                    = cartesian(randoms['RANDOM_RA'].data, randoms['RANDOM_DEC'].data, randoms['Z'].data)
 randoms['CARTESIAN_X'] = xyz[:,0]
 randoms['CARTESIAN_Y'] = xyz[:,1]
 randoms['CARTESIAN_Z'] = xyz[:,2]
+
+print('Applying boundary.')
 
 randoms['IS_BOUNDARY'] = 0
 
@@ -83,5 +95,7 @@ randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - bounda
 randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
 
 randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand}
+
+print('Writing.')
 
 randoms.write(fpath, format='fits', overwrite=True)

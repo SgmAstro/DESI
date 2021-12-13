@@ -9,7 +9,7 @@ from   astropy.table import Table
 from   multiprocessing import Pool
 
 nproc = 8
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms.fits'
+fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_N8.fits'
 
 rand  = fits.open(fpath)
 hdr   = rand[1].header
@@ -20,31 +20,35 @@ hdr   = rand[1].header
 rand     = fitsio.read(fpath)
 # rand = rand[:200*nproc]
 
-split_idx = np.arange(len(rand))
-splits = np.split(split_idx, nproc)
+body = rand[rand['IS_BOUNDARY'] == 0]
+boundary = rand[rand['IS_BOUNDARY'] == 1]
+
+split_idx = np.arange(len(body))
+splits = np.array_split(split_idx, nproc)
+
+boundary = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
+
+kd_tree  = KDTree(boundary)
 
 def process_one(split):
-    sub_rand = rand[split]
+    sub_rand = body[split]
     sub_rand = Table(sub_rand, copy=True)
 
     points   = np.c_[sub_rand['CARTESIAN_X'], sub_rand['CARTESIAN_Y'], sub_rand['CARTESIAN_Z']] 
 
-    kd_tree  = KDTree(points)
+    points = [x for x in points]
 
-    indexes  = kd_tree.query_ball_tree(kd_tree, r=8.)
+    dd, ii = kd_tree.query(points, k=1)
 
-    del sub_rand
-    del kd_tree
+    return  dd.tolist()
     
-    return  [len(idx) for idx in indexes]
-
 #print(splits)
 #print(rand[splits[0]])
 '''
 result = []
 
 for split in splits:
-    result.append(process_one(split))
+    result += process_one(split)
 
 result = np.array(result)
 '''
@@ -61,9 +65,12 @@ for rr in result:
     flat_result += rr
 
 rand = Table(rand)
-rand['N8'] = np.array(flat_result)
+rand['BOUND_DIST'] = 0.0
+
+rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
 
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
-rand.write(fpath.replace('randoms', 'randoms_N8'), format='fits', overwrite=True)
+rand.write(fpath.replace('randoms_N8', 'randoms_bd'), format='fits', overwrite=True)
+

@@ -40,7 +40,9 @@ def process_one(split):
 
     dd, ii = kd_tree.query(points, k=1)
 
-    return  dd.tolist()
+    # ii = boundary['RANDID'][ii]
+    
+    return  dd.tolist() #, ii.tolist()
     
 #print(splits)
 #print(rand[splits[0]])
@@ -60,17 +62,20 @@ with Pool(nproc) as p:
 #print(result)
 
 flat_result = []
+flat_ii = []
 
 for rr in result:
     flat_result += rr
-
+    # flat_ii += rr[1]
+    
 rand = Table(rand)
 rand['BOUND_DIST'] = 0.0
+rand['BOUND_ID'] = 0
 
 rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
+# rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0] = np.array(flat_ii)
 
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
 rand.write(fpath.replace('randoms_N8', 'randoms_bd'), format='fits', overwrite=True)
-

@@ -21,7 +21,7 @@ rand     = fitsio.read(fpath)
 # rand = rand[:200*nproc]
 
 split_idx = np.arange(len(rand))
-splits = np.split(split_idx, nproc)
+splits = np.array_split(split_idx, nproc)
 
 def process_one(split):
     sub_rand = rand[split]

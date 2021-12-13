@@ -6,19 +6,25 @@ from scipy.interpolate import interp1d
 from gama_limits import gama_limits
 from astropy.table import Table
 from cartesian import cartesian
+from fsky import fsky
 
 
 np.random.seed(314)
 
 field = 'G9'
 
-nrand = np.int(1.e6)
-# nrand = 1.e6
-
 dz   = 1.e-4
 
-zmin = 0.
+zmin = 0.0
 zmax = 0.6
+
+# Assumse one gama field, of 60. sq. deg. 
+vol  = fsky(60.) * (cosmo.comoving_volume(zmax).value - cosmo.comoving_volume(zmin).value)
+rand_density = 5.e-2
+
+nrand = np.int(np.ceil(vol * rand_density))
+
+print(vol, rand_density, nrand / 1.e6)
 
 boundary_percent = 0.5
 
@@ -44,12 +50,13 @@ Vdraws  = Vmin + Vdraws * (Vmax - Vmin)
 
 zs      = Vz(Vdraws)
 
-ctheta_min = np.cos(np.pi/2. - np.radians(dec_min) )
+ctheta_min = np.cos(np.pi/2. - np.radians(dec_min))
 ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
     
 cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
 theta     = np.arccos(cos_theta)
 decs      = np.pi/2. - theta
+decs      = np.degrees(decs)
 
 ras       = np.random.uniform(ra_min, ra_max, nrand)
 

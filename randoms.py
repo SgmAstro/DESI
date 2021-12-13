@@ -54,5 +54,14 @@ for field in gama_limits.keys():
     break
 
 randoms = Table(np.c_[ras, decs, zs, Vs], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
-random['RANDID'] = np.arange(len(randoms))
+randoms['RANDID'] = np.arange(len(randoms))
+
+ddeg = 2.*(1./3600)
+
+randoms['IS_BOUNDARY'] = 0
+
+randoms['IS_BOUNDARY'][randoms['RANDOM_RA'] > (ra_max - ddeg)] = 1
+randoms['IS_BOUNDARY'][randoms['RANDOM_RA'] < (ra_min + ddeg)] = 1
+randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > (dec_max - ddeg)] = 1
+randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < (dec_min + ddeg)] = 1
 randoms.write(fpath, format='fits', overwrite=True)

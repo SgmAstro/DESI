@@ -18,7 +18,7 @@ hdr   = rand[1].header
 # print(hdr)
 
 rand     = fitsio.read(fpath)
-rand = rand[:200*nproc]
+# rand = rand[:200*nproc]
 
 split_idx = np.arange(len(rand))
 splits = np.split(split_idx, nproc)
@@ -40,14 +40,14 @@ def process_one(split):
 
 #print(splits)
 #print(rand[splits[0]])
-
+'''
 result = []
 
 for split in splits:
     result.append(process_one(split))
 
 result = np.array(result)
-
+'''
 #print(result)
 
 with Pool(nproc) as p:
@@ -65,7 +65,5 @@ rand['N8'] = np.array(flat_result)
 
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
-
-
 
 rand.write(fpath.replace('randoms', 'randoms_N8'), format='fits', overwrite=True)

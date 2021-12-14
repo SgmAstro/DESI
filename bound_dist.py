@@ -10,14 +10,14 @@ from   multiprocessing import Pool
 
 np.random.seed(314)
 
-nproc = 8
+nproc = 12
 
 field = 'G9'
 realz = 0
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_N8_{}_{:d}.fits'.format(field, realz)
 
-rand  = fits.open(fpath)
+#rand  = fits.open(fpath)
 #rand  =rand[:200]
 
 # hdr   = rand[1].header
@@ -25,14 +25,15 @@ rand  = fits.open(fpath)
 # print(rand.info())
 # print(hdr)
 
+# Outpute is sorted by fillfactor.py;
 rand     = fitsio.read(fpath)
-# rand = rand[:200*nproc]
+#rand = rand[:800*nproc]
 
 body = rand[rand['IS_BOUNDARY'] == 0]
 boundary = rand[rand['IS_BOUNDARY'] == 1]
 
-# split_idx = np.arange(len(body))
-# splits = np.array_split(split_idx, nproc)
+split_idx = np.arange(len(body))
+splits = np.array_split(split_idx, nproc)
 
 bids = boundary['RANDID']
 
@@ -45,23 +46,20 @@ kd_tree  = KDTree(boundary)
 points = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']] 
 points = [x for x in points]
 
-print('Querying boundary tree')
+# dd, ii = kd_tree.query(points, k=1)
 
-dd, ii = kd_tree.query(points, k=1)
-
-'''
 def process_one(split):
     # sub_rand = Table(body[split], copy=True)
 
     points = np.c_[body[split]['CARTESIAN_X'], body[split]['CARTESIAN_Y'], body[split]['CARTESIAN_Z']] 
     points = [x for x in points]
 
-    dd, ii = kd_tree.query(points, k=1)
-
-    # ii = boundary['RANDID'][ii]
+    print('Querying boundary tree for split [{}...{}]'.format(split[0], split[-1]))
     
-    return  dd.tolist() #, ii.tolist()
-'''    
+    dd, ii = kd_tree.query(points, k=1)
+    
+    return  dd.tolist(), ii.tolist()
+
 #print(splits)
 #print(rand[splits[0]])
 '''
@@ -73,7 +71,7 @@ for split in splits:
 result = np.array(result)
 '''
 #print(result)
-'''
+
 with Pool(nproc) as p:
     result = p.map(process_one, splits)
 
@@ -83,16 +81,15 @@ flat_result = []
 flat_ii = []
 
 for rr in result:
-    flat_result += rr
-    # flat_ii += rr[1]
-'''
+    flat_result += rr[0]
+    flat_ii += rr[1]
 
 rand = Table(rand)
 rand['BOUND_DIST'] = 0.0
 rand['BOUND_ID'] = 0
 
-rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = dd # np.array(flat_result)
-rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0] = bids[ii] # np.array(flat_ii)
+rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
+rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0] = bids[np.array(flat_ii)]
 
 print('Shuffling.')
 

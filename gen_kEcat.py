@@ -6,6 +6,7 @@ from smith_kcorr import GAMA_KCorrection
 from rest_gmr import smith_rest_gmr
 from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
+from zmax_theta import zmax_theta
 
 
 ngal=20000
@@ -45,6 +46,8 @@ dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
 dat['MALL_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
 dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
 
+dat['ZMAX_THETA'] = zmax_theta(dat['ZGAMA'], dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], aall=False)
+
 dat.pprint()
 
-dat.write(root + '/GAMA4/gama_gold_kE.fits', format='fits', overwrite=True)
+dat.write(root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.)), format='fits', overwrite=True)

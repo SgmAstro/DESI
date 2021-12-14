@@ -3,7 +3,7 @@ import numpy as np
 import astropy.io.fits as fits
 
 from astropy.table import Table
-from cosmo import cosmo
+from cosmo import cosmo, distmod
 
 
 root = os.environ['CSCRATCH'] + '/norberg/'
@@ -47,7 +47,7 @@ dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 dat.pprint()
 
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
-dat['DISTMOD'] = 5. * np.log10(1.e6 * dat['LUMDIST'] / 10.)
+dat['DISTMOD'] = distmod(dat['ZGAMA'])
 
 print('Writing {}'.format(root + '/GAMA4/gama_gold.fits'))
 

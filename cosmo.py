@@ -1,3 +1,4 @@
+import numpy as np
 import astropy.units as u
 
 from    astropy.cosmology       import  FlatLambdaCDM

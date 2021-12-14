@@ -40,14 +40,11 @@ def rest_gmr(kcorr_rfunc, kcorr_gfunc, z, gmr):
 
         else:
              warn = 2
-             
-            # print(result.message)
-
-            # raise RuntimeError()
-
+             result = -99.
+            
      return  result, warn
 
-def smith_rest_gmr(zs, gmrs, debug=False):
+def smith_rest_gmr(zs, gmrs, debug=True):
    kcorr_r = GAMA_KCorrection(band='R')
    kcorr_g = GAMA_KCorrection(band='G')
 

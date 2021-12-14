@@ -4,7 +4,10 @@ from astropy.table import Table
 from smith_kcorr import GAMA_KCorrection
 from rest_gmr import smith_rest_gmr
 from tmr_ecorr import tmr_ecorr, tmr_q
+from abs_mag import abs_mag
 
+
+ngal=15000
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold.fits'
@@ -12,7 +15,7 @@ fpath = root + '/GAMA4/gama_gold.fits'
 dat = Table.read(fpath)
 dat.pprint()
 
-dat = dat[:5000]
+dat = dat[:ngal]
 
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 
@@ -37,4 +40,9 @@ dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=True)
 dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 
+dat['MALL_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
+dat['MCOLOR_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
+
 dat.pprint()
+
+dat.write(root + '/GAMA4/gama_gold_kE.fits', format='fits', overwrite=True)

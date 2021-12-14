@@ -40,8 +40,8 @@ dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=True)
 dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 
-dat['MALL_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
-dat['MCOLOR_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
+# dat['MALL_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
+# dat['MCOLOR_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
 
 dat.pprint()
 

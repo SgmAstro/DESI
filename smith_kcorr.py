@@ -153,7 +153,7 @@ def test_plots(axes):
         axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
 
     axes[0].set_xlabel(r"$z$")
-    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_ylabel(r"$^{0.1}K_r(z)$")
     axes[0].set_xlim(0,0.6)
     axes[0].set_ylim(-0.6,1)
     axes[0].legend(loc="upper left").draw_frame(False)
@@ -165,11 +165,11 @@ def test_plots(axes):
         axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
 
     axes[1].set_xlabel(r"$z$")
-    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_ylabel(r"$^{0.1}K_g(z)$")
     axes[1].set_xlim(-0.01,0.6)
     axes[1].set_ylim(-0.4,1.4)
     axes[1].legend(loc="upper left").draw_frame(False)
-    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_ylabel(r"$^{0.1}K_r(z)$")
     axes[0].set_xlim(0,0.6)
     axes[0].set_ylim(-0.6,1)
     axes[0].legend(loc="upper left").draw_frame(False)
@@ -181,7 +181,7 @@ def test_plots(axes):
         axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
 
     axes[1].set_xlabel(r"$z$")
-    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_ylabel(r"$^{0.1}K_g(z)$")
     axes[1].set_xlim(-0.01,0.6)
     axes[1].set_ylim(-0.4,1.4)
 
@@ -196,10 +196,10 @@ def test_nonnative_plots(axes, zref):
     for c in cols:
         col = np.ones(len(z)) * c
         k = kcorr_r.k_nonnative_zref(zref, z, col)
-        axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[0].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c)
 
     axes[0].set_xlabel(r"$z$")
-    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_ylabel(r"$^{0.0}K_r(z)$")
     axes[0].set_xlim(0,0.6)
     axes[0].set_ylim(-0.6,1)
     axes[0].legend(loc="upper left").draw_frame(False)
@@ -208,10 +208,10 @@ def test_nonnative_plots(axes, zref):
     for c in cols:
         col = np.ones(len(z)) * c
         k = kcorr_g.k_nonnative_zref(zref, z, col)
-        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[1].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c)
 
     axes[1].set_xlabel(r"$z$")
-    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_ylabel(r"$^{0.0}K_g(z)$")
     axes[1].set_xlim(-0.01,0.6)
     axes[1].set_ylim(-0.4,1.4)
     

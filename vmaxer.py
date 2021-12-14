@@ -4,15 +4,12 @@ from astropy.table import Table
 from cosmo import volcom
 
 def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA'):
-    vmin   = volcom(zmin, area)
-    vmax   = volcom(zmax, area)
+    assert dat[zcol].min() <= zmin
+    assert dat[zcol].max() >= zmax
 
     result = Table(dat[zcol, 'ZMIN', 'ZMAX'], copy=True)
     result = result[result[zcol] >= zmin]
     result = result[result[zcol] <= zmax]
-
-    assert dat[zcol].min() <= zmin
-    assert dat[zcol].max() >= zmax
 
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)

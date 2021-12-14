@@ -6,10 +6,9 @@ from smith_kcorr import GAMA_KCorrection
 from rest_gmr import smith_rest_gmr
 from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
-from zmax_theta import zmax_theta
 
-#ngal=5000
-ngal=20000
+ngal=5000
+#ngal=20000
 nproc=4
 
 root = os.environ['CSCRATCH'] + '/norberg/'
@@ -48,10 +47,8 @@ dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
 dat['MALL_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
 dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
 
-dat['ZMAX_THETA_ALL'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
-dat['ZMAX_THETA_COLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
-
-zmax_theta(dat['ZGAMA'], dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], aall=False)
+dat['Z_THETA_QALL'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
+dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
 
 dat.pprint()
 

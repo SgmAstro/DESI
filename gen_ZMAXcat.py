@@ -1,58 +1,90 @@
 import os
+import time
 import numpy as np
 
-from astropy.table import Table
+from cosmo import distmod
 from smith_kcorr import GAMA_KCorrection
-from rest_gmr import smith_rest_gmr
-from tmr_ecorr import tmr_ecorr, tmr_q
-from abs_mag import abs_mag
-from zmax_theta import zmax_theta
+from tmr_ecorr import tmr_ecorr
+from scipy.optimize import brentq, minimize
+from astropy.table import Table
 
-#ngal=5000
-ngal=20000
+kcorr_r = GAMA_KCorrection(band='R')
+
+def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=True):
+    z = np.atleast_1d(z)
+    rest_gmr_0p1 = np.atleast_1d(rest_gmr_0p1)
+    rest_gmr_0p0 = np.atleast_1d(rest_gmr_0p0)
+    
+    result = distmod(z) + kcorr_r.k_nonnative_zref(0.0, z, rest_gmr_0p1) + tmr_ecorr(z, rest_gmr_0p0, aall=aall)
+
+    return result[0]
+    
+def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=True):
+     def diff(x):
+          return theta(x, rest_gmr_0p1, rest_gmr_0p0, aall=aall) - thetaz - dr
+
+     def absdiff(x):
+        return np.abs(diff(x))
+
+     warn = 0
+
+     try:
+        result = brentq(diff, 1.e-3, 0.6)
+
+     except ValueError as VE:
+        warn = 1
+
+        # Brent method fails, requires sign change across boundaries.                                                                                          
+        result = minimize(absdiff, 0.3)
+
+        if result.success:
+            result = result.x[0]
+
+        else:
+             warn = 2
+             result = -99.
+
+     return  result, warn
+
+def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=True, debug=True):
+   result = []
+   start = time.time()
+
+   if debug:
+        print('Solving for zmax.')
+
+   for i, (rest_gmr_0p1, rest_gmr_0p0, theta_z, dr) in enumerate(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs)):
+        interim, warn = solve_theta(rest_gmr_0p1, rest_gmr_0p0, theta_z, dr, aall=aall)
+
+        result.append([interim, warn])
+
+        if (i % 500 == 0) & debug:
+             runtime = (time.time() - start) / 60.
+
+             print('{:.3f}% complete after {:.2f} mins.'.format(100. * i / len(theta_zs), runtime))
+
+   result = np.array(result)
+
+   return  result[:,0], result[:,1]
+
+
+ngal=5000
+#ngal=20000
 nproc=4
 
+rlim = 19.8
+
 root = os.environ['CSCRATCH'] + '/norberg/'
-fpath = root + '/GAMA4/gama_gold.fits'
+fpath = root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.))
 
 dat = Table.read(fpath)
 dat.pprint()
 
-dat = dat[:ngal]
+dat['DELTA_RPETRO'] = rlim - dat['R_PETRO']
 
-dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
+zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO'], aall=True, debug=True)
 
-rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])
+dat['ZMAX'] = zmaxs
+dat['ZMAX_WARN'] = warn
 
-dat['REST_GMR_0P1'] = rest_gmr_0p1
-dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int)
-
-kcorr_r = GAMA_KCorrection(band='R')
-kcorr_g = GAMA_KCorrection(band='G')
-
-dat['REST_GMR_0P1_INDEX'] = kcorr_r.rest_gmr_index(dat['REST_GMR_0P1'], kcoeff=False)
-
-dat['KCORR_R0P1'] = kcorr_r.k(dat['ZGAMA'], dat['REST_GMR_0P1'])
-dat['KCORR_G0P1'] = kcorr_g.k(dat['ZGAMA'], dat['REST_GMR_0P1'])
-
-dat['KCORR_R0P0'] = kcorr_r.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'])
-dat['KCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'])
-
-dat['REST_GMR_0P0'] = dat['GMR'] - (dat['KCORR_G0P0'] - dat['KCORR_R0P0'])
-
-dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
-
-dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=True)
-dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
-
-dat['MALL_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
-dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
-
-dat['ZMAX_THETA_ALL'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
-dat['ZMAX_THETA_COLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
-
-zmax_theta(dat['ZGAMA'], dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], aall=False)
-
-dat.pprint()
-
-dat.write(root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.)), format='fits', overwrite=True)
+dat.write(root + '/GAMA4/gama_gold_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)), format='fits', overwrite=True)

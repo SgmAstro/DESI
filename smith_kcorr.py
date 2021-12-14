@@ -1,9 +1,14 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+from   scipy.interpolate import interp1d
 from   pkg_resources     import resource_filename
 
-self.raw_dir = resource_filename('lumfn', 'data/')        
+# raw_dir = resource_filename('DESI/', 'data/')        
+raw_dir='/global/homes/m/mjwilson/desi/BGS/Sam/DESI/data'
 
 class GAMA_KCorrection(object):
-    def __init__(self, kind="linear", band='R'):
+    def __init__(self, band, kind="linear"):
 
         """
         Colour-dependent polynomial fit to the GAMA K-correction (Fig. 13 of Smith+17), 
@@ -16,7 +21,7 @@ class GAMA_KCorrection(object):
             kind: type of interpolation between colour bins,
                   e.g. "linear", "cubic". Default is "linear"
         """
-        k_corr_file = self.raw_dir + '/ajs_kcorr_{}band_z01.dat'.format(band.lower())
+        k_corr_file = raw_dir + '/ajs_kcorr_{}band_z01.dat'.format(band.lower())
         
         # read file of parameters of polynomial fit to k-correction
         # polynomial k-correction is of the form
@@ -42,12 +47,10 @@ class GAMA_KCorrection(object):
         self.__X_interpolator = lambda x: None
         self.__Y_interpolator = lambda x: None
         self.__X_interpolator, self.__Y_interpolator = self.__initialize_line_interpolators() 
-
    
     def __initialize_parameter_interpolator(self, parameter, median_colour, kind="linear"):
         # returns function for interpolating polynomial coefficients, as a function of colour
         return interp1d(median_colour, parameter, kind=kind, fill_value="extrapolate")
-
     
     def __initialize_line_interpolators(self):
         # linear coefficients for z>0.5
@@ -58,12 +61,7 @@ class GAMA_KCorrection(object):
         redshift = np.array([0.48,0.5])
         arr_ones = np.ones(len(redshift))
         for i in range(self.nbins):
-            if i <= 3:
-                Q0 = 2.12
-            else:
-                Q0 = 0.8
-            
-            k = self.k(redshift, arr_ones*self.colour_med[i]) - Q0*(redshift-self.z0)
+            k = self.k(redshift, arr_ones*self.colour_med[i])
             X[i] = (k[1]-k[0]) / (redshift[1]-redshift[0])
             Y[i] = k[0] - X[i]*redshift[0]
         
@@ -71,7 +69,6 @@ class GAMA_KCorrection(object):
         Y_interpolator = interp1d(self.colour_med, Y, kind='linear', fill_value="extrapolate")
         
         return X_interpolator, Y_interpolator
-
 
     def __A(self, colour):
         # coefficient of the z**4 term
@@ -102,7 +99,7 @@ class GAMA_KCorrection(object):
         return self.__Y_interpolator(colour_clipped)
 
 
-    def k(self, redshift, colour):
+    def k(self, redshift, restframe_colour):
         """
         Polynomial fit to the GAMA K-correction for z<0.5
         The K-correction is extrapolated linearly for z>0.5
@@ -116,59 +113,95 @@ class GAMA_KCorrection(object):
         K = np.zeros(len(redshift))
         idx = redshift <= 0.5
         
-        K[idx] = self.__A(colour[idx])*(redshift[idx]-self.z0)**4 + \
-                 self.__B(colour[idx])*(redshift[idx]-self.z0)**3 + \
-                 self.__C(colour[idx])*(redshift[idx]-self.z0)**2 + \
-                 self.__D(colour[idx])*(redshift[idx]-self.z0) + self.__E 
+        K[idx] = self.__A(restframe_colour[idx])*(redshift[idx]-self.z0)**4 + \
+                 self.__B(restframe_colour[idx])*(redshift[idx]-self.z0)**3 + \
+                 self.__C(restframe_colour[idx])*(redshift[idx]-self.z0)**2 + \
+                 self.__D(restframe_colour[idx])*(redshift[idx]-self.z0) + self.__E 
 
         idx = redshift > 0.5
         
-        K[idx] = self.__X(colour[idx])*redshift[idx] + self.__Y(colour[idx])
+        K[idx] = self.__X(restframe_colour[idx])*redshift[idx] + self.__Y(restframe_colour[idx])
         
-        if (colour[0] > 0.76):
-            Q0 = 0.80
-        else:
-            Q0 = 2.12
+        return  K    
 
-        return  K + Q0*(redshift-self.z0)
+    def k_nonnative_zref(self, refz, redshift, restframe_colour):
+        refzs = refz * np.ones_like(redshift)
+        
+        return  self.k(redshift, restframe_colour) - self.k(refzs, restframe_colour) - 2.5 * np.log10(1. + refz)
 
-def test_plots():
+def test_plots(axes):
+    kcorr_r = GAMA_KCorrection(band='R')
+    kcorr_g = GAMA_KCorrection(band='G')
 
-    kcorr_r = GAMA_KCorrection("k_corr_rband_z01.mpeg")
-    kcorr_g = GAMA_KCorrection("k_corr_gband_z01.mpeg")
-
-    z = np.arange(-0.01,0.601,0.01)
+    z    = np.arange(-0.01,0.601,0.01)
     cols = 0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731
-    
-    # make r-band k-correction plot
+
+    # make r-band k-correction plot                                                                                                                      
     for c in cols:
         col = np.ones(len(z)) * c
         k = kcorr_r.k(z, col)
-        plt.plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
 
-    plt.xlabel(r"$z$")
-    plt.ylabel(r"$^{0.1}K_r(z)+E(z)$")
-    plt.xlim(0,0.6)
-    plt.ylim(-0.6,1)
-    plt.legend(loc="upper left").draw_frame(False)
-    plt.show()
+    axes[0].set_xlabel(r"$z$")
+    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_xlim(0,0.6)
+    axes[0].set_ylim(-0.6,1)
+    axes[0].legend(loc="upper left").draw_frame(False)
+
+    # make g-band k-correction plot                                                                                                                      
+    for c in cols:
+        col = np.ones(len(z)) * c
+        k = kcorr_g.k(z, col)
+        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+
+    axes[1].set_xlabel(r"$z$")
+    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_xlim(-0.01,0.6)
+    axes[1].set_ylim(-0.4,1.4)
+    axes[1].legend(loc="upper left").draw_frame(False)
+    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_xlim(0,0.6)
+    axes[0].set_ylim(-0.6,1)
+    axes[0].legend(loc="upper left").draw_frame(False)
 
     # make g-band k-correction plot
     for c in cols:
         col = np.ones(len(z)) * c
         k = kcorr_g.k(z, col)
-        plt.plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
 
-    plt.xlabel(r"$z$")
-    plt.ylabel(r"$^{0.1}K_g(z)+E(z)$")
-    plt.xlim(-0.01,0.6)
-    plt.ylim(-0.4,1.4)
-    plt.legend(loc="upper left").draw_frame(False)
-    plt.show()
-        
-if __name__ == "__main__":
-    test_plots()
+    axes[1].set_xlabel(r"$z$")
+    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_xlim(-0.01,0.6)
+    axes[1].set_ylim(-0.4,1.4)
+
+def test_nonnative_plots(axes, zref):    
+    kcorr_r = GAMA_KCorrection(band='R')
+    kcorr_g = GAMA_KCorrection(band='G')
+
+    z    = np.arange(-0.01,0.601,0.01)
+    cols = 0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731
+
+    # make r-band k-correction plot                                                                                                                     
+    for c in cols:
+        col = np.ones(len(z)) * c
+        k = kcorr_r.k_nonnative_zref(zref, z, col)
+        axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+
+    axes[0].set_xlabel(r"$z$")
+    axes[0].set_ylabel(r"$^{0.1}K_r(z)+E(z)$")
+    axes[0].set_xlim(0,0.6)
+    axes[0].set_ylim(-0.6,1)
+    axes[0].legend(loc="upper left").draw_frame(False)
+
+    # make g-band k-correction plot                                                                                                                     
+    for c in cols:
+        col = np.ones(len(z)) * c
+        k = kcorr_g.k_nonnative_zref(zref, z, col)
+        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+
+    axes[1].set_xlabel(r"$z$")
+    axes[1].set_ylabel(r"$^{0.1}K_g(z)+E(z)$")
+    axes[1].set_xlim(-0.01,0.6)
+    axes[1].set_ylim(-0.4,1.4)
     
-
-    gama_kcorr_r = GAMA_KCorrection("k_corr_rband_z01.mpeg")
-    gama_kcorr_g = GAMA_KCorrection("k_corr_gband_z01.mpeg")

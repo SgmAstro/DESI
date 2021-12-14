@@ -2,8 +2,8 @@ import numpy as np
 
 from data.ke_params import *
 
-def tmr_ecorr(redshift, restframe_colour, all=False):
-    if all:
+def tmr_ecorr(redshift, restframe_colour, aall=False):
+    if aall:
         result = -Qall*redshift
     
     else:
@@ -13,8 +13,8 @@ def tmr_ecorr(redshift, restframe_colour, all=False):
 
     return result
 
-def tmr_q(redshift, restframe_colour, all=False):
-    if all:
+def tmr_q(redshift, restframe_colour, aall=False):
+    if aall:
         result = np.ones_like(redshift) * Qall
 
     else:

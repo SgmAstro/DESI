@@ -8,7 +8,7 @@ from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 
 
-ngal=5000
+ngal=20000
 nproc=4
 
 root = os.environ['CSCRATCH'] + '/norberg/'
@@ -37,10 +37,10 @@ dat['KCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P
 
 dat['REST_GMR_0P0'] = dat['GMR'] - (dat['KCORR_G0P0'] - dat['KCORR_R0P0'])
 
-dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
+dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
 
-dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=True)
-dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
+dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=True)
+dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
 
 dat['MALL_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
 dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])

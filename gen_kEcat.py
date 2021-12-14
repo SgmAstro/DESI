@@ -7,8 +7,8 @@ from rest_gmr import smith_rest_gmr
 from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 
-ngal=5000
-#ngal=20000
+#ngal=5000
+ngal=100000
 nproc=4
 
 root = os.environ['CSCRATCH'] + '/norberg/'

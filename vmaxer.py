@@ -1,13 +1,15 @@
 import numpy as np
 
-from astropy.table import Table
-from cosmo import volcom
+from   astropy.table import Table
+from   cosmo import volcom
 
-def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA'):
+def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
     assert dat[zcol].min() <= zmin
     assert dat[zcol].max() >= zmax
 
-    result = Table(dat[zcol, 'ZMIN', 'ZMAX'], copy=True)
+    cols   = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
+
+    result = Table(dat[cols], copy=True)
     result = result[result[zcol] >= zmin]
     result = result[result[zcol] <= zmax]
 

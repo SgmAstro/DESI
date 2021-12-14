@@ -68,7 +68,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=True, debug=True):
    return  result[:,0], result[:,1]
 
 
-ngal=5000
+ngal=100000
 #ngal=20000
 nproc=4
 

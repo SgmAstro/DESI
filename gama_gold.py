@@ -43,7 +43,7 @@ print(np.mean(z_cut))
 print(np.mean(r_cut))
 print(np.mean(nq_cut))
 
-# dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
+dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 dat.pprint()
 
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value

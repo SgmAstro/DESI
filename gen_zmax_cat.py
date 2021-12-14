@@ -51,7 +51,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=True, debug=True):
    start = time.time()
 
    if debug:
-        print('Solving for zmax.')
+        print('Solving for zlimit.')
 
    for i, (rest_gmr_0p1, rest_gmr_0p0, theta_z, dr) in enumerate(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs)):
         interim, warn = solve_theta(rest_gmr_0p1, rest_gmr_0p0, theta_z, dr, aall=aall)
@@ -73,6 +73,7 @@ ngal=5000
 nproc=4
 
 rlim = 19.8
+rmax = 12.0
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.))
@@ -80,11 +81,18 @@ fpath = root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.))
 dat = Table.read(fpath)
 dat.pprint()
 
-dat['DELTA_RPETRO'] = rlim - dat['R_PETRO']
+dat['DELTA_RPETRO_FAINT'] = rlim - dat['R_PETRO']
 
-zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO'], aall=True, debug=True)
+zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'], aall=True, debug=True)
 
 dat['ZMAX'] = zmaxs
 dat['ZMAX_WARN'] = warn
+
+dat['DELTA_RPETRO_BRIGHT'] = rmax - dat['R_PETRO']
+
+zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'], aall=True, debug=True)
+
+dat['ZMIN'] = zmins
+dat['ZMIN_WARN'] = warn
 
 dat.write(root + '/GAMA4/gama_gold_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)), format='fits', overwrite=True)

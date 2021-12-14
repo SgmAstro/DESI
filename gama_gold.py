@@ -3,6 +3,8 @@ import numpy as np
 import astropy.io.fits as fits
 
 from astropy.table import Table
+from cosmo import cosmo
+
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/TilingCatv46.fits'
@@ -46,6 +48,9 @@ print(np.mean(nq_cut))
 
 dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 dat.pprint()
+
+dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'])
+dat['DISTMOD'] = 5. * np.log10(1.e6 * dat['LUMDIST'] / 10.)
 
 print('Writing {}'.format(root + '/GAMA4/gama_gold.fits'))
 

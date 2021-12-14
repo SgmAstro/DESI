@@ -12,7 +12,7 @@ fpath = root + '/GAMA4/gama_gold.fits'
 dat = Table.read(fpath)
 dat.pprint()
 
-dat = dat[:100]
+dat = dat[:5000]
 
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 

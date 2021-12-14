@@ -8,7 +8,7 @@ from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 from zmax_theta import zmax_theta
 
-
+# ngal=5000
 ngal=20000
 nproc=4
 
@@ -29,6 +29,8 @@ dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int)
 
 kcorr_r = GAMA_KCorrection(band='R')
 kcorr_g = GAMA_KCorrection(band='G')
+
+dat['REST_GMR_0P1_INDEX'] = kcorr_r.rest_gmr_index(dat['REST_GMR_0P1'], kcoeff=False)
 
 dat['KCORR_R0P1'] = kcorr_r.k(dat['ZGAMA'], dat['REST_GMR_0P1'])
 dat['KCORR_G0P1'] = kcorr_g.k(dat['ZGAMA'], dat['REST_GMR_0P1'])

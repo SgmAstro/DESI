@@ -47,7 +47,7 @@ dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 dat.pprint()
 
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
-dat['DISTMOD'] = distmod(dat['ZGAMA'])
+dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
 print('Writing {}'.format(root + '/GAMA4/gama_gold.fits'))
 

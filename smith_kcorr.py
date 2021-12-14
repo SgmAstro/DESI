@@ -129,6 +129,16 @@ class GAMA_KCorrection(object):
         
         return  self.k(redshift, restframe_colour) - self.k(refzs, restframe_colour) - 2.5 * np.log10(1. + refz)
 
+    def rest_gmr_index(self, rest_gmr, kcoeff=False):
+        bins = np.array([-100., 0.18, 0.35, 0.52, 0.69, 0.86, 1.03, 100.])
+        idx = np.digitize(rest_gmr, bins)
+        '''
+        if kcoeff==True:
+            for i in enumerate(rest_gmr):
+                ddict = {i:{col_med, A[0], B[0], C[0], D[0]}}
+        '''
+        return idx
+
 def test_plots(axes):
     kcorr_r = GAMA_KCorrection(band='R')
     kcorr_g = GAMA_KCorrection(band='G')

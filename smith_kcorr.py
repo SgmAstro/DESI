@@ -1,5 +1,9 @@
+from   pkg_resources     import resource_filename
+
+self.raw_dir = resource_filename('lumfn', 'data/')        
+
 class GAMA_KCorrection(object):
-    def __init__(self, k_corr_file, kind="linear"):
+    def __init__(self, kind="linear", band='R'):
 
         """
         Colour-dependent polynomial fit to the GAMA K-correction (Fig. 13 of Smith+17), 
@@ -12,6 +16,7 @@ class GAMA_KCorrection(object):
             kind: type of interpolation between colour bins,
                   e.g. "linear", "cubic". Default is "linear"
         """
+        k_corr_file = self.raw_dir + '/ajs_kcorr_{}band_z01.dat'.format(band.lower())
         
         # read file of parameters of polynomial fit to k-correction
         # polynomial k-correction is of the form
@@ -19,8 +24,7 @@ class GAMA_KCorrection(object):
         col_min, col_max, A, B, C, D, E, col_med = \
             np.loadtxt(k_corr_file, unpack=True)
     
-        z0 = 0.1
-        self.z0 = z0              # reference redshift
+        self.z0 = 0.1             # reference redshift
         self.nbins = len(col_min) # number of colour bins in file
         
         self.colour_min = np.min(col_med)
@@ -166,5 +170,5 @@ if __name__ == "__main__":
     test_plots()
     
 
-gama_kcorr_r = GAMA_KCorrection("k_corr_rband_z01.mpeg")
-gama_kcorr_g = GAMA_KCorrection("k_corr_gband_z01.mpeg")
+    gama_kcorr_r = GAMA_KCorrection("k_corr_rband_z01.mpeg")
+    gama_kcorr_g = GAMA_KCorrection("k_corr_gband_z01.mpeg")

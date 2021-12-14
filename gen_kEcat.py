@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 from astropy.table import Table
 from smith_kcorr import GAMA_KCorrection
@@ -7,7 +8,8 @@ from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 
 
-ngal=15000
+ngal=5000
+nproc=4
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold.fits'
@@ -22,7 +24,7 @@ dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])
 
 dat['REST_GMR_0P1'] = rest_gmr_0p1
-dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn
+dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int)
 
 kcorr_r = GAMA_KCorrection(band='R')
 kcorr_g = GAMA_KCorrection(band='G')
@@ -40,8 +42,8 @@ dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=True)
 dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], all=False)
 
-# dat['MALL_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
-# dat['MCOLOR_0P0'] = abs_mag(dat['RPETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
+dat['MALL_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
+dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
 
 dat.pprint()
 

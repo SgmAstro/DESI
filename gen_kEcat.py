@@ -7,8 +7,9 @@ from rest_gmr import smith_rest_gmr
 from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 
-#ngal=5000
-ngal=100000
+
+dryrun=False
+
 nproc=4
 
 root = os.environ['CSCRATCH'] + '/norberg/'
@@ -17,7 +18,9 @@ fpath = root + '/GAMA4/gama_gold.fits'
 dat = Table.read(fpath)
 dat.pprint()
 
-dat = Table(np.random.choice(dat, ngal))
+if dryrun:
+  ngal=5000
+  dat = Table(np.random.choice(dat, ngal))
 
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 

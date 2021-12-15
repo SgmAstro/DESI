@@ -9,6 +9,7 @@ from abs_mag import abs_mag
 
 
 dryrun=False
+ngal=5000 # if dryrun.
 
 nproc=4
 
@@ -19,7 +20,6 @@ dat = Table.read(fpath)
 dat.pprint()
 
 if dryrun:
-  ngal=5000
   dat = Table(np.random.choice(dat, ngal))
 
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']

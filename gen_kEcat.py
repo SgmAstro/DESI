@@ -17,7 +17,7 @@ fpath = root + '/GAMA4/gama_gold.fits'
 dat = Table.read(fpath)
 dat.pprint()
 
-dat = dat[:ngal]
+dat = Table(np.random.choice(dat, ngal))
 
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 

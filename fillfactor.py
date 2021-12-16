@@ -8,7 +8,8 @@ from   scipy.spatial import KDTree
 from   astropy.table import Table
 from   multiprocessing import Pool
 
-nproc = 12
+
+nproc = 16
 
 field = 'G9'
 realz = 0
@@ -19,7 +20,7 @@ fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(fie
 
 print('Reading rand.')
 
-rand     = fitsio.read(fpath)
+rand = fitsio.read(fpath)
 
 if dryrun:
     rand = rand[:200*nproc]

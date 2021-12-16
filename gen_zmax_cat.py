@@ -72,12 +72,12 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 #######
 
 aall=False
-dryrun=False
+dryrun=True
 
 rlim = 19.8
 rmax = 12.0
 
-ngal = 500
+ngal = 1500
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 

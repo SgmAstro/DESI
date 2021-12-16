@@ -11,9 +11,15 @@ from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter
 
-
+ngal=1500
 Area = 180.
-fpath = os.environ['CSCRATCH'] + '/norberg//GAMA4/gama_gold_zmax_100k.fits'
+dryrun=False
+
+fpath = os.environ['CSCRATCH'] + '/norberg//GAMA4/gama_gold_zmax.fits'
+
+if dryrun:
+    fpath = fpath.replace('_zmax', '_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)))
+
 opath = fpath.replace('zmax', 'vmax')
 
 gama_zmax = Table.read(fpath)
@@ -28,6 +34,8 @@ gama_vmax = gama_vmax[gama_vmax['ZMAX'] > 0.0]
 
 gama_vmax.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area}
 
+print('Writing {}.'.format(opath))
+
 gama_vmax.write(opath, format='fits', overwrite=True)
 
 
@@ -37,6 +45,8 @@ VV      = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min
 result  = lumfn(gama_vmax, VV)
 
 result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
+
+print('Writing {}.'.format(opath))
 
 result.write(opath, format='fits', overwrite=True)
 

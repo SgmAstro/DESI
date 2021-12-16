@@ -1,3 +1,29 @@
 Reading rand.
 Creating big tree.
 Counting < 8 Mpc/h pairs for small trees.
+Creating split [0 ... 153365] tree.
+Querying split [0 ... 153365] tree.
+Creating split [1687022 ... 1840386] tree.
+Querying split [1687022 ... 1840386] tree.
+Creating split [306732 ... 460097] tree.
+Querying split [306732 ... 460097] tree.
+Creating split [153366 ... 306731] tree.
+Querying split [153366 ... 306731] tree.
+Creating split [766830 ... 920195] tree.
+Querying split [766830 ... 920195] tree.
+Creating split [1380292 ... 1533656] tree.
+Querying split [1380292 ... 1533656] tree.
+Creating split [1226927 ... 1380291] tree.
+Querying split [1226927 ... 1380291] tree.
+Creating split [920196 ... 1073561] tree.
+Querying split [920196 ... 1073561] tree.
+Creating split [1533657 ... 1687021] tree.
+Querying split [1533657 ... 1687021] tree.
+Creating split [613464 ... 766829] tree.
+Querying split [613464 ... 766829] tree.
+Creating split [460098 ... 613463] tree.
+Querying split [460098 ... 613463] tree.
+Creating split [1073562 ... 1226926] tree.
+Querying split [1073562 ... 1226926] tree.
+Flattening.
+Writing.

@@ -49,6 +49,12 @@ dat.pprint()
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
-print('Writing {}'.format(root + '/GAMA4/gama_gold.fits'))
+# Randomise rows.
+idx = np.arange(len(dat))
+idx = np.random.choice(idx, size=len(idx), replace=False)
+
+dat = dat[idx]
+
+print('Writing {}.'.format(root + '/GAMA4/gama_gold.fits'))
 
 dat.write(root + '/GAMA4/gama_gold.fits', format='fits', overwrite=True)

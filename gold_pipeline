@@ -1,0 +1,7 @@
+# python gama_gold.py > logs/gama_gold.log
+
+# python gen_kEcat.py > logs/gama_kE.log
+
+# python gen_zmax_cat.py > logs/gama_zmax.log
+
+python gen_gold_lf.py > logs/gama_lumfn.log

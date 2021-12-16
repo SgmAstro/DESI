@@ -14,21 +14,17 @@ nproc = 12
 
 field = 'G9'
 realz = 0
+dryrun=False
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_N8_{}_{:d}.fits'.format(field, realz)
 
-#rand  = fits.open(fpath)
-#rand  =rand[:200]
-
-# hdr   = rand[1].header
-
-# print(rand.info())
-# print(hdr)
-
 # Outpute is sorted by fillfactor.py;
 rand     = fitsio.read(fpath)
-#rand = rand[:800*nproc]
 
+if dryrun:
+    rand = rand[:800*nproc]
+    fpath= fpath.replace('.fits', '_dryrun.fits')
+    
 body = rand[rand['IS_BOUNDARY'] == 0]
 boundary = rand[rand['IS_BOUNDARY'] == 1]
 
@@ -38,19 +34,18 @@ splits = np.array_split(split_idx, nproc)
 bids = boundary['RANDID']
 
 boundary = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
+boundary = np.array(boundary, copy=True)
 
 print('Creating boundary tree')
 
 kd_tree  = KDTree(boundary)
 
-points = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']] 
-points = [x for x in points]
+# points = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']] 
+# points = [x for x in points]
 
 # dd, ii = kd_tree.query(points, k=1)
 
 def process_one(split):
-    # sub_rand = Table(body[split], copy=True)
-
     points = np.c_[body[split]['CARTESIAN_X'], body[split]['CARTESIAN_Y'], body[split]['CARTESIAN_Z']] 
     points = [x for x in points]
 
@@ -60,9 +55,9 @@ def process_one(split):
     
     return  dd.tolist(), ii.tolist()
 
-#print(splits)
-#print(rand[splits[0]])
 '''
+# Serial.
+
 result = []
 
 for split in splits:
@@ -70,12 +65,8 @@ for split in splits:
 
 result = np.array(result)
 '''
-#print(result)
-
 with Pool(nproc) as p:
     result = p.map(process_one, splits)
-
-#print(result)
 
 flat_result = []
 flat_ii = []

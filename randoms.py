@@ -6,7 +6,6 @@ from   scipy.interpolate import interp1d
 from   gama_limits import gama_limits
 from   astropy.table import Table
 from   cartesian import cartesian
-from   fsky import fsky
 
 
 np.random.seed(314)
@@ -33,7 +32,7 @@ print(vol, rand_density, nrand / 1.e6)
 
 boundary_percent = 1.
 
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
+opath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
 zs   = np.arange(0.0, zmax+dz, dz)
 Vs   = volcom(zs, Area) 
@@ -95,8 +94,8 @@ randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC
 randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
 randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
 
-randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand}
+randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand, 'FIELD': field, 'Area': Area, 'BOUND_PERCENT': boundary_percent}
 
 print('Writing.')
 
-randoms.write(fpath, format='fits', overwrite=True)
+randoms.write(opath, format='fits', overwrite=True)

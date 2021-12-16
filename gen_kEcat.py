@@ -9,9 +9,9 @@ from abs_mag import abs_mag
 
 
 dryrun=False
-ngal=5000 # if dryrun.
+ngal=1500 # if dryrun.
 
-nproc=4
+np.random.seed(314)
 
 root = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold.fits'
@@ -19,9 +19,13 @@ fpath = root + '/GAMA4/gama_gold.fits'
 dat = Table.read(fpath)
 dat.pprint()
 
+opath=root + '/GAMA4/gama_gold_kE.fits'
+
 if dryrun:
   dat = Table(np.random.choice(dat, ngal))
+  opath=opath.replace('_kE', '_kE_{:d}k'.format(np.int(ngal / 1000.)))                                                     
 
+  
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 
 rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])
@@ -42,7 +46,7 @@ dat['KCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P
 
 dat['REST_GMR_0P0'] = dat['GMR'] - (dat['KCORR_G0P0'] - dat['KCORR_R0P0'])
 
-dat['Q_COLOR_0P0'] = tmr_q(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
+dat['Q_COLOR_0P0'] = tmr_q(dat['REST_GMR_0P0'], aall=False)
 
 dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=True)
 dat['EQ_COLOR_0P0']   = tmr_ecorr(dat['ZGAMA'], dat['REST_GMR_0P0'], aall=False)
@@ -55,4 +59,6 @@ dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
 
 dat.pprint()
 
-dat.write(root + '/GAMA4/gama_gold_kE_{:d}k.fits'.format(np.int(ngal / 1000.)), format='fits', overwrite=True)
+print('Writing {}.'.format(opath))
+
+dat.write(opath, format='fits', overwrite=True)

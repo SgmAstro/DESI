@@ -13,13 +13,13 @@ def tmr_ecorr(redshift, restframe_colour, aall=False):
 
     return result
 
-def tmr_q(redshift, restframe_colour, aall=False):
+def tmr_q(restframe_colour, aall=False):
     if aall:
-        result = np.ones_like(redshift) * Qall
+        result = Qall * np.ones_like(restframe_colour)
 
     else:
-        result = np.zeros_like(redshift)
-        result[restframe_colour > redblue_split] = Qred
+        result = np.zeros_like(restframe_colour)
+        result[restframe_colour > redblue_split]  = Qred
         result[restframe_colour <= redblue_split] = Qblue
 
     return result
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     zs = np.arange(0.0, 1.0, 0.01)
     cols = 0.5 * np.ones_like(zs)
 
-    Es = tmr_ecorr(zs, cols, all=False)
-    Qs = tmr_q(zs, cols, all=True) 
+    Es = tmr_ecorr(zs, cols, aall=False)
+    Qs = tmr_q(cols, aall=True) 
     
     print(Qs)

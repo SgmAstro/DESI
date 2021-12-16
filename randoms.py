@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from   cosmo import cosmo
+from   cosmo import cosmo, volcom
 from   scipy.interpolate import interp1d
 from   gama_limits import gama_limits
 from   astropy.table import Table
@@ -13,15 +13,19 @@ np.random.seed(314)
 
 realz = 0
 field = 'G9'
+Area = 60. 
 
 dz   = 1.e-4
 
 zmin = 0.0
-zmax = 0.6
+zmax = 0.3
+
+Vmin = volcom(zmin, Area) 
+Vmax = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
-vol  = fsky(5. * 12.) * (cosmo.comoving_volume(zmax).value - cosmo.comoving_volume(zmin).value)
-rand_density = 1.e-1
+vol  = Vmax - Vmin
+rand_density = 5.e-1
 
 nrand = np.int(np.ceil(vol * rand_density))
 
@@ -31,11 +35,8 @@ boundary_percent = 1.
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
-Vmin = cosmo.comoving_volume(zmin).value
-Vmax = cosmo.comoving_volume(zmax).value
-
 zs   = np.arange(0.0, zmax+dz, dz)
-Vs   = cosmo.comoving_volume(zs).value
+Vs   = volcom(zs, Area) 
 
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 Vz   = interp1d(Vs, zs, kind='linear', copy=True, bounds_error=True, fill_value=np.NaN, assume_sorted=False)
@@ -65,7 +66,7 @@ print('Solved {:d} for field {}'.format(nrand, field))
 
 print('Applying rotation.')
 
-xyz                    = cartesian(ras, decs, zs)
+xyz = cartesian(ras, decs, zs)
 
 ras = ras.astype(np.float32)
 decs= decs.astype(np.float32)

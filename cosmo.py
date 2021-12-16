@@ -15,4 +15,4 @@ def distcom(zs):
     return cosmo.comoving_distance(zs).value
 
 def volcom(zs, area):
-    return (4./3.) * fsky(area) * distcom(zs)**3.
+    return (4./3.) * np.pi * fsky(area) * distcom(zs)**3.

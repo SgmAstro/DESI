@@ -10,7 +10,7 @@ from astropy.table import Table
 
 kcorr_r = GAMA_KCorrection(band='R')
 
-def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=True):
+def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=False):
     z = np.atleast_1d(z)
     rest_gmr_0p1 = np.atleast_1d(rest_gmr_0p1)
     rest_gmr_0p0 = np.atleast_1d(rest_gmr_0p0)
@@ -19,7 +19,7 @@ def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=True):
 
     return result[0]
     
-def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=True):
+def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      def diff(x):
           return theta(x, rest_gmr_0p1, rest_gmr_0p0, aall=aall) - thetaz - dr
 
@@ -46,7 +46,7 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=True):
 
      return  result, warn
 
-def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=True, debug=True):
+def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    result = []
    start = time.time()
 
@@ -67,9 +67,6 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=True, debug=True):
 
    return  result[:,0], result[:,1]
 
-
-ngal=100000
-#ngal=20000
 nproc=4
 
 rlim = 19.8
@@ -83,14 +80,14 @@ dat.pprint()
 
 dat['DELTA_RPETRO_FAINT'] = rlim - dat['R_PETRO']
 
-zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'], aall=True, debug=True)
+zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'], aall=False, debug=True)
 
 dat['ZMAX'] = zmaxs
 dat['ZMAX_WARN'] = warn
 
 dat['DELTA_RPETRO_BRIGHT'] = rmax - dat['R_PETRO']
 
-zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'], aall=True, debug=True)
+zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'], aall=False, debug=True)
 
 dat['ZMIN'] = zmins
 dat['ZMIN_WARN'] = warn

@@ -46,6 +46,7 @@ def get_ddps(Area, M_0P0s, zs):
         zlims['DDP{}_ZMIN'.format(i+1)] = zmin
         zlims['DDP{}_ZMAX'.format(i+1)] = zmax
         zlims['DDP{}_VZ'.format(i+1)]   = volcom(zmax, Area) - volcom(zmin, Area)
+        zlims['DDP{}_NGAL'.format(i+1)] = np.count_nonzero(in_ddp) 
         zlims['DDP{}_DENS'.format(i+1)] = np.count_nonzero(in_ddp) / zlims['DDP{}_VZ'.format(i+1)] 
         
     # returns [0, 1, 0] array

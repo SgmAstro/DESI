@@ -9,7 +9,6 @@ raw_dir='/global/homes/m/mjwilson/desi/BGS/Sam/DESI/data'
 
 class GAMA_KCorrection(object):
     def __init__(self, band, kind="linear"):
-
         """
         Colour-dependent polynomial fit to the GAMA K-correction (Fig. 13 of Smith+17), 
         used to convert between SDSS r-band Petrosian apparent magnitudes, and rest 
@@ -139,6 +138,18 @@ class GAMA_KCorrection(object):
         '''
         return idx
 
+class GAMA_KCorrection_color():
+    def __init__(self):
+        self.kRcorr = GAMA_KCorrection(band='R')
+        self.kGcorr = GAMA_KCorrection(band='G')
+
+    def obs_gmr(self, rest_gmr):        
+        return  rest_gmr + self.kRcorr.k(z, rest_gmr) - self.kGcorr.k(z, rest_gmr)
+
+    def rest_gmr_nonnative(self, z, native_rest_gmr):
+        return  native_rest_gmr + self.kGcorr.k(z, native_rest_gmr) - self.kRcorr.k(z, native_rest_gmr) 
+
+    
 def test_plots(axes):
     kcorr_r = GAMA_KCorrection(band='R')
     kcorr_g = GAMA_KCorrection(band='G')

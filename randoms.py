@@ -94,7 +94,11 @@ randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC
 randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
 randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
 
-randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand, 'FIELD': field, 'Area': Area, 'BOUND_PERCENT': boundary_percent}
+randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand, 'FIELD': field, 'Area': Area, 'BOUND_PERCENT': boundary_percent,\
+                'VOL': vol, 'RAND_DENS': rand_density, 'VOL8': (4./3.)*np.pi*(8.**3.)}
+
+randoms.meta['NRAND8'] = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
+randoms.meta['NRAND8_PERR'] =np.sqrt(randoms.meta['NRAND8'])
 
 print('Writing.')
 

@@ -4,6 +4,7 @@ import astropy.io.fits as fits
 
 from astropy.table import Table
 from cosmo import cosmo, distmod
+from gama_limits import gama_field
 
 
 root = os.environ['CSCRATCH'] + '/norberg/'
@@ -48,6 +49,9 @@ dat.pprint()
 
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
+
+# TODO:  Add FIELD column containing G9, G12, ...
+dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
 
 # Randomise rows.
 idx = np.arange(len(dat))

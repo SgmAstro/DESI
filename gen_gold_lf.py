@@ -10,6 +10,7 @@ from   smith_kcorr import test_plots, test_nonnative_plots
 from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter
+from   gama_limits import gama_field
 
 def process_cat(fpath, vmax_opath):
     assert 'vmax' in vmax_opath
@@ -17,7 +18,13 @@ def process_cat(fpath, vmax_opath):
     opath = vmax_opath
 
     gama_zmax = Table.read(fpath)
-    
+
+    # HACK:  remove after pipeline rerun with G9, G12, G15 randoms.
+    print('HACK: Limiting to G9.')
+        
+    gama_zmax['FIELD'] = gama_field(gama_zmax['RA'], gama_zmax['DEC'])
+    gama_zmax = gama_zmax[gama_zmax['FIELD'] == 'G9']
+        
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()
 

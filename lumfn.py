@@ -18,7 +18,10 @@ def lumfn(dat, vol, Ms=np.arange(-25.5, -15.5, 0.3), Mcol='MCOLOR_0P0'):
         nsample = len(sample)
         
         median = np.median(sample[Mcol])
-    
-        result.append([median, nsample / dM / vol, np.sqrt(nsample) / dM / vol, np.sum(1./sample['VMAX']) / dM])
+
+        ivmax = 1./sample['VMAX']
+        variance = np.sum(ivmax**2.) / np.sum(ivmax)**2.
+        
+        result.append([median, nsample / dM / vol, np.sqrt(nsample) / dM / vol, np.sum(ivmax) / dM, np.sqrt(variance)])
             
-    return  Table(np.array(result), names=['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX'])
+    return  Table(np.array(result), names=['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR'])

@@ -146,8 +146,10 @@ class GAMA_KCorrection_color():
     def obs_gmr(self, rest_gmr):        
         return  rest_gmr + self.kRcorr.k(z, rest_gmr) - self.kGcorr.k(z, rest_gmr)
 
-    def rest_gmr_nonnative(self, z, native_rest_gmr):
-        return  native_rest_gmr + self.kGcorr.k(z, native_rest_gmr) - self.kRcorr.k(z, native_rest_gmr) 
+    def rest_gmr_nonnative(self, native_rest_gmr):
+        refzs = np.zeros_like(native_rest_gmr)
+        
+        return  native_rest_gmr + self.kGcorr.k(refzs, native_rest_gmr) - self.kRcorr.k(refzs, native_rest_gmr) 
 
     
 def test_plots(axes):

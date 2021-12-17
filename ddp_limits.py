@@ -33,7 +33,7 @@ for rlim in rlims:
     for aall, all_type in zip([True, False], ['QALL', 'QCOLOR']):
         for gmr_0P1 in gmrs_0p1:
             gmr_0P1  = gmr_0P1 * np.ones_like(zs)
-            gmr_0P0  = kcorr_RG.rest_gmr_nonnative(zs, gmr_0P1)
+            gmr_0P0  = kcorr_RG.rest_gmr_nonnative(gmr_0P1)
 
             ks       = kcorr_r.k_nonnative_zref(0.0, zs, gmr_0P1)
             es       = tmr_ecorr(zs, gmr_0P0, aall=aall)

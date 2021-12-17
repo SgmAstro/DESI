@@ -32,4 +32,4 @@ def named_schechter(M, named_type='TMR', zz=None, evolve=False):
         Mstar       -= Q * (zz - zref)
         phistar     *= 10. ** (0.4 * P * (zz - zref))
 
-    return named_schechter(M, phistar, Mstar, alpha)
+    return schechter(M, phistar, Mstar, alpha)

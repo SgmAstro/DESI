@@ -49,6 +49,8 @@ fpaths = [x for x in fpaths if os.path.exists(x)]
 # e.g. 280/28027/redrock-sv3-bright-28027.fits
 tabs = []
 
+print('Gathering DESI zs.')
+
 for x in fpaths:
     zbest = Table.read(x, hdu='REDSHIFTS')
     fmap  = Table.read(x, hdu='FIBERMAP')
@@ -78,6 +80,8 @@ gold.pprint()
 # DESI
 c             = SkyCoord(ra=desi_zs['TARGET_RA']*u.degree, dec=desi_zs['TARGET_DEC']*u.degree)
 
+print('Matching DESI to GAMA Gold.')
+
 # GAMA
 catalog       = SkyCoord(ra=gold['RA'], dec=gold['DEC'])
 idx, d2d, d3d = c.match_to_catalog_3d(catalog)
@@ -88,5 +92,14 @@ gold_match   = gold[idx]
 desi_zs      = hstack([desi_zs, gold_match])
 desi_zs['GAMA_SEP'] = d2d
 
+max_sep      = 1.0 * u.arcsec
 
+print(np.mean(desi_zs['GAMA_SEP'] < max_sep))
 
+opath = fpath.replace('gama', 'desi')
+
+print('Writing {}'.format(opath))
+
+desi_zs.write(opath, format='fits', overwrite=True)
+
+print('Done.')

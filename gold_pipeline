@@ -4,4 +4,8 @@
 
 # python gen_zmax_cat.py > logs/gama_zmax.log
 
-python gen_gold_lf.py > logs/gama_lumfn.log
+# python ddp_limits.py
+
+python gen_ddp_cat.py
+
+# python gen_gold_lf.py > logs/gama_lumfn.log

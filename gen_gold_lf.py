@@ -68,8 +68,7 @@ else:
         ddp_fpath = fpath.replace('zmax', 'ddp_n8_d0_{:d}'.format(idx))
         ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
 
-        process_cat(fpath, ddp_opath)
-
-        print(ddp_fpath)
-        print(ddp_opath)
         print()
+        print(ddp_fpath)
+        
+        process_cat(fpath, ddp_opath)

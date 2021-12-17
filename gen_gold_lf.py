@@ -77,5 +77,6 @@ else:
 
         print()
         print(ddp_fpath)
+        print(ddp_opath)
         
-        process_cat(fpath, ddp_opath)
+        process_cat(ddp_fpath, ddp_opath)

@@ -8,7 +8,10 @@
 
 # python gen_ddp_cat.py
 
-# References schechter fn. 
+# References schechter fn fiven a zmax catalog.
 python gen_gold_lf.py # > logs/gama_lumfn.log
 
 # python gen_ddp_n8.py
+
+# Density dependent schechter fn. given a ddp_n8 catalog.
+# python gen_gold_lf.py # > logs/gama_lumfn.log

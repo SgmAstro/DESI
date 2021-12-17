@@ -9,6 +9,7 @@ from    scipy import stats
 from    getdist.mcsamples import MCSamplesFromCobaya
 
 # Run me on interactive:
+# desienv master
 # srun -N 1 -n 1 python fit_schechter.py
 
 known = False
@@ -30,7 +31,7 @@ def chi2(log10phistar, Mstar, alpha):
     res /= lumfn['PHI_IVMAX_ERROR']
     res  = res * res
 
-    return res
+    return np.sum(res)
 
 def lnlike(log10phistar, Mstar, alpha):
     return -chi2(log10phistar, Mstar, alpha) / 2.
@@ -45,6 +46,8 @@ info["params"] = {
 info["sampler"] = {"mcmc": {"Rminus1_stop": 0.001, "max_tries": 1000}}
 
 updated_info, sampler = run(info, output='{}/cobaya/schechter_chain'.format(root))
+
+print('Written to {}/cobaya/schechter_chain*'.format(root))
 
 # gdsamples = MCSamplesFromCobaya(updated_info, sampler.products()["sample"])
 # gdplot    = gdplt.get_subplot_plotter(width_inch=5)

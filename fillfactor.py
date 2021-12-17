@@ -20,7 +20,7 @@ fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(fie
 
 print('Reading rand.')
 
-rand = fitsio.read(fpath)
+rand = Table.read(fpath)
 
 if dryrun:
     rand = rand[:200*nproc]
@@ -76,7 +76,6 @@ flat_result = []
 for rr in result:
     flat_result += rr
 
-rand = Table(rand)
 rand['N8'] = np.array(flat_result).astype(np.int32)
 
 print('Writing.')

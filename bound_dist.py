@@ -19,7 +19,7 @@ dryrun=False
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_N8_{}_{:d}.fits'.format(field, realz)
 
 # Outpute is sorted by fillfactor.py;
-rand     = fitsio.read(fpath)
+rand  = Table.read(fpath)
 
 if dryrun:
     rand = rand[:800*nproc]
@@ -75,7 +75,6 @@ for rr in result:
     flat_result += rr[0]
     flat_ii += rr[1]
 
-rand = Table(rand)
 rand['BOUND_DIST'] = 0.0
 rand['BOUND_ID'] = 0
 

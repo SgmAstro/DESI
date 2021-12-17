@@ -6,14 +6,15 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table
 from   scipy.spatial import KDTree
 from   cartesian import cartesian
+from   delta8_limits import delta8_tier
 
 
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp.fits'
 
-dat = fitsio.read(fpath)
-dat = Table(dat)
+dat = Table.read(fpath)
+# dat = dat[:1000]
 
-# dat = dat[:5000]
+assert 'DDP1_DENS' in dat.meta
 
 # add cartesian coordinates to catalogue
 xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
@@ -34,7 +35,7 @@ realz  = 0
 rpath  = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
 rand   = fitsio.read(rpath)
 
-# rand   = rand[:100000]
+# rand   = rand[:1000]
 
 rpoints = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
 rpoints = np.array(rpoints, copy=True)
@@ -75,24 +76,33 @@ for idx in range(3):
 
 dat.pprint()
 
-# TODO: Inherit the DDP header and propagate. 
-meta     = {'DDP1_ZMIN': 0.039069999009370804,\
-            'DDP1_ZMAX': 0.2483299970626831,\
-            'DDP1_VZ': 6451530.309761727,\
-            'DDP1_DENS': 0.005383528919866882,\
-            'DDP2_ZMIN': 0.03914999961853027,\
-            'DDP2_ZMAX': 0.18308000266551971,\
-            'DDP2_VZ': 2679079.7557868413,\
-            'DDP2_DENS': 0.009928035902084674,\
-            'DDP3_ZMIN': 0.03903000056743622,\
-            'DDP3_ZMAX': 0.09973999857902527,\
-            'DDP3_VZ': 432372.2344703941,\
-            'DDP3_DENS': 0.018396185892331243,\
-            'VOL8': (4./3.)*np.pi*(8.**3.)}
+##  Derived.
+dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
-for x in meta.keys():
-    print('{}\t\t{}'.format(x.ljust(20), meta[x]))
+dat['DDP1_DELTA8'] = (dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR']) - 1. 
+dat['DDP2_DELTA8'] = (dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR']) - 1. 
+dat['DDP3_DELTA8'] = (dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / dat['FILLFACTOR']) - 1. 
+
+for x in dat.meta.keys():
+    print('{}\t\t{}'.format(x.ljust(20), dat.meta[x]))
 
 print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
+
+tiers = delta8_tier(dat['DDP1_DELTA8'])
+utiers = np.unique(tiers).tolist()
+utiers.remove(-99)
+
+print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
+
+for tier in utiers:
+    # E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_ddp_n8_d0_0.fits
+    isin  = (tiers == tier)
+    
+    opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
+
+    print('Writing {}.'.format(opath))
+    
+    to_write = dat[isin]
+    to_write.write(opath, format='fits', overwrite=True)

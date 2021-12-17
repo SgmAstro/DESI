@@ -48,3 +48,5 @@ for rlim in rlims:
             dat.write(opath, format='fits', overwrite=True)
             
             count   += 1
+
+            print('Solved for {} {} {}'.format(rlim, all_type, gmr_0P1))

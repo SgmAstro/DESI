@@ -26,8 +26,8 @@ lumfn.pprint()
 def chi2(log10phistar, Mstar, alpha):
     phistar = 10.**log10phistar
     
-    res  = (lumfn['PHI_N'] - schechter(lumfn['MEDIAN_M'], phistar, Mstar, alpha))
-    res /= lumfn['PHI_N_ERROR']
+    res  = (lumfn['PHI_IVMAX'] - schechter(lumfn['MEDIAN_M'], phistar, Mstar, alpha))
+    res /= lumfn['PHI_IVMAX_ERROR']
     res  = res * res
 
     return res

@@ -8,26 +8,25 @@ from   scipy.spatial import KDTree
 from   astropy.table import Table
 from   multiprocessing import Pool
 
-nproc = 12
+
+nproc = 16
 
 field = 'G9'
 realz = 0
 
+dryrun=False
+
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
-
-#rand  = fits.open(fpath)
-#hdr   = rand[1].header
-
-# print(rand.info())
-# print(hdr)
 
 print('Reading rand.')
 
-rand     = fitsio.read(fpath)
-# rand = rand[:200*nproc]
+rand = Table.read(fpath)
 
+if dryrun:
+    rand = rand[:200*nproc]
+    fpath = fpath.replace('.fits', '_dryrun.fits')
+    
 sort_idx = np.argsort(rand['CARTESIAN_X'])
-
 rand = rand[sort_idx]
 
 split_idx = np.arange(len(rand))
@@ -56,9 +55,8 @@ def process_one(split):
     
     return  [len(idx) for idx in indexes]
 
-#print(splits)
-#print(rand[splits[0]])
 '''
+## serial.
 result = []
 
 for split in splits:
@@ -66,14 +64,10 @@ for split in splits:
 
 result = np.array(result)
 '''
-#print(result)
-
 print('Counting < 8 Mpc/h pairs for small trees.')
 
 with Pool(nproc) as p:
     result = p.map(process_one, splits)
-
-#print(result)
 
 print('Flattening.')
 
@@ -82,11 +76,7 @@ flat_result = []
 for rr in result:
     flat_result += rr
 
-rand = Table(rand)
 rand['N8'] = np.array(flat_result).astype(np.int32)
-
-# Bound dist.
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
 print('Writing.')
 

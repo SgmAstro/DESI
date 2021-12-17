@@ -1,0 +1,15 @@
+Creating boundary tree
+Querying boundary tree for split [0...144354]
+Querying boundary tree for split [144355...288708]
+Querying boundary tree for split [433063...577416]
+Querying boundary tree for split [866125...1010478]
+Querying boundary tree for split [288709...433062]
+Querying boundary tree for split [721771...866124]
+Querying boundary tree for split [577417...721770]
+Querying boundary tree for split [1154833...1299186]
+Querying boundary tree for split [1010479...1154832]
+Querying boundary tree for split [1299187...1443540]
+Querying boundary tree for split [1587895...1732248]
+Querying boundary tree for split [1443541...1587894]
+Shuffling.
+Writing /global/cscratch1/sd/mjwilson/desi/BGS/Sam/randoms_bd_G9_0.fits.

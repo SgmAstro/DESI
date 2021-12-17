@@ -1,0 +1,8 @@
+# assumes interactive node.
+# python randoms.py > logs/randoms.log
+
+# python fillfactor.py > logs/fillfactor.log
+
+python bound_dist.py > logs/bound_dist.log
+
+# python rand_slicer.py 

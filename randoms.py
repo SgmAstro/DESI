@@ -1,27 +1,30 @@
 import os
 import numpy as np
 
-from   cosmo import cosmo
+from   cosmo import cosmo, volcom
 from   scipy.interpolate import interp1d
 from   gama_limits import gama_limits
 from   astropy.table import Table
 from   cartesian import cartesian
-from   fsky import fsky
 
 
 np.random.seed(314)
 
 realz = 0
 field = 'G9'
+Area = 60. 
 
 dz   = 1.e-4
 
 zmin = 0.0
-zmax = 0.6
+zmax = 0.3
+
+Vmin = volcom(zmin, Area) 
+Vmax = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
-vol  = fsky(5. * 12.) * (cosmo.comoving_volume(zmax).value - cosmo.comoving_volume(zmin).value)
-rand_density = 1.e-1
+vol  = Vmax - Vmin
+rand_density = 5.e-1
 
 nrand = np.int(np.ceil(vol * rand_density))
 
@@ -29,13 +32,10 @@ print(vol, rand_density, nrand / 1.e6)
 
 boundary_percent = 1.
 
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
-
-Vmin = cosmo.comoving_volume(zmin).value
-Vmax = cosmo.comoving_volume(zmax).value
+opath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
 zs   = np.arange(0.0, zmax+dz, dz)
-Vs   = cosmo.comoving_volume(zs).value
+Vs   = volcom(zs, Area) 
 
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 Vz   = interp1d(Vs, zs, kind='linear', copy=True, bounds_error=True, fill_value=np.NaN, assume_sorted=False)
@@ -65,7 +65,7 @@ print('Solved {:d} for field {}'.format(nrand, field))
 
 print('Applying rotation.')
 
-xyz                    = cartesian(ras, decs, zs)
+xyz = cartesian(ras, decs, zs)
 
 ras = ras.astype(np.float32)
 decs= decs.astype(np.float32)
@@ -94,8 +94,14 @@ randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC
 randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
 randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
 
-randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand}
+randoms.meta = {'ZMIN': zmin, 'ZMAX': zmax, 'DZ': dz, 'NRAND': nrand, 'FIELD': field, 'Area': Area, 'BOUND_PERCENT': boundary_percent,\
+                'VOL': vol, 'RAND_DENS': rand_density, 'VOL8': (4./3.)*np.pi*(8.**3.)}
+
+randoms.meta['NRAND8'] = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
+randoms.meta['NRAND8_PERR'] =np.sqrt(randoms.meta['NRAND8'])
+
+print(randoms.meta)
 
 print('Writing.')
 
-randoms.write(fpath, format='fits', overwrite=True)
+# randoms.write(opath, format='fits', overwrite=True)

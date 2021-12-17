@@ -1,0 +1,19 @@
+# python gama_gold.py > logs/gama_gold.log
+
+# python gen_kEcat.py > logs/gama_kE.log
+
+# python gen_zmax_cat.py > logs/gama_zmax.log
+
+# python ddp_limits.py
+
+# python gen_ddp_cat.py
+
+# References schechter fn fiven a zmax catalog.
+python gen_gold_lf.py # > logs/gama_lumfn.log
+
+# python gen_ddp_n8.py
+
+# Density dependent schechter fn. given a ddp_n8 catalog.
+# python gen_gold_lf.py # > logs/gama_lumfn.log
+
+# python gen_rand_ddp_N8.py

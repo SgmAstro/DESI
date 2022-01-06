@@ -38,11 +38,13 @@ def lnlike(log10phistar, Mstar, alpha):
     
 info = {"likelihood": {"schechter": lnlike}}
 
+# https://cobaya.readthedocs.io/en/latest/params_prior.html
 info["params"] = {
      "log10phistar": {"prior": {"min": -2.5, "max": 0.0},   "ref": -2.0,   "proposal": 0.01},  # TMR ref.  -2.01
      "Mstar":        {"prior": {"min": -21., "max": -20.5}, "ref": -20.75, "proposal": 0.01},  # TMR ref.  -20.89 
      "alpha":        {"prior": {"min": -1.3, "max": -1.2},  "ref": -1.25,  "proposal": 0.01}}  # TMR ref.  -1.25
 
+# https://cobaya.readthedocs.io/en/latest/sampler_mcmc.html
 info["sampler"] = {"mcmc": {"Rminus1_stop": 0.001, "max_tries": 1000}}
 
 updated_info, sampler = run(info, output='{}/cobaya/schechter_chain'.format(root))

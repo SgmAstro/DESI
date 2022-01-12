@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from   scipy.spatial import KDTree
 from   astropy.table import Table
 from   multiprocessing import Pool
-from   data.sphere_radius import r_sphere
 
 import argparse
 parser = argparse.ArgumentParser(description='Select GAMA field.')
@@ -53,7 +52,7 @@ def process_one(split):
 
     print('Querying split [{} ... {}] tree.'.format(split[0], split[-1]))
     
-    indexes  = kd_tree.query_ball_tree(big_tree, r=r_sphere)
+    indexes  = kd_tree.query_ball_tree(big_tree, r=8.)
 
     del kd_tree
     
@@ -81,6 +80,7 @@ for rr in result:
     flat_result += rr
 
 rand['N8'] = np.array(flat_result).astype(np.int32)
+rand.meta['RSPHERE'] = 8.
 
 print('Writing.')
 

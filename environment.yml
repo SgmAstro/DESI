@@ -1,5 +1,5 @@
 # conda env create -f environment.yml
-name: desilf
+name: base
 channels:
   - defaults
   - conda-forge

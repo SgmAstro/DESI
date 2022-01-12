@@ -33,7 +33,7 @@ field  = 'G9'
 realz  = 0
 
 rpath  = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
-rand   = fitsio.read(rpath)
+rand, rand_hdr = fitsio.read(rpath, header=True)
 
 # rand   = rand[:1000]
 
@@ -52,8 +52,7 @@ dat['RANDSEP'] = dd
 dat['RANDMATCH'] = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 
-# TODO: Get from header.
-nrand8 = 1072.3302924
+nrand8 = rand_hdr['NRAND8']
 
 dat['FILLFACTOR'] = rand['N8'][ii] / nrand8
 

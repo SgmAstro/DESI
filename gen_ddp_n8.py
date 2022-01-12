@@ -122,7 +122,7 @@ for tier in utiers:
 
     to_write['FIELD'] = gama_field(to_write['RA'], to_write['DEC'])
     
-    isin = to_write[to_write['FIELD'] == field]
+    isin = to_write['FIELD'] == field
     to_write_field = to_write[isin]
     
     opath_field = opath.replace('gold', 'gold_{}'.format(field))

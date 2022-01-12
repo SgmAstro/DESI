@@ -50,7 +50,6 @@ dat.pprint()
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
-# TODO:  Add FIELD column containing G9, G12, ...
 dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
 
 # Randomise rows.

@@ -10,6 +10,8 @@ from   delta8_limits import delta8_tier
 from   gama_limits import gama_field
 
 import argparse
+
+
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
 args = parser.parse_args()
@@ -110,15 +112,12 @@ for tier in utiers:
     isin  = (tiers == tier)
     
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
-    #opath = opath.replace('gold', 'gold_{}'.format(field))
 
     print('Writing {}.'.format(opath))
     
     to_write = dat[isin]
     to_write.write(opath, format='fits', overwrite=True)
     
-    
-
     to_write['FIELD'] = gama_field(to_write['RA'], to_write['DEC'])
     
     isin = to_write['FIELD'] == field

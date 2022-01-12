@@ -9,6 +9,11 @@ from   astropy.table import Table
 from   multiprocessing import Pool
 
 import argparse
+
+'''
+Script to calculate the maximimum distance [Mpc/h] of each random from the boundary. 
+'''
+
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
 args = parser.parse_args()

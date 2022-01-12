@@ -8,13 +8,16 @@ from   scipy.spatial import KDTree
 from   astropy.table import Table
 from   multiprocessing import Pool
 
+import argparse
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
 
 nproc = 16
-
-field = 'G9'
 realz = 0
 
-dryrun=False
+dryrun= False
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
@@ -77,6 +80,7 @@ for rr in result:
     flat_result += rr
 
 rand['N8'] = np.array(flat_result).astype(np.int32)
+rand.meta['RSPHERE'] = 8.
 
 print('Writing.')
 

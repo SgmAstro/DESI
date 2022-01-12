@@ -7,7 +7,6 @@ from   astropy.table import Table
 from   scipy.spatial import KDTree
 from   cartesian import cartesian
 from   delta8_limits import delta8_tier
-from   data.sphere_radius import r_sphere
 from   gama_limits import gama_field
 
 import argparse
@@ -19,7 +18,7 @@ field = args.field.upper()
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp.fits'
 
 dat = Table.read(fpath)
-dat = dat[:30000]
+# dat = dat[:30000]
 
 assert 'DDP1_DENS' in dat.meta
 
@@ -83,7 +82,7 @@ for idx in range(3):
 dat.pprint()
 
 ##  Derived.
-dat.meta['VOL8']   = (4./3.)*np.pi*(r_sphere**3.)
+dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
 dat['DDP1_DELTA8'] = (dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR']) - 1. 
 dat['DDP2_DELTA8'] = (dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR']) - 1. 

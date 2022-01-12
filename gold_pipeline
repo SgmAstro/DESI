@@ -15,5 +15,3 @@ python gen_gold_lf.py # > logs/gama_lumfn.log
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
 # python gen_gold_lf.py # > logs/gama_lumfn.log
-
-# python gen_rand_ddp_N8.py

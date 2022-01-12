@@ -1,8 +1,17 @@
-# assumes interactive node.
-# python randoms.py > logs/randoms.log
+export FIELD='G9'
 
-# python fillfactor.py > logs/fillfactor.log
+echo 'Running randoms pipeline for field '$FIELD
 
-python bound_dist.py > logs/bound_dist.log
+# Serial code. 
+# python randoms.py --field $FIELD > logs/randoms_$FIELD.log
 
-# python rand_slicer.py 
+# Uses Pool, should be on interactive. 
+# python fillfactor.py --field $FIELD > logs/fillfactor_$FIELD.log
+
+# Uses Pool, should be on interactive.
+# python bound_dist.py --field $FIELD > logs/bound_dist_$FIELD.log
+
+# Assumes python gen_ddp_N8.py has been run. 
+
+# ** TODO: need to fix up this script on main. **
+# python gen_rand_ddp_N8.py --field $FIELD > logs/rand_ddp_N8_$FIELD.log

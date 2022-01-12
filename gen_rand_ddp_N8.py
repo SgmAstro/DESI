@@ -20,6 +20,9 @@ fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(
 rand = Table.read(fpath)
 # rand = rand[:1000]
 
+# Propagate header 'DDP1_ZMIN' etc. to randoms.
+rand.meta.update(dat.meta)
+
 points       = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
 points       = np.array(points, copy=True)
 

@@ -7,14 +7,18 @@ import matplotlib.pyplot as plt
 from   scipy.spatial import KDTree
 from   astropy.table import Table
 from   multiprocessing import Pool
+from   data.sphere_radius import r_sphere
 
+import argparse
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
 
 nproc = 16
-
-field = 'G9'
 realz = 0
 
-dryrun=False
+dryrun= False
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
@@ -49,7 +53,7 @@ def process_one(split):
 
     print('Querying split [{} ... {}] tree.'.format(split[0], split[-1]))
     
-    indexes  = kd_tree.query_ball_tree(big_tree, r=8.)
+    indexes  = kd_tree.query_ball_tree(big_tree, r=r_sphere)
 
     del kd_tree
     

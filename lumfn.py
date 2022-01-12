@@ -3,6 +3,7 @@ import numpy as np
 from   astropy.table import Table
 from   cosmo import volcom
 
+
 def lumfn(dat, vol, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     idxs = np.digitize(dat[Mcol], bins=Ms)
 
@@ -19,9 +20,9 @@ def lumfn(dat, vol, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
         
         median = np.median(sample[Mcol])
 
-        ivmax = 1./sample['VMAX'].data
+        ivmax   = 1. / sample['VMAX'].data
         ivmax2  = 1. / sample['VMAX'].data**2.
-
+        
         result.append([median,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\

@@ -75,7 +75,7 @@ for idx in range(3):
 
     print('Querying tree for DDP {}'.format(ddp_idx))
 
-    indexes_ddp  = kd_tree_all.query_ball_tree(kd_tree_ddp, r=r_sphere)
+    indexes_ddp  = kd_tree_all.query_ball_tree(kd_tree_ddp, r=8.)
 
     dat['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
 

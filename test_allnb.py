@@ -12,6 +12,6 @@ def test_notebooks():
     
     for field in fields:    
         pm.execute_notebook('docs/nb/randoms_qa.ipynb',\
-                            'test/pm_randoms_qa.ipynb',\
+                            'test/pm_randoms_qa_{}.ipynb'.format(field),\
                             parameters=dict(field=field)
                             )

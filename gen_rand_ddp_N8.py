@@ -40,9 +40,7 @@ for idx in range(3):
 
     rand['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
 
-# HACK: can be removed after full randoms run through.
-rand.meta['NRAND8'] = 1072.33029242
-
+    
 rand['FILLFACTOR']  = rand['N8'] / rand.meta['NRAND8']   
 
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
@@ -50,6 +48,13 @@ rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS
 rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
+
+utiers = np.unique(rand['DDP1_DELTA8_TIER'])
+
+for ut in utiers:
+    in_tier = (rand['DDP1_DELTA8_TIER'].data == ut)
+
+    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)    
 
 print('Writing {}'.format(fpath.replace('bd', 'bd_ddp_n8')))
     

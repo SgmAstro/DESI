@@ -21,8 +21,8 @@ def process_cat(fpath, vmax_opath, field=None):
 
     gama_zmax = Table.read(fpath)
 
-
-    gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
+    if 'FIELD' not in gama_zmax.dtype.names:
+        gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
     
     if field != None:
         assert field in gama_limits.keys()

@@ -1,0 +1,21 @@
+# conda env create -f environment.yml
+name: base
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - pip
+  - wget 
+  - numpy
+  - matplotlib
+  - pandas
+  - astropy
+  - scipy
+  - fitsio
+  - papermill
+  - jupyter
+  - notebook>=6.1.5
+  - nbformat >=5.0.2
+  - coveralls
+  - pytest
+  - pytest-cov

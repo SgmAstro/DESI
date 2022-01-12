@@ -27,12 +27,13 @@ def process_cat(fpath, vmax_opath, field=None):
     if field != None:
         assert field in gama_limits.keys()
         
-        print(np.unique(gama_zmax['FIELD'].data))
+        # print(np.unique(gama_zmax['FIELD'].data))
+        
         gama_zmax = gama_zmax[gama_zmax['FIELD'].data == field]
+        
         opath = opath.replace('gold', 'gold_{}'.format(field))
-        print(len(gama_zmax))
-        exit(0)
-
+        
+        # print(len(gama_zmax))
     
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()

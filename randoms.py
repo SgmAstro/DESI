@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import argparse
 
 from   cosmo import cosmo, volcom
 from   scipy.interpolate import interp1d
@@ -7,11 +8,14 @@ from   gama_limits import gama_limits
 from   astropy.table import Table
 from   cartesian import cartesian
 
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
 
 np.random.seed(314)
 
 realz = 0
-field = 'G9'
 Area = 60. 
 
 dz   = 1.e-4
@@ -104,4 +108,4 @@ print(randoms.meta)
 
 print('Writing.')
 
-# randoms.write(opath, format='fits', overwrite=True)
+randoms.write(opath, format='fits', overwrite=True)

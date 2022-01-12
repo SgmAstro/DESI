@@ -10,21 +10,31 @@ from   smith_kcorr import test_plots, test_nonnative_plots
 from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter
-from   gama_limits import gama_field
+from   gama_limits import gama_field, gama_limits
 
-def process_cat(fpath, vmax_opath):
+import argparse
+
+def process_cat(fpath, vmax_opath, field=None):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
 
     gama_zmax = Table.read(fpath)
 
-    # HACK:  remove after pipeline rerun with G9, G12, G15 randoms.
-    print('HACK: Limiting to G9.')
+    if 'FIELD' not in gama_zmax.dtype.names:
+        gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
+    
+    if field != None:
+        assert field in gama_limits.keys()
         
-    gama_zmax['FIELD'] = gama_field(gama_zmax['RA'], gama_zmax['DEC'])
-    gama_zmax = gama_zmax[gama_zmax['FIELD'] == 'G9']
+        # print(np.unique(gama_zmax['FIELD'].data))
         
+        gama_zmax = gama_zmax[gama_zmax['FIELD'].data == field]
+        
+        opath = opath.replace('gold', 'gold_{}'.format(field))
+        
+        # print(len(gama_zmax))
+    
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()
 
@@ -40,25 +50,34 @@ def process_cat(fpath, vmax_opath):
     gama_vmax.write(opath, format='fits', overwrite=True)
 
     ##  Luminosity fn.
-    opath = vmax_opath.replace('vmax', 'lumfn')
+    opath = opath.replace('vmax', 'lumfn')
 
     VV      = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
     result  = lumfn(gama_vmax, VV)
 
     result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
-
+    
     print('Writing {}.'.format(opath))
-
+    
     result.write(opath, format='fits', overwrite=True)
     
     
-ngal=1500
+ngal = 1500
 Area = 180.
 dryrun=False
-density_split=True
+density_split=False
+
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
+print(field)
 
 if not density_split:
-    fpath = os.environ['CSCRATCH'] + '/norberg//GAMA4/gama_gold_zmax.fits'
+    field = ''
+    print('IGNORING FIELD GENERATING G9 to G15')
+    
+    fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
     if dryrun:
         fpath = fpath.replace('_zmax', '_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)))
@@ -68,15 +87,15 @@ if not density_split:
     process_cat(fpath, opath)
 
 else:
-    fpath = os.environ['CSCRATCH'] + '/norberg//GAMA4/gama_gold_zmax.fits'
+    fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
     for idx in range(4):
         ddp_idx   = idx + 1
-        ddp_fpath = fpath.replace('zmax', 'ddp_n8_d0_{:d}'.format(idx))
+        ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
         ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
 
         print()
         print(ddp_fpath)
         print(ddp_opath)
         
-        process_cat(ddp_fpath, ddp_opath)
+        process_cat(ddp_fpath, ddp_opath, field=field)

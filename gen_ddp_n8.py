@@ -7,12 +7,18 @@ from   astropy.table import Table
 from   scipy.spatial import KDTree
 from   cartesian import cartesian
 from   delta8_limits import delta8_tier
+from   gama_limits import gama_field
 
+import argparse
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
 
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp.fits'
 
 dat = Table.read(fpath)
-# dat = dat[:1000]
+# dat = dat[:30000]
 
 assert 'DDP1_DENS' in dat.meta
 
@@ -29,7 +35,6 @@ points      = np.array(points, copy=True)
 kd_tree_all  = KDTree(points)
 
 # randoms.
-field  = 'G9' 
 realz  = 0
 
 rpath  = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
@@ -94,15 +99,32 @@ tiers = delta8_tier(dat['DDP1_DELTA8'])
 utiers = np.unique(tiers).tolist()
 utiers.remove(-99)
 
+print(utiers)
+print(np.arange(4))
+
+assert np.all(utiers == np.arange(4))
+
 print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
 for tier in utiers:
-    # E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_ddp_n8_d0_0.fits
+    # E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits
     isin  = (tiers == tier)
     
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
+    #opath = opath.replace('gold', 'gold_{}'.format(field))
 
     print('Writing {}.'.format(opath))
     
     to_write = dat[isin]
     to_write.write(opath, format='fits', overwrite=True)
+    
+    
+
+    to_write['FIELD'] = gama_field(to_write['RA'], to_write['DEC'])
+    
+    isin = to_write['FIELD'] == field
+    to_write_field = to_write[isin]
+    
+    opath_field = opath.replace('gold', 'gold_{}'.format(field))
+    
+    to_write_field.write(opath_field, format='fits', overwrite=True)

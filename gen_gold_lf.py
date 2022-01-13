@@ -11,6 +11,8 @@ from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter
 from   gama_limits import gama_field, gama_limits
+from   delta8_limits import dd8_limits
+from   renormalise_d8LF import lumfn_d8_normalise
 
 import argparse
 
@@ -52,19 +54,16 @@ def process_cat(fpath, vmax_opath, field=None):
     ##  Luminosity fn.
     opath = opath.replace('vmax', 'lumfn')
 
+    VV = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
+
+    result = lumfn(gama_vmax, VV)
     
     if density_split == True:
-        
-        rand_path = '/global/cscratch1/sd/ldrm11/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(field)
+        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
         rand = Table.read(rand_path)
         scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-        VV = vol_normalise(gama_vmax, scale)
         
-    else:
-        VV = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
-
-            
-    result  = lumfn(gama_vmax, VV)
+        result = lumfn_d8_normalise(result, scale)
 
     result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
     

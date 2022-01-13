@@ -9,7 +9,7 @@ from   vmaxer import vmaxer
 from   smith_kcorr import test_plots, test_nonnative_plots
 from   cosmo import distmod, volcom
 from   lumfn import lumfn
-from   schechter import schechter
+from   schechter import schechter, named_schechter
 from   gama_limits import gama_field, gama_limits
 from   delta8_limits import dd8_limits
 from   renormalise_d8LF import lumfn_d8_normalise
@@ -28,15 +28,9 @@ def process_cat(fpath, vmax_opath, field=None):
     
     if field != None:
         assert field in gama_limits.keys()
-        
-        # print(np.unique(gama_zmax['FIELD'].data))
-        
+                
         gama_zmax = gama_zmax[gama_zmax['FIELD'].data == field]
-        
-        opath = opath.replace('gold', 'gold_{}'.format(field))
-        
-        # print(len(gama_zmax))
-    
+                    
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()
 
@@ -57,22 +51,7 @@ def process_cat(fpath, vmax_opath, field=None):
     VV = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
 
     result = lumfn(gama_vmax, VV)
-    
-    if density_split == True:
-        rand_path = '/global/cscratch1/sd/ldrm11/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(field)
-        rand = Table.read(rand_path)
-        scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-        
-        result = lumfn_d8_normalise(result, scale)
-        
-        gama_lf = Table.read(os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_lumfn.fits')
-        sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
-        lims = dd8_limits[idx]
-        d8 = np.mean(lims)
-        sc *= (1. + d8) / (1. + 0.007)
 
-        gama_lf['sc'] = sc
-    
     result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
 
     print('Writing {}.'.format(opath))
@@ -82,7 +61,7 @@ def process_cat(fpath, vmax_opath, field=None):
 ngal = 1500
 Area = 180.
 dryrun=False
-density_split=False
+density_split=True
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
@@ -115,5 +94,25 @@ else:
         print(ddp_opath)
         
         process_cat(ddp_fpath, ddp_opath, field=field)
-
         
+        print('PROCESS CAT FINISHED.')
+        
+        field = 'G12'
+        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
+        rand = Table.read(rand_path)
+        scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+        
+        lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_G9_ddp_n8_d0_{}_lumfn.fits'.format(idx)
+        result = Table.read(lumfn_path)        
+        result = lumfn_d8_normalise(result, scale)
+                
+        gama_lf_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_lumfn.fits'
+        gama_lf =  Table.read(gama_lf_path)
+        sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
+        lims = dd8_limits[idx]
+        d8 = np.mean(lims)
+        sc *= (1. + d8) / (1. + 0.007)
+        gama_lf['sc'] = sc 
+        
+        gama_lf.write(gama_lf_path, format='fits', overwrite=True)
+

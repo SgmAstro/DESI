@@ -65,8 +65,8 @@ ddp1_zmax = dat.meta['DDP1_ZMAX']
 
 for ut in utiers:
     
-    ddp1_rand = rand[z > ddp1_zmin]
-    ddp1_rand = ddp1_rand[z < ddp1_zmax]
+    ddp1_rand = rand[rand['ZGAMA'] > ddp1_zmin]
+    ddp1_rand = ddp1_rand[rand['ZGAMA'] < ddp1_zmax]
     
     in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 

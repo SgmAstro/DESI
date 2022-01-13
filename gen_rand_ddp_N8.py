@@ -2,6 +2,7 @@ import os
 import fitsio
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 
 from astropy.table import Table
 from scipy.spatial import KDTree
@@ -9,16 +10,25 @@ from cartesian import cartesian
 from delta8_limits import dd8_limits, delta8_tier
 
 
-field = 'G9'
+parser = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+args = parser.parse_args()
+field = args.field.upper()
+
+#field = 'G9'
 realz = 0
+
+# TO DO: Find file to import as constantS
+ddp1_zmin = 0.039
+ddp1_zmax = 0.248
 
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp_n8.fits'
 dat = Table.read(fpath)
-# dat = dat[:1000]
+#dat = dat[:1000]
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
 rand = Table.read(fpath)
-# rand = rand[:1000]
+#rand = rand[:1000]
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
 rand.meta.update(dat.meta)
@@ -55,7 +65,11 @@ rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 utiers = np.unique(rand['DDP1_DELTA8_TIER'])
 
 for ut in utiers:
-    in_tier = (rand['DDP1_DELTA8_TIER'].data == ut)
+    
+    ddp1_rand = rand[z > ddp1_zmin]
+    ddp1_rand = ddp1_rand[z < ddp1_zmax]
+    
+    in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)    
 

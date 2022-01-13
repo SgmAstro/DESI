@@ -59,22 +59,22 @@ def process_cat(fpath, vmax_opath, field=None):
     result = lumfn(gama_vmax, VV)
     
     if density_split == True:
-        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
+        rand_path = '/global/cscratch1/sd/ldrm11/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(field)
         rand = Table.read(rand_path)
         scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
         
         result = lumfn_d8_normalise(result, scale)
-
+        
+        gama_lf = Table.read(os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_lumfn.fits')
         sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
         lims = dd8_limits[idx]
         d8 = np.mean(lims)
         sc *= (1. + d8) / (1. + 0.007)
 
-        result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV, 'sc': sc}
+        gama_lf['sc'] = sc
     
-    else:
-        result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
-    
+    result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
+
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)

@@ -18,10 +18,6 @@ field = args.field.upper()
 #field = 'G9'
 realz = 0
 
-# TO DO: Find file to import as constantS
-ddp1_zmin = 0.039
-ddp1_zmax = 0.248
-
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp_n8.fits'
 dat = Table.read(fpath)
 #dat = dat[:1000]
@@ -63,6 +59,9 @@ rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 
 utiers = np.unique(rand['DDP1_DELTA8_TIER'])
+
+ddp1_zmin = dat.meta['DDP1_ZMIN']
+ddp1_zmax = dat.meta['DDP1_ZMAX']
 
 for ut in utiers:
     

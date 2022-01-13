@@ -97,12 +97,11 @@ else:
         
         print('PROCESS CAT FINISHED.')
         
-        field = 'G12'
         rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
         rand = Table.read(rand_path)
         scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
         
-        lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_G9_ddp_n8_d0_{}_lumfn.fits'.format(idx)
+        lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
         result = Table.read(lumfn_path)        
         result = lumfn_d8_normalise(result, scale)
                 

@@ -52,7 +52,18 @@ def process_cat(fpath, vmax_opath, field=None):
     ##  Luminosity fn.
     opath = opath.replace('vmax', 'lumfn')
 
-    VV      = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
+    
+    if density_split == True:
+        
+        rand_path = '/global/cscratch1/sd/ldrm11/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(field)
+        rand = Table.read(rand_path)
+        scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+        VV = vol_normalise(gama_vmax, scale)
+        
+    else:
+        VV = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
+
+            
     result  = lumfn(gama_vmax, VV)
 
     result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
@@ -60,7 +71,6 @@ def process_cat(fpath, vmax_opath, field=None):
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
-    
     
 ngal = 1500
 Area = 180.
@@ -71,7 +81,6 @@ parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
 args = parser.parse_args()
 field = args.field.upper()
-print(field)
 
 if not density_split:
     field = ''
@@ -99,3 +108,5 @@ else:
         print(ddp_opath)
         
         process_cat(ddp_fpath, ddp_opath, field=field)
+
+        

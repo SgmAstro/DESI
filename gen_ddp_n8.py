@@ -96,6 +96,9 @@ print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
 
+dat = dat[dat['ZGAMA'] > dat.meta['DDP1_ZMIN']]
+dat = dat[dat['ZGAMA'] < dat.meta['DDP1_ZMAX']]
+
 tiers = delta8_tier(dat['DDP1_DELTA8'])
 utiers = np.unique(tiers).tolist()
 utiers.remove(-99)

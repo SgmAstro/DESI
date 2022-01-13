@@ -65,7 +65,15 @@ def process_cat(fpath, vmax_opath, field=None):
         
         result = lumfn_d8_normalise(result, scale)
 
-    result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
+        sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
+        lims = dd8_limits[idx]
+        d8 = np.mean(lims)
+        sc *= (1. + d8) / (1. + 0.007)
+
+        result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV, 'sc': sc}
+    
+    else:
+        result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
     
     print('Writing {}.'.format(opath))
     

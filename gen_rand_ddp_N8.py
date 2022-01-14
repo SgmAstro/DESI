@@ -15,7 +15,6 @@ parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA fiel
 args = parser.parse_args()
 field = args.field.upper()
 
-#field = 'G9'
 realz = 0
 
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp_n8.fits'

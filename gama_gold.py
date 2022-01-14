@@ -13,6 +13,9 @@ fpath = root + '/TilingCatv46.fits'
 dat   = Table.read(fpath)
 dat   = Table(dat, masked=False)
 
+# TODO: Inherit this from somewhere sensible.
+dat.meta['AREA'] = 180.
+
 # print(dat.dtype.names)
 
 dat.rename_column('Z', 'ZGAMA')

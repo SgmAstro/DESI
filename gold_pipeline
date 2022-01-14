@@ -13,6 +13,9 @@
 # See status with e.g. squeue -u mjwilson                                                                                        
 #
 
+# Density split LF only. 
+export FIELD=G12 
+
 export CODE_ROOT=~/desi/BGS/Sam/DESI/
 
 export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/
@@ -32,15 +35,15 @@ source /project/projectdirs/desi/software/desi_environment.sh master
 
 echo 'Running gold pipeline'
 
-# python gama_gold.py > logs/gama_gold.log
+python gama_gold.py # > logs/gama_gold.log
 
-# python gen_kEcat.py --dryrun # > logs/gama_kE.log
+python gen_kEcat.py --dryrun # > logs/gama_kE.log
 
 python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
 
 # python ddp_limits.py
 
-# python gen_ddp_cat.py
+python gen_ddp_cat.py --dryrun
 
 # References schechter fn fiven a zmax catalog.
 # python gen_gold_lf.py # > logs/gama_lumfn.log
@@ -48,4 +51,4 @@ python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
 # python gen_ddp_n8.py
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-# python gen_gold_lf.py # > logs/gama_lumfn.log
+# python gen_gold_lf.py --density_split # > logs/gama_lumfn.log

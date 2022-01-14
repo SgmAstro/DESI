@@ -136,7 +136,7 @@ if __name__ == '__main__':
 
             print('Found d8 renormalisation scale of {:.3f}'.format(scale))
             
-            result = lumfn_d8_normalise(result, scale)
+            result = lumfn_d8_normalise(result, 1. / scale)
 
             result.pprint()
             

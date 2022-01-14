@@ -106,13 +106,7 @@ else:
         result = Table.read(lumfn_path)        
         result = lumfn_d8_normalise(result, scale)
                 
-            
-            
-        #gama_lf_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
-        
-        gama_lf_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_lumfn.fits'
-        gama_lf =  Table.read(gama_lf_path)
-        sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
+        sc = named_schechter(result['MEDIAN_M'], named_type='TMR')
         lims = dd8_limits[idx]
         d8 = np.mean(lims)
         sc *= (1. + d8) / (1. + 0.007)

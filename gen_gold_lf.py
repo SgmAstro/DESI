@@ -29,7 +29,7 @@ def process_cat(fpath, vmax_opath, Area, field=None):
         gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
     
     else:
-        print('Found fields: {}'.format(np.unique(gama_zmax['FIELD'])))
+        print('Found fields: {}'.format(np.unique(gama_zmax['FIELD'].data)))
         
     if field != None:
         assert field in gama_limits.keys()
@@ -51,8 +51,10 @@ def process_cat(fpath, vmax_opath, Area, field=None):
     
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
 
+    print('Found {:.3f}% with zmax < 0.0'.format(np.mean(gama_vmax['ZMAX'] <= 0.0)))
+    
     # TODO: Why do we need this?                                                                                                   
-    gama_vmax = gama_vmax[gama_vmax['ZMAX'] > 0.0]
+    gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]
 
     gama_vmax.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area}
 
@@ -121,17 +123,29 @@ if __name__ == '__main__':
             process_cat(ddp_fpath, ddp_opath, Area=Area / 3., field=field)
         
             print('PROCESS CAT FINISHED.')
-        
-            scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-        
+                    
             lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
+
+            print('Reading: {}'.format(lumfn_path))
+            
             result = Table.read(lumfn_path)        
+
+            result.pprint()
+
+            scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+
+            print('Found d8 renormalisation scale of {:.3f}'.format(scale))
+            
             result = lumfn_d8_normalise(result, scale)
-                
-            sc = named_schechter(result['MEDIAN_M'], named_type='TMR')
+
+            result.pprint()
+            
             lims = dd8_limits[idx]
-            d8 = np.mean(lims)
-            sc *= (1. + d8) / (1. + 0.007)
+            d8   = np.mean(lims)
+
+            sc   = named_schechter(result['MEDIAN_M'], named_type='TMR')
+            sc  *= (1. + d8) / (1. + 0.007)
+            
             result['D8_REFSCH'] = sc 
 
             result.write(lumfn_path, format='fits', overwrite=True)

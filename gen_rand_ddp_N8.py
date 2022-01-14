@@ -12,18 +12,23 @@ from delta8_limits import dd8_limits, delta8_tier
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+
 args = parser.parse_args()
 field = args.field.upper()
+dryrun = args.dryrun
 
 realz = 0
 
-fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp_n8.fits'
+fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp_n8.fits'
 dat = Table.read(fpath)
-#dat = dat[:20000]
 
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
+fpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
+
+if dryrun:
+    fpath = fpath.replace('.fits', '_dryrun.fits')
+
 rand = Table.read(fpath)
-#rand = rand[:20000]
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
 rand.meta.update(dat.meta)
@@ -76,7 +81,9 @@ for ut in utiers:
         
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)
     rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier])
-    
-print('Writing {}'.format(fpath.replace('bd', 'bd_ddp_n8')))
 
-rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)
+opath = fpath.replace('bd', 'bd_ddp_n8')
+    
+print('Writing {}'.format(opath))
+
+rand.write(opath, format='fits', overwrite=True)

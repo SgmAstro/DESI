@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --qos=debug
-#SBATCH --time=5
+#SBATCH --qos=regular
+#SBATCH --time=120
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --constraint=haswell
@@ -23,17 +23,18 @@ source /project/projectdirs/desi/software/desi_environment.sh master
 echo 'Running randoms pipeline for field '$FIELD
 
 # Serial code (--dryrun)
-# python randoms.py --field $FIELD --dryrun  > logs/randoms_$FIELD.log
+python randoms.py --field $FIELD > logs/randoms_$FIELD.log
 
 # Uses Pool, should be on interactive. 
-python fillfactor.py --field $FIELD --dryrun # > logs/fillfactor_$FIELD.log
+python fillfactor.py --field $FIELD > logs/fillfactor_$FIELD.log
 
 # Uses Pool, should be on interactive.
-# python bound_dist.py --field $FIELD ## > logs/bound_dist_$FIELD.log
+python bound_dist.py --field $FIELD > logs/bound_dist_$FIELD.log
 
 # Assumes python gen_ddp_N8.py has been run. 
-# python gen_rand_ddp_N8.py --field $FIELD ## > logs/rand_ddp_N8_$FIELD.log
+python gen_rand_ddp_N8.py --field $FIELD --dryrun > logs/rand_ddp_N8_$FIELD.log
 
+# TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest
 
 echo 'Done.'

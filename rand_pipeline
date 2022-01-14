@@ -7,7 +7,9 @@
 #SBATCH -o rand_pipeline.log
 
 # Submit with:  sbatch rand_pipeline
-# qos [debug, regular]
+# to qos of [debug, regular]
+# See status with e.g. squeue -u mjwilson
+# 
 export FIELD='G12'
 
 export CODE_ROOT=~/desi/BGS/Sam/DESI/

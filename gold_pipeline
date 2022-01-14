@@ -39,11 +39,11 @@ echo 'Running gold pipeline'
 
 # python gen_kEcat.py --dryrun # > logs/gama_kE.log
 
-python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
+# python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
 
 # python ddp_limits.py
 
-# python gen_ddp_cat.py --dryrun
+python gen_ddp_cat.py --dryrun
 
 # References schechter fn fiven a zmax catalog.
 # python gen_gold_lf.py # > logs/gama_lumfn.log

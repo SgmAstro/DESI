@@ -19,21 +19,20 @@ if dryrun:
 
 print('Reading: {}'.format(fpath))
     
-dat   = fitsio.read(fpath)
-dat   = Table(dat)
-
+dat   = Table.read(fpath)
 Area  = dat.meta['AREA']
+
+print('Retrieved Area: {}'.format(Area))
 
 print('Judging DDP.')
 
 dat['DDP'], zlims = get_ddps(Area, dat['MCOLOR_0P0'], dat['ZGAMA'])
 dat.meta.update(zlims)
 
-print(Area)
 print(zlims)
 
 opath = fpath.replace('zmax', 'ddp')
 
-print('Reading: {}'.format(opath))
+print('Writing: {}'.format(opath))
 
 dat.write(opath, format='fits', overwrite=True)

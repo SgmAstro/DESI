@@ -1,0 +1,9 @@
+
+Environment:
+
+Code: /global/homes/m/mjwilson/desi/BGS/Sam/DESI/
+Gold output dir.: /global/cscratch1/sd/mjwilson/norberg/GAMA4/
+Randoms output dir: /global/cscratch1/sd/mjwilson/norberg/GAMA4/randoms/
+Running gold pipeline
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/fromnumeric.py:748: UserWarning: Warning: 'partition' will ignore the 'mask' of the MaskedColumn.
+  a.partition(kth, axis=axis, kind=kind, order=order)

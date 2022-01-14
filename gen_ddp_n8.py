@@ -106,9 +106,12 @@ tiers = delta8_tier(dat['DDP1_DELTA8'])
 
 dat['DDP1_DELTA8_TIER'] = tiers
 
-utiers = np.unique(tiers).tolist()
-utiers.remove(-99)
-utiers = np.array(utiers)
+utiers = np.unique(tiers)
+
+if -99 in utiers:
+    utiers = utiers.tolist()    
+    utiers.remove(-99)
+    utiers = np.array(utiers)
 
 print(utiers)
 
@@ -126,13 +129,17 @@ for tier in utiers:
     
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
 
+    print()
+    print('---- d{} ----'.format(tier))
     print('Writing {}.'.format(opath))
     
     to_write = dat[isin]
+
+    assert 'AREA' in to_write.dtype.names
+    
     to_write.write(opath, format='fits', overwrite=True)
-    
-    to_write['FIELD'] = gama_field(to_write['RA'], to_write['DEC'])
-    
+
+    ## 
     isin = to_write['FIELD'] == field
     to_write_field = to_write[isin]
     

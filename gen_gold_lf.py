@@ -27,7 +27,6 @@ def process_cat(fpath, vmax_opath, field=None):
         print('WARNING:  Missing FIELD keyword, adding it.')
         
         gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
-
         
     found_fields = np.unique(gama_zmax['FIELD'].data)
         

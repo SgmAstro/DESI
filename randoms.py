@@ -35,11 +35,10 @@ rand_density = 5.e-1
 
 nrand = np.int(np.ceil(vol * rand_density))
 
-opath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
+opath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
 
 if dryrun:
     nrand = 1000
-
     opath = opath.replace('.fits', '_dryrun.fits')
     
 print(vol, rand_density, nrand / 1.e6)

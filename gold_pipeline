@@ -1,4 +1,22 @@
-# python gama_gold.py > logs/gama_gold.log
+#!/bin/bash                                                                                                               
+#SBATCH --qos=debug                                                                                                        
+#SBATCH --time=5
+#SBATCH --nodes=1                                                                                                          
+#SBATCH --ntasks-per-node=1                                                                                               
+#SBATCH --constraint=haswell                                                                                               
+#SBATCH -o gold_pipeline.log                                                                                                
+# Submit with:  sbatch gold_pipeline                                                                                        
+# export FIELD='G12'
+
+export ROOT=~/desi/BGS/Sam/DESI/
+# export ROOT=~/DESI/                                                                                                       
+cd $ROOT
+
+source /project/projectdirs/desi/software/desi_environment.sh master
+
+echo 'Running randoms pipeline for field '$FIELD
+
+python gama_gold.py > logs/gama_gold.log
 
 # python gen_kEcat.py > logs/gama_kE.log
 

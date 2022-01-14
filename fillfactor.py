@@ -9,25 +9,28 @@ from   astropy.table import Table
 from   multiprocessing import Pool
 
 import argparse
+
+
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+
 args = parser.parse_args()
+
 field = args.field.upper()
+dryrun = args.dryrun
 
 nproc = 16
 realz = 0
 
-dryrun= False
-
-fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
+fpath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
 
 print('Reading rand.')
 
-rand = Table.read(fpath)
-
 if dryrun:
-    rand = rand[:200*nproc]
     fpath = fpath.replace('.fits', '_dryrun.fits')
+
+rand = Table.read(fpath)
     
 sort_idx = np.argsort(rand['CARTESIAN_X'])
 rand = rand[sort_idx]
@@ -58,15 +61,6 @@ def process_one(split):
     
     return  [len(idx) for idx in indexes]
 
-'''
-## serial.
-result = []
-
-for split in splits:
-    result.append(process_one(split))
-
-result = np.array(result)
-'''
 print('Counting < 8 Mpc/h pairs for small trees.')
 
 with Pool(nproc) as p:
@@ -82,6 +76,8 @@ for rr in result:
 rand['N8'] = np.array(flat_result).astype(np.int32)
 rand.meta['RSPHERE'] = 8.
 
-print('Writing.')
+opath = fpath.replace('randoms_{}'.format(field), 'randoms_N8_{}'.format(field))
 
-rand.write(fpath.replace('randoms', 'randoms_N8'), format='fits', overwrite=True)
+print('Writing {}.'.format(opath))
+
+rand.write(opath, format='fits', overwrite=True)

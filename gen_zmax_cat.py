@@ -1,5 +1,6 @@
 import os
 import time
+import argparse
 import numpy as np
 
 from cosmo import distmod
@@ -67,44 +68,55 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 
    return  result[:,0], result[:,1]
 
-#######
-#######  Main
-#######
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Gen zmax cat.')
+    parser.add_argument('-a', '--aall', help='All Q, no red/blue split.', action='store_true')
+    parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-aall=False
-dryrun=True
+    args = parser.parse_args()
+    aall = args.aall
+    dryrun = args.dryrun
+    
+    rlim = 19.8
+    rmax = 12.0
 
-rlim = 19.8
-rmax = 12.0
+    print('Assuming {:.4f} < r < {:.4f}'.format(rmax, rlim))
+    print('Assuming Q ALL = {}'.format(aall))
+    
+    root = os.environ['GOLD_DIR']
 
-ngal = 1500
+    fpath = root + '/gama_gold_kE.fits'
+    opath = root + '/gama_gold_zmax.fits'
 
-root = os.environ['CSCRATCH'] + '/norberg/'
+    if dryrun:
+        fpath = fpath.replace('.fits', '_dryrun.fits')
+        opath = opath.replace('.fits', '_dryrun.fits')
 
-fpath = root + '/GAMA4/gama_gold_kE.fits'
-opath = root + '/GAMA4/gama_gold_zmax.fits'
+    print('Reading {}.'.format(fpath))
+        
+    dat = Table.read(fpath)
+    dat.pprint()
 
-dat = Table.read(fpath)
-dat.pprint()
+    dat['DELTA_RPETRO_FAINT'] = rlim - dat['R_PETRO']
 
-if dryrun:
-  dat = Table(np.random.choice(dat, ngal))
-  opath=opath.replace('_zmax', '_zmax_{:d}k'.format(np.int(ngal / 1000.)))
+    print('Solving for {} bounding curve'.format(rlim))
+    
+    zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'],\
+                       aall=aall, debug=dryrun)
 
-dat['DELTA_RPETRO_FAINT'] = rlim - dat['R_PETRO']
+    dat['ZMAX'] = zmaxs
+    dat['ZMAX_WARN'] = warn
 
-zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'], aall=aall, debug=dryrun)
+    dat['DELTA_RPETRO_BRIGHT'] = rmax - dat['R_PETRO']
 
-dat['ZMAX'] = zmaxs
-dat['ZMAX_WARN'] = warn
+    print('Solving for {} bounding curve'.format(rmax))
+    
+    zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'],\
+                       aall=aall, debug=dryrun)
 
-dat['DELTA_RPETRO_BRIGHT'] = rmax - dat['R_PETRO']
+    dat['ZMIN'] = zmins
+    dat['ZMIN_WARN'] = warn
 
-zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'], aall=aall, debug=dryrun)
+    print('Writing {}.'.format(opath))
 
-dat['ZMIN'] = zmins
-dat['ZMIN_WARN'] = warn
-
-print('Writing {}.'.format(opath))
-
-dat.write(opath, format='fits', overwrite=True)
+    dat.write(opath, format='fits', overwrite=True)

@@ -13,10 +13,15 @@
 export FIELD='G12'
 
 export CODE_ROOT=~/desi/BGS/Sam/DESI/
-# export CODE_ROOT=~/DESI/
-
 export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/
 export GOLD_DIR=$CSCRATCH/norberg/GAMA4/
+
+echo
+echo 'Environment:'
+echo
+echo 'Code: '$CODE_ROOT
+echo 'Gold output dir.: '$GOLD_DIR
+echo 'Randoms output dir: '$RANDOMS_DIR
 
 cd $CODE_ROOT
 

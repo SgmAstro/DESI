@@ -5,29 +5,45 @@
 #SBATCH --ntasks-per-node=1                                                                                               
 #SBATCH --constraint=haswell                                                                                               
 #SBATCH -o gold_pipeline.log                                                                                                
-# Submit with:  sbatch gold_pipeline                                                                                        
-# export FIELD='G12'
 
-export ROOT=~/desi/BGS/Sam/DESI/
-# export ROOT=~/DESI/                                                                                                       
-cd $ROOT
+
+# Submit with:  sbatch gold_pipeline                                                                                        
+# to qos of [debug, regular]
+#
+# See status with e.g. squeue -u mjwilson                                                                                        
+#
+
+export CODE_ROOT=~/desi/BGS/Sam/DESI/
+
+export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/
+export GOLD_DIR=$CSCRATCH/norberg/GAMA4/
+
+echo
+echo 'Environment:'
+echo
+echo 'Code: '$CODE_ROOT
+echo 'Gold output dir.: '$GOLD_DIR
+echo 'Randoms output dir: '$RANDOMS_DIR
+
+
+cd $CODE_ROOT
 
 source /project/projectdirs/desi/software/desi_environment.sh master
 
-echo 'Running randoms pipeline for field '$FIELD
+echo 'Running gold pipeline'
 
-python gama_gold.py > logs/gama_gold.log
+# python gama_gold.py > logs/gama_gold.log
 
-# python gen_kEcat.py > logs/gama_kE.log
+# python gen_kEcat.py --dryrun # > logs/gama_kE.log
 
-# python gen_zmax_cat.py > logs/gama_zmax.log
+python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
 
 # python ddp_limits.py
 
 # python gen_ddp_cat.py
 
 # References schechter fn fiven a zmax catalog.
-python gen_gold_lf.py # > logs/gama_lumfn.log
+# python gen_gold_lf.py # > logs/gama_lumfn.log
 
 # python gen_ddp_n8.py
 

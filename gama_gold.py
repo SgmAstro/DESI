@@ -7,11 +7,11 @@ from cosmo import cosmo, distmod
 from gama_limits import gama_field
 
 
-root = os.environ['CSCRATCH'] + '/norberg/'
+root  = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/TilingCatv46.fits'
 
 dat   = Table.read(fpath)
-dat = Table(dat, masked=False)
+dat   = Table(dat, masked=False)
 
 # print(dat.dtype.names)
 

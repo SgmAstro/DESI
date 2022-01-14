@@ -1,4 +1,5 @@
 import os
+import argparse
 import numpy as np
 
 from astropy.table import Table
@@ -8,22 +9,27 @@ from tmr_ecorr import tmr_ecorr, tmr_q
 from abs_mag import abs_mag
 
 
-dryrun=False
-ngal=1500 # if dryrun.
-
 np.random.seed(314)
 
-root = os.environ['CSCRATCH'] + '/norberg/'
-fpath = root + '/GAMA4/gama_gold.fits'
+parser = argparse.ArgumentParser(description='Gen kE cat.')
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+
+args = parser.parse_args()
+dryrun = args.dryrun
+
+root = os.environ['GOLD_DIR']
+fpath = root + '/gama_gold.fits'
 
 dat = Table.read(fpath)
 dat.pprint()
 
-opath=root + '/GAMA4/gama_gold_kE.fits'
+opath=root + '/gama_gold_kE.fits'
 
 if dryrun:
-  dat = Table(np.random.choice(dat, ngal))
-  opath=opath.replace('_kE', '_kE_{:d}k'.format(np.int(ngal / 1000.)))                                                     
+  idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
+  
+  dat   = dat[idx]
+  opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
   
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']

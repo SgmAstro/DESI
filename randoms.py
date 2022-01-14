@@ -9,9 +9,12 @@ from   astropy.table import Table
 from   cartesian import cartesian
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+
 args = parser.parse_args()
 field = args.field.upper()
+dryrun = args.dryrun
 
 np.random.seed(314)
 
@@ -32,11 +35,16 @@ rand_density = 5.e-1
 
 nrand = np.int(np.ceil(vol * rand_density))
 
+opath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
+
+if dryrun:
+    nrand = 1000
+
+    opath = opath.replace('.fits', '_dryrun.fits')
+    
 print(vol, rand_density, nrand / 1.e6)
 
 boundary_percent = 1.
-
-opath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_{}_{:d}.fits'.format(field, realz)
 
 zs   = np.arange(0.0, zmax+dz, dz)
 Vs   = volcom(zs, Area) 
@@ -106,6 +114,6 @@ randoms.meta['NRAND8_PERR'] =np.sqrt(randoms.meta['NRAND8'])
 
 print(randoms.meta)
 
-print('Writing.')
+print('Writing {}.'.format(opath))
 
 randoms.write(opath, format='fits', overwrite=True)

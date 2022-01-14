@@ -1,0 +1,11 @@
+Running randoms pipeline for field G12
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+3680772.579023961 0.5 0.001
+Solved 1000 for field G12
+Applying rotation.
+Applying boundary.
+{'ZMIN': 0.0, 'ZMAX': 0.3, 'DZ': 0.0001, 'NRAND': 1000, 'FIELD': 'G12', 'Area': 60.0, 'BOUND_PERCENT': 1.0, 'VOL': 3680772.579023961, 'RAND_DENS': 0.5, 'VOL8': 2144.660584850632, 'NRAND8': 1072.330292425316, 'NRAND8_PERR': 32.74645465428763}
+Writing /global/cscratch1/sd/mjwilson/desi/BGS/Sam/randoms_G12_0_dryrun.fits.
+Done.

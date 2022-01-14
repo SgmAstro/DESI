@@ -4,22 +4,22 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --constraint=haswell
-#SBATCH -o ~/rand_pipeline.log
+#SBATCH -o rand_pipeline.log
 
-# Submit with sbatch rand_pipeline
+# Submit with:  sbatch rand_pipeline
 export FIELD='G12'
 
 export ROOT=~/desi/BGS/Sam/DESI/
-export ROOT=~/DESI/
+# export ROOT=~/DESI/
 
 cd $ROOT
 
-source /project/projectdirs/desi/software/desi_environment.sh
+source /project/projectdirs/desi/software/desi_environment.sh master
 
 echo 'Running randoms pipeline for field '$FIELD
 
 # Serial code. 
-# python randoms.py --field $FIELD > logs/randoms_$FIELD.log
+python randoms.py --field $FIELD --dryrun ## > logs/randoms_$FIELD.log
 
 # Uses Pool, should be on interactive. 
 # python fillfactor.py --field $FIELD > logs/fillfactor_$FIELD.log

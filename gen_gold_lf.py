@@ -24,19 +24,34 @@ def process_cat(fpath, vmax_opath, Area, field=None):
     gama_zmax = Table.read(fpath)
 
     if 'FIELD' not in gama_zmax.dtype.names:
+        print('Missing FIELD keyword, adding it.')
+        
         gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
     
+    else:
+        print('Found fields: {}'.format(np.unique(gama_zmax['FIELD'])))
+        
     if field != None:
         assert field in gama_limits.keys()
-                
-        gama_zmax = gama_zmax[gama_zmax['FIELD'].data == field]
+
+        print('Subselecting field {}'.format(field))
+
+        isin = gama_zmax['FIELD'] == field 
+        
+        print('Retained {} from field selection.'.format(np.mean(isin)))
+        
+        gama_zmax = gama_zmax[isin]
                     
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()
 
+    print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
+
+    print('Assuming area {} sq. deg.'.format(Area))
+    
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
 
-    # TODO: Why do we need this?                                                                                                                                    
+    # TODO: Why do we need this?                                                                                                   
     gama_vmax = gama_vmax[gama_vmax['ZMAX'] > 0.0]
 
     gama_vmax.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area}

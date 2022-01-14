@@ -164,7 +164,7 @@ if __name__ == '__main__':
             sc   = named_schechter(result['MEDIAN_M'], named_type='TMR')
             sc  *= (1. + d8) / (1. + 0.007)
             
-            result['D8_REFSCH_d{}'.format(idx)] = sc 
+            result['d{}_REFSCHECHTER'.format(idx)] = sc 
 
             print('Writing {}'.format(lumfn_path))
             

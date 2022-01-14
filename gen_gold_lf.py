@@ -65,8 +65,13 @@ density_split=True
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
 args = parser.parse_args()
 field = args.field.upper()
+
+density_split = args.density_split
+
+print(field, density_split)
 
 if not density_split:
     field = ''

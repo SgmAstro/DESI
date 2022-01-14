@@ -113,7 +113,7 @@ assert np.all(utiers == np.arange(4))
 print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
 for tier in utiers:
-    # E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits
+    #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits
     isin  = (tiers == tier)
     
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))

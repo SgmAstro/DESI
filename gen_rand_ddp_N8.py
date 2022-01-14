@@ -84,9 +84,9 @@ for ut in utiers:
     rand.meta.update(vol_frac)
             
     print('PRINTING META')
-    print(ddp1_rand.meta)
+    print(rand.meta)
     
 
 print('Writing {}'.format(fpath.replace('bd', 'bd_ddp_n8')))
 
-ddp1_rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)
+rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)

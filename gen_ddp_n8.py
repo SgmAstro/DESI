@@ -103,6 +103,8 @@ tiers = delta8_tier(dat['DDP1_DELTA8'])
 utiers = np.unique(tiers).tolist()
 utiers.remove(-99)
 
+dat['DDP1_DELTA8_TIER'] = tiers
+
 print(utiers)
 print(np.arange(4))
 

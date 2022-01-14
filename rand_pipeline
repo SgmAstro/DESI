@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=60
+#SBATCH --qos=debug
+#SBATCH --time=5
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --constraint=haswell
+#SBATCH -o ~/rand_pipeline.log
 
 # Submit with sbatch rand_pipeline
-
 export FIELD='G12'
 
 export ROOT=~/desi/BGS/Sam/DESI/
@@ -30,4 +30,6 @@ echo 'Running randoms pipeline for field '$FIELD
 # Assumes python gen_ddp_N8.py has been run. 
 
 # ** TODO: need to fix up this script on main. **
-python gen_rand_ddp_N8.py --field $FIELD # > logs/rand_ddp_N8_$FIELD.log
+# python gen_rand_ddp_N8.py --field $FIELD # > logs/rand_ddp_N8_$FIELD.log
+
+echo 'Done.'

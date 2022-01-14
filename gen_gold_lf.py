@@ -12,7 +12,6 @@ from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter, named_schechter
 from   gama_limits import gama_field, gama_limits
-from   delta8_limits import dd8_limits
 from   renormalise_d8LF import lumfn_d8_normalise
 
 
@@ -153,16 +152,14 @@ if __name__ == '__main__':
             result.pprint()
 
             scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-
+            d8    = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)] 
+                        
             print('Found d8 renormalisation scale of {:.3f}'.format(scale))
             
             result = lumfn_d8_normalise(result, 1. / scale)
 
             result.pprint()
             
-            lims = dd8_limits[idx]
-            d8   = np.mean(lims)
-
             sc   = named_schechter(result['MEDIAN_M'], named_type='TMR')
             sc  *= (1. + d8) / (1. + 0.007)
             

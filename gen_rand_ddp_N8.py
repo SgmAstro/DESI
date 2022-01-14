@@ -20,11 +20,11 @@ realz = 0
 
 fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp_n8.fits'
 dat = Table.read(fpath)
-#dat = dat[:1000]
+#dat = dat[:20000]
 
 fpath = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
 rand = Table.read(fpath)
-#rand = rand[:1000]
+#rand = rand[:20000]
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
 rand.meta.update(dat.meta)
@@ -63,15 +63,30 @@ utiers = np.unique(rand['DDP1_DELTA8_TIER'])
 ddp1_zmin = dat.meta['DDP1_ZMIN']
 ddp1_zmax = dat.meta['DDP1_ZMAX']
 
+print(utiers)
+
 for ut in utiers:
     
-    ddp1_rand = rand[rand['ZGAMA'] > ddp1_zmin]
-    ddp1_rand = ddp1_rand[rand['ZGAMA'] < ddp1_zmax]
+    print(ut)
+    
+    ddp1_rand = rand[rand['Z'] > ddp1_zmin]
+    ddp1_rand = ddp1_rand[ddp1_rand['Z'] < ddp1_zmax]
     
     in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 
-    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)    
+    print('DDP1_d{}_VOLFRAC ADDED.'.format(ut))
+    print(np.mean(in_tier))
+    
+    #ddp1_rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)    
+    
+    vol_frac = {'DDP1_d{}_VOLFRAC'.format(ut): np.mean(in_tier)}
+    
+    rand.meta.update(vol_frac)
+            
+    print('PRINTING META')
+    print(ddp1_rand.meta)
+    
 
 print('Writing {}'.format(fpath.replace('bd', 'bd_ddp_n8')))
-    
-rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)
+
+ddp1_rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)

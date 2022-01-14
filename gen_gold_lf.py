@@ -24,81 +24,79 @@ def process_cat(fpath, vmax_opath, field=None):
     gama_zmax = Table.read(fpath)
 
     if 'FIELD' not in gama_zmax.dtype.names:
-        print('Missing FIELD keyword, adding it.')
+        print('WARNING:  Missing FIELD keyword, adding it.')
         
         gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
-    
-    else:
-        print('Found fields: {}'.format(np.unique(gama_zmax['FIELD'].data)))
-        
-    if field != None:
-        assert field in gama_limits.keys()
 
-        print('Subselecting field {}'.format(field))
-
-        isin = gama_zmax['FIELD'] == field 
         
-        print('Retained {} from field selection.'.format(np.mean(isin)))
+    found_fields = np.unique(gama_zmax['FIELD'].data)
         
-        gama_zmax = gama_zmax[isin]
-                    
+    print('Found fields: {}'.format(found_fields))
+                            
     zmin = gama_zmax['ZGAMA'].min()
     zmax = gama_zmax['ZGAMA'].max()
-
+    
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
 
-    print('Assuming area {} sq. deg.'.format(Area))
+    Area = gama_zmax.meta['AREA']
+
+    if field != None:
+        assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
+
+        Area /= 3.
+        
+    print('Retrieved area {} [sq. deg.]'.format(Area))
+
+    VV = volcom(zmax, Area) - volcom(zmin, Area)
     
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
 
-    print('Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
+    print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
     # TODO: Why do we need this?                                                                                                   
     gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]
 
-    gama_vmax.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area}
-
+    gama_vmax.meta = gama_zmax.meta
+    gama_vmax.meta.update({'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'VOLUME': VV})
+    
     print('Writing {}.'.format(opath))
 
     gama_vmax.write(opath, format='fits', overwrite=True)
-
+    
     ##  Luminosity fn.
     opath = opath.replace('vmax', 'lumfn')
-
-    VV = volcom(gama_vmax['ZGAMA'].max(), Area) - volcom(gama_vmax['ZGAMA'].min(), Area)
-
+    
     result = lumfn(gama_vmax, VV)
 
-    result.meta = {'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'Area': Area, 'Vol': VV}
+    result.meta = gama_vmax.meta
 
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
 
 
-
 if __name__ == '__main__':
-    ngal = 1500
-    Area = 180.
-    dryrun=False
-
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
-    parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+    parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=False, default=None)
     parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     
     args = parser.parse_args()
-    field = args.field.upper()
+
+    field = args.field
     dryrun = args.dryrun
     density_split = args.density_split
 
-    print(field, density_split)
+    print(field, dryrun, density_split)
 
     if not density_split:
+        print('Generating Gold reference LF.')
+        
         field = ''
-        print('IGNORING FIELD GENERATING G9 to G15')
+        
+        print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
     
-        fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
+        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
 
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
@@ -108,10 +106,18 @@ if __name__ == '__main__':
         process_cat(fpath, opath)
 
     else:
-        fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
+        print('Generating Gold density-split LF.')
 
-        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
+        assert field != None
+
+        field = field.upper()
+        
+        rand_path = os.environ['RANDOMS_DIR'] + '{}/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
         rand = Table.read(rand_path)
+        
+        print('Read {}'.format(rand_path))
+        
+        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
         
         for idx in range(4):
             ddp_idx   = idx + 1
@@ -119,14 +125,13 @@ if __name__ == '__main__':
             ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
 
             print()
-            print(ddp_fpath)
-            print(ddp_opath)
+            print('Reading: {}'.format(ddp_fpath))
             
-            process_cat(ddp_fpath, ddp_opath, Area=Area / 3., field=field)
+            process_cat(ddp_fpath, ddp_opath, field=field)
         
             print('PROCESS CAT FINISHED.')
                     
-            lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
+            lumfn_path = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
 
             print('Reading: {}'.format(lumfn_path))
             
@@ -150,6 +155,8 @@ if __name__ == '__main__':
             
             result['D8_REFSCH'] = sc 
 
+            print('Writing {}'.format(lumfn_path))
+            
             result.write(lumfn_path, format='fits', overwrite=True)
 
     print('Done.')

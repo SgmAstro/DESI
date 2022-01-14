@@ -2,4 +2,3 @@ Running randoms pipeline for field G12
 WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
 WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
 WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-Done.

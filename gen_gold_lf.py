@@ -121,12 +121,22 @@ if __name__ == '__main__':
         print('Read {}'.format(rpath))
         
         fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
+
+        utiers = np.arange(4)
+
+        if dryrun:
+            # A few galaxies have a high probability to be in highest density only. 
+            utiers = np.array([3])
         
-        for idx in range(4):
+        for idx in utiers:
             ddp_idx   = idx + 1
             ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
             ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
-
+            
+            if dryrun:
+                ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
+                ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
+                
             print()
             print('Reading: {}'.format(ddp_fpath))
             

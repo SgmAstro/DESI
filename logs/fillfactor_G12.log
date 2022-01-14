@@ -1,0 +1,37 @@
+Reading rand.
+Creating big tree.
+Counting < 8 Mpc/h pairs for small trees.
+Creating split [0 ... 62] tree.
+Querying split [0 ... 62] tree.
+Creating split [378 ... 440] tree.
+Querying split [378 ... 440] tree.
+Creating split [63 ... 125] tree.
+Querying split [63 ... 125] tree.
+Creating split [628 ... 689] tree.
+Querying split [628 ... 689] tree.
+Creating split [690 ... 751] tree.
+Querying split [690 ... 751] tree.
+Creating split [752 ... 813] tree.
+Querying split [752 ... 813] tree.
+Creating split [189 ... 251] tree.
+Querying split [189 ... 251] tree.
+Creating split [126 ... 188] tree.
+Querying split [126 ... 188] tree.
+Creating split [504 ... 565] tree.
+Querying split [504 ... 565] tree.
+Creating split [315 ... 377] tree.
+Querying split [315 ... 377] tree.
+Creating split [938 ... 999] tree.
+Querying split [938 ... 999] tree.
+Creating split [252 ... 314] tree.
+Querying split [252 ... 314] tree.
+Creating split [876 ... 937] tree.
+Querying split [876 ... 937] tree.
+Creating split [441 ... 503] tree.
+Querying split [441 ... 503] tree.
+Creating split [566 ... 627] tree.
+Querying split [566 ... 627] tree.
+Creating split [814 ... 875] tree.
+Querying split [814 ... 875] tree.
+Flattening.
+Writing /global/cscratch1/sd/mjwilson/norberg/GAMA4/randoms//randoms_N8_G12_0_dryrun.fits.

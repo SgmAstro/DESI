@@ -99,14 +99,10 @@ print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
 
-dat = dat[dat['ZGAMA'] > dat.meta['DDP1_ZMIN']]
-dat = dat[dat['ZGAMA'] < dat.meta['DDP1_ZMAX']]
+dat = dat[(dat['ZGAMA'] > dat.meta['DDP1_ZMIN']) & (dat['ZGAMA'] < dat.meta['DDP1_ZMAX'])]
+dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
-tiers = delta8_tier(dat['DDP1_DELTA8'])
-
-dat['DDP1_DELTA8_TIER'] = tiers
-
-utiers = np.unique(tiers)
+utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
 
 if -99 in utiers:
     utiers = utiers.tolist()    
@@ -124,19 +120,20 @@ else:
 print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
 for tier in utiers:
-    #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits
-    isin  = (tiers == tier)
-    
-    opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
-
     print()
     print('---- d{} ----'.format(tier))
-    print('Writing {}.'.format(opath))
-    
+
+    isin  = (dat['DDP1_DELTA8_TIER'].data == tier)    
     to_write = dat[isin]
 
-    assert 'AREA' in to_write.dtype.names
+    assert 'AREA' in dat.meta.keys()
+    assert 'AREA' in to_write.meta.keys()
     
+    #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits                                                  
+    opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
+
+    print('Writing {}.'.format(opath))
+        
     to_write.write(opath, format='fits', overwrite=True)
 
     ## 
@@ -148,3 +145,5 @@ for tier in utiers:
     print('Writing {}.'.format(opath_field))
     
     to_write_field.write(opath_field, format='fits', overwrite=True)
+
+print('\n\nDone.\n\n')

@@ -6,7 +6,6 @@
 #SBATCH --constraint=haswell                                                                                               
 #SBATCH -o gold_pipeline.log                                                                                                
 
-
 # Submit with:  sbatch gold_pipeline                                                                                        
 # to qos of [debug, regular]
 #
@@ -15,6 +14,9 @@
 
 # Density split LF only. 
 export FIELD=G12 
+
+export DRYRUN=''
+export DRYRUN='--dryrun'
 
 export CODE_ROOT=~/desi/BGS/Sam/DESI/
 
@@ -35,20 +37,20 @@ source /project/projectdirs/desi/software/desi_environment.sh master
 
 echo 'Running gold pipeline'
 
-# python gama_gold.py # > logs/gama_gold.log
+# python gama_gold.py > logs/gama_gold.log
 
-# python gen_kEcat.py --dryrun # > logs/gama_kE.log
+# python gen_kEcat.py $DRYRUN > logs/gama_kE.log
 
-# python gen_zmax_cat.py --dryrun # > logs/gama_zmax.log
+# python gen_zmax_cat.py $DRYRUN > logs/gama_zmax.log
 
 # python ddp_limits.py
 
-# python gen_ddp_cat.py --dryrun
+# python gen_ddp_cat.py $DRYRUN > logs/gama_ddp.log  
 
 # References schechter fn fiven a zmax catalog.
-# python gen_gold_lf.py --dryrun # > logs/gama_lumfn.log
+# python gen_gold_lf.py $DRYRUN # > logs/gama_lumfn.log
 
-python gen_ddp_n8.py --field $FIELD --dryrun
+# python gen_ddp_n8.py --field $FIELD $DRYRUN > logs/gama_ddp_n8_$FIELD.log
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-# python gen_gold_lf.py --density_split --field $FIELD --dryrun # > logs/gama_lumfn.log
+python gen_gold_lf.py --density_split --field $FIELD $DRYRUN # > logs/gama_lumfn_d8_$FIELD.log

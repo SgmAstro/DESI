@@ -16,7 +16,7 @@ from   renormalise_d8LF import lumfn_d8_normalise
 
 import argparse
 
-def process_cat(fpath, vmax_opath, field=None):
+def process_cat(fpath, vmax_opath, Area, field=None):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -57,66 +57,66 @@ def process_cat(fpath, vmax_opath, field=None):
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
+
+
+
+if __name__ == '__main__'
+    ngal = 1500
+    Area = 180.
+    dryrun=False
+
+    parser = argparse.ArgumentParser(description='Select GAMA field.')
+    parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+    parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
+
+    args = parser.parse_args()
+    field = args.field.upper()
+    density_split = args.density_split
+
+    print(field, density_split)
+
+    if not density_split:
+        field = ''
+        print('IGNORING FIELD GENERATING G9 to G15')
     
-ngal = 1500
-Area = 180.
-dryrun=False
-density_split=True
+        fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
-parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
-args = parser.parse_args()
-field = args.field.upper()
+        if dryrun:
+            fpath = fpath.replace('_zmax', '_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)))
 
-density_split = args.density_split
-
-print(field, density_split)
-
-if not density_split:
-    field = ''
-    print('IGNORING FIELD GENERATING G9 to G15')
-    
-    fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
-
-    if dryrun:
-        fpath = fpath.replace('_zmax', '_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)))
-
-    opath = fpath.replace('zmax', 'vmax')
+        opath = fpath.replace('zmax', 'vmax')
         
-    process_cat(fpath, opath)
+        process_cat(fpath, opath, Area=Area)
 
-else:
-    fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
+    else:
+        fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
-    rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
-    rand = Table.read(rand_path)
+        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
+        rand = Table.read(rand_path)
         
-    for idx in range(4):
-        ddp_idx   = idx + 1
-        ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
-        ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
+        for idx in range(4):
+            ddp_idx   = idx + 1
+            ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
+            ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
 
-        print()
-        print(ddp_fpath)
-        print(ddp_opath)
+            print()
+            print(ddp_fpath)
+            print(ddp_opath)
+            
+            process_cat(ddp_fpath, ddp_opath, Area=Area / 3., field=field)
         
-        process_cat(ddp_fpath, ddp_opath, field=field)
+            print('PROCESS CAT FINISHED.')
         
-        print('PROCESS CAT FINISHED.')
+            scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
         
-        scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-        
-        lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
-        result = Table.read(lumfn_path)        
-        result = lumfn_d8_normalise(result, scale)
+            lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
+            result = Table.read(lumfn_path)        
+            result = lumfn_d8_normalise(result, scale)
                 
-        sc = named_schechter(result['MEDIAN_M'], named_type='TMR')
-        lims = dd8_limits[idx]
-        d8 = np.mean(lims)
-        sc *= (1. + d8) / (1. + 0.007)
-        result['D8_REFSCH'] = sc 
-        
-        #gama_lf.write(gama_lf_path, format='fits', overwrite=True)
+            sc = named_schechter(result['MEDIAN_M'], named_type='TMR')
+            lims = dd8_limits[idx]
+            d8 = np.mean(lims)
+            sc *= (1. + d8) / (1. + 0.007)
+            result['D8_REFSCH'] = sc 
 
-        result.write(lumfn_path, format='fits', overwrite=True)
+            result.write(lumfn_path, format='fits', overwrite=True)

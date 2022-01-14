@@ -57,7 +57,7 @@ rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS
 
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 
-utiers = np.unique(rand['DDP1_DELTA8_TIER'])
+utiers = np.unique(rand['DDP1_DELTA8_TIER'].data)
 
 ddp1_zmin = dat.meta['DDP1_ZMIN']
 ddp1_zmax = dat.meta['DDP1_ZMAX']

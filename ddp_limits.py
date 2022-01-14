@@ -15,15 +15,15 @@ kcorr_r  = GAMA_KCorrection(band='R')
 kcorr_RG = GAMA_KCorrection_color()
 
 # To be looped over for a total of 7 x 3 x 2 curves.
-gmrs_0p1 =  np.array([0.131, 0.298, 0.443, 0.603, 0.785, 0.933, 1.067])  
-gmrs_0p0 =  np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
+gmrs_0p1 = np.array([0.131, 0.298, 0.443, 0.603, 0.785, 0.933, 1.067])  
+gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 
 rlims    = [12., 19.8] # bright and faint limits.
 
 zs       = np.arange(0.01, 0.6, 0.01)
 mus      = cosmo.distmod(zs)
 
-root     = os.environ['CSCRATCH'] + '/norberg/GAMA4/ddrp_limits/'
+root     = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 
 count    = 0
 
@@ -50,3 +50,5 @@ for rlim in rlims:
             count   += 1
 
             print('Solved for {} {} {}'.format(rlim, all_type, gmr_0P1))
+
+print('Done.')

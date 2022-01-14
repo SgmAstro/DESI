@@ -84,6 +84,9 @@ if not density_split:
 else:
     fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
+    rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
+    rand = Table.read(rand_path)
+        
     for idx in range(4):
         ddp_idx   = idx + 1
         ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
@@ -97,21 +100,24 @@ else:
         
         print('PROCESS CAT FINISHED.')
         
-        rand_path = '{}/desi/BGS/Sam/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
-        rand = Table.read(rand_path)
         scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
         
         lumfn_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
         result = Table.read(lumfn_path)        
         result = lumfn_d8_normalise(result, scale)
                 
+            
+            
+        #gama_lf_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
+        
         gama_lf_path = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_lumfn.fits'
         gama_lf =  Table.read(gama_lf_path)
         sc = named_schechter(gama_lf['MEDIAN_M'], named_type='TMR')
         lims = dd8_limits[idx]
         d8 = np.mean(lims)
         sc *= (1. + d8) / (1. + 0.007)
-        gama_lf['sc'] = sc 
+        result['D8_REFSCH'] = sc 
         
-        gama_lf.write(gama_lf_path, format='fits', overwrite=True)
+        #gama_lf.write(gama_lf_path, format='fits', overwrite=True)
 
+        result.write(lumfn_path, format='fits', overwrite=True)

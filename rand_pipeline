@@ -1,15 +1,31 @@
+#!/bin/bash
+#SBATCH --qos=regular
+#SBATCH --time=60
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --constraint=haswell
+
+# Submit with sbatch rand_pipeline
+
 export FIELD='G9'
+
+export ROOT=~/desi/BGS/Sam/DESI/
+export ROOT=~/DESI/
+
+cd $ROOT
+
+source /project/projectdirs/desi/software/desi_environment.sh
 
 echo 'Running randoms pipeline for field '$FIELD
 
 # Serial code. 
-# python randoms.py --field $FIELD > logs/randoms_$FIELD.log
+python randoms.py --field $FIELD > logs/randoms_$FIELD.log
 
 # Uses Pool, should be on interactive. 
-# python fillfactor.py --field $FIELD > logs/fillfactor_$FIELD.log
+python fillfactor.py --field $FIELD > logs/fillfactor_$FIELD.log
 
 # Uses Pool, should be on interactive.
-# python bound_dist.py --field $FIELD > logs/bound_dist_$FIELD.log
+python bound_dist.py --field $FIELD > logs/bound_dist_$FIELD.log
 
 # Assumes python gen_ddp_N8.py has been run. 
 

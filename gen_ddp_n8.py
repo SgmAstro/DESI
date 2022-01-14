@@ -14,13 +14,15 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+
 args = parser.parse_args()
 field = args.field.upper()
+dryrun = args.dryrun
 
-fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_ddp.fits'
+fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
 dat = Table.read(fpath)
-# dat = dat[:30000]
 
 assert 'DDP1_DENS' in dat.meta
 

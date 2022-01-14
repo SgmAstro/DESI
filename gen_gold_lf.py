@@ -1,10 +1,11 @@
 import os
 import sys
+import argparse
 import pylab as pl
 import numpy as np
 import matplotlib.pyplot as plt
-from   astropy.table import Table
 
+from   astropy.table import Table
 from   vmaxer import vmaxer
 from   smith_kcorr import test_plots, test_nonnative_plots
 from   cosmo import distmod, volcom
@@ -14,9 +15,8 @@ from   gama_limits import gama_field, gama_limits
 from   delta8_limits import dd8_limits
 from   renormalise_d8LF import lumfn_d8_normalise
 
-import argparse
 
-def process_cat(fpath, vmax_opath, Area, field=None):
+def process_cat(fpath, vmax_opath, field=None):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -82,12 +82,14 @@ if __name__ == '__main__':
     Area = 180.
     dryrun=False
 
-    parser = argparse.ArgumentParser(description='Select GAMA field.')
+    parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
     parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
     parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
-
+    parser.add_argument('--dryrun', action='store_true', help='dryrun.')
+    
     args = parser.parse_args()
     field = args.field.upper()
+    dryrun = args.dryrun
     density_split = args.density_split
 
     print(field, density_split)
@@ -99,11 +101,11 @@ if __name__ == '__main__':
         fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'
 
         if dryrun:
-            fpath = fpath.replace('_zmax', '_zmax_{:d}k.fits'.format(np.int(ngal / 1000.)))
+            fpath = fpath.replace('.fits', '_dryrun.fits')
 
         opath = fpath.replace('zmax', 'vmax')
         
-        process_cat(fpath, opath, Area=Area)
+        process_cat(fpath, opath)
 
     else:
         fpath = os.environ['CSCRATCH'] + '/norberg/GAMA4/gama_gold_zmax.fits'

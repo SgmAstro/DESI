@@ -76,12 +76,13 @@ for ut in utiers:
     ddp1_rand = ddp1_rand[ddp1_rand['Z'] < ddp1_zmax]
     
     in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
-
-    print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
         
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)
     rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier])
 
+    print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
+    print('DDP1_d{}_TIERMEDd8 OF {:.4f} ADDED.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+    
 opath = fpath.replace('bd', 'bd_ddp_n8')
     
 print('Writing {}'.format(opath))

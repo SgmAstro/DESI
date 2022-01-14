@@ -5,6 +5,7 @@ import astropy.io.fits as fits
 from astropy.table import Table
 from cosmo import cosmo, distmod
 from gama_limits import gama_field
+from cartesian import cartesian
 
 
 root  = os.environ['CSCRATCH'] + '/norberg/'
@@ -54,6 +55,13 @@ dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
 dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
+
+#
+xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
+
+dat['CARTESIAN_X'] = xyz[:,0]
+dat['CARTESIAN_Y'] = xyz[:,1]
+dat['CARTESIAN_Z'] = xyz[:,2]
 
 # Randomise rows.
 idx = np.arange(len(dat))

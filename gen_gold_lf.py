@@ -149,3 +149,5 @@ if __name__ == '__main__':
             result['D8_REFSCH'] = sc 
 
             result.write(lumfn_path, format='fits', overwrite=True)
+
+    print('Done.')

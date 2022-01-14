@@ -51,7 +51,7 @@ def process_cat(fpath, vmax_opath, Area, field=None):
     
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
 
-    print('Found {:.3f}% with zmax < 0.0'.format(np.mean(gama_vmax['ZMAX'] <= 0.0)))
+    print('Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
     # TODO: Why do we need this?                                                                                                   
     gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]

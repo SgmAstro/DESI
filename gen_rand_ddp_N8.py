@@ -63,30 +63,20 @@ utiers = np.unique(rand['DDP1_DELTA8_TIER'])
 ddp1_zmin = dat.meta['DDP1_ZMIN']
 ddp1_zmax = dat.meta['DDP1_ZMAX']
 
-print(utiers)
+print('Unique tiers: {}'.format(utiers))
 
-for ut in utiers:
-    
-    print(ut)
-    
+print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
+
+for ut in utiers:    
     ddp1_rand = rand[rand['Z'] > ddp1_zmin]
     ddp1_rand = ddp1_rand[ddp1_rand['Z'] < ddp1_zmax]
     
     in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 
-    print('DDP1_d{}_VOLFRAC ADDED.'.format(ut))
-    print(np.mean(in_tier))
-    
-    #ddp1_rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)    
-    
-    vol_frac = {'DDP1_d{}_VOLFRAC'.format(ut): np.mean(in_tier)}
-    
-    rand.meta.update(vol_frac)
+    print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
+        
+    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)] = np.mean(in_tier)
             
-    print('PRINTING META')
-    print(rand.meta)
-    
-
 print('Writing {}'.format(fpath.replace('bd', 'bd_ddp_n8')))
 
 rand.write(fpath.replace('bd', 'bd_ddp_n8'), format='fits', overwrite=True)

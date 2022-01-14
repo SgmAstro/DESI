@@ -7,6 +7,6 @@ def delta8_tier(delta8):
 
     # Gaps in defined d8 coverage??  See TMR.   
     for i, lims in enumerate(dd8_limits):
-        result[(delta8 > lims[0]) & (delta8 <= lims[1])] = i
+        result[(delta8 >= lims[0]) & (delta8 < lims[1])] = i
 
     return  result

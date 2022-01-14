@@ -46,9 +46,9 @@ echo 'Running gold pipeline'
 # python gen_ddp_cat.py --dryrun
 
 # References schechter fn fiven a zmax catalog.
-python gen_gold_lf.py --dryrun # > logs/gama_lumfn.log
+# python gen_gold_lf.py --dryrun # > logs/gama_lumfn.log
 
-# python gen_ddp_n8.py
+# python gen_ddp_n8.py --field $FIELD --dryrun
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-# python gen_gold_lf.py --density_split # > logs/gama_lumfn.log
+python gen_gold_lf.py --density_split --field $FIELD --dryrun # > logs/gama_lumfn.log

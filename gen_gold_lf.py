@@ -78,7 +78,7 @@ def process_cat(fpath, vmax_opath, field=None):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
     parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=False, default=None)
-    parser.add_argument('-d', '--density_split', type=bool, help='Trigger density split luminosity function.', default=False)
+    parser.add_argument('-d', '--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     
     args = parser.parse_args()
@@ -112,10 +112,14 @@ if __name__ == '__main__':
 
         field = field.upper()
         
-        rand_path = os.environ['RANDOMS_DIR'] + '{}/randoms_bd_ddp_n8_{}_0.fits'.format(os.environ['CSCRATCH'], field)
-        rand = Table.read(rand_path)
+        rpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_{}_0.fits'.format(field)
+
+        if dryrun:
+            rpath = rpath.replace('.fits', '_dryrun.fits')
+
+        rand = Table.read(rpath)
         
-        print('Read {}'.format(rand_path))
+        print('Read {}'.format(rpath))
         
         fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
         

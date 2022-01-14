@@ -1,5 +1,6 @@
 import os
 import fitsio
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,11 +10,9 @@ from   cartesian import cartesian
 from   delta8_limits import delta8_tier
 from   gama_limits import gama_field
 
-import argparse
-
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-f', '--field', help='GAMA field.', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args = parser.parse_args()
@@ -22,16 +21,14 @@ dryrun = args.dryrun
 
 fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
+if dryrun:
+    fpath = fpath.replace('.fits', '_dryrun.fits')
+
+print('Reading: {}'.format(fpath))
+    
 dat = Table.read(fpath)
 
 assert 'DDP1_DENS' in dat.meta
-
-# add cartesian coordinates to catalogue
-xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
-
-dat['CARTESIAN_X'] = xyz[:,0]
-dat['CARTESIAN_Y'] = xyz[:,1]
-dat['CARTESIAN_Z'] = xyz[:,2]
 
 points      = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
 points      = np.array(points, copy=True)
@@ -41,10 +38,14 @@ kd_tree_all  = KDTree(points)
 # randoms.
 realz  = 0
 
-rpath  = os.environ['CSCRATCH'] + '/desi/BGS/Sam/randoms_bd_{}_{:d}.fits'.format(field, realz)
-rand, rand_hdr = fitsio.read(rpath, header=True)
+rpath  = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
 
-# rand   = rand[:1000]
+if dryrun:
+    rpath = rpath.replace('.fits', '_dryrun.fits')
+
+print('Reading: {}'.format(rpath))
+    
+rand, rand_hdr = fitsio.read(rpath, header=True)
 
 rpoints = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
 rpoints = np.array(rpoints, copy=True)
@@ -102,15 +103,20 @@ dat = dat[dat['ZGAMA'] > dat.meta['DDP1_ZMIN']]
 dat = dat[dat['ZGAMA'] < dat.meta['DDP1_ZMAX']]
 
 tiers = delta8_tier(dat['DDP1_DELTA8'])
-utiers = np.unique(tiers).tolist()
-utiers.remove(-99)
 
 dat['DDP1_DELTA8_TIER'] = tiers
 
-print(utiers)
-print(np.arange(4))
+utiers = np.unique(tiers).tolist()
+utiers.remove(-99)
+utiers = np.array(utiers)
 
-assert np.all(utiers == np.arange(4))
+print(utiers)
+
+if not np.all(utiers == np.arange(4)):
+    print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
+    
+else:
+    print(utiers)
 
 print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
@@ -131,5 +137,7 @@ for tier in utiers:
     to_write_field = to_write[isin]
     
     opath_field = opath.replace('gold', 'gold_{}'.format(field))
+
+    print('Writing {}.'.format(opath_field))
     
     to_write_field.write(opath_field, format='fits', overwrite=True)

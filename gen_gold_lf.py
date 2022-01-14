@@ -60,7 +60,7 @@ def process_cat(fpath, vmax_opath, Area, field=None):
 
 
 
-if __name__ == '__main__'
+if __name__ == '__main__':
     ngal = 1500
     Area = 180.
     dryrun=False

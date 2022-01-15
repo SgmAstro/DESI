@@ -9,16 +9,17 @@ from tmr_ecorr import tmr_ecorr
 from scipy.optimize import brentq, minimize
 from astropy.table import Table
 
+
 kcorr_r = GAMA_KCorrection(band='R')
 
 def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=False):
-    z = np.atleast_1d(z)
+    z            = np.atleast_1d(z)
     rest_gmr_0p1 = np.atleast_1d(rest_gmr_0p1)
     rest_gmr_0p0 = np.atleast_1d(rest_gmr_0p0)
     
-    result = distmod(z) + kcorr_r.k_nonnative_zref(0.0, z, rest_gmr_0p1) + tmr_ecorr(z, rest_gmr_0p0, aall=aall)
+    result       = distmod(z) + kcorr_r.k_nonnative_zref(0.0, z, rest_gmr_0p1) + tmr_ecorr(z, rest_gmr_0p0, aall=aall)
 
-    return result[0]
+    return  result[0]
     
 def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      def diff(x):
@@ -49,7 +50,7 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
 
 def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    result = []
-   start = time.time()
+   start  = time.time()
 
    if debug:
         print('Solving for zlimit.')
@@ -67,6 +68,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    result = np.array(result)
 
    return  result[:,0], result[:,1]
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen zmax cat.')
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     print('Solving for {} bounding curve'.format(rlim))
     
     zmaxs, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_FAINT'],\
-                       aall=aall, debug=dryrun)
+                       aall=aall, debug=True)
 
     dat['ZMAX'] = zmaxs
     dat['ZMAX_WARN'] = warn
@@ -112,7 +114,7 @@ if __name__ == '__main__':
     print('Solving for {} bounding curve'.format(rmax))
     
     zmins, warn = zmax(dat['REST_GMR_0P1'], dat['REST_GMR_0P0'], dat['Z_THETA_QCOLOR'], dat['DELTA_RPETRO_BRIGHT'],\
-                       aall=aall, debug=dryrun)
+                       aall=aall, debug=True)
 
     dat['ZMIN'] = zmins
     dat['ZMIN_WARN'] = warn

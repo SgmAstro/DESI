@@ -1,6 +1,6 @@
 #!/bin/bash                                                                                                               
-#SBATCH --qos=regular                                                                                                        
-#SBATCH --time=120
+#SBATCH --qos=regular                                                                                                      
+#SBATCH --time=600
 #SBATCH --nodes=1                                                                                                          
 #SBATCH --ntasks-per-node=1                                                                                               
 #SBATCH --constraint=haswell                                                                                               
@@ -12,8 +12,6 @@
 # See status with e.g. squeue -u mjwilson                                                                                        
 #
 
-# Density split LF only. 
-export FIELD=G12 
 
 export DRYRUN=''
 # export DRYRUN='--dryrun'
@@ -41,16 +39,20 @@ echo 'Running gold pipeline'
 
 # python gen_kEcat.py $DRYRUN > logs/gama_kE.log
 
-# python gen_zmax_cat.py $DRYRUN > logs/gama_zmax.log
+python gen_zmax_cat.py $DRYRUN > logs/gama_zmax.log
 
-# python ddp_limits.py > logs/ddp_limits.log
+python ddp_limits.py > logs/ddp_limits.log
 
-# python gen_ddp_cat.py $DRYRUN > logs/gama_ddp.log  
+python gen_ddp_cat.py $DRYRUN > logs/gama_ddp.log  
 
 # References schechter fn fiven a zmax catalog.
-# python gen_gold_lf.py $DRYRUN > logs/gama_lumfn.log
+python gen_gold_lf.py $DRYRUN > logs/gama_lumfn.log
 
-# python gen_ddp_n8.py --field $FIELD $DRYRUN > logs/gama_ddp_n8_$FIELD.log
+python gen_ddp_n8.py --field G9  $DRYRUN > logs/gama_ddp_n8_G9.log
+python gen_ddp_n8.py --field G12 $DRYRUN > logs/gama_ddp_n8_G12.log
+python gen_ddp_n8.py --field G15 $DRYRUN > logs/gama_ddp_n8_G15.log
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-python gen_gold_lf.py --density_split --field $FIELD $DRYRUN # > logs/gama_lumfn_d8_$FIELD.log
+python gen_gold_lf.py --density_split --field G9  $DRYRUN > logs/gama_lumfn_d8_G9.log
+python gen_gold_lf.py --density_split --field G12 $DRYRUN > logs/gama_lumfn_d8_G12.log
+python gen_gold_lf.py --density_split --field G15 $DRYRUN > logs/gama_lumfn_d8_G15.log

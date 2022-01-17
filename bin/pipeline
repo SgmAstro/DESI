@@ -1,7 +1,7 @@
 #!/bin/bash
 export RESET=1
 
-# export DRYRUN=''
+export DRYRUN=''
 export DRYRUN='--dryrun'                                                                                                                                                                           
 
 export CODE_ROOT=$HOME/DESI/
@@ -23,14 +23,13 @@ if (( $RESET > 0 )); then
     # ls -l $GOLD_DIR/
     # ls -l $RANDOMS_DIR/
     # ls -l $CODE_ROOT/logs/
- 
-    export RESET=0
 fi
 
-#  Total of eight jobs, with correct dependency logic.
+#  ----  Total of eight jobs, with correct dependency logic  ----
+export RESET=0
 
 # Generate all steps up to reference LF. 
-GOLD_JOBID=$(sbatch --parsable  --export=DRYRUN=$DRYRUN gold_pipeline)
+GOLD_JOBID=$(sbatch --parsable --export=DRYRUN=$DRYRUN,RESET=$RESET gold_pipeline)
 
 echo '>>>>> GOLD JOB ID <<<<<'
 echo $GOLD_JOBID
@@ -48,11 +47,11 @@ echo '-----'
 
 echo '>>>>>  DEPENDENT JOBS  <<<<<'
 
-# Requires ddp cat. & random fill factor. 
-# Note: runs all fields simultaneously. 
-sbatch --dependency=afterok:$GOLD_JOBID gold_d8_pipeline
-
 # Requires ddp cat, & randoms; no reset required.  
-sbatch --export=FIELD=G9  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID rand_d8_pipeline
-sbatch --export=FIELD=G12 --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID rand_d8_pipeline
-sbatch --export=FIELD=G15 --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID rand_d8_pipeline
+RAND_D8_G9_JOBID=$(sbatch --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID  rand_d8_pipeline)
+RAND_D8_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID rand_d8_pipeline)
+RAND_D8_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID rand_d8_pipeline)
+
+# Requires ddp cat. & random fill factor.                                                                                                                                                            
+# Note: runs all fields simultaneously.                                                                                                                                                              
+sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_D8_G9_JOBID:$RAND_D8_G12_JOBID:$RAND_D8_G15_JOBID gold_d8_pipeline

@@ -15,7 +15,7 @@
 #
 
 if [[ -z "${RESET}" ]]; then
-  export RESET=1
+  export RESET=0
 else
   echo 'RESET SET TO BE '$RESET
 fi

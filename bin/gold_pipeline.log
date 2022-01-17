@@ -1,13 +1,16 @@
 ====
-Starting job 4749078 at Mon 17 Jan 19:01:34 GMT 2022 for user dc-wils7.
+Starting job 4749134 at Mon 17 Jan 19:34:21 GMT 2022 for user dc-wils7.
 Running on nodes: m5387
 ====
+RESET SET TO BE 1
+DRYRUN SET TO BE --dryrun
 
 Environment:
 
 Code: /cosma/home/durham/dc-wils7/DESI/
 Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
 Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+>>>>>  TRASHING GOLD_DIR  <<<<<.
+rm: cannot remove ‘/cosma5/data/durham/dc-wils7/GAMA4//*.fits’: No such file or directory
 Running gold pipeline; logging to logs/gama_gold.log
 Running gen_kEcat.py; logging to logs/gama_kE.log
-Running gen_zmax_cat.py; logging to logs/gama_zama.log

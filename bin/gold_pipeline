@@ -65,6 +65,8 @@ python gen_gold_lf.py $DRYRUN > logs/gama_lumfn.log
 
 echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8_G9/12/15.log'
 '
+# Dependency on randoms bd files, for fillfactor and bound_dist.
+# Hence field argument. 
 # python gen_ddp_n8.py --field G9  $DRYRUN > logs/gama_ddp_n8_G9.log
 python gen_ddp_n8.py --field G12 $DRYRUN # > logs/gama_ddp_n8_G12.log
 # python gen_ddp_n8.py --field G15 $DRYRUN > logs/gama_ddp_n8_G15.log

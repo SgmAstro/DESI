@@ -9,18 +9,18 @@ from   ddp import get_ddps
 parser = argparse.ArgumentParser(description='Gen ddp cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
+args   = parser.parse_args()
 dryrun = args.dryrun
 
-fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
+fpath  = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
 print('Reading: {}'.format(fpath))
     
-dat   = Table.read(fpath)
-Area  = dat.meta['AREA']
+dat    = Table.read(fpath)
+Area   = dat.meta['AREA']
 
 print('Retrieved Area: {}'.format(Area))
 

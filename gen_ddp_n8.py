@@ -15,27 +15,28 @@ parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold gala
 parser.add_argument('-f', '--field', help='GAMA field for randoms_bd file (fill factor & bound_dist retrieval).', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
-field = args.field.upper()
+args   = parser.parse_args()
+field  = args.field.upper()
 dryrun = args.dryrun
 
-fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
 print('Reading: {}'.format(fpath))
-    
-dat = Table.read(fpath)
+
+# Read ddp cat.    
+dat    = Table.read(fpath)
 
 assert 'DDP1_DENS' in dat.meta
 
-points      = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
-points      = np.array(points, copy=True)
+points       = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
+points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
 
-# randoms.
+# Read randoms bound_dist.
 realz  = 0
 
 rpath  = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
@@ -69,6 +70,7 @@ dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 for idx in range(3):
+    # Calculate DDP1/2/3 N8 for all gold galaxies.
     ddp_idx      = idx + 1
     
     ddp          = dat[dat['DDP'][:,idx] == 1]
@@ -101,6 +103,7 @@ print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
 
+# Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range).
 dat = dat[(dat['ZGAMA'] > dat.meta['DDP1_ZMIN']) & (dat['ZGAMA'] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 

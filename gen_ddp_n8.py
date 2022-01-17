@@ -11,7 +11,7 @@ from   delta8_limits import delta8_tier
 from   gama_limits import gama_field
 
 
-parser = argparse.ArgumentParser(description='')
+parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-f', '--field', help='GAMA field for randoms_bd file (fill factor & bound_dist retrieval).', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
@@ -63,13 +63,10 @@ dd, ii   = big_tree.query([x for x in points], k=1)
 
 # Find closest random for bound_dist and fill factor. 
 # These randoms are split by field.
-dat['RANDSEP'] = dd
-dat['RANDMATCH'] = rand['RANDID'][ii]
+dat['RANDSEP']    = dd
+dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
-
-nrand8 = rand_hdr['NRAND8']
-
-dat['FILLFACTOR'] = rand['N8'][ii] / nrand8
+dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 for idx in range(3):
     ddp_idx      = idx + 1

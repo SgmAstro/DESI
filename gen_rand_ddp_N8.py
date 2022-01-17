@@ -14,13 +14,13 @@ parser = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
-field = args.field.upper()
+args   = parser.parse_args()
+field  = args.field.upper()
 dryrun = args.dryrun
 
-realz = 0
+realz  = 0
 
-fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp_n8.fits'
+fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')

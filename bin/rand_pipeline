@@ -10,7 +10,7 @@
 # to qos of [debug, regular]
 # See status with e.g. squeue -u mjwilson
 # 
-export FIELD='G12'
+export FIELD='G15'
 
 # export DRYRUN=''                                                                                                                                                                                   
 export DRYRUN='--dryrun'

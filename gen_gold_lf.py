@@ -12,7 +12,7 @@ from   cosmo import distmod, volcom
 from   lumfn import lumfn
 from   schechter import schechter, named_schechter
 from   gama_limits import gama_field, gama_limits
-from   renormalise_d8LF import lumfn_d8_normalise
+from   renormalise_d8LF import renormalise_d8LF
 
 
 def process_cat(fpath, vmax_opath, field=None):
@@ -157,7 +157,7 @@ if __name__ == '__main__':
                         
             print('Found d8 renormalisation scale of {:.3f}'.format(scale))
             
-            result = lumfn_d8_normalise(result, 1. / scale)
+            result = renormalise_d8LF(result, 1. / scale)
 
             result.pprint()
             

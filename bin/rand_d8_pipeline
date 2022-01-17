@@ -1,20 +1,28 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=300
-#SBATCH --nodes=1
-#SBATCH --ntasks-per-node=1
-#SBATCH --constraint=haswell
-#SBATCH -o rand_pipeline.log
+#SBATCH -p cosma                                                                                                                                                                                     
+#SBATCH -t 300                                                                                                                                                                                     
+#SBATCH -o gold_pipeline.log                                                                                                                                                                         
+#SBATCH -A durham                                                                                                                                                                                    
+#SBATCH --nodes=1                                                                                                                                                                                    
+#SBATCH --ntasks-per-node=1   
+
 
 # Submit with:  sbatch rand_pipeline
 # to qos of [debug, regular]
 # See status with e.g. squeue -u mjwilson
 # 
+if [[ -z "${FIELD}" ]]; then
+  export FIELD="G12"
+else
+  echo 'FIELD SET TO BE '$FIELD
+fi
 
-export FIELD='G12'
-
-# export DRYRUN=''                                                                                                                                                                                   
-export DRYRUN='--dryrun'
+if [[ -z "${DRYRUN}" ]]; then
+  # export DRYRUN=''                                                                                                                                                                                
+  export DRYRUN='--dryrun'
+else
+  echo 'DRYRUN SET TO BE '$DRYRUN
+fi
 
 export CODE_ROOT=$HOME/DESI/
 

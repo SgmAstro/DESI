@@ -1,7 +1,9 @@
 ====
-Starting job 4749078 at Mon 17 Jan 19:01:34 GMT 2022 for user dc-wils7.
+Starting job 4749260 at Mon 17 Jan 20:03:36 GMT 2022 for user dc-wils7.
 Running on nodes: m5387
 ====
+RESET SET TO BE 0
+DRYRUN SET TO BE --dryrun
 
 Environment:
 

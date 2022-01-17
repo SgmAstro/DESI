@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p cosma                                                                                                                                                                                    
 #SBATCH -t 300                                                                                                                                                                                      
-#SBATCH -o gold_pipeline.log                                                                                                                                                                         
+#SBATCH -o rand_pipeline.log                                                                                                                                                                         
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
 #SBATCH --ntasks-per-node=1    
@@ -10,8 +10,12 @@
 # to qos of [debug, regular]
 # See status with e.g. squeue -u mjwilson
 # 
-if [[ -z "${FIELD}" ]]; then
+
+# printenv
+
+if [[ -z "${FIELD}" ]]; then  
   export FIELD="G12"
+  echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
 fi
@@ -24,7 +28,7 @@ else
 fi
 
 if [[ -z "${RESET}" ]]; then
-  export RESET=1
+  export RESET=0
 else
   echo 'RESET SET TO BE '$RESET
 fi

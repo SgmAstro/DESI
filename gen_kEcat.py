@@ -26,7 +26,7 @@ dat.pprint()
 opath=root + '/gama_gold_kE.fits'
 
 if dryrun:
-  idx   = np.random.choice(np.arange(len(dat)), 500, replace=False)
+  idx   = np.random.choice(np.arange(len(dat)), 50, replace=False)
   
   dat   = dat[idx]
   opath = opath.replace('.fits', '_dryrun.fits')                                                     

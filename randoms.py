@@ -43,7 +43,7 @@ if not os.path.isdir(os.environ['RANDOMS_DIR']):
     os.makedirs(os.environ['RANDOMS_DIR'])
 
 if dryrun:
-    nrand = 100
+    nrand = 10
     opath = opath.replace('.fits', '_dryrun.fits')
     
 print(vol, rand_density, nrand / 1.e6)

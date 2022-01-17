@@ -104,12 +104,17 @@ dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
 utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
 
+
 if -99 in utiers:
     utiers = utiers.tolist()    
     utiers.remove(-99)
     utiers = np.array(utiers)
 
-print(utiers)
+
+dat.meta['UTIERS'] = utiers.tolist()
+
+print(dat.meta)
+
 
 if not np.all(utiers == np.arange(4)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
@@ -128,7 +133,8 @@ for tier in utiers:
 
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
-    
+
+
     #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits                                                  
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
 

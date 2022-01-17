@@ -21,6 +21,10 @@ dryrun = args.dryrun
 realz = 0
 
 fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp_n8.fits'
+
+if dryrun:
+    fpath = fpath.replace('.fits', '_dryrun.fits')
+
 dat = Table.read(fpath)
 
 fpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)

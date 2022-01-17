@@ -33,7 +33,7 @@ Vmax = volcom(zmax, Area)
 vol  = Vmax - Vmin
 rand_density = 5.e-1
 
-nrand = np.int(np.ceil(vol * rand_density))
+nrand = np.int64(np.ceil(vol * rand_density))
 
 opath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
 

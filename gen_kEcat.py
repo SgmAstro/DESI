@@ -37,7 +37,7 @@ dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])
 
 dat['REST_GMR_0P1'] = rest_gmr_0p1
-dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int)
+dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int32)
 
 kcorr_r = GAMA_KCorrection(band='R')
 kcorr_g = GAMA_KCorrection(band='G')

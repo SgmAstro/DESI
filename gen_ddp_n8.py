@@ -117,7 +117,7 @@ if not np.all(utiers == np.arange(4)):
 else:
     print(utiers)
 
-print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
+print('Delta8 spans {:.4f} to {:.4f} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
 for tier in utiers:
     print()

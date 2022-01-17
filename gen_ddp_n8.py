@@ -150,7 +150,7 @@ for tier in utiers:
     print('Writing {}.'.format(opath_field))
 
     # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-    to_write_field['AREA'] /= 3.
+    to_write_field.meta['AREA'] /= 3.
     
     to_write_field.write(opath_field, format='fits', overwrite=True)
 

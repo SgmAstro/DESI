@@ -7,14 +7,15 @@ def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
     assert dat[zcol].min() <= zmin
     assert dat[zcol].max() >= zmax
 
-    cols   = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
+    cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
 
-    result = Table(dat[cols], copy=True)
-    result = result[result[zcol] >= zmin]
-    result = result[result[zcol] <= zmax]
+    result      = Table(dat[cols], copy=True)
+    result.meta = dat.meta
+
+    result      = result[result[zcol] >= zmin]
+    result      = result[result[zcol] <= zmax]
 
     ##  TODO: HERE WE APPLY A FILLFACTOR CUT OF 0.8
-
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
     
@@ -24,4 +25,4 @@ def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
     result['VZ']    = volcom(result[zcol], area)
     result['VZ']   -= volcom(result['ZMIN'], area)
     
-    return result
+    return  result

@@ -5,3 +5,281 @@ Code: /global/homes/m/mjwilson/desi/BGS/Sam/DESI/
 Gold output dir.: /global/cscratch1/sd/mjwilson/norberg/GAMA4/
 Randoms output dir: /global/cscratch1/sd/mjwilson/norberg/GAMA4/randoms/
 Running gold pipeline
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/u2/m/mjwilson/desi/BGS/Sam/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3370: RuntimeWarning: Mean of empty slice.
+  return mean(axis=axis, dtype=dtype, out=out, **kwargs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/_methods.py:170: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3372: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3370: RuntimeWarning: Mean of empty slice.
+  return mean(axis=axis, dtype=dtype, out=out, **kwargs)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/_methods.py:170: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/core/fromnumeric.py:3372: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/astropy/cosmology/core.py:1250: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  f = lambda z1, z2: quad(self._inv_efunc_scalar, z1, z2,
+/global/common/software/desi/cori/desiconda/20200801-1.4.0-spec/conda/lib/python3.8/site-packages/numpy/lib/function_base.py:2192: RuntimeWarning: invalid value encountered in ? (vectorized)
+  outputs = ufunc(*inputs)

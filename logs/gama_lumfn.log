@@ -1,8 +1,7 @@
 None False False
 Generating Gold reference LF.
 IGNORING FIELD ARG., GENERATING ALL OF G9-G15
-WARNING:  Missing FIELD keyword, adding it.
-Found fields: ['G12' 'G15' 'G9']
+Found fields: [b'G12' b'G15' b'G9']
 Found redshift limits: 0.039 < z < 0.263
 Retrieved area 180.0 [sq. deg.]
 WARNING:  Found 0.070% with zmax < 0.0

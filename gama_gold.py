@@ -69,6 +69,11 @@ idx = np.random.choice(idx, size=len(idx), replace=False)
 
 dat = dat[idx]
 
-print('Writing {}.'.format(root + '/GAMA4/gama_gold.fits'))
+print('Writing {}.'.format(os.environ['GOLD_DIR'] + '/gama_gold.fits'))
 
-dat.write(root + '/GAMA4/gama_gold.fits', format='fits', overwrite=True)
+if not os.path.isdir(os.environ['GOLD_DIR']):
+    print('Creating {}'.format(os.environ['GOLD_DIR']))
+
+    os.makedirs(os.environ['GOLD_DIR'])
+
+dat.write(os.environ['GOLD_DIR'] + '/gama_gold.fits', format='fits', overwrite=True)

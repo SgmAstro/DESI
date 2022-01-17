@@ -117,23 +117,22 @@ if __name__ == '__main__':
         
         print('Read {}'.format(rpath))
         
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
-
-        utiers = np.arange(4)
-
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
             utiers = np.array([3])
-        
+
+        else:
+            utiers = np.arange(4)
+                    
         for idx in utiers:
             ddp_idx   = idx + 1
-            ddp_fpath = fpath.replace('zmax', '{}_ddp_n8_d0_{:d}'.format(field, idx))
+            ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
             ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
             
             if dryrun:
                 ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
                 ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
-                
+
             print()
             print('Reading: {}'.format(ddp_fpath))
             
@@ -141,11 +140,7 @@ if __name__ == '__main__':
         
             print('PROCESS CAT FINISHED.')
                     
-            lumfn_path = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{}_lumfn.fits'.format(field, idx)
-
-            print('Reading: {}'.format(lumfn_path))
-            
-            result = Table.read(lumfn_path)        
+            result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
             result.pprint()
 
@@ -163,8 +158,8 @@ if __name__ == '__main__':
             
             result['d{}_REFSCHECHTER'.format(idx)] = sc 
 
-            print('Writing {}'.format(lumfn_path))
+            print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
             
-            result.write(lumfn_path, format='fits', overwrite=True)
+            result.write(ddp_opath.replace('vmax', 'lumfn'), format='fits', overwrite=True)
 
     print('Done.')

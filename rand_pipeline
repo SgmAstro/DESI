@@ -12,8 +12,8 @@
 # 
 export FIELD='G12'
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'
+# export DRYRUN=''
+export DRYRUN='--dryrun'
 
 export CODE_ROOT=~/desi/BGS/Sam/DESI/
 export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/

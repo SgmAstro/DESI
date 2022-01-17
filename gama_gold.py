@@ -8,7 +8,7 @@ from gama_limits import gama_field
 from cartesian import cartesian
 
 
-root  = os.environ['CSCRATCH'] + '/norberg/'
+root  = os.environ['TILING_CATDIR']
 fpath = root + '/TilingCatv46.fits'
 
 dat   = Table.read(fpath)
@@ -51,7 +51,7 @@ print(np.mean(nq_cut))
 dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 dat.pprint()
 
-dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA']).value
+dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'].data)
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
 dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])

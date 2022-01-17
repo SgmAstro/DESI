@@ -13,13 +13,14 @@
 #
 
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'
+# export DRYRUN=''
+export DRYRUN='--dryrun'
 
-export CODE_ROOT=~/desi/BGS/Sam/DESI/
+export CODE_ROOT=~/DESI/
 
-export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/
-export GOLD_DIR=$CSCRATCH/norberg/GAMA4/
+export TILING_CATDIR=/cosma5/data/durham/dc-wils7/
+export GOLD_DIR=/cosma5/data/durham/dc-wils7/GAMA4/
+export RANDOMS_DIR=/cosma5/data/durham/dc-wils7/GAMA4/randoms/
 
 echo
 echo 'Environment:'
@@ -31,7 +32,7 @@ echo 'Randoms output dir: '$RANDOMS_DIR
 
 cd $CODE_ROOT
 
-source /project/projectdirs/desi/software/desi_environment.sh master
+# source /project/projectdirs/desi/software/desi_environment.sh master
 
 echo 'Running gold pipeline; logging to logs/gama_gold.log'
 

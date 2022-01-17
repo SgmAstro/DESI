@@ -16,11 +16,14 @@
 # export DRYRUN=''
 export DRYRUN='--dryrun'
 
-export CODE_ROOT=~/DESI/
+export CODE_ROOT=$HOME/DESI/
 
 export TILING_CATDIR=/cosma5/data/durham/dc-wils7/
 export GOLD_DIR=/cosma5/data/durham/dc-wils7/GAMA4/
 export RANDOMS_DIR=/cosma5/data/durham/dc-wils7/GAMA4/randoms/
+
+export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
+export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
 
 echo
 echo 'Environment:'
@@ -31,7 +34,7 @@ echo 'Randoms output dir: '$RANDOMS_DIR
 
 
 cd $CODE_ROOT
-
+:'
 # source /project/projectdirs/desi/software/desi_environment.sh master
 
 echo 'Running gold pipeline; logging to logs/gama_gold.log'
@@ -61,18 +64,19 @@ echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 python gen_gold_lf.py $DRYRUN > logs/gama_lumfn.log
 
 echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8_G9/12/15.log'
-
-python gen_ddp_n8.py --field G9  $DRYRUN > logs/gama_ddp_n8_G9.log
-python gen_ddp_n8.py --field G12 $DRYRUN > logs/gama_ddp_n8_G12.log
-python gen_ddp_n8.py --field G15 $DRYRUN > logs/gama_ddp_n8_G15.log
-
+'
+# Dependency on randoms bd files, for fillfactor and bound_dist.
+# Hence field argument. 
+# python gen_ddp_n8.py --field G9  $DRYRUN > logs/gama_ddp_n8_G9.log
+python gen_ddp_n8.py --field G12 $DRYRUN # > logs/gama_ddp_n8_G12.log
+# python gen_ddp_n8.py --field G15 $DRYRUN > logs/gama_ddp_n8_G15.log
+:'
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
 python gen_gold_lf.py --density_split --field G9  $DRYRUN > logs/gama_lumfn_d8_G9.log
 python gen_gold_lf.py --density_split --field G12 $DRYRUN > logs/gama_lumfn_d8_G12.log
 python gen_gold_lf.py --density_split --field G15 $DRYRUN > logs/gama_lumfn_d8_G15.log
-:'
 '
 echo
 echo 'Done.'

@@ -13,6 +13,8 @@ def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
     result = result[result[zcol] >= zmin]
     result = result[result[zcol] <= zmax]
 
+    ##  TODO: HERE WE APPLY A FILLFACTOR CUT OF 0.8
+
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
     

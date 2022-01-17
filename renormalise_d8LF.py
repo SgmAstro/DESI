@@ -1,5 +1,4 @@
-def lumfn_d8_normalise(cat, fdelta):
-    
+def renormalise_d8LF(cat, fdelta):
     '''
     fscale equal to Equation 7 in McNaught-Roberts (2014).
     See: https://arxiv.org/pdf/1409.4681.pdf

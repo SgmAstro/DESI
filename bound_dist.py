@@ -14,8 +14,8 @@ import argparse
 Script to calculate the maximimum distance [Mpc/h] of each random from the boundary. 
 '''
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser = argparse.ArgumentParser(description='Find boundary distance for all randoms in a specified field..')
+parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args = parser.parse_args()

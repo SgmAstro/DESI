@@ -11,7 +11,7 @@ tmr_DDP1     = [-21.8, -20.1]
 tmr_DDP2     = [-20.6, -19.3]
 tmr_DDP3     = [-19.6, -17.8]
 
-root         = os.environ['CSCRATCH'] + '/norberg/GAMA4/ddrp_limits/'
+root         = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 
 bright_curve = fitsio.read(root + '/ddrp_limit_7.fits')
 faint_curve  = fitsio.read(root + '/ddrp_limit_27.fits')

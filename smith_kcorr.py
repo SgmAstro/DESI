@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from   scipy.interpolate import interp1d
 from   pkg_resources     import resource_filename
 
-# raw_dir = resource_filename('DESI/', 'data/')        
-raw_dir='/global/homes/m/mjwilson/desi/BGS/Sam/DESI/data'
+raw_dir = resource_filename('DESI', 'data')        
 
 class GAMA_KCorrection(object):
     def __init__(self, band, kind="linear"):

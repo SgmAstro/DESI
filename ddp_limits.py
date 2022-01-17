@@ -1,3 +1,4 @@
+import os
 import numpy             as np
 import matplotlib.pyplot as plt
 import cosmo             as cosmo
@@ -24,6 +25,11 @@ zs       = np.arange(0.01, 0.6, 0.01)
 mus      = cosmo.distmod(zs)
 
 root     = os.environ['GOLD_DIR'] + '/ddrp_limits/'
+
+if not os.path.isdir(root):
+    print('Creating {}'.format(root))
+
+    os.makedirs(root)
 
 count    = 0
 

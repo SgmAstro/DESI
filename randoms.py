@@ -33,9 +33,14 @@ Vmax = volcom(zmax, Area)
 vol  = Vmax - Vmin
 rand_density = 5.e-1
 
-nrand = np.int(np.ceil(vol * rand_density))
+nrand = np.int64(np.ceil(vol * rand_density))
 
 opath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
+
+if not os.path.isdir(os.environ['RANDOMS_DIR']):
+    print('Creating {}'.format(os.environ['RANDOMS_DIR']))
+
+    os.makedirs(os.environ['RANDOMS_DIR'])
 
 if dryrun:
     nrand = 1000

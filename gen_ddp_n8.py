@@ -7,35 +7,36 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table
 from   scipy.spatial import KDTree
 from   cartesian import cartesian
-from   delta8_limits import delta8_tier
+from   delta8_limits import delta8_tier, d8_limits
 from   gama_limits import gama_field
 
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', help='GAMA field.', required=True)
+parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
+parser.add_argument('-f', '--field', help='GAMA field for randoms_bd file (fill factor & bound_dist retrieval).', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
-field = args.field.upper()
+args   = parser.parse_args()
+field  = args.field.upper()
 dryrun = args.dryrun
 
-fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
 print('Reading: {}'.format(fpath))
-    
-dat = Table.read(fpath)
+
+# Read ddp cat.    
+dat    = Table.read(fpath)
 
 assert 'DDP1_DENS' in dat.meta
 
-points      = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
-points      = np.array(points, copy=True)
+points       = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
+points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
 
-# randoms.
+# Read randoms bound_dist.
 realz  = 0
 
 rpath  = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
@@ -44,6 +45,9 @@ if dryrun:
     rpath = rpath.replace('.fits', '_dryrun.fits')
 
 print('Reading: {}'.format(rpath))
+
+if not os.path.isfile(rpath):
+    raise RuntimeError('Expect random bound dist. file for field {}; Run bound_dist.py for this field'.format(field))
     
 rand, rand_hdr = fitsio.read(rpath, header=True)
 
@@ -58,15 +62,15 @@ print('Querying tree for closest rand.')
 
 dd, ii   = big_tree.query([x for x in points], k=1)
 
-dat['RANDSEP'] = dd
-dat['RANDMATCH'] = rand['RANDID'][ii]
+# Find closest random for bound_dist and fill factor. 
+# These randoms are split by field.
+dat['RANDSEP']    = dd
+dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
-
-nrand8 = rand_hdr['NRAND8']
-
-dat['FILLFACTOR'] = rand['N8'][ii] / nrand8
+dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 for idx in range(3):
+    # Calculate DDP1/2/3 N8 for all gold galaxies.
     ddp_idx      = idx + 1
     
     ddp          = dat[dat['DDP'][:,idx] == 1]
@@ -99,22 +103,18 @@ print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
 
+# Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range).
 dat = dat[(dat['ZGAMA'] > dat.meta['DDP1_ZMIN']) & (dat['ZGAMA'] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
 utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
-
 
 if -99 in utiers:
     utiers = utiers.tolist()    
     utiers.remove(-99)
     utiers = np.array(utiers)
 
-
-dat.meta['UTIERS'] = utiers.tolist()
-
-print(dat.meta)
-
+dat.meta['D8_LIMITS'] = d8_limits
 
 if not np.all(utiers == np.arange(4)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
@@ -122,7 +122,7 @@ if not np.all(utiers == np.arange(4)):
 else:
     print(utiers)
 
-print('Delta8 spans {} to {} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
+print('Delta8 spans {:.4f} to {:.4f} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
 for tier in utiers:
     print()
@@ -133,7 +133,6 @@ for tier in utiers:
 
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
-
 
     #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits                                                  
     opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
@@ -149,6 +148,9 @@ for tier in utiers:
     opath_field = opath.replace('gold', 'gold_{}'.format(field))
 
     print('Writing {}.'.format(opath_field))
+
+    # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
+    to_write_field['AREA'] /= 3.
     
     to_write_field.write(opath_field, format='fits', overwrite=True)
 

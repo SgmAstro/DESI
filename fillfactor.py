@@ -11,8 +11,8 @@ from   multiprocessing import Pool
 import argparse
 
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
+parser.add_argument('-f', '--field', type=str, help='Sselect equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args = parser.parse_args()
@@ -74,7 +74,12 @@ for rr in result:
     flat_result += rr
 
 rand['N8'] = np.array(flat_result).astype(np.int32)
+rand['FILLFACTOR']  = rand['N8'] / rand.meta['NRAND8']
+
 rand.meta['RSPHERE'] = 8.
+
+# TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
+rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
 
 opath = fpath.replace('randoms_{}'.format(field), 'randoms_N8_{}'.format(field))
 

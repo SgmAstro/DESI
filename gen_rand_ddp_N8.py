@@ -10,8 +10,8 @@ from cartesian import cartesian
 from delta8_limits import dd8_limits, delta8_tier
 
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
+parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args = parser.parse_args()
@@ -57,8 +57,6 @@ for idx in range(3):
 
     rand['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
 
-    
-rand['FILLFACTOR']  = rand['N8'] / rand.meta['NRAND8']   
 
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
@@ -76,9 +74,7 @@ print('Unique tiers: {}'.format(utiers))
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 for ut in utiers:    
-    ddp1_rand = rand[rand['Z'] > ddp1_zmin]
-    ddp1_rand = ddp1_rand[ddp1_rand['Z'] < ddp1_zmax]
-    
+    ddp1_rand = rand[(rand['Z'] > ddp1_zmin) & (rand['Z'] < ddp1_zmax)]    
     in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
         
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)

@@ -11,8 +11,8 @@ from   delta8_limits import delta8_tier
 from   gama_limits import gama_field
 
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field', help='GAMA field.', required=True)
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('-f', '--field', help='GAMA field for randoms_bd file (fill factor & bound_dist retrieval).', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args = parser.parse_args()
@@ -44,6 +44,9 @@ if dryrun:
     rpath = rpath.replace('.fits', '_dryrun.fits')
 
 print('Reading: {}'.format(rpath))
+
+if not os.path.isfile(rpath):
+    raise RuntimeError('Expect random bound dist. file for field {}; Run bound_dist.py for this field'.format(field))
     
 rand, rand_hdr = fitsio.read(rpath, header=True)
 
@@ -58,6 +61,8 @@ print('Querying tree for closest rand.')
 
 dd, ii   = big_tree.query([x for x in points], k=1)
 
+# Find closest random for bound_dist and fill factor. 
+# These randoms are split by field.
 dat['RANDSEP'] = dd
 dat['RANDMATCH'] = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]

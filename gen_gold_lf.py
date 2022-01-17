@@ -36,13 +36,10 @@ def process_cat(fpath, vmax_opath, field=None):
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
 
-    # TODO: 
-    Area = 180. # gama_zmax.meta['AREA']
+    Area = gama_zmax.meta['AREA']
 
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
-
-        Area /= 3.
         
     print('Retrieved area {} [sq. deg.]'.format(Area))
 

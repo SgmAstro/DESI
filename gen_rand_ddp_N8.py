@@ -7,7 +7,7 @@ import argparse
 from astropy.table import Table
 from scipy.spatial import KDTree
 from cartesian import cartesian
-from delta8_limits import dd8_limits, delta8_tier
+from delta8_limits import d8_limits, delta8_tier
 
 
 parser = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
@@ -64,6 +64,8 @@ rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DEN
 rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
+
+rand.meta['D8_LIMITS'] = d8_limits
 
 utiers = np.unique(rand['DDP1_DELTA8_TIER'].data)
 

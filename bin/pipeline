@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Generate all steps up to reference LF. 
+GOLD_JOBID=$(sbatch gold_pipeline --parsable)
+
+echo $GOLD_JOBID
+
+# Generate all steps up to random fill factor and bound_dist. 
+RAND_G9_JOBID=$(sbatch rand_pipeline  --parsable --export=ALL,FIELD=G9)
+RAND_G12_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD=G12)
+RAND_G15_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD=G15)
+
+# Requires ddp cat. & random fill factor. 
+# Note: runs all fields simultaneously. 
+sbatch gold_d8_pipeline --dependency=afterok:$GOLD_JOBID
+
+# Requires ddp cat. 
+# sbatch rand_d8_pipeline --export=ALL,FIELD=G9
+# sbatch rand_d8_pipeline --export=ALL,FIELD=G12
+# sbatch rand_d8_pipeline --export=ALL,FIELD=G15

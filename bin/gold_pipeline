@@ -1,10 +1,12 @@
 #!/bin/bash                                                                                                               
-#SBATCH --qos=cosma                                                                                                      
-#SBATCH --time=600
+#SBATCH -p cosma                                                                                                     
+#SBATCH -t 60
+#SBATCH -o gold_pipeline.log
+#SBATCH -A durham 
 #SBATCH --nodes=1                                                                                                          
 #SBATCH --ntasks-per-node=1                                                                                               
-#SBATCH -o gold_pipeline.log                                                                                                
-#SBATCH -A Durham
+
+# projects: hpcicc, durham, analyse, dp004, do010
 
 # Submit with:  sbatch gold_pipeline                                                                                        
 # to qos of [debug, regular]

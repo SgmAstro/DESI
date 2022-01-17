@@ -5,6 +5,7 @@
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
 #SBATCH --ntasks-per-node=1
+#SBATCH --open-mode=append
 
 # Submit with:  sbatch gold_d8_pipeline                                                                                        
 # to qos of [debug, regular]
@@ -13,8 +14,8 @@
 #
 
 if [[ -z "${DRYRUN}" ]]; then
-  # export DRYRUN=''                                                                                                                                                                               
-  export DRYRUN='--dryrun'
+  export DRYRUN=''                                                                                                                                                                               
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi

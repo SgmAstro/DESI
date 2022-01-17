@@ -1,9 +1,8 @@
 ====
-Starting job 4750389 at Mon 17 Jan 21:08:17 GMT 2022 for user dc-wils7.
+Starting job 4752372 at Mon 17 Jan 22:00:32 GMT 2022 for user dc-wils7.
 Running on nodes: m5387
 ====
 RESET SET TO BE 0
-DRYRUN SET TO BE --dryrun
 
 Environment:
 
@@ -12,29 +11,3 @@ Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
 Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
 Running gold pipeline; logging to logs/gama_gold.log
 Running gen_kEcat.py; logging to logs/gama_kE.log
-Running gen_zmax_cat.py; logging to logs/gama_zama.log
-Running ddp_limits.py; logging to logs/ddp_limits.log
-Running gen_ddp_cat.py; logging to logs/gama_ddp.log
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-Running gen_gold_lf.py; logging to logs/gama_lumfn.log
-WARNING: VerifyWarning: Keyword name 'FORCE_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'FORCE_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/fromnumeric.py:3438: RuntimeWarning: Mean of empty slice.
-  return mean(axis=axis, dtype=dtype, out=out, **kwargs)
-/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/_methods.py:189: RuntimeWarning: invalid value encountered in double_scalars
-  ret = ret.dtype.type(ret / rcount)
-/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/fromnumeric.py:3440: RuntimeWarning: Mean of empty slice.
-  return _methods._mean(a, axis=axis, dtype=dtype,
-
-Done.

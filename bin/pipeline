@@ -2,7 +2,7 @@
 export RESET=1
 
 export DRYRUN=''
-export DRYRUN='--dryrun'                                                                                                                                                                           
+# export DRYRUN='--dryrun'                                                                                                                                                                           
 
 export CODE_ROOT=$HOME/DESI/
 
@@ -19,6 +19,12 @@ if (( $RESET > 0 )); then
     rm $GOLD_DIR/*.fits
     rm $RANDOMS_DIR/*$FIELD*.fits
     rm $CODE_ROOT/logs/*.log
+
+    rm gold_pipeline.log
+    rm gold_d8_pipeline.log
+
+    rm rand_pipeline.log
+    rm rand_d8_pipeline.log
 
     # ls -l $GOLD_DIR/
     # ls -l $RANDOMS_DIR/
@@ -45,12 +51,18 @@ echo $RAND_G12_JOBID
 echo $RAND_G15_JOBID
 echo '-----'
 
-echo '>>>>>  DEPENDENT JOBS  <<<<<'
-
 # Requires ddp cat, & randoms; no reset required.  
 RAND_D8_G9_JOBID=$(sbatch --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID  rand_d8_pipeline)
 RAND_D8_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID rand_d8_pipeline)
 RAND_D8_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID rand_d8_pipeline)
+
+echo ' >>>>> RANDOM D8 JOB IDS <<<<<'
+echo $RAND_D8_G9_JOBID
+echo $RAND_D8_G12_JOBID
+echo $RAND_D8_G15_JOBID
+echo '-----'
+
+echo '>>>>>  DEPENDENT JOBS  <<<<<'
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
 # Note: runs all fields simultaneously.                                                                                                                                                              

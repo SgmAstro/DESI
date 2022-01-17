@@ -5,6 +5,7 @@
 #SBATCH -A durham 
 #SBATCH --nodes=1                                                                                                          
 #SBATCH --ntasks-per-node=1                                                                                               
+#SBATCH --open-mode=append
 
 # projects: hpcicc, durham, analyse, dp004, do010
 
@@ -21,8 +22,8 @@ else
 fi
 
 if [[ -z "${DRYRUN}" ]]; then
-  # export DRYRUN=''                                                                                                                                                                               
-  export DRYRUN='--dryrun'
+  export DRYRUN=''                                                                                                                                                                               
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi

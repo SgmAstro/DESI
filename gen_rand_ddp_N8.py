@@ -65,7 +65,7 @@ rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DEN
 
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 
-rand.meta['D8_LIMITS'] = d8_limits
+rand.meta['D8_LIMITS'] = str(d8_limits)
 
 utiers = np.unique(rand['DDP1_DELTA8_TIER'].data)
 

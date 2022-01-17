@@ -10,20 +10,23 @@
 # to qos of [debug, regular]
 # See status with e.g. squeue -u mjwilson
 # 
-export RESET=1
-
 if [[ -z "${FIELD}" ]]; then
   export FIELD="G12"
 else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
-
 if [[ -z "${DRYRUN}" ]]; then
   # export DRYRUN='' 
   export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
+fi
+
+if [[ -z "${RESET}" ]]; then
+  export RESET=1
+else
+  echo 'RESET SET TO BE '$RESET
 fi
 
 export CODE_ROOT=$HOME/DESI/
@@ -48,7 +51,7 @@ cd $CODE_ROOT
 
 if (( $RESET > 0 )); then
     echo '>>>>>  TRASHING RANDOMS_DIR FOR '$FIELD' <<<<<'
-
+    
     rm $RANDOMS_DIR/*$FIELD*.fits
 fi
 

@@ -18,36 +18,46 @@ if (( $RESET > 0 )); then
 
     rm $GOLD_DIR/*.fits
     rm $RANDOMS_DIR/*$FIELD*.fits
+    rm $CODE_ROOT/logs/*.log
+
+    ls -l $GOLD_DIR/
+    ls -l $RANDOMS_DIR/
+    ls -l $CODE_ROOT/logs/
+ 
+    export RESET=0
 fi
+
+#  Total of eight jobs, with correct dependency logic.
 
 # Generate all steps up to reference LF. 
 GOLD_JOBID=$(sbatch gold_pipeline --parsable  --export=ALL,DRYRUN=$DRYRUN)
 GOLD_JOBID=$(echo $GOLD_JOBID | awk '{print $NF}')
 
-echo '-----'
+echo '>>>>> GOLD JOB ID <<<<<'
 echo $GOLD_JOBID
 echo '-----'
 
 # Generate all steps up to random fill factor and bound_dist. 
-RAND_G9_JOBID=$(sbatch rand_pipeline  --parsable --export=ALL,FIELD=G9,DRYRUN=$DRYRUN)
-RAND_G12_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD=G12,DRYRUN=$DRYRUN)
-RAND_G15_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD=G15,DRYRUN=$DRYRUN)
+RAND_G9_JOBID=$(sbatch rand_pipeline  --parsable --export=ALL,FIELD='G9',DRYRUN=$DRYRUN,RESET=$RESET)
+RAND_G12_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD='G12',DRYRUN=$DRYRUN,RESET=$RESET)
+RAND_G15_JOBID=$(sbatch rand_pipeline --parsable --export=ALL,FIELD='G15',DRYRUN=$DRYRUN,RESET=$RESET)
 
 RAND_G9_JOBID=$(echo $RAND_G9_JOBID| awk '{print $NF}')
-RAND_G12_JOBID=$(echo $RAND_G9_JOBID | awk '{print $NF}')
+RAND_G12_JOBID=$(echo $RAND_G12_JOBID | awk '{print $NF}')
 RAND_G15_JOBID=$(echo $RAND_G15_JOBID | awk '{print $NF}')
 
-echo '-----'
+echo ' >>>>> RANDOM JOB IDS <<<<<'
 echo $RAND_G9_JOBID
 echo $RAND_G12_JOBID
 echo $RAND_G15_JOBID
 echo '-----'
 
+echo '>>>>>  DEPENDENT JOBS  <<<<<'
 # Requires ddp cat. & random fill factor. 
 # Note: runs all fields simultaneously. 
 sbatch gold_d8_pipeline --dependency=afterok:$GOLD_JOBID
 
-# Requires ddp cat, & randoms. 
-sbatch rand_d8_pipeline --export=ALL,FIELD=G9  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID
-sbatch rand_d8_pipeline --export=ALL,FIELD=G12 --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID 
-sbatch rand_d8_pipeline --export=ALL,FIELD=G15 --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID 
+# Requires ddp cat, & randoms; no reset required.  
+sbatch rand_d8_pipeline --export=ALL,FIELD='G9'  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID
+sbatch rand_d8_pipeline --export=ALL,FIELD='G12' --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID 
+sbatch rand_d8_pipeline --export=ALL,FIELD='G15' --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID 

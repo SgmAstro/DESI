@@ -1,42 +1,42 @@
- CATAID       OBJID        ...     CARTESIAN_Y         CARTESIAN_Z    
-                           ...                                        
-------- ------------------ ... ------------------- -------------------
- 377217 587727943491322176 ... -324.98490369761384   12.46453978628196
- 171040 587725040627351704 ...  -24.63653794054611 -16.101689577872936
- 219914 587726013994959291 ...  -9.081648238574225  13.763210826183848
- 560374 588848899375825181 ...  -4.807995345364819  -5.420552980617658
-  48006 587722982292455656 ...  210.06118462121867  -4.915638592584356
- 513338 587729972326498715 ...   343.4926081286107 -10.110815212474963
- 418433 587728879258632495 ... -405.10774232473415  26.240297376734404
-3863293 588010930296521198 ...  -532.3043222296523 -25.084723868417953
- 559685 588848899374907541 ...  -21.08180508600735  -4.463042342434413
-  62434 587722982828212405 ...   129.9941983604812 -1.2999314218993576
-    ...                ... ...                 ...                 ...
- 485439 587729777981653262 ...  154.98427627883981   -9.31878554017961
-  39059 587722982274760818 ... -15.041384207305638 -2.3470228339691372
- 228219 587726014011211823 ...   96.72240758299175   3.497603439585624
-3589784 587729150377459957 ...   -81.5126817941073  -3.816708118176635
- 342957 587726032802087112 ...  196.26512825667493  12.269133772423201
- 617712 588848900463984922 ...   360.1013580659878   2.199695607335705
- 139038 587724650333143239 ...   62.91557162013081 -23.761429335641168
-  32444 587722981742215284 ...  26.970021079485445  -6.822236414905426
-  32235 587722981741822033 ...  27.429855435755975  -10.33764256436271
-3852926 588010930294161768 ... -420.41837831561435  -17.25208690567442
+CATAID       OBJID        ...     CARTESIAN_Y         CARTESIAN_Z     
+                          ...                                         
+------ ------------------ ... ------------------- --------------------
+209748 587725074990104938 ... -344.77276732721725 -0.29201119712561685
+537129 588848898840789129 ...  13.778240299502608  -4.0400222378383175
+382081 587727944027472289 ...  -460.4315484359427   21.680969625684444
+561801 588848899377922344 ...  52.315729708895546   -7.238360697540164
+227206 587726014009442667 ...   389.0924449752832   14.877260726360266
+363681 587726033340137638 ...    231.635870153189   15.121871374437344
+209284 587725074989187472 ...  -448.2823166531956   1.0675392832320167
+125782 587724649259532757 ...    18.1948135650104    -9.39455434058648
+301084 587726032227533257 ...  -407.9997788373662   11.628860563801618
+609191 588848900446945574 ...  -65.78541667183589   2.5948468988305784
+   ...                ... ...                 ...                  ...
+ 55733 587722982815236346 ...  16.490515106073875   -2.356076772898859
+342472 587726032801104215 ...  187.88584713723827   12.509164150156877
+262094 587726015622283506 ...  249.31774291887044     17.6534944539041
+493345 587729778520621500 ...  284.06713828874996   -9.865315614590857
+642118 587725084111667592 ...  -138.5961849305117   -4.600501986269242
+239656 587726014548934790 ...  247.84696111791274   11.032187045369659
+417992 587728879257912032 ...  -512.8203443926446   30.719758781227377
+583923 588848899911516239 ...  -27.65767574607019  -1.2075464160378884
+144007 587724650867064939 ... -12.661593813710459  -10.288741982048007
+178118 587725041165271332 ...  -6.125311879423784   -8.937615460163103
 Length = 113687 rows
 Solving for rest gmr.
 0.000% complete after 0.00 mins.
 0.440% complete after 0.06 mins.
 0.880% complete after 0.11 mins.
 1.319% complete after 0.17 mins.
-1.759% complete after 0.22 mins.
+1.759% complete after 0.23 mins.
 2.199% complete after 0.28 mins.
 2.639% complete after 0.34 mins.
-3.079% complete after 0.39 mins.
+3.079% complete after 0.40 mins.
 3.518% complete after 0.45 mins.
-3.958% complete after 0.50 mins.
-4.398% complete after 0.56 mins.
+3.958% complete after 0.51 mins.
+4.398% complete after 0.57 mins.
 4.838% complete after 0.62 mins.
-5.278% complete after 0.67 mins.
+5.278% complete after 0.68 mins.
 5.717% complete after 0.73 mins.
 6.157% complete after 0.79 mins.
 6.597% complete after 0.84 mins.
@@ -44,7 +44,7 @@ Solving for rest gmr.
 7.477% complete after 0.96 mins.
 7.916% complete after 1.01 mins.
 8.356% complete after 1.07 mins.
-8.796% complete after 1.13 mins.
+8.796% complete after 1.12 mins.
 9.236% complete after 1.18 mins.
 9.676% complete after 1.24 mins.
 10.115% complete after 1.29 mins.
@@ -52,229 +52,229 @@ Solving for rest gmr.
 10.995% complete after 1.41 mins.
 11.435% complete after 1.46 mins.
 11.875% complete after 1.52 mins.
-12.315% complete after 1.57 mins.
+12.315% complete after 1.58 mins.
 12.754% complete after 1.63 mins.
 13.194% complete after 1.69 mins.
 13.634% complete after 1.74 mins.
 14.074% complete after 1.80 mins.
-14.514% complete after 1.86 mins.
-14.953% complete after 1.92 mins.
-15.393% complete after 1.98 mins.
-15.833% complete after 2.03 mins.
-16.273% complete after 2.09 mins.
-16.713% complete after 2.14 mins.
-17.152% complete after 2.20 mins.
-17.592% complete after 2.26 mins.
-18.032% complete after 2.32 mins.
-18.472% complete after 2.37 mins.
-18.912% complete after 2.43 mins.
-19.351% complete after 2.49 mins.
-19.791% complete after 2.54 mins.
-20.231% complete after 2.60 mins.
-20.671% complete after 2.66 mins.
-21.111% complete after 2.71 mins.
-21.550% complete after 2.77 mins.
-21.990% complete after 2.82 mins.
-22.430% complete after 2.88 mins.
-22.870% complete after 2.94 mins.
-23.310% complete after 3.00 mins.
-23.749% complete after 3.05 mins.
-24.189% complete after 3.11 mins.
-24.629% complete after 3.17 mins.
-25.069% complete after 3.22 mins.
-25.509% complete after 3.28 mins.
-25.948% complete after 3.34 mins.
-26.388% complete after 3.39 mins.
-26.828% complete after 3.45 mins.
-27.268% complete after 3.51 mins.
-27.708% complete after 3.57 mins.
-28.147% complete after 3.62 mins.
-28.587% complete after 3.68 mins.
-29.027% complete after 3.74 mins.
-29.467% complete after 3.79 mins.
-29.907% complete after 3.85 mins.
-30.346% complete after 3.91 mins.
-30.786% complete after 3.97 mins.
-31.226% complete after 4.02 mins.
-31.666% complete after 4.08 mins.
-32.106% complete after 4.14 mins.
-32.545% complete after 4.20 mins.
-32.985% complete after 4.26 mins.
-33.425% complete after 4.31 mins.
-33.865% complete after 4.37 mins.
-34.305% complete after 4.42 mins.
-34.745% complete after 4.48 mins.
-35.184% complete after 4.54 mins.
-35.624% complete after 4.59 mins.
-36.064% complete after 4.65 mins.
-36.504% complete after 4.71 mins.
-36.944% complete after 4.76 mins.
-37.383% complete after 4.82 mins.
-37.823% complete after 4.88 mins.
-38.263% complete after 4.93 mins.
-38.703% complete after 4.99 mins.
-39.143% complete after 5.05 mins.
-39.582% complete after 5.10 mins.
-40.022% complete after 5.16 mins.
-40.462% complete after 5.22 mins.
-40.902% complete after 5.27 mins.
-41.342% complete after 5.33 mins.
-41.781% complete after 5.39 mins.
-42.221% complete after 5.45 mins.
-42.661% complete after 5.51 mins.
-43.101% complete after 5.56 mins.
-43.541% complete after 5.62 mins.
-43.980% complete after 5.67 mins.
-44.420% complete after 5.73 mins.
-44.860% complete after 5.79 mins.
-45.300% complete after 5.84 mins.
-45.740% complete after 5.90 mins.
-46.179% complete after 5.96 mins.
-46.619% complete after 6.01 mins.
-47.059% complete after 6.07 mins.
-47.499% complete after 6.12 mins.
-47.939% complete after 6.18 mins.
-48.378% complete after 6.24 mins.
-48.818% complete after 6.30 mins.
-49.258% complete after 6.35 mins.
-49.698% complete after 6.41 mins.
-50.138% complete after 6.47 mins.
-50.577% complete after 6.52 mins.
-51.017% complete after 6.58 mins.
-51.457% complete after 6.63 mins.
-51.897% complete after 6.69 mins.
-52.337% complete after 6.75 mins.
-52.776% complete after 6.81 mins.
-53.216% complete after 6.86 mins.
-53.656% complete after 6.92 mins.
-54.096% complete after 6.97 mins.
-54.536% complete after 7.03 mins.
-54.976% complete after 7.09 mins.
-55.415% complete after 7.15 mins.
-55.855% complete after 7.20 mins.
-56.295% complete after 7.26 mins.
-56.735% complete after 7.32 mins.
-57.175% complete after 7.37 mins.
-57.614% complete after 7.43 mins.
-58.054% complete after 7.49 mins.
-58.494% complete after 7.54 mins.
-58.934% complete after 7.60 mins.
-59.374% complete after 7.66 mins.
-59.813% complete after 7.71 mins.
-60.253% complete after 7.77 mins.
-60.693% complete after 7.83 mins.
-61.133% complete after 7.89 mins.
-61.573% complete after 7.94 mins.
-62.012% complete after 8.00 mins.
-62.452% complete after 8.06 mins.
-62.892% complete after 8.11 mins.
-63.332% complete after 8.17 mins.
-63.772% complete after 8.23 mins.
-64.211% complete after 8.28 mins.
-64.651% complete after 8.34 mins.
-65.091% complete after 8.39 mins.
-65.531% complete after 8.45 mins.
-65.971% complete after 8.51 mins.
-66.410% complete after 8.56 mins.
-66.850% complete after 8.62 mins.
-67.290% complete after 8.68 mins.
-67.730% complete after 8.73 mins.
-68.170% complete after 8.79 mins.
-68.609% complete after 8.84 mins.
-69.049% complete after 8.90 mins.
-69.489% complete after 8.96 mins.
-69.929% complete after 9.02 mins.
-70.369% complete after 9.07 mins.
-70.808% complete after 9.13 mins.
-71.248% complete after 9.19 mins.
-71.688% complete after 9.24 mins.
-72.128% complete after 9.30 mins.
-72.568% complete after 9.36 mins.
-73.007% complete after 9.41 mins.
-73.447% complete after 9.47 mins.
-73.887% complete after 9.53 mins.
-74.327% complete after 9.58 mins.
-74.767% complete after 9.64 mins.
-75.206% complete after 9.70 mins.
-75.646% complete after 9.75 mins.
-76.086% complete after 9.81 mins.
-76.526% complete after 9.87 mins.
-76.966% complete after 9.92 mins.
-77.406% complete after 9.98 mins.
-77.845% complete after 10.04 mins.
-78.285% complete after 10.09 mins.
-78.725% complete after 10.15 mins.
-79.165% complete after 10.21 mins.
-79.605% complete after 10.26 mins.
-80.044% complete after 10.32 mins.
-80.484% complete after 10.38 mins.
-80.924% complete after 10.44 mins.
-81.364% complete after 10.49 mins.
-81.804% complete after 10.55 mins.
-82.243% complete after 10.60 mins.
-82.683% complete after 10.66 mins.
-83.123% complete after 10.72 mins.
-83.563% complete after 10.77 mins.
-84.003% complete after 10.83 mins.
-84.442% complete after 10.89 mins.
-84.882% complete after 10.94 mins.
-85.322% complete after 11.00 mins.
-85.762% complete after 11.06 mins.
-86.202% complete after 11.11 mins.
-86.641% complete after 11.17 mins.
-87.081% complete after 11.23 mins.
-87.521% complete after 11.29 mins.
-87.961% complete after 11.34 mins.
-88.401% complete after 11.40 mins.
-88.840% complete after 11.46 mins.
-89.280% complete after 11.51 mins.
-89.720% complete after 11.57 mins.
-90.160% complete after 11.63 mins.
-90.600% complete after 11.68 mins.
-91.039% complete after 11.74 mins.
-91.479% complete after 11.79 mins.
-91.919% complete after 11.85 mins.
-92.359% complete after 11.91 mins.
-92.799% complete after 11.96 mins.
-93.238% complete after 12.02 mins.
-93.678% complete after 12.08 mins.
-94.118% complete after 12.13 mins.
-94.558% complete after 12.19 mins.
-94.998% complete after 12.25 mins.
-95.437% complete after 12.31 mins.
-95.877% complete after 12.36 mins.
-96.317% complete after 12.42 mins.
-96.757% complete after 12.48 mins.
-97.197% complete after 12.53 mins.
-97.636% complete after 12.59 mins.
-98.076% complete after 12.65 mins.
-98.516% complete after 12.71 mins.
-98.956% complete after 12.76 mins.
-99.396% complete after 12.82 mins.
-99.836% complete after 12.88 mins.
- CATAID       OBJID        ...    Z_THETA_QALL      Z_THETA_QCOLOR  
-                           ...                                      
-------- ------------------ ... ------------------ ------------------
- 377217 587727943491322176 ...  38.74308803830844  38.77070793662769
- 171040 587725040627351704 ... 38.212804406992014  38.23493500810009
- 219914 587726013994959291 ...   38.8540930940744 38.650554616653594
- 560374 588848899375825181 ... 39.554814656112676  39.59286745343018
-  48006 587722982292455656 ...  38.11378435906318 38.135100663866076
- 513338 587729972326498715 ...   38.8704860018648  38.67000652422083
- 418433 587728879258632495 ...  39.20011316640911  38.96841119630871
-3863293 588010930296521198 ...  39.88180718738771   39.9264950992558
- 559685 588848899374907541 ... 38.675057150765724  38.48823968355305
-  62434 587722982828212405 ...  37.11146510939865 37.016808619609165
-    ...                ... ...                ...                ...
- 485439 587729777981653262 ...  37.32936834909691  37.22437335916533
-  39059 587722982274760818 ... 36.100144651517006   36.1091002531198
- 228219 587726014011211823 ...  36.21118342870798  36.22058783093419
-3589784 587729150377459957 ... 35.466771533541696 35.473549434744136
- 342957 587726032802087112 ... 37.791828718223954   37.8104556167511
- 617712 588848900463984922 ...  39.64569625638784 39.685620758760585
- 139038 587724650333143239 ... 39.824699286940636  39.86821419430071
-  32444 587722981742215284 ...  37.96159384388471 37.824916370101214
-  32235 587722981741822033 ... 38.665821208131725  38.69259960807603
-3852926 588010930294161768 ...  39.08947696394841  39.12140297002713
+14.514% complete after 1.85 mins.
+14.953% complete after 1.91 mins.
+15.393% complete after 1.97 mins.
+15.833% complete after 2.02 mins.
+16.273% complete after 2.08 mins.
+16.713% complete after 2.13 mins.
+17.152% complete after 2.19 mins.
+17.592% complete after 2.24 mins.
+18.032% complete after 2.30 mins.
+18.472% complete after 2.36 mins.
+18.912% complete after 2.41 mins.
+19.351% complete after 2.47 mins.
+19.791% complete after 2.53 mins.
+20.231% complete after 2.58 mins.
+20.671% complete after 2.64 mins.
+21.111% complete after 2.69 mins.
+21.550% complete after 2.75 mins.
+21.990% complete after 2.81 mins.
+22.430% complete after 2.86 mins.
+22.870% complete after 2.92 mins.
+23.310% complete after 2.97 mins.
+23.749% complete after 3.03 mins.
+24.189% complete after 3.08 mins.
+24.629% complete after 3.14 mins.
+25.069% complete after 3.20 mins.
+25.509% complete after 3.25 mins.
+25.948% complete after 3.31 mins.
+26.388% complete after 3.36 mins.
+26.828% complete after 3.42 mins.
+27.268% complete after 3.47 mins.
+27.708% complete after 3.53 mins.
+28.147% complete after 3.59 mins.
+28.587% complete after 3.65 mins.
+29.027% complete after 3.70 mins.
+29.467% complete after 3.76 mins.
+29.907% complete after 3.81 mins.
+30.346% complete after 3.87 mins.
+30.786% complete after 3.93 mins.
+31.226% complete after 3.98 mins.
+31.666% complete after 4.04 mins.
+32.106% complete after 4.09 mins.
+32.545% complete after 4.15 mins.
+32.985% complete after 4.20 mins.
+33.425% complete after 4.26 mins.
+33.865% complete after 4.31 mins.
+34.305% complete after 4.37 mins.
+34.745% complete after 4.43 mins.
+35.184% complete after 4.48 mins.
+35.624% complete after 4.54 mins.
+36.064% complete after 4.60 mins.
+36.504% complete after 4.65 mins.
+36.944% complete after 4.71 mins.
+37.383% complete after 4.76 mins.
+37.823% complete after 4.82 mins.
+38.263% complete after 4.87 mins.
+38.703% complete after 4.93 mins.
+39.143% complete after 4.99 mins.
+39.582% complete after 5.05 mins.
+40.022% complete after 5.11 mins.
+40.462% complete after 5.16 mins.
+40.902% complete after 5.22 mins.
+41.342% complete after 5.28 mins.
+41.781% complete after 5.33 mins.
+42.221% complete after 5.39 mins.
+42.661% complete after 5.44 mins.
+43.101% complete after 5.50 mins.
+43.541% complete after 5.56 mins.
+43.980% complete after 5.61 mins.
+44.420% complete after 5.67 mins.
+44.860% complete after 5.72 mins.
+45.300% complete after 5.78 mins.
+45.740% complete after 5.84 mins.
+46.179% complete after 5.90 mins.
+46.619% complete after 5.95 mins.
+47.059% complete after 6.01 mins.
+47.499% complete after 6.07 mins.
+47.939% complete after 6.12 mins.
+48.378% complete after 6.18 mins.
+48.818% complete after 6.23 mins.
+49.258% complete after 6.29 mins.
+49.698% complete after 6.35 mins.
+50.138% complete after 6.40 mins.
+50.577% complete after 6.46 mins.
+51.017% complete after 6.51 mins.
+51.457% complete after 6.57 mins.
+51.897% complete after 6.63 mins.
+52.337% complete after 6.68 mins.
+52.776% complete after 6.74 mins.
+53.216% complete after 6.80 mins.
+53.656% complete after 6.85 mins.
+54.096% complete after 6.91 mins.
+54.536% complete after 6.97 mins.
+54.976% complete after 7.02 mins.
+55.415% complete after 7.08 mins.
+55.855% complete after 7.13 mins.
+56.295% complete after 7.19 mins.
+56.735% complete after 7.25 mins.
+57.175% complete after 7.30 mins.
+57.614% complete after 7.36 mins.
+58.054% complete after 7.42 mins.
+58.494% complete after 7.47 mins.
+58.934% complete after 7.53 mins.
+59.374% complete after 7.59 mins.
+59.813% complete after 7.64 mins.
+60.253% complete after 7.70 mins.
+60.693% complete after 7.76 mins.
+61.133% complete after 7.81 mins.
+61.573% complete after 7.87 mins.
+62.012% complete after 7.92 mins.
+62.452% complete after 7.98 mins.
+62.892% complete after 8.04 mins.
+63.332% complete after 8.09 mins.
+63.772% complete after 8.15 mins.
+64.211% complete after 8.21 mins.
+64.651% complete after 8.26 mins.
+65.091% complete after 8.32 mins.
+65.531% complete after 8.38 mins.
+65.971% complete after 8.43 mins.
+66.410% complete after 8.49 mins.
+66.850% complete after 8.54 mins.
+67.290% complete after 8.60 mins.
+67.730% complete after 8.66 mins.
+68.170% complete after 8.71 mins.
+68.609% complete after 8.77 mins.
+69.049% complete after 8.82 mins.
+69.489% complete after 8.88 mins.
+69.929% complete after 8.93 mins.
+70.369% complete after 8.99 mins.
+70.808% complete after 9.05 mins.
+71.248% complete after 9.10 mins.
+71.688% complete after 9.16 mins.
+72.128% complete after 9.21 mins.
+72.568% complete after 9.27 mins.
+73.007% complete after 9.33 mins.
+73.447% complete after 9.38 mins.
+73.887% complete after 9.44 mins.
+74.327% complete after 9.50 mins.
+74.767% complete after 9.55 mins.
+75.206% complete after 9.61 mins.
+75.646% complete after 9.66 mins.
+76.086% complete after 9.72 mins.
+76.526% complete after 9.78 mins.
+76.966% complete after 9.84 mins.
+77.406% complete after 9.89 mins.
+77.845% complete after 9.94 mins.
+78.285% complete after 10.00 mins.
+78.725% complete after 10.06 mins.
+79.165% complete after 10.11 mins.
+79.605% complete after 10.17 mins.
+80.044% complete after 10.23 mins.
+80.484% complete after 10.28 mins.
+80.924% complete after 10.34 mins.
+81.364% complete after 10.40 mins.
+81.804% complete after 10.45 mins.
+82.243% complete after 10.51 mins.
+82.683% complete after 10.57 mins.
+83.123% complete after 10.62 mins.
+83.563% complete after 10.68 mins.
+84.003% complete after 10.74 mins.
+84.442% complete after 10.79 mins.
+84.882% complete after 10.85 mins.
+85.322% complete after 10.91 mins.
+85.762% complete after 10.96 mins.
+86.202% complete after 11.02 mins.
+86.641% complete after 11.08 mins.
+87.081% complete after 11.13 mins.
+87.521% complete after 11.19 mins.
+87.961% complete after 11.24 mins.
+88.401% complete after 11.30 mins.
+88.840% complete after 11.36 mins.
+89.280% complete after 11.42 mins.
+89.720% complete after 11.47 mins.
+90.160% complete after 11.53 mins.
+90.600% complete after 11.58 mins.
+91.039% complete after 11.64 mins.
+91.479% complete after 11.70 mins.
+91.919% complete after 11.75 mins.
+92.359% complete after 11.81 mins.
+92.799% complete after 11.86 mins.
+93.238% complete after 11.92 mins.
+93.678% complete after 11.98 mins.
+94.118% complete after 12.03 mins.
+94.558% complete after 12.09 mins.
+94.998% complete after 12.15 mins.
+95.437% complete after 12.20 mins.
+95.877% complete after 12.26 mins.
+96.317% complete after 12.31 mins.
+96.757% complete after 12.37 mins.
+97.197% complete after 12.43 mins.
+97.636% complete after 12.48 mins.
+98.076% complete after 12.54 mins.
+98.516% complete after 12.60 mins.
+98.956% complete after 12.65 mins.
+99.396% complete after 12.71 mins.
+99.836% complete after 12.76 mins.
+CATAID       OBJID             RA      ...    Z_THETA_QALL      Z_THETA_QCOLOR  
+                              deg      ...                                      
+------ ------------------ ------------ ... ------------------ ------------------
+209748 587725074990104938 134.80169161 ...  38.80457201120052  38.83281580623779
+537129 588848898840789129 184.21539209 ...  36.79619935366227 36.808364557352796
+382081 587727944027472289 135.23306993 ...  39.50580443953617  39.24528345977409
+561801 588848899377922344 184.87290284 ...   39.6678349582135  39.70850746907585
+227206 587726014009442667 212.57882544 ...  39.90803077564431  39.95180408404065
+363681 587726033340137638 220.75196667 ...  38.05772779612202  38.07856129585166
+209284 587725074989187472 132.63681292 ... 39.083260007789946  38.84125403373561
+125782 587724649259532757 185.68473966 ...  36.66966866480431  36.59161817806086
+301084 587726032227533257 131.94779532 ...  38.97690365308175 38.759956201847885
+609191 588848900446945574 174.12463152 ... 39.272414879110045  39.03481342008371
+   ...                ...          ... ...                ...                ...
+ 55733 587722982815236346 183.25000321 ...  37.85797226278877 37.723997278500555
+342472 587726032801104215 215.89801885 ...  37.73769766930872  37.61051918659741
+262094 587726015622283506 217.64833392 ... 38.406751561504905 38.430838871342246
+493345 587729778520621500 220.43701801 ... 38.578661700536124  38.60451701079737
+642118 587725084111667592 140.86961231 ...  36.86241493515926  36.87492013864475
+239656 587726014548934790 218.53762784 ...  38.34949797472922  38.37293417087761
+417992 587728879257912032 134.45054766 ...  39.72232546333452  39.43442297402998
+583923 588848899911516239 177.36780566 ...   38.8690244643277  38.66671649499596
+144007 587724650867064939 178.73870765 ... 38.421075173047434 38.445368185964476
+178118 587725041165271332 179.14071172 ...  37.27053811305004  37.16830312364536
 Length = 113687 rows
 Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_kE.fits.

@@ -152,6 +152,9 @@ if __name__ == '__main__':
             
             result['d{}_REFSCHECHTER'.format(idx)] = sc 
 
+            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = scale
+            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = d8
+
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
             
             result.write(ddp_opath.replace('vmax', 'lumfn'), format='fits', overwrite=True)

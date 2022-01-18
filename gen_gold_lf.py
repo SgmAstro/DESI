@@ -82,9 +82,11 @@ if __name__ == '__main__':
     field = args.field
     dryrun = args.dryrun
     density_split = args.density_split
-
+    
     print(field, dryrun, density_split)
 
+    user = os.environ['USER']
+    
     if not density_split:
         print('Generating Gold reference LF.')
         
@@ -93,7 +95,8 @@ if __name__ == '__main__':
         print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
     
         fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
-
+        #fpath = '/cosma/home/durham/{}/data/GAMA4/gama_gold_zmax.fits'.format(user)
+        
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
@@ -109,7 +112,8 @@ if __name__ == '__main__':
         field = field.upper()
         
         rpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_{}_0.fits'.format(field)
-
+        #rpath = '/cosma/home/durham/{}/data/GAMA4/randoms/gama_gold_zmax.fits'.format(user)
+        
         if dryrun:
             rpath = rpath.replace('.fits', '_dryrun.fits')
 
@@ -144,7 +148,15 @@ if __name__ == '__main__':
 
             result.pprint()
 
-            scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            rand_G9 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G9_0.fits')
+            rand_G12 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G12_0.fits')
+            rand_G15 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G15_0.fits')
+            
+            scale_G9 = rand_G9.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            scale_G12 = rand_G12.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            scale_G15 = rand_G15.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+
+            scale = np.mean([scale_G9, scale_G12, scale_G15])
             d8    = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)] 
                         
             print('Found d8 renormalisation scale of {:.3f}'.format(scale))

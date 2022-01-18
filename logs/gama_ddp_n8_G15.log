@@ -1,5 +1,5 @@
 Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp.fits
-Reading: /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G12_0.fits
+Reading: /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G15_0.fits
 Creating big rand. tree.
 Querying tree for closest rand.
 Building tree for DDP 1
@@ -136,19 +136,19 @@ Delta8 spans -1.0000 to 39.9747 over [0 1 2 3] tiers.
 
 ---- d0 ----
 Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_n8_d0_0.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G12_ddp_n8_d0_0.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_0.fits.
 
 ---- d1 ----
 Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_n8_d0_1.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G12_ddp_n8_d0_1.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_1.fits.
 
 ---- d2 ----
 Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_n8_d0_2.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G12_ddp_n8_d0_2.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_2.fits.
 
 ---- d3 ----
 Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_n8_d0_3.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G12_ddp_n8_d0_3.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3.fits.
 
 
 Done.

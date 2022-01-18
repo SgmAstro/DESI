@@ -1,4 +1,5 @@
 import os
+import time
 import numpy as np
 import argparse
 
@@ -12,14 +13,16 @@ parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
-field = args.field.upper()
+args   = parser.parse_args()
+field  = args.field.upper()
 dryrun = args.dryrun
 
 np.random.seed(314)
 
+start = time.time()
+
 realz = 0
-Area = 60. 
+Area  = 60. 
 
 dz   = 1.e-4
 
@@ -121,3 +124,5 @@ print(randoms.meta)
 print('Writing {}.'.format(opath))
 
 randoms.write(opath, format='fits', overwrite=True)
+
+print('Finished in {} mins.'.format((time.time() - start) / 60.))

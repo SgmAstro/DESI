@@ -1,4 +1,5 @@
 import os
+import time
 import fitsio
 import numpy as np
 import astropy.io.fits as fits
@@ -15,15 +16,17 @@ parser = argparse.ArgumentParser(description='Calculate fill factor using random
 parser.add_argument('-f', '--field', type=str, help='Sselect equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
+args   = parser.parse_args()
 
-field = args.field.upper()
+field  = args.field.upper()
 dryrun = args.dryrun
 
 nproc = 16
 realz = 0
 
 fpath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
+
+start = time.time()
 
 print('Reading rand.')
 
@@ -73,8 +76,8 @@ flat_result = []
 for rr in result:
     flat_result += rr
 
-rand['N8'] = np.array(flat_result).astype(np.int32)
-rand['FILLFACTOR']  = rand['N8'] / rand.meta['NRAND8']
+rand['RAND_N8'] = np.array(flat_result).astype(np.int32)
+rand['FILLFACTOR']  = rand['RAND_N8'] / rand.meta['NRAND8']
 
 rand.meta['RSPHERE'] = 8.
 
@@ -86,3 +89,5 @@ opath = fpath.replace('randoms_{}'.format(field), 'randoms_N8_{}'.format(field))
 print('Writing {}.'.format(opath))
 
 rand.write(opath, format='fits', overwrite=True)
+
+print('Finished in {} mins.'.format((time.time() - start) / 60.))

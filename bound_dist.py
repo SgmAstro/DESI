@@ -1,4 +1,5 @@
 import os
+import time
 import fitsio
 import numpy as np
 import astropy.io.fits as fits
@@ -18,12 +19,14 @@ parser = argparse.ArgumentParser(description='Find boundary distance for all ran
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
-args = parser.parse_args()
+args   = parser.parse_args()
 
-field = args.field.upper()
+field  = args.field.upper()
 dryrun = args.dryrun
 
 np.random.seed(314)
+
+start = time.time()
 
 nproc = 12
 realz = 0
@@ -108,3 +111,5 @@ opath = fpath.replace('randoms_N8', 'randoms_bd')
 print('Writing {}.'.format(opath))
 
 rand.write(opath, format='fits', overwrite=True)
+
+print('Finished in {} mins.'.format((time.time() - start) / 60.))

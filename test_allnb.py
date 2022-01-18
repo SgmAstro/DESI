@@ -4,9 +4,9 @@ import papermill as pm
 def test_allnbs():
     print('Running all tests.')
     
-    # run_randomqa()
+    run_randomqa()
 
-    run_delta8qa()
+    # run_delta8qa()
     
     print('Done.')
     

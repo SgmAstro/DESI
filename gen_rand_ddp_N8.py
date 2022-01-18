@@ -1,4 +1,5 @@
 import os
+import time
 import fitsio
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,6 +18,8 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 args   = parser.parse_args()
 field  = args.field.upper()
 dryrun = args.dryrun
+
+start  = time.time()
 
 realz  = 0
 
@@ -91,3 +94,5 @@ opath = fpath.replace('bd', 'bd_ddp_n8')
 print('Writing {}'.format(opath))
 
 rand.write(opath, format='fits', overwrite=True)
+
+print('Finished in {} mins.'.format((time.time() - start) / 60.))

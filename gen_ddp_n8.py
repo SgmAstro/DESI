@@ -114,7 +114,7 @@ if -99 in utiers:
     utiers.remove(-99)
     utiers = np.array(utiers)
 
-dat.meta['D8_LIMITS'] = d8_limits
+dat.meta['D8_LIMITS'] = str(d8_limits)
 
 if not np.all(utiers == np.arange(4)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))

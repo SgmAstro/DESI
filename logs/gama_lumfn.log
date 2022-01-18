@@ -4,7 +4,7 @@ IGNORING FIELD ARG., GENERATING ALL OF G9-G15
 Found fields: [b'G12' b'G15' b'G9']
 Found redshift limits: 0.039 < z < 0.263
 Retrieved area 180.0 [sq. deg.]
-WARNING:  Found 0.070% with zmax < 0.0
-Writing /global/cscratch1/sd/mjwilson/norberg/GAMA4//gama_gold_vmax.fits.
-Writing /global/cscratch1/sd/mjwilson/norberg/GAMA4//gama_gold_lumfn.fits.
+WARNING:  Found 0.075% with zmax < 0.0
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_vmax.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_lumfn.fits.
 Done.

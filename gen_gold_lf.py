@@ -42,8 +42,6 @@ def process_cat(fpath, vmax_opath, field=None):
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
         
     print('Retrieved area {} [sq. deg.]'.format(Area))
-
-    VV = volcom(zmax, Area) - volcom(zmin, Area)
     
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
 
@@ -51,9 +49,6 @@ def process_cat(fpath, vmax_opath, field=None):
     
     # TODO: Why do we need this?                                                                                                   
     gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]
-
-    gama_vmax.meta = gama_zmax.meta
-    gama_vmax.meta.update({'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'VOLUME': VV})
     
     print('Writing {}.'.format(opath))
 
@@ -147,16 +142,11 @@ if __name__ == '__main__':
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
             result.pprint()
-
-            rand_G9 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G9_0.fits')
-            rand_G12 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G12_0.fits')
-            rand_G15 = Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G15_0.fits')
             
-            scale_G9 = rand_G9.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            scale_G12 = rand_G12.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            scale_G15 = rand_G15.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(field)) for field in [9, 12, 15]]
 
-            scale = np.mean([scale_G9, scale_G12, scale_G15])
+            scale = np.array([x.meta['KEYWORD'] for x in rands]).mean()
+
             d8    = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)] 
                         
             print('Found d8 renormalisation scale of {:.3f}'.format(scale))

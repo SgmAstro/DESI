@@ -9,8 +9,11 @@ def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
 
     cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
 
+    VV = volcom(zmax, area) - volcom(zmin, area)
+    
     result      = Table(dat[cols], copy=True)
     result.meta = dat.meta
+    result.meta.update({'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'VOLUME': VV})
 
     result      = result[result[zcol] >= zmin]
     result      = result[result[zcol] <= zmax]
@@ -25,4 +28,5 @@ def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
     result['VZ']    = volcom(result[zcol], area)
     result['VZ']   -= volcom(result['ZMIN'], area)
     
+        
     return  result

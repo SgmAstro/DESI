@@ -36,14 +36,12 @@ def process_cat(fpath, vmax_opath, field=None):
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
 
-    Area = gama_zmax.meta['AREA']
-
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
         
     print('Retrieved area {} [sq. deg.]'.format(Area))
     
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
+    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'])
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
@@ -58,8 +56,6 @@ def process_cat(fpath, vmax_opath, field=None):
     opath = opath.replace('vmax', 'lumfn')
     
     result = lumfn(gama_vmax, VV)
-
-    result.meta = gama_vmax.meta
 
     print('Writing {}.'.format(opath))
     

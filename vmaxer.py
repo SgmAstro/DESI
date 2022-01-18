@@ -3,12 +3,13 @@ import numpy as np
 from   astropy.table import Table
 from   cosmo import volcom
 
-def vmaxer(dat, zmin, zmax, area, zcol='ZGAMA', extra_cols=[]):
+def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[]):
     assert dat[zcol].min() <= zmin
     assert dat[zcol].max() >= zmax
 
     cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
 
+    area = dat.meta['AREA']
     VV = volcom(zmax, area) - volcom(zmin, area)
     
     result      = Table(dat[cols], copy=True)

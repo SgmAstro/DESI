@@ -36,24 +36,15 @@ def process_cat(fpath, vmax_opath, field=None):
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
 
-    Area = gama_zmax.meta['AREA']
-
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
-        
-    print('Retrieved area {} [sq. deg.]'.format(Area))
-
-    VV = volcom(zmax, Area) - volcom(zmin, Area)
     
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, Area, extra_cols=['MCOLOR_0P0'])
+    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'])
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
     # TODO: Why do we need this?                                                                                                   
     gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]
-
-    gama_vmax.meta = gama_zmax.meta
-    gama_vmax.meta.update({'FORCE_ZMIN': zmin, 'FORCE_ZMAX': zmax, 'VOLUME': VV})
     
     print('Writing {}.'.format(opath))
 
@@ -63,8 +54,6 @@ def process_cat(fpath, vmax_opath, field=None):
     opath = opath.replace('vmax', 'lumfn')
     
     result = lumfn(gama_vmax, VV)
-
-    result.meta = gama_vmax.meta
 
     print('Writing {}.'.format(opath))
     
@@ -82,9 +71,11 @@ if __name__ == '__main__':
     field = args.field
     dryrun = args.dryrun
     density_split = args.density_split
-
+    
     print(field, dryrun, density_split)
 
+    user = os.environ['USER']
+    
     if not density_split:
         print('Generating Gold reference LF.')
         
@@ -93,7 +84,7 @@ if __name__ == '__main__':
         print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
     
         fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
-
+        
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
@@ -109,7 +100,7 @@ if __name__ == '__main__':
         field = field.upper()
         
         rpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_{}_0.fits'.format(field)
-
+        
         if dryrun:
             rpath = rpath.replace('.fits', '_dryrun.fits')
 
@@ -143,11 +134,14 @@ if __name__ == '__main__':
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
             result.pprint()
+            
+            rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(field)) for field in [9, 12, 15]]
 
-            scale = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            d8    = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)] 
-                        
-            print('Found d8 renormalisation scale of {:.3f}'.format(scale))
+            scale = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in rands]).mean()
+            d8    = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in rands]).mean()
+
+            print('Found vol renormalisation scale of {:.3f}'.format(scale))
+            print('Found d8 renormalisation scale of {:.3f}'.format(d8))
             
             result = renormalise_d8LF(result, 1. / scale)
 

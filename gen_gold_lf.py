@@ -90,7 +90,6 @@ if __name__ == '__main__':
         print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
     
         fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
-        #fpath = '/cosma/home/durham/{}/data/GAMA4/gama_gold_zmax.fits'.format(user)
         
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
@@ -107,7 +106,6 @@ if __name__ == '__main__':
         field = field.upper()
         
         rpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_{}_0.fits'.format(field)
-        #rpath = '/cosma/home/durham/{}/data/GAMA4/randoms/gama_gold_zmax.fits'.format(user)
         
         if dryrun:
             rpath = rpath.replace('.fits', '_dryrun.fits')

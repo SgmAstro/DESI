@@ -4,15 +4,17 @@ from   astropy.table import Table
 from   cosmo import volcom
 
 
-def lumfn(dat, vol, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     idxs   = np.digitize(dat[Mcol], bins=Ms)
     result = []
 
-    ds = np.diff(Ms)
-    dM = ds[0]
+    ds     = np.diff(Ms)
+    dM     = ds[0]
 
     assert np.all(ds == dM)
     
+    vol    = dat.meta['VOLUME']
+
     for idx in np.arange(len(Ms) - 1):
         sample  = dat[idxs == idx]
         nsample = len(sample)
@@ -35,7 +37,7 @@ def lumfn(dat, vol, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
 
-    result.meta['MS'] = Ms.tolist()
+    result.meta['MS'] = str(Ms.tolist())
     result.meta['VOLUME'] = vol
 
     return  result 

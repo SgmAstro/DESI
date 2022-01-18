@@ -53,7 +53,7 @@ def process_cat(fpath, vmax_opath, field=None):
     ##  Luminosity fn.
     opath = opath.replace('vmax', 'lumfn')
     
-    result = lumfn(gama_vmax, VV)
+    result = lumfn(gama_vmax)
 
     print('Writing {}.'.format(opath))
     

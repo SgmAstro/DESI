@@ -38,8 +38,6 @@ def process_cat(fpath, vmax_opath, field=None):
 
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
-        
-    print('Retrieved area {} [sq. deg.]'.format(Area))
     
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'])
 
@@ -139,11 +137,11 @@ if __name__ == '__main__':
             
             rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(field)) for field in [9, 12, 15]]
 
-            scale = np.array([x.meta['KEYWORD'] for x in rands]).mean()
+            scale = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in rands]).mean()
+            d8    = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in rands]).mean()
 
-            d8    = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)] 
-                        
-            print('Found d8 renormalisation scale of {:.3f}'.format(scale))
+            print('Found vol renormalisation scale of {:.3f}'.format(scale))
+            print('Found d8 renormalisation scale of {:.3f}'.format(d8))
             
             result = renormalise_d8LF(result, 1. / scale)
 

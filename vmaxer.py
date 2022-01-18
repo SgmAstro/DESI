@@ -19,7 +19,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[]):
     result.meta = dat.meta
     result.meta.update({'FORCE_ZMIN': zmin,\
                         'FORCE_ZMAX': zmax,\
-                        'VOLUME': VV})
+                        'VOLUME':     VV})
 
     result      = result[result[zcol] >= zmin]
     result      = result[result[zcol] <= zmax]

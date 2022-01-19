@@ -3,6 +3,7 @@ import sys
 import argparse
 import pylab as pl
 import numpy as np
+import astropy.io.fits as fits
 import matplotlib.pyplot as plt
 
 from   astropy.table import Table
@@ -152,17 +153,23 @@ if __name__ == '__main__':
             result = renormalise_d8LF(result, 1. / scale)
 
             result.pprint()
-            
-            sc   = named_schechter(result['MEDIAN_M'], named_type='TMR')
-            sc  *= (1. + d8) / (1. + 0.007)
-            
-            result['d{}_REFSCHECHTER'.format(idx)] = sc 
 
-            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = scale
-            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = d8
+            # 
+            sch_Ms = np.arange(-23. -16., 1.e-3)
+
+            sch    = named_schechter(sch_Ms, named_type='TMR')
+            sch   *= (1. + d8) / (1. + 0.007)
+
+            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
+            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = scale
+            ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = d8
 
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
-            
+
+            primary_hdu    = fits.PrimaryHDU()
+            result_hdu     = fits.ImageHDU(result)
+            ref_result_hdu = fits.ImageHDU(ref_result)
+
             result.write(ddp_opath.replace('vmax', 'lumfn'), format='fits', overwrite=True)
 
     print('Done.')

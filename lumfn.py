@@ -5,17 +5,18 @@ from   cosmo import volcom
 
 
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
-    vol      = dat.meta['VOLUME']
+    dat      = Table(dat, copy=True)
 
     if 'IN_SAMPLE' in dat.dtype.names:
-        # FILLFACTOR > 0.8 cut   
-        dat      = Table(dat, copy=True)
+        # e.g. FILLFACTOR > 0.8 cut   
         dat      = dat[dat['IN_SAMPLE'] > 0]
-
         vol_frac = dat.meta['IN_SAMPLE_VOLFRAC']
 
     else:
         vol_frac = 1.
+
+    vol    = dat.meta['VOLUME']
+    vol   *= vol_frac
 
     idxs   = np.digitize(dat[Mcol], bins=Ms)
     result = []
@@ -23,9 +24,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     ds     = np.diff(Ms)
     dM     = ds[0]
 
-    assert np.all(ds == dM)
-
-    vol   *= vol_frac
+    assert  np.all(ds == dM)
     
     for idx in np.arange(len(Ms) - 1):
         sample  = dat[idxs == idx]
@@ -52,7 +51,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
 
-    result.meta['MS'] = str(Ms.tolist())
+    result.meta['MS']     = str(Ms.tolist())
     result.meta['VOLUME'] = vol
 
     return  result 

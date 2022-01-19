@@ -15,16 +15,18 @@ import argparse
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
 parser.add_argument('-f', '--field', type=str, help='Sselect equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
 args   = parser.parse_args()
 
 field  = args.field.upper()
 dryrun = args.dryrun
+prefix = args.prefix
 
 nproc = 16
 realz = 0
 
-fpath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
+fpath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 
 start = time.time()
 
@@ -79,12 +81,14 @@ for rr in result:
 rand['RAND_N8'] = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']  = rand['RAND_N8'] / rand.meta['NRAND8']
 
+# TODO:  DDP1_FILLFACTOR.
+
 rand.meta['RSPHERE'] = 8.
 
 # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
 rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
 
-opath = fpath.replace('randoms_{}'.format(field), 'randoms_N8_{}'.format(field))
+opath = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
 
 print('Writing {}.'.format(opath))
 

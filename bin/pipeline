@@ -52,7 +52,7 @@ echo $RAND_G15_JOBID
 echo '-----'
 
 # Requires ddp cat, & randoms; no reset required.  
-RAND_D8_G9_JOBID=$(sbatch --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID  rand_d8_pipeline)
+RAND_D8_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID  rand_d8_pipeline)
 RAND_D8_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID rand_d8_pipeline)
 RAND_D8_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID rand_d8_pipeline)
 

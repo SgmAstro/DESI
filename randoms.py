@@ -11,36 +11,41 @@ from   cartesian import cartesian
 from   gama_limits import gama_field
 
 
-parser = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
-parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
-
-args   = parser.parse_args()
-field  = args.field.upper()
-dryrun = args.dryrun
-
 np.random.seed(314)
 
-start = time.time()
+parser  = argparse.ArgumentParser(description='Select GAMA field.')
+parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
-realz = 0
-Area  = 60. 
+# Defaults to GAMA Gold limits. 
+parser.add_argument('--zmin', help='Minimum redshift limit', default=0.039)
+parser.add_argument('--zmax', help='Maximum redshift limit', default=0.263)
 
-dz   = 1.e-4
+args    = parser.parse_args()
+field   = args.field.upper()
+dryrun  = args.dryrun
+zmin    = args.zmin
+zmax    = args.zmax
+prefix  = args.prefix 
 
-zmin = 0.0
-zmax = 0.3
+start   = time.time()
 
-Vmin = volcom(zmin, Area) 
-Vmax = volcom(zmax, Area)
+realz   = 0
+Area    = 60. 
+
+dz      = 1.e-4
+
+Vmin    = volcom(zmin, Area) 
+Vmax    = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
-vol  = Vmax - Vmin
+vol     = Vmax - Vmin
 rand_density = 5.e-1
 
 nrand = np.int64(np.ceil(vol * rand_density))
 
-opath = os.environ['RANDOMS_DIR'] + '/randoms_{}_{:d}.fits'.format(field, realz)
+opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 
 if not os.path.isdir(os.environ['RANDOMS_DIR']):
     print('Creating {}'.format(os.environ['RANDOMS_DIR']))

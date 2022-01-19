@@ -42,7 +42,7 @@ cd $CODE_ROOT
 
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
-python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
+# python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
 
 # echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 

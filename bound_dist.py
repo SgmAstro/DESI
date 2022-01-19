@@ -15,23 +15,25 @@ import argparse
 Script to calculate the maximimum distance [Mpc/h] of each random from the boundary. 
 '''
 
+np.random.seed(314)
+
 parser = argparse.ArgumentParser(description='Find boundary distance for all randoms in a specified field..')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
 args   = parser.parse_args()
 
 field  = args.field.upper()
 dryrun = args.dryrun
-
-np.random.seed(314)
+prefix = args.prefix
 
 start = time.time()
 
 nproc = 12
 realz = 0
 
-fpath = os.environ['RANDOMS_DIR'] + '/randoms_N8_{}_{:d}.fits'.format(field, realz)
+fpath = os.environ['RANDOMS_DIR'] + '/{}_N8_{}_{:d}.fits'.format(prefix, field, realz)
 
 if dryrun:
     fpath= fpath.replace('.fits', '_dryrun.fits')
@@ -106,7 +108,7 @@ rand = rand[idx]
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
-opath = fpath.replace('randoms_N8', 'randoms_bd')
+opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
 
 print('Writing {}.'.format(opath))
 

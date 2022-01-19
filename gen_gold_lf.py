@@ -24,9 +24,10 @@ def process_cat(fpath, vmax_opath, field=None, rand=None):
     gama_zmax = Table.read(fpath)
 
     if 'FIELD' not in gama_zmax.dtype.names:
-        print('WARNING:  Missing FIELD keyword, adding it.')
-        
-        gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
+        # print('WARNING:  Missing FIELD keyword, adding it.')
+        # gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
+
+        raise RuntimeError('FIELD MISSING FROM DTYPES.')
         
     found_fields = np.unique(gama_zmax['FIELD'].data)
         
@@ -52,8 +53,7 @@ def process_cat(fpath, vmax_opath, field=None, rand=None):
     gama_vmax.write(opath, format='fits', overwrite=True)
     
     ##  Luminosity fn.
-    opath = opath.replace('vmax', 'lumfn')
-    
+    opath  = opath.replace('vmax', 'lumfn')
     result = lumfn(gama_vmax)
 
     print('Writing {}.'.format(opath))
@@ -66,16 +66,16 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=False, default=None)
     parser.add_argument('-d', '--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
-    
-    args = parser.parse_args()
+    parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
-    field = args.field
+    args   = parser.parse_args()
+
+    field  = args.field
     dryrun = args.dryrun
     density_split = args.density_split
+    prefix = args.prefix
     
     print(field, dryrun, density_split)
-
-    user = os.environ['USER']
     
     if not density_split:
         print('Generating Gold reference LF.')
@@ -83,15 +83,18 @@ if __name__ == '__main__':
         field = ''
         
         print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
-    
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
+
+        # Bounded by gama gold, reference schechter limits:  
+        # 0.039 < z < 0.263.
+        # Note: not split by field. 
+        fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp_n8.fits'
         
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
-        opath = fpath.replace('zmax', 'vmax')
+        opath = fpath.replace('ddp_n8', 'vmax')
         
-        process_cat(fpath, opath, rand=None)
+        process_cat(fpath, opath)
 
     else:
         print('Generating Gold density-split LF.')
@@ -99,8 +102,8 @@ if __name__ == '__main__':
         assert field != None
 
         field = field.upper()
-        
-        rpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_{}_0.fits'.format(field)
+
+        rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
         
         if dryrun:
             rpath = rpath.replace('.fits', '_dryrun.fits')
@@ -116,7 +119,7 @@ if __name__ == '__main__':
         else:
             utiers = np.arange(4)
 
-        all_rpaths = [os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(ff) for ff in [9, 12, 15]]
+        all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
         if dryrun:
             all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
@@ -125,6 +128,8 @@ if __name__ == '__main__':
 
         for idx in utiers:
             ddp_idx   = idx + 1
+
+            # Bounded by DDP1 z limits. 
             ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
             ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
             
@@ -142,7 +147,8 @@ if __name__ == '__main__':
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
             result.pprint()
-            
+
+            # Calculated for DDP1 redshift limits. 
             scale  = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])
             d8     = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in all_rands])
 
@@ -160,7 +166,7 @@ if __name__ == '__main__':
             result.pprint()
 
             # 
-            sch_Ms = np.arange(-23. -16., 1.e-3)
+            sch_Ms = np.arange(-23., -15., 1.e-3)
 
             sch    = named_schechter(sch_Ms, named_type='TMR')
             sch   *= (1. + d8) / (1. + 0.007)

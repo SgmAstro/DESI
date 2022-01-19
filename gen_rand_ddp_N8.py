@@ -14,10 +14,12 @@ from delta8_limits import d8_limits, delta8_tier
 parser = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
 args   = parser.parse_args()
 field  = args.field.upper()
 dryrun = args.dryrun
+prefix = args.prefix
 
 start  = time.time()
 
@@ -28,9 +30,9 @@ fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
-dat = Table.read(fpath)
+dat   = Table.read(fpath)
 
-fpath = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
+fpath = os.environ['RANDOMS_DIR'] + '/{}_bd_{}_{:d}.fits'.format(prefix, field, realz)
 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
@@ -62,6 +64,11 @@ for idx in range(3):
                                                                                                                                                                                         
 rand.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
+ddp1_zmin = dat.meta['DDP1_ZMIN']
+ddp1_zmax = dat.meta['DDP1_ZMAX']
+
+rand['IN_DDP1']     = (rand['Z'] > ddp1_zmin) & (rand['Z'] < ddp1_zmax)
+
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
@@ -70,17 +77,13 @@ rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 
 rand.meta['D8_LIMITS'] = str(d8_limits)
 
-utiers = np.unique(rand['DDP1_DELTA8_TIER'].data)
-
-ddp1_zmin = dat.meta['DDP1_ZMIN']
-ddp1_zmax = dat.meta['DDP1_ZMAX']
+utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
 
 print('Unique tiers: {}'.format(utiers))
-
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 for ut in utiers:    
-    ddp1_rand = rand[(rand['Z'] > ddp1_zmin) & (rand['Z'] < ddp1_zmax)]    
+    ddp1_rand = rand[rand['IN_DDP1']]
     in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
         
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)

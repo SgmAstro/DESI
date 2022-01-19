@@ -13,9 +13,11 @@ from   gama_limits import gama_field
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms')
 
 args   = parser.parse_args()
 dryrun = args.dryrun
+prefix = args.rand_prefix
 
 fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
@@ -34,9 +36,10 @@ points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
 
+# ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
 realz  = 0
-rpaths = [os.environ['RANDOMS_DIR'] + '/randoms_bd_G{}_{:d}.fits'.format(ff, realz) for ff in [9, 12, 15]]
+rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_G{}_{:d}.fits'.format(prefix, ff, realz) for ff in [9, 12, 15]]
 
 if dryrun:
     rpaths = [rpath.replace('.fits', '_dryrun.fits') for rpath in rpaths]
@@ -58,8 +61,11 @@ for rpath in rpaths:
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
 
-rpoints = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
-rpoints = np.array(rpoints, copy=True)
+for i, rpath in rpaths:
+    dat.meta['RANDOMS{}_PATH'.format(i)] = rpath
+
+rpoints  = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
+rpoints  = np.array(rpoints, copy=True)
 
 print('Creating big rand. tree.')
 
@@ -83,8 +89,10 @@ for field in ['G9', 'G12', 'G15']:
     for x in ['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z']:
         print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
 
-# assert  np.all(dat['RANDSEP'].data < 20.), 'Failed to find matching random with < 5 Mpc/h separation.'
+# Typically, bounded by 1.6
+assert  np.all(dat['RANDSEP'].data < 3.), 'Failed to find matching random with < 5 Mpc/h separation.'
 
+# ----  Calculate DDPX_N8 for each gama gold galaxy.  ----
 for idx in range(3):
     # Calculate DDP1/2/3 N8 for all gold galaxies.
     ddp_idx      = idx + 1
@@ -119,7 +127,8 @@ print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
 
 dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
 
-# Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range).
+
+#  ----  Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range)  ----
 dat = dat[(dat['ZGAMA'] > dat.meta['DDP1_ZMIN']) & (dat['ZGAMA'] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
@@ -161,8 +170,7 @@ for tier in utiers:
         print('Writing {}.'.format(opath_field))
 
         # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-        to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.
-    
+        to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.    
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

@@ -167,9 +167,12 @@ if __name__ == '__main__':
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 
             primary_hdu    = fits.PrimaryHDU()
-            result_hdu     = fits.ImageHDU(result)
-            ref_result_hdu = fits.ImageHDU(ref_result)
 
-            result.write(ddp_opath.replace('vmax', 'lumfn'), format='fits', overwrite=True)
+            hdr            = fits.Header(result.meta)
+            result_hdu     = fits.BinTableHDU(result, name='VMAX', header=hdr)
+            ref_result_hdu = fits.BinTableHDU(ref_result, names='REFERENCE')
+            hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
+
+            hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
 
     print('Done.')

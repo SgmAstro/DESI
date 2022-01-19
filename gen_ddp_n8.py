@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 
-from   astropy.table import Table
+from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   cartesian import cartesian
 from   delta8_limits import delta8_tier, d8_limits
@@ -12,11 +12,9 @@ from   gama_limits import gama_field
 
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
-parser.add_argument('-f', '--field', help='GAMA field for randoms_bd file (fill factor & bound_dist retrieval).', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 
 args   = parser.parse_args()
-field  = args.field.upper()
 dryrun = args.dryrun
 
 fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
@@ -38,18 +36,26 @@ kd_tree_all  = KDTree(points)
 
 # Read randoms bound_dist.
 realz  = 0
-
-rpath  = os.environ['RANDOMS_DIR'] + '/randoms_bd_{}_{:d}.fits'.format(field, realz)
+rpaths = [os.environ['RANDOMS_DIR'] + '/randoms_bd_G{}_{:d}.fits'.format(ff, realz) for ff in [9, 12, 15]]
 
 if dryrun:
-    rpath = rpath.replace('.fits', '_dryrun.fits')
+    rpaths = [rpath.replace('.fits', '_dryrun.fits') for rpath in rpaths]
 
-print('Reading: {}'.format(rpath))
+print('Reading: {}'.format(rpaths))
 
-if not os.path.isfile(rpath):
-    raise RuntimeError('Expect random bound dist. file for field {}; Run bound_dist.py for this field'.format(field))
-    
-rand, rand_hdr = fitsio.read(rpath, header=True)
+rand = None
+
+for rpath in rpaths:
+    if not os.path.isfile(rpath):
+        raise  RuntimeError('Expect random bound dist. file for {}; Run bound_dist.py for this field'.format(rpath))
+
+    if rand == None:
+        rand = Table.read(rpath)
+
+    else:
+        rand = vstack([rand, Table.read(rpath)])
+
+print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
 
 rpoints = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
 rpoints = np.array(rpoints, copy=True)
@@ -68,6 +74,13 @@ dat['RANDSEP']    = dd
 dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
+
+for field in ['G9', 'G12', 'G15']:
+    in_field = dat['FIELD'] == field
+
+    print(field, np.median(dat['RANDSEP'][in_field]))
+
+assert  np.all(dat['RANDSEP'].data < 20.), 'Failed to find matching random with < 5 Mpc/h separation.'
 
 for idx in range(3):
     # Calculate DDP1/2/3 N8 for all gold galaxies.
@@ -134,24 +147,17 @@ for tier in utiers:
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
 
-    #  E.g. /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_gold_G9_ddp_n8_d0_0.fits                                                  
-    opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
-
-    print('Writing {}.'.format(opath))
-        
-    to_write.write(opath, format='fits', overwrite=True)
-
-    ## 
-    isin = to_write['FIELD'] == field
-    to_write_field = to_write[isin]
+    for field in ['G9', 'G12', 'G15']:    
+        isin = to_write['FIELD'] == field
+        to_write_field = to_write[isin]
     
-    opath_field = opath.replace('gold', 'gold_{}'.format(field))
+        opath_field = opath.replace('gold', 'gold_{}'.format(field))
 
-    print('Writing {}.'.format(opath_field))
+        print('Writing {}.'.format(opath_field))
 
-    # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-    to_write_field.meta['AREA'] /= 3.
+        # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
+        to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.
     
-    to_write_field.write(opath_field, format='fits', overwrite=True)
+        to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

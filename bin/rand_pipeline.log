@@ -1,0 +1,51 @@
+====
+Starting job 4785913 at Wed 19 Jan 18:58:56 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+FIELD SET TO BE G9
+RESET SET TO BE 0
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G9
+/var/slurm/slurmd/job4785913/slurm_script: line 67: logs/randoms_G9.log: No such file or directory
+/var/slurm/slurmd/job4785913/slurm_script: line 70: logs/fillfactor_G9.log: No such file or directory
+/var/slurm/slurmd/job4785913/slurm_script: line 73: logs/bound_dist_G9.log: No such file or directory
+Done.
+====
+Starting job 4785914 at Wed 19 Jan 18:59:02 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+FIELD SET TO BE G12
+RESET SET TO BE 0
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G12
+/var/slurm/slurmd/job4785914/slurm_script: line 67: logs/randoms_G12.log: No such file or directory
+/var/slurm/slurmd/job4785914/slurm_script: line 70: logs/fillfactor_G12.log: No such file or directory
+/var/slurm/slurmd/job4785914/slurm_script: line 73: logs/bound_dist_G12.log: No such file or directory
+Done.
+====
+Starting job 4785915 at Wed 19 Jan 18:59:04 GMT 2022 for user dc-wils7.
+Running on nodes: m5340
+====
+FIELD SET TO BE G15
+RESET SET TO BE 0
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G15
+/var/slurm/slurmd/job4785915/slurm_script: line 67: logs/randoms_G15.log: No such file or directory
+/var/slurm/slurmd/job4785915/slurm_script: line 70: logs/fillfactor_G15.log: No such file or directory
+/var/slurm/slurmd/job4785915/slurm_script: line 73: logs/bound_dist_G15.log: No such file or directory
+Done.

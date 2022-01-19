@@ -1,0 +1,25 @@
+====
+Starting job 4785912 at Wed 19 Jan 18:58:53 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+RESET SET TO BE 0
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running gold pipeline; logging to logs/gama_gold.log
+/var/slurm/slurmd/job4785912/slurm_script: line 59: logs/gama_gold.log: No such file or directory
+Running gen_kEcat.py; logging to logs/gama_kE.log
+/var/slurm/slurmd/job4785912/slurm_script: line 63: logs/gama_kE.log: No such file or directory
+Running gen_zmax_cat.py; logging to logs/gama_zama.log
+/var/slurm/slurmd/job4785912/slurm_script: line 68: logs/gama_zmax.log: No such file or directory
+Running ddp_limits.py; logging to logs/ddp_limits.log
+/var/slurm/slurmd/job4785912/slurm_script: line 72: logs/ddp_limits.log: No such file or directory
+Running gen_ddp_cat.py; logging to logs/gama_ddp.log
+/var/slurm/slurmd/job4785912/slurm_script: line 76: logs/gama_ddp.log: No such file or directory
+Running gen_gold_lf.py; logging to logs/gama_lumfn.log
+/var/slurm/slurmd/job4785912/slurm_script: line 81: logs/gama_lumfn.log: No such file or directory
+
+Done.

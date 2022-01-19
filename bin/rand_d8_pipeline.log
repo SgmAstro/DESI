@@ -1,0 +1,42 @@
+====
+Starting job 4785916 at Wed 19 Jan 18:59:04 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+FIELD SET TO BE G9
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G9
+/var/slurm/slurmd/job4785916/slurm_script: line 50: logs/rand_ddp_N8_G9.log: No such file or directory
+Done.
+====
+Starting job 4785917 at Wed 19 Jan 18:59:07 GMT 2022 for user dc-wils7.
+Running on nodes: m5340
+====
+FIELD SET TO BE G12
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G12
+/var/slurm/slurmd/job4785917/slurm_script: line 50: logs/rand_ddp_N8_G12.log: No such file or directory
+Done.
+====
+Starting job 4785918 at Wed 19 Jan 18:59:08 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+FIELD SET TO BE G15
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+Running randoms pipeline for field G15
+/var/slurm/slurmd/job4785918/slurm_script: line 50: logs/rand_ddp_N8_G15.log: No such file or directory
+Done.

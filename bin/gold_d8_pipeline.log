@@ -1,0 +1,16 @@
+====
+Starting job 4785919 at Wed 19 Jan 18:59:11 GMT 2022 for user dc-wils7.
+Running on nodes: m5339
+====
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
+Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
+/var/slurm/slurmd/job4785919/slurm_script: line 45: logs/gama_ddp_n8.log: No such file or directory
+/var/slurm/slurmd/job4785919/slurm_script: line 50: logs/gama_lumfn_d8_G9.log: No such file or directory
+/var/slurm/slurmd/job4785919/slurm_script: line 51: logs/gama_lumfn_d8_G12.log: No such file or directory
+/var/slurm/slurmd/job4785919/slurm_script: line 52: logs/gama_lumfn_d8_G15.log: No such file or directory
+
+Done.

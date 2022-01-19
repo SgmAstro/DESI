@@ -1,18 +1,21 @@
 import papermill as pm
 
+
+fields = ['G9', 'G12', 'G15']
+
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs():
     print('Running all tests.')
     
-    run_randomqa()
+    # run_randomqa()
 
-    # run_delta8qa()
+    run_goldqa()
+
+    run_delta8qa()
     
     print('Done.')
     
 def run_randomqa():
-    fields = ['G9', 'G12', 'G15']
-    
     for field in fields:
         print('Running random QA for field {}'.format(field))
         
@@ -22,9 +25,35 @@ def run_randomqa():
                             kernel='lumfn',\
                             )
 
-def run_delta8qa():
-    fields = ['G9', 'G12', 'G15']
+def run_goldqa():
+    print('Running gold QA')
 
+    pm.execute_notebook('docs/nb/zmax_catQA.ipynb',\
+                            'test/zmax_catQA.ipynb',\
+                            kernel='lumfn',\
+                            )
+
+    pm.execute_notebook('docs/nb/kE_catQA.ipynb',\
+                        'test/kE_catQA.ipynb',\
+                        kernel='lumfn',\
+                        )
+
+    pm.execute_notebook('docs/nb/ddp_QA.ipynb',\
+                        'test/ddp_QA.ipynb',\
+                        kernel='lumfn',\
+                        )
+
+    pm.execute_notebook('docs/nb/delta8_qa.ipynb',\
+                        'test/delta8_qa.ipynb',\
+                        kernel='lumfn',\
+                        )
+
+    # jack knife qa. 
+    # schechter fit. 
+    # d8 LF. 
+    # desi qa. 
+    
+def run_delta8qa():
     for field in fields:
         print('Running delta8 QA for field {}'.format(field))
 

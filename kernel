@@ -1,0 +1,2 @@
+python -m ipykernel install --user --name=lumfn
+Installed kernelspec lumfn in /cosma/home/durham/dc-wils7/.local/share/jupyter/kernels/lumfn

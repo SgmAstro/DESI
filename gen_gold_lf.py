@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
         opath = fpath.replace('zmax', 'vmax')
         
-        process_cat(fpath, opath)
+        process_cat(fpath, opath, rand=None)
 
     else:
         print('Generating Gold density-split LF.')
@@ -115,8 +115,13 @@ if __name__ == '__main__':
 
         else:
             utiers = np.arange(4)
+
+        all_rpaths = [os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(ff) for ff in [9, 12, 15]]
+
+        if dryrun:
+            all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
                     
-        all_rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{:d}_0.fits'.format(ff)) for ff in [9, 12, 15]]
+        all_rands = [Table.read(_x) for _x in all_rpaths]
 
         for idx in utiers:
             ddp_idx   = idx + 1
@@ -168,9 +173,16 @@ if __name__ == '__main__':
 
             primary_hdu    = fits.PrimaryHDU()
 
-            hdr            = fits.Header(result.meta)
+            keys           = sorted(result.meta.keys())
+            
+            header         = {}
+            
+            for key in keys:
+                header[key] = str(result.meta[key])
+
+            hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='VMAX', header=hdr)
-            ref_result_hdu = fits.BinTableHDU(ref_result, names='REFERENCE')
+            ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
             hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)

@@ -85,8 +85,6 @@ for field in ['G9', 'G12', 'G15']:
 
 # assert  np.all(dat['RANDSEP'].data < 20.), 'Failed to find matching random with < 5 Mpc/h separation.'
 
-exit(0)
-
 for idx in range(3):
     # Calculate DDP1/2/3 N8 for all gold galaxies.
     ddp_idx      = idx + 1
@@ -155,6 +153,8 @@ for tier in utiers:
     for field in ['G9', 'G12', 'G15']:    
         isin = to_write['FIELD'] == field
         to_write_field = to_write[isin]
+
+        opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
     
         opath_field = opath.replace('gold', 'gold_{}'.format(field))
 

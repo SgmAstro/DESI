@@ -1,264 +1,69 @@
-G15 False True
+G15 True True
 Generating Gold density-split LF.
-Read /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_ddp_n8_G15_0.fits
+Read /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_ddp_n8_G15_0_dryrun.fits
 
-Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_0.fits
+Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_dryrun.fits
 Found fields: [b'G15']
-Found redshift limits: 0.039 < z < 0.248
+Found redshift limits: 0.045 < z < 0.247
 Retrieved area 60.0000 [sq. deg.]
-Fraction of galaxies making fillfactor cut: 0.0000; fraction of volume (randoms): 0.7995
+Fraction of galaxies making fillfactor cut: 0.0000; fraction of volume (randoms): 0.0000
 WARNING:  Found 0.000% with zmax < 0.0
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_0_vmax.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_0_lumfn.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_vmax_dryrun.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_lumfn_dryrun.fits.
 PROCESS CAT FINISHED.
 MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
 -------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
      ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
 Length = 99 rows
-Field vol renormalization: [0.30077692 0.30044487 0.30077692]
-Field d8  renormalization: [-0.91549055 -0.91549055 -0.91549055]
-Found mean vol. renormalisation scale of 0.301
-Found mean  d8  renormalisation scale of -0.915
+Field vol renormalization: [0.3        0.33103448 0.27586207]
+Field d8  renormalization: [2091.85072781 2091.85072781 2091.85072781]
+Found mean vol. renormalisation scale of 0.302
+Found mean  d8  renormalisation scale of 2091.851
 MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
 -------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
      ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
+      --    --          --       0.0             0.0 0.0        --
 Length = 99 rows
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_0_lumfn.fits
-
-Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_1.fits
-Found fields: [b'G15']
-Found redshift limits: 0.039 < z < 0.248
-Retrieved area 60.0000 [sq. deg.]
-Fraction of galaxies making fillfactor cut: 0.0000; fraction of volume (randoms): 0.7995
-WARNING:  Found 0.000% with zmax < 0.0
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_1_vmax.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_1_lumfn.fits.
-PROCESS CAT FINISHED.
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Field vol renormalization: [0.15471116 0.15473999 0.15471116]
-Field d8  renormalization: [-0.22418714 -0.22418714 -0.22418714]
-Found mean vol. renormalisation scale of 0.155
-Found mean  d8  renormalisation scale of -0.224
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_1_lumfn.fits
-
-Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_2.fits
-Found fields: [b'G15']
-Found redshift limits: 0.040 < z < 0.248
-Retrieved area 60.0000 [sq. deg.]
-Fraction of galaxies making fillfactor cut: 0.0000; fraction of volume (randoms): 0.7995
-WARNING:  Found 0.048% with zmax < 0.0
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_2_vmax.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_2_lumfn.fits.
-PROCESS CAT FINISHED.
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Field vol renormalization: [0.09317958 0.09324283 0.09317958]
-Field d8  renormalization: [1.06590455 1.0658213  1.06590455]
-Found mean vol. renormalisation scale of 0.093
-Found mean  d8  renormalisation scale of 1.066
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_2_lumfn.fits
-
-Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3.fits
-Found fields: [b'G15']
-Found redshift limits: 0.041 < z < 0.246
-Retrieved area 60.0000 [sq. deg.]
-Fraction of galaxies making fillfactor cut: 0.0000; fraction of volume (randoms): 0.7995
-WARNING:  Found 0.044% with zmax < 0.0
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_vmax.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_lumfn.fits.
-PROCESS CAT FINISHED.
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Field vol renormalization: [0.01326154 0.01326991 0.01326154]
-Field d8  renormalization: [4.88711839 4.88589004 4.88711839]
-Found mean vol. renormalisation scale of 0.013
-Found mean  d8  renormalisation scale of 4.887
-MEDIAN_M PHI_N PHI_N_ERROR PHI_IVMAX PHI_IVMAX_ERROR  N  V_ON_VMAX
--------- ----- ----------- --------- --------------- --- ---------
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-     ...   ...         ...       ...             ... ...       ...
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-      --   0.0         0.0       0.0             0.0 0.0        --
-Length = 99 rows
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_lumfn.fits
+Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_G15_ddp_n8_d0_3_lumfn_dryrun.fits
 Done.

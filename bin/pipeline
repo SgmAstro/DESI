@@ -1,8 +1,8 @@
 #!/bin/bash
 export RESET=1
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'                                                                                                                                                                           
+# export DRYRUN=''
+export DRYRUN='--dryrun'                                                                                                                                                                           
 export CODE_ROOT=$HOME/DESI/
 
 export TILING_CATDIR=/cosma5/data/durham/dc-wils7/
@@ -64,5 +64,5 @@ echo '-----'
 echo '>>>>>  DEPENDENT JOBS  <<<<<'
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
-# Note: runs all fields simultaneously.                                                                                                                                                              
+# Note: runs all fields simultaneously.                                                                                                                                         
 sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_D8_G9_JOBID:$RAND_D8_G12_JOBID:$RAND_D8_G15_JOBID gold_d8_pipeline

@@ -1,8 +1,0 @@
-Reading: /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp.fits
-Reading: ['/cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G9_0.fits', '/cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G12_0.fits', '/cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G15_0.fits']
-Retrieved randoms for [b'G12' b'G15' b'G9']
-Creating big rand. tree.
-Querying tree for closest rand.
-G9 325.9557952986655
-G12 0.7422145841478183
-G15 230.71352025881743

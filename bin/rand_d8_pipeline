@@ -12,14 +12,14 @@
 # See status with e.g. squeue -u mjwilson
 # 
 if [[ -z "${FIELD}" ]]; then
-  export FIELD="G12"
+  export FIELD="G9"
 else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
 if [[ -z "${DRYRUN}" ]]; then
-  export DRYRUN=''                                                                                                                                                                                
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                                
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi

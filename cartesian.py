@@ -5,8 +5,8 @@ from   scipy.spatial.transform import Rotation as R
 
 
 def cartesian(ras, decs, zs, rotate=False):
-    phi   = np.radians(ras)
-    theta = np.pi/2. - np.radians(decs)
+    phi        = np.radians(ras)
+    theta      = np.pi/2. - np.radians(decs)
 
     mean_phi   = np.median(phi)
     mean_theta = np.median(theta)

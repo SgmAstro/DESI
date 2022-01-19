@@ -14,8 +14,8 @@
 #
 
 if [[ -z "${DRYRUN}" ]]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
@@ -47,9 +47,9 @@ python gen_ddp_n8.py $DRYRUN > logs/gama_ddp_n8.log
 # echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-# python gen_gold_lf.py --density_split --field G9  $DRYRUN > logs/gama_lumfn_d8_G9.log
-# python gen_gold_lf.py --density_split --field G12 $DRYRUN > logs/gama_lumfn_d8_G12.log
-# python gen_gold_lf.py --density_split --field G15 $DRYRUN > logs/gama_lumfn_d8_G15.log
+python gen_gold_lf.py --density_split --field G9  $DRYRUN > logs/gama_lumfn_d8_G9.log
+python gen_gold_lf.py --density_split --field G12 $DRYRUN > logs/gama_lumfn_d8_G12.log
+python gen_gold_lf.py --density_split --field G15 $DRYRUN > logs/gama_lumfn_d8_G15.log
 
 echo
 echo 'Done.'

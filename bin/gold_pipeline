@@ -22,8 +22,8 @@ else
 fi
 
 if [[ -z "${DRYRUN}" ]]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
@@ -56,24 +56,24 @@ fi
 
 echo 'Running gold pipeline; logging to logs/gama_gold.log'
 
-python gama_gold.py > logs/gama_gold.log
+# python gama_gold.py > logs/gama_gold.log
 
 echo 'Running gen_kEcat.py; logging to logs/gama_kE.log'
 
-python gen_kEcat.py $DRYRUN > logs/gama_kE.log
+# python gen_kEcat.py $DRYRUN > logs/gama_kE.log
 
 echo 'Running gen_zmax_cat.py; logging to logs/gama_zama.log'
 
 # Max. runtime 60 minutes.
-python gen_zmax_cat.py $DRYRUN > logs/gama_zmax.log
+# python gen_zmax_cat.py $DRYRUN > logs/gama_zmax.log
 
 echo 'Running ddp_limits.py; logging to logs/ddp_limits.log'
 
-python ddp_limits.py > logs/ddp_limits.log
+# python ddp_limits.py > logs/ddp_limits.log
 
 echo 'Running gen_ddp_cat.py; logging to logs/gama_ddp.log'
 
-python gen_ddp_cat.py $DRYRUN > logs/gama_ddp.log  
+# python gen_ddp_cat.py $DRYRUN > logs/gama_ddp.log  
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 

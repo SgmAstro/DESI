@@ -1,23 +1,24 @@
 Reading rand.
 Creating big tree.
 Counting < 8 Mpc/h pairs for small trees.
-Creating split [230050 ... 345074] tree.
-Querying split [230050 ... 345074] tree.
-Creating split [0 ... 115024] tree.
-Querying split [0 ... 115024] tree.
-Creating split [345075 ... 460098] tree.
-Querying split [345075 ... 460098] tree.
-Creating split [1150243 ... 1265266] tree.
-Querying split [1150243 ... 1265266] tree.
-Creating split [690147 ... 805170] tree.
-Querying split [690147 ... 805170] tree.
-Creating split [805171 ... 920194] tree.
-Querying split [805171 ... 920194] tree.
-Creating split [1380291 ... 1495314] tree.
-Querying split [1380291 ... 1495314] tree.
-Creating split [1265267 ... 1380290] tree.
-Querying split [1265267 ... 1380290] tree.
-Creating split [1495315 ... 1610338] tree.
-Querying split [1495315 ... 1610338] tree.
+Creating split [0 ... 31] tree.
+Querying split [0 ... 31] tree.
+Creating split [64 ... 95] tree.
+Querying split [64 ... 95] tree.
+Creating split [190 ... 220] tree.
+Querying split [190 ... 220] tree.
+Creating split [221 ... 251] tree.
+Querying split [221 ... 251] tree.
+Creating split [283 ... 313] tree.
+Querying split [283 ... 313] tree.
+Creating split [128 ... 158] tree.
+Querying split [128 ... 158] tree.
+Creating split [314 ... 344] tree.
+Querying split [314 ... 344] tree.
+Creating split [376 ... 406] tree.
+Querying split [376 ... 406] tree.
+Creating split [32 ... 63] tree.
+Querying split [32 ... 63] tree.
 Flattening.
-Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_N8_G9_0.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_N8_G9_0_dryrun.fits.
+Finished in 0.0021162509918212892 mins.

@@ -1,29 +1,36 @@
 Reading rand.
 Creating big tree.
 Counting < 8 Mpc/h pairs for small trees.
-Creating split [0 ... 115024] tree.
-Querying split [0 ... 115024] tree.
-Creating split [230050 ... 345074] tree.
-Querying split [230050 ... 345074] tree.
-Creating split [1725363 ... 1840386] tree.
-Querying split [1725363 ... 1840386] tree.
-Creating split [1380291 ... 1495314] tree.
-Querying split [1380291 ... 1495314] tree.
-Creating split [345075 ... 460098] tree.
-Querying split [345075 ... 460098] tree.
-Creating split [690147 ... 805170] tree.
-Querying split [690147 ... 805170] tree.
-Creating split [115025 ... 230049] tree.
-Querying split [115025 ... 230049] tree.
-Creating split [1495315 ... 1610338] tree.
-Querying split [1495315 ... 1610338] tree.
-Creating split [1265267 ... 1380290] tree.
-Querying split [1265267 ... 1380290] tree.
-Creating split [460099 ... 575122] tree.
-Querying split [460099 ... 575122] tree.
-Creating split [575123 ... 690146] tree.
-Querying split [575123 ... 690146] tree.
-Creating split [1150243 ... 1265266] tree.
-Querying split [1150243 ... 1265266] tree.
+Creating split [64 ... 95] tree.
+Querying split [64 ... 95] tree.
+Creating split [128 ... 158] tree.
+Querying split [128 ... 158] tree.
+Creating split [159 ... 189] tree.
+Querying split [159 ... 189] tree.
+Creating split [221 ... 251] tree.
+Querying split [221 ... 251] tree.
+Creating split [283 ... 313] tree.
+Querying split [283 ... 313] tree.
+Creating split [32 ... 63] tree.
+Querying split [32 ... 63] tree.
+Creating split [376 ... 406] tree.
+Querying split [376 ... 406] tree.
+Creating split [407 ... 437] tree.
+Querying split [407 ... 437] tree.
+Creating split [469 ... 499] tree.
+Querying split [469 ... 499] tree.
+Creating split [190 ... 220] tree.
+Querying split [190 ... 220] tree.
+Creating split [252 ... 282] tree.
+Querying split [252 ... 282] tree.
+Creating split [314 ... 344] tree.
+Querying split [314 ... 344] tree.
+Creating split [0 ... 31] tree.
+Querying split [0 ... 31] tree.
+Creating split [345 ... 375] tree.
+Querying split [345 ... 375] tree.
+Creating split [438 ... 468] tree.
+Querying split [438 ... 468] tree.
 Flattening.
-Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_N8_G15_0.fits.
+Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_N8_G15_0_dryrun.fits.
+Finished in 0.0022428393363952636 mins.

@@ -1,10 +1,3 @@
 None True False
 Generating Gold reference LF.
 IGNORING FIELD ARG., GENERATING ALL OF G9-G15
-Found fields: [b'G12' b'G15' b'G9']
-Found redshift limits: 0.039 < z < 0.263
-Retrieved area 180.0000 [sq. deg.]
-WARNING:  Found 0.020% with zmax < 0.0
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_vmax_dryrun.fits.
-Writing /cosma5/data/durham/dc-wils7/GAMA4//gama_gold_lumfn_dryrun.fits.
-Done.

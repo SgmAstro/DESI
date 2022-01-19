@@ -1,9 +1,8 @@
 ====
-Starting job 4784966 at Wed 19 Jan 17:44:39 GMT 2022 for user dc-wils7.
-Running on nodes: m5358
+Starting job 4785739 at Wed 19 Jan 18:17:33 GMT 2022 for user dc-wils7.
+Running on nodes: m5399
 ====
 FIELD SET TO BE G9
-DRYRUN SET TO BE --dryrun
 
 Environment:
 
@@ -11,34 +10,24 @@ Code: /cosma/home/durham/dc-wils7/DESI/
 Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
 Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
 Running randoms pipeline for field G9
-WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'D8_LIMITS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Traceback (most recent call last):
+  File "/cosma/home/durham/dc-wils7/DESI/gen_rand_ddp_N8.py", line 31, in <module>
+    dat = Table.read(fpath)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/io/registry/core.py", line 184, in read
+    fileobj = ctx.__enter__()
+  File "/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/contextlib.py", line 119, in __enter__
+    return next(self.gen)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_dryrun.fits'
 Done.
 ====
-Starting job 4784967 at Wed 19 Jan 17:44:46 GMT 2022 for user dc-wils7.
-Running on nodes: m5358
+Starting job 4785740 at Wed 19 Jan 18:17:35 GMT 2022 for user dc-wils7.
+Running on nodes: m5350
 ====
 FIELD SET TO BE G12
-DRYRUN SET TO BE --dryrun
 
 Environment:
 
@@ -46,34 +35,11 @@ Code: /cosma/home/durham/dc-wils7/DESI/
 Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
 Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
 Running randoms pipeline for field G12
-WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'D8_LIMITS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-Done.
 ====
-Starting job 4784968 at Wed 19 Jan 17:44:51 GMT 2022 for user dc-wils7.
-Running on nodes: m5172
+Starting job 4785741 at Wed 19 Jan 18:17:38 GMT 2022 for user dc-wils7.
+Running on nodes: m5399
 ====
 FIELD SET TO BE G15
-DRYRUN SET TO BE --dryrun
 
 Environment:
 
@@ -81,27 +47,17 @@ Code: /cosma/home/durham/dc-wils7/DESI/
 Gold output dir.: /cosma5/data/durham/dc-wils7/GAMA4/
 Randoms output dir: /cosma5/data/durham/dc-wils7/GAMA4/randoms/
 Running randoms pipeline for field G15
-WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'D8_LIMITS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d-99_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d-99_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d0_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_d3_TIERMEDd8' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Traceback (most recent call last):
+  File "/cosma/home/durham/dc-wils7/DESI/gen_rand_ddp_N8.py", line 31, in <module>
+    dat = Table.read(fpath)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/io/registry/core.py", line 184, in read
+    fileobj = ctx.__enter__()
+  File "/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/contextlib.py", line 119, in __enter__
+    return next(self.gen)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/cosma5/data/durham/dc-wils7/GAMA4//gama_gold_ddp_dryrun.fits'
+Done.
 Done.

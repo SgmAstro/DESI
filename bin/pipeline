@@ -1,8 +1,9 @@
 #!/bin/bash
 export RESET=1
 
-# export DRYRUN=''
-export DRYRUN='--dryrun'                                                                                                                                                                           
+export DRYRUN=''
+# export DRYRUN='--dryrun'                                                                                                                                                                           
+
 export CODE_ROOT=$HOME/DESI/
 
 export TILING_CATDIR=/cosma5/data/durham/dc-wils7/

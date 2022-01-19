@@ -1,9 +1,8 @@
 ====
-Starting job 4784962 at Wed 19 Jan 17:40:36 GMT 2022 for user dc-wils7.
-Running on nodes: m5172
+Starting job 4785735 at Wed 19 Jan 18:17:13 GMT 2022 for user dc-wils7.
+Running on nodes: m5350
 ====
 RESET SET TO BE 0
-DRYRUN SET TO BE --dryrun
 
 Environment:
 
@@ -15,34 +14,20 @@ Running gen_kEcat.py; logging to logs/gama_kE.log
 Running gen_zmax_cat.py; logging to logs/gama_zama.log
 Running ddp_limits.py; logging to logs/ddp_limits.log
 Running gen_ddp_cat.py; logging to logs/gama_ddp.log
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
-WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
 Running gen_gold_lf.py; logging to logs/gama_lumfn.log
 Traceback (most recent call last):
   File "/cosma/home/durham/dc-wils7/DESI/gen_gold_lf.py", line 94, in <module>
     process_cat(fpath, opath, rand=None)
-  File "/cosma/home/durham/dc-wils7/DESI/gen_gold_lf.py", line 43, in process_cat
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'], rand=rand)
-  File "/cosma/home/durham/dc-wils7/DESI/vmaxer.py", line 17, in vmaxer
-    result      = Table(dat[cols], copy=True)
-  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py", line 1888, in __getitem__
-    out = self.__class__([self[x] for x in item],
-  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py", line 1888, in <listcomp>
-    out = self.__class__([self[x] for x in item],
-  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py", line 1882, in __getitem__
-    return self.columns[item]
-  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py", line 247, in __getitem__
-    return OrderedDict.__getitem__(self, item)
-KeyError: 'FILLFACTOR'
+  File "/cosma/home/durham/dc-wils7/DESI/gen_gold_lf.py", line 24, in process_cat
+    gama_zmax = Table.read(fpath)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/connect.py", line 62, in __call__
+    out = self.registry.read(cls, *args, **kwargs)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/io/registry/core.py", line 184, in read
+    fileobj = ctx.__enter__()
+  File "/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/contextlib.py", line 119, in __enter__
+    return next(self.gen)
+  File "/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/utils/data.py", line 271, in get_readable_fileobj
+    fileobj = io.FileIO(name_or_obj, 'r')
+FileNotFoundError: [Errno 2] No such file or directory: '/cosma5/data/durham/dc-wils7/GAMA4//gama_gold_zmax_dryrun.fits'
 
 Done.

@@ -1,14 +1,14 @@
 Creating boundary tree
+Querying boundary tree for split [80...119]
 Querying boundary tree for split [0...39]
 Querying boundary tree for split [159...197]
-Querying boundary tree for split [40...79]
-Querying boundary tree for split [120...158]
 Querying boundary tree for split [237...275]
 Querying boundary tree for split [315...353]
 Querying boundary tree for split [354...392]
+Querying boundary tree for split [198...236]
 Querying boundary tree for split [276...314]
-Querying boundary tree for split [432...470]
 Querying boundary tree for split [393...431]
+Querying boundary tree for split [432...470]
 Shuffling.
 Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_bd_G15_0_dryrun.fits.
-Finished in 0.0030316750208536783 mins.
+Finished in 0.002002604802449544 mins.

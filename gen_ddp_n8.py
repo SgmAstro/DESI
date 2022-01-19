@@ -61,8 +61,8 @@ for rpath in rpaths:
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
 
-for i, rpath in rpaths:
-    dat.meta['RANDOMS{}_PATH'.format(i)] = rpath
+for i, rpath in enumerate(rpaths):
+    dat.meta['RPATH_{}'.format(i)] = rpath
 
 rpoints  = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
 rpoints  = np.array(rpoints, copy=True)
@@ -89,8 +89,9 @@ for field in ['G9', 'G12', 'G15']:
     for x in ['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z']:
         print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
 
-# Typically, bounded by 1.6
-assert  np.all(dat['RANDSEP'].data < 3.), 'Failed to find matching random with < 5 Mpc/h separation.'
+if not dryrun:
+    # Typically, bounded by 1.6
+    assert  np.all(dat['RANDSEP'].data < 3.), 'Failed to find matching random with < 5 Mpc/h separation.'
 
 # ----  Calculate DDPX_N8 for each gama gold galaxy.  ----
 for idx in range(3):

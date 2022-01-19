@@ -16,7 +16,7 @@
 #
 
 if [[ -z "${RESET}" ]]; then
-  export RESET=0
+  export RESET=1
 else
   echo 'RESET SET TO BE '$RESET
 fi
@@ -76,9 +76,6 @@ echo 'Running gen_ddp_cat.py; logging to logs/gama_ddp.log'
 python gen_ddp_cat.py $DRYRUN > $CODE_ROOT/logs/gama_ddp.log  
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
-
-# References schechter fn fiven a zmax catalog.
-python gen_gold_lf.py $DRYRUN > $CODE_ROOT/logs/gama_lumfn.log
 
 echo
 echo 'Done.'

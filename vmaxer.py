@@ -3,6 +3,7 @@ import numpy as np
 from   astropy.table import Table
 from   cosmo import volcom
 
+
 def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     assert  dat[zcol].min() <= zmin
     assert  dat[zcol].max() >= zmax
@@ -22,7 +23,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     result.meta = dat.meta
     result.meta.update({'FORCE_ZMIN': zmin,\
                         'FORCE_ZMAX': zmax,\
-                        'VOLUME':     VV})
+                        'VOLUME':       VV})
 
     result      = result[result[zcol] >= zmin]
     result      = result[result[zcol] <= zmax]
@@ -46,4 +47,3 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     result['VZ']   -= volcom(result['ZMIN'], area)
 
     return  result
-

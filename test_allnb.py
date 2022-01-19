@@ -7,11 +7,11 @@ fields = ['G9', 'G12', 'G15']
 def test_allnbs():
     print('Running all tests.')
     
-    # run_randomqa()
+    run_randomqa()
 
     run_goldqa()
 
-    run_delta8qa()
+    # run_delta8qa()
     
     print('Done.')
     

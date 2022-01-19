@@ -56,7 +56,6 @@ dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
 
 dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
 
-#
 xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
 
 dat['CARTESIAN_X'] = xyz[:,0]

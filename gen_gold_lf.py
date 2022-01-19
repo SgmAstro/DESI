@@ -6,7 +6,7 @@ import numpy as np
 import astropy.io.fits as fits
 import matplotlib.pyplot as plt
 
-from   astropy.table import Table
+from   astropy.table import Table, vstack
 from   vmaxer import vmaxer
 from   smith_kcorr import test_plots, test_nonnative_plots
 from   cosmo import distmod, volcom
@@ -16,7 +16,7 @@ from   gama_limits import gama_field, gama_limits
 from   renormalise_d8LF import renormalise_d8LF
 
 
-def process_cat(fpath, vmax_opath, field=None, rand=None):
+def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -40,7 +40,12 @@ def process_cat(fpath, vmax_opath, field=None, rand=None):
 
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
-    
+
+    if len(rand_paths) > 0:
+        rand  = vstack([Table.read(_x) for _x in rand_paths])
+    else:
+        rand  = None
+
     gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'], rand=rand)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
@@ -63,7 +68,7 @@ def process_cat(fpath, vmax_opath, field=None, rand=None):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
-    parser.add_argument('-f', '--field', type=str, help='select equatorial GAMA field: G9, G12, G15', required=False, default=None)
+    parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=False, default=None)
     parser.add_argument('-d', '--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
@@ -74,15 +79,13 @@ if __name__ == '__main__':
     dryrun = args.dryrun
     density_split = args.density_split
     prefix = args.prefix
-    
-    print(field, dryrun, density_split)
-    
+
+    if density_split:
+        assert  field != None
+        assert  'ddp1' in prefix
+
     if not density_split:
         print('Generating Gold reference LF.')
-        
-        field = ''
-        
-        print('IGNORING FIELD ARG., GENERATING ALL OF G9-G15')
 
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
@@ -93,13 +96,16 @@ if __name__ == '__main__':
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
         opath = fpath.replace('ddp_n8', 'vmax')
-        
-        process_cat(fpath, opath)
+
+        all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
+
+        if dryrun:
+            all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
+
+        process_cat(fpath, opath, rand_paths=all_rpaths)
 
     else:
         print('Generating Gold density-split LF.')
-
-        assert field != None
 
         field = field.upper()
 
@@ -107,24 +113,15 @@ if __name__ == '__main__':
         
         if dryrun:
             rpath = rpath.replace('.fits', '_dryrun.fits')
-
-        rand = Table.read(rpath)
-        
-        print('Read {}'.format(rpath))
-        
+                
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
             utiers = np.array([3])
 
         else:
             utiers = np.arange(4)
-
-        all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
-
-        if dryrun:
-            all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
                     
-        all_rands = [Table.read(_x) for _x in all_rpaths]
+        all_rands = None 
 
         for idx in utiers:
             ddp_idx   = idx + 1
@@ -140,13 +137,21 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            process_cat(ddp_fpath, ddp_opath, field=field, rand=rand)
+            process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
         
             print('PROCESS CAT FINISHED.')
                     
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
             result.pprint()
+
+            if all_rands == None:
+                all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
+
+                if dryrun:
+                    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
+
+                all_rands = [Table.read(_x) for _x in all_rpaths]
 
             # Calculated for DDP1 redshift limits. 
             scale  = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])

@@ -98,7 +98,7 @@ randoms = Table(np.c_[ras, decs, zs, Vdraws], names=['RANDOM_RA', 'RANDOM_DEC', 
 randoms['RANDID'] = np.arange(len(randoms))
 randoms['FIELD'] = gama_field(ras, decs)
 
-assert np.all(randoms['FIELD'].data == field)
+assert  np.all(randoms['FIELD'].data == field)
 
 randoms['CARTESIAN_X'] = xyz[:,0]
 randoms['CARTESIAN_Y'] = xyz[:,1]

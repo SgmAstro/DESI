@@ -4,7 +4,7 @@ from   cosmo import cosmo
 from   scipy.spatial.transform import Rotation as R
 
 
-def cartesian(ras, decs, zs):
+def cartesian(ras, decs, zs, rotate=False):
     phi   = np.radians(ras)
     theta = np.pi/2. - np.radians(decs)
 
@@ -19,15 +19,18 @@ def cartesian(ras, decs, zs):
 
     pos   = np.c_[xs, ys, zs]
 
-    rot   = R.from_rotvec(-mean_phi * np.array([0, 0, 1]))
+    if rotate:
+        rot   = R.from_rotvec(-mean_phi * np.array([0, 0, 1]))
     
-    res   = rot.apply(pos)
+        res   = rot.apply(pos)
 
-    rot   = R.from_rotvec((np.pi/2. - mean_theta) * np.array([0, 1, 0]))
+        rot   = R.from_rotvec((np.pi/2. - mean_theta) * np.array([0, 1, 0]))
     
-    resres = rot.apply(res)
+        resres = rot.apply(res)
 
-    return resres
+        pos = resres
+
+    return  pos
 
 
 if __name__ == '__main__':

@@ -5,6 +5,18 @@ from   cosmo import volcom
 
 
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
+    vol      = dat.meta['VOLUME']
+
+    if 'IN_SAMPLE' in dat.dtype.names:
+        # FILLFACTOR > 0.8 cut   
+        dat      = Table(dat, copy=True)
+        dat      = dat[dat['IN_SAMPLE'] > 0]
+
+        vol_frac = dat.meta['IN_SAMPLE_VOLFRAC']
+
+    else:
+        vol_frac = 1.
+
     idxs   = np.digitize(dat[Mcol], bins=Ms)
     result = []
 
@@ -12,17 +24,20 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
     dM     = ds[0]
 
     assert np.all(ds == dM)
-    
-    vol    = dat.meta['VOLUME']
 
+    vol   *= vol_frac
+    
     for idx in np.arange(len(Ms) - 1):
         sample  = dat[idxs == idx]
         nsample = len(sample)
         
         median  = np.median(sample[Mcol])
 
-        ivmax   = 1. / sample['VMAX'].data
-        ivmax2  = 1. / sample['VMAX'].data**2.
+        vmax    = sample['VMAX'].data
+        vmax   *= vol_frac
+
+        ivmax   = 1. / vmax
+        ivmax2  = 1. / vmax**2.
         
         result.append([median,\
                        nsample / dM / vol,\
@@ -30,7 +45,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
                        np.sum(ivmax) / dM,\
                        np.sqrt(np.sum(ivmax2)) / dM,\
                        nsample,
-                       np.median(sample['VMAX'].data) / vol])
+                       np.median(vmax) / vol])
 
     names = ['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 

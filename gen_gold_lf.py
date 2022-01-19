@@ -15,7 +15,7 @@ from   gama_limits import gama_field, gama_limits
 from   renormalise_d8LF import renormalise_d8LF
 
 
-def process_cat(fpath, vmax_opath, field=None):
+def process_cat(fpath, vmax_opath, field=None, rand=None):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -39,7 +39,7 @@ def process_cat(fpath, vmax_opath, field=None):
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
     
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'])
+    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'], rand=rand)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
@@ -115,6 +115,8 @@ if __name__ == '__main__':
         else:
             utiers = np.arange(4)
                     
+        all_rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{:d}_0.fits'.format(ff)) for ff in [9, 12, 15]]
+
         for idx in utiers:
             ddp_idx   = idx + 1
             ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
@@ -127,7 +129,7 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            process_cat(ddp_fpath, ddp_opath, field=field)
+            process_cat(ddp_fpath, ddp_opath, field=field, rand=rand)
         
             print('PROCESS CAT FINISHED.')
                     
@@ -135,10 +137,8 @@ if __name__ == '__main__':
 
             result.pprint()
             
-            rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(field)) for field in [9, 12, 15]]
-
-            scale = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in rands])
-            d8    = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in rands])
+            scale  = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])
+            d8     = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in all_rands])
 
             print('Field vol renormalization: {}'.format(scale))
             print('Field d8  renormalization: {}'.format(d8))

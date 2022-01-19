@@ -22,8 +22,8 @@ else
 fi
 
 if [[ -z "${DRYRUN}" ]]; then
-  # export DRYRUN='' 
-  export DRYRUN='--dryrun'
+  export DRYRUN='' 
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi

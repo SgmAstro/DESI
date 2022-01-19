@@ -8,6 +8,8 @@ from   scipy.interpolate import interp1d
 from   gama_limits import gama_limits
 from   astropy.table import Table
 from   cartesian import cartesian
+from   gama_limits import gama_field
+
 
 parser = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
@@ -94,7 +96,9 @@ xyz=xyz.astype(np.float32)
 
 randoms = Table(np.c_[ras, decs, zs, Vdraws], names=['RANDOM_RA', 'RANDOM_DEC', 'Z', 'V'])
 randoms['RANDID'] = np.arange(len(randoms))
-randoms['FIELD'] = field
+randoms['FIELD'] = gama_field(ras, decs)
+
+assert np.all(randoms['FIELD'].data == field)
 
 randoms['CARTESIAN_X'] = xyz[:,0]
 randoms['CARTESIAN_Y'] = xyz[:,1]

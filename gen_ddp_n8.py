@@ -55,6 +55,7 @@ for rpath in rpaths:
     else:
         rand = vstack([rand, Table.read(rpath)])
 
+print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
 
 rpoints = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
@@ -76,11 +77,15 @@ dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 for field in ['G9', 'G12', 'G15']:
-    in_field = dat['FIELD'] == field
+    dat_in_field  =  dat[(dat['FIELD']  == field)]
+    rand_in_field = rand[(rand['FIELD'] == field)]
+    
+    for x in ['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z']:
+        print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
 
-    print(field, np.median(dat['RANDSEP'][in_field]))
+# assert  np.all(dat['RANDSEP'].data < 20.), 'Failed to find matching random with < 5 Mpc/h separation.'
 
-assert  np.all(dat['RANDSEP'].data < 20.), 'Failed to find matching random with < 5 Mpc/h separation.'
+exit(0)
 
 for idx in range(3):
     # Calculate DDP1/2/3 N8 for all gold galaxies.

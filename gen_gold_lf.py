@@ -137,11 +137,17 @@ if __name__ == '__main__':
             
             rands = [Table.read(os.environ['RANDOMS_DIR'] + '/randoms_bd_ddp_n8_G{}_0.fits'.format(field)) for field in [9, 12, 15]]
 
-            scale = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in rands]).mean()
-            d8    = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in rands]).mean()
+            scale = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in rands])
+            d8    = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in rands])
 
-            print('Found vol renormalisation scale of {:.3f}'.format(scale))
-            print('Found d8 renormalisation scale of {:.3f}'.format(d8))
+            print('Field vol renormalization: {}'.format(scale))
+            print('Field d8  renormalization: {}'.format(d8))
+
+            scale = scale.mean()
+            d8    = d8.mean()
+
+            print('Found mean vol. renormalisation scale of {:.3f}'.format(scale))
+            print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
             
             result = renormalise_d8LF(result, 1. / scale)
 

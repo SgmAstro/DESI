@@ -1,7 +1,0 @@
-3680772.5790239596 0.5 0.0005
-Solved 500 for field G12
-Applying rotation.
-Applying boundary.
-{'ZMIN': 0.0, 'ZMAX': 0.3, 'DZ': 0.0001, 'NRAND': 500, 'FIELD': 'G12', 'Area': 60.0, 'BOUND_PERCENT': 1.0, 'VOL': 3680772.5790239596, 'RAND_DENS': 0.5, 'VOL8': 2144.660584850632, 'NRAND8': 1072.330292425316, 'NRAND8_PERR': 32.74645465428763}
-Writing /cosma5/data/durham/dc-wils7/GAMA4/randoms//randoms_G12_0_dryrun.fits.
-Finished in 0.0011455774307250976 mins.

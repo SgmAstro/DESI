@@ -15,7 +15,7 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="G12"
+  export FIELD="G9"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
@@ -36,9 +36,9 @@ fi
 
 export CODE_ROOT=$HOME/DESI/
 
-export TILING_CATDIR=/cosma5/data/durham/dc-wils7/
-export GOLD_DIR=/cosma5/data/durham/dc-wils7/GAMA4/
-export RANDOMS_DIR=/cosma5/data/durham/dc-wils7/GAMA4/randoms/
+export TILING_CATDIR=$HOME/data/
+export GOLD_DIR=$HOME/data/GAMA4/
+export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
 
 export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
 export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH

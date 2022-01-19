@@ -3,11 +3,12 @@ export RESET=1
 
 export DRYRUN=''
 # export DRYRUN='--dryrun'                                                                                                                                                                           
+
 export CODE_ROOT=$HOME/DESI/
 
-export TILING_CATDIR=/cosma5/data/durham/dc-wils7/
-export GOLD_DIR=/cosma5/data/durham/dc-wils7/GAMA4/
-export RANDOMS_DIR=/cosma5/data/durham/dc-wils7/GAMA4/randoms/
+export TILING_CATDIR=$HOME/data/
+export GOLD_DIR=$HOME/data/GAMA4/
+export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
 
 export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
 export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
@@ -64,5 +65,5 @@ echo '-----'
 echo '>>>>>  DEPENDENT JOBS  <<<<<'
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
-# Note: runs all fields simultaneously.                                                                                                                                                              
+# Note: runs all fields simultaneously.                                                                                                                                         
 sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_D8_G9_JOBID:$RAND_D8_G12_JOBID:$RAND_D8_G15_JOBID gold_d8_pipeline

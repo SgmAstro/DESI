@@ -43,13 +43,17 @@ def run_goldqa():
                         kernel='lumfn',\
                         )
 
+    pm.execute_notebook('docs/nb/lumfn.ipynb',\
+                        'test/pm_lumfn.ipynb',\
+                        kernel='lumfn',\
+                        )
+
     pm.execute_notebook('docs/nb/delta8_qa.ipynb',\
                         'test/pm_delta8_qa.ipynb',\
                         kernel='lumfn',\
                         )
 
     # jack knife qa. 
-    # schechter fit. 
     # d8 LF. 
     # desi qa. 
     

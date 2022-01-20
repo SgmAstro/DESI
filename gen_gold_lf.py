@@ -96,13 +96,13 @@ if __name__ == '__main__':
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
         opath = fpath.replace('ddp_n8', 'vmax')
-
+        '''
         all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
         if dryrun:
             all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
-
-        process_cat(fpath, opath, rand_paths=all_rpaths)
+        '''
+        process_cat(fpath, opath, rand_paths=[])
 
     else:
         print('Generating Gold density-split LF.')

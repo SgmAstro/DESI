@@ -1,0 +1,17 @@
+Solving for DDP 1
+Solving for DDP 2
+Solving for DDP 3
+Unique tiers: [-99   0   1   2   3]
+Found redshift limits: 0.039 < z < 0.248
+DDP1_d-99_VOLFRAC OF 0.4638 ADDED.
+DDP1_d-99_TIERMEDd8 OF 0.0155 ADDED.
+DDP1_d0_VOLFRAC OF 0.2637 ADDED.
+DDP1_d0_TIERMEDd8 OF -0.9132 ADDED.
+DDP1_d1_VOLFRAC OF 0.1647 ADDED.
+DDP1_d1_TIERMEDd8 OF -0.2224 ADDED.
+DDP1_d2_VOLFRAC OF 0.0918 ADDED.
+DDP1_d2_TIERMEDd8 OF 1.0423 ADDED.
+DDP1_d3_VOLFRAC OF 0.0161 ADDED.
+DDP1_d3_TIERMEDd8 OF 5.1544 ADDED.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_ddp_n8_G15_0.fits
+Finished in 0.2354025681813558 mins.

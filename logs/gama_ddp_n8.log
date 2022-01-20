@@ -1,0 +1,185 @@
+Reading: /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_ddp.fits
+Reading: ['/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G9_0.fits', '/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G12_0.fits', '/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G15_0.fits']
+Retrieved galaxies for [b'G12' b'G15' b'G9']
+Retrieved randoms for [b'G12' b'G15' b'G9']
+Creating big rand. tree.
+Querying tree for closest rand.
+G9 [-579.49009187 -578.21966646 -578.04210466 ...  -74.31236388  -74.29026722
+  -73.47926779] [-580.43097 -580.4203  -580.31006 ...  -73.88251  -73.87512  -73.76151]
+G9 [ 76.1909173   77.65328807  77.8943103  ... 576.54283231 578.98901203
+ 579.37048228] [ 73.60615  73.71194  73.9429  ... 580.2914  580.3544  580.39496]
+G9 [-25.98642391 -25.93487827 -25.80811417 ...  38.55501317  38.71607045
+  38.7630878 ] [-26.05787  -26.03734  -26.033516 ...  39.04052   39.045006  39.05831 ]
+G12 [-747.06603665 -746.9806649  -746.9270858  ... -116.08807321 -115.94416995
+ -115.78075151] [-747.16486  -747.1534   -747.1523   ... -115.682785 -115.5812
+ -115.565475]
+G12 [-77.55595026 -77.25883899 -77.02130714 ...  77.30097552  77.60186964
+  77.61187939] [-78.02824  -78.004    -77.95254  ...  77.937355  77.94132   78.018295]
+G12 [-39.08445107 -38.93831562 -38.91468121 ...  25.81234914  25.86446789
+  25.89604328] [-39.08608  -39.065117 -39.060467 ...  26.027569  26.028975  26.034864]
+G15 [-636.47938159 -636.24418368 -635.95658364 ...  -86.6252179   -86.58030025
+  -86.18219097] [-636.78845 -636.7462  -636.6852  ...  -85.08242  -84.90302  -84.78161]
+G15 [-511.90400387 -511.68501408 -510.10707665 ...  -64.20985663  -64.12221291
+  -61.89428972] [-514.0881   -514.0473   -514.00275  ...  -61.535126  -61.436947
+  -61.406013]
+G15 [-25.72861472 -25.62810072 -25.47957178 ...  38.06522353  38.31100079
+  38.42380399] [-26.05787  -26.03734  -26.033516 ...  39.04052   39.045006  39.05831 ]
+Building tree for DDP 1
+Querying tree for DDP 1
+Building tree for DDP 2
+Querying tree for DDP 2
+Building tree for DDP 3
+Querying tree for DDP 3
+ CATAID       OBJID             RA          DEC     ... DDP1_N8 DDP2_N8 DDP3_N8
+                               deg          deg     ...                        
+------- ------------------ ------------ ----------- ... ------- ------- -------
+ 218760 587725076066468464 140.76184403  0.88138861 ...       3       0       0
+ 514222 588010357995208988 140.43170714  2.70322146 ...      32      44       0
+ 136729 587724650329014562 175.98187034 -1.68652677 ...     101     137       0
+   8301 588848900987158689 181.68685894   0.7011761 ...       8      14      23
+ 660000 587729150915772570 140.29266091 -1.49659397 ...       5       0       0
+ 345969 587726033301209510 131.84474743  1.97358773 ...       0       0       0
+ 262800 587726015623856358 221.23507916   2.2316643 ...      22      26       0
+ 372831 587727942954910007 137.96509775  1.28227391 ...      28      72       0
+ 272878 587726031175222059 181.01714733  1.36547646 ...       0       0       0
+  84783 587722983887405380   179.621877  0.53845386 ...      78     106     190
+    ...                ...          ...         ... ...     ...     ...     ...
+3553377 587729149837509221 129.98054963 -1.96468895 ...      22       0       0
+ 197901 587725073917608362 137.64128557 -0.71439331 ...       0       0       0
+ 301730 587726032228843749  134.9329824  1.28547856 ...      28      53       0
+ 321025 587726032266330520 220.60598533  1.61786225 ...       7      13       0
+ 143753 587724650866475298 177.31071793 -1.34708031 ...      42      78       0
+ 185149 587725041702142403 179.16336376 -1.45824011 ...      34      50       0
+3616164 587729150914986241 138.56730785   -1.439633 ...       0       0       0
+ 609911 588848900448583865 177.76693029  0.24165831 ...      40      52       0
+  39472 587722982275678306 177.09073936 -0.67589884 ...      46      74     155
+ 573785 588848899890807305  130.0602971 -0.02332007 ...      11       0       0
+Length = 113687 rows
+EXTNAME             		TilingCat
+TCOMM1              		GAMA ID
+TUCD1               		meta.id;meta.main
+TCOMM2              		SDSS objid
+TUCD2               		meta.id
+TCOMM3              		J2000 coordinate
+TUCD3               		pos.eq.ra
+TCOMM4              		J2000 coordinate
+TUCD4               		pos.eq.dec
+TCOMM5              		3-arcsec fiber magnitude
+TUCD5               		phot.mag;em.opt.R
+TCOMM6              		Extinction-corrected SDSS DR7 Petrosian mag
+TUCD6               		phot.mag;em.opt.R
+TCOMM7              		Extinction-corrected SDSS DR7 mag
+TUCD7               		phot.mag;em.opt.U
+TCOMM8              		Extinction-corrected SDSS DR7 mag
+TUCD8               		phot.mag;em.opt.B
+TCOMM9              		Extinction-corrected SDSS DR7 mag
+TUCD9               		phot.mag;em.opt.R
+TCOMM10             		Extinction-corrected SDSS DR7 mag
+TUCD10              		phot.mag;em.opt.I
+TCOMM11             		Extinction-corrected SDSS DR7 mag
+TUCD11              		phot.mag;em.opt.I
+TCOMM12             		Survey code for redshift source, see notes
+TUCD12              		meta.code;meta.dataset
+TCOMM13             		Spectroscopic redshift, -1 for none attempted
+TUCD13              		src.redshift
+TCOMM14             		Quality of redshift
+TUCD14              		meta.code.qual;src.redshift
+TCOMM15             		Tests of NQ=2 redshifts, see notes
+TUCD15              		meta.code.qual;src.redshift
+TCOMM16             		ID of spectrum from SpecAll table
+TUCD16              		meta.id.cross;spect
+TCOMM17             		Redshift uncertainty, c delta ln(1+z), see notes
+TUCD17              		src.redshift;stat.error
+TCOMM18             		Number of GAMA spectra within 1 arcsec
+TUCD18              		meta.number;spect
+TCOMM19             		SDSS Petro half-light surface brightness
+TUCD19              		phot.mag.sb;em.opt.R
+TCOMM20             		r_psf - r_model star-galaxy separation parameter
+TUCD20              		src.class.starGalaxy
+TCOMM21             		J - K - f_locus star-galaxy separation parameter
+TUCD21              		src.class.starGalaxy
+TCOMM22             		Extinction-corrected r-defined auto AB mag
+TUCD22              		phot.mag;em.IR.K
+TCOMM23             		Flux from FIRST-SDSS matching by John Ching
+TUCD23              		phot.flux.density;em.radio
+TCOMM24             		1 for match to H-ATLAS SDSS possible ID
+TUCD24              		meta.code
+TCOMM25             		1-deg strip, 2 for GAMA I regions
+TUCD25              		meta.code
+TCOMM26             		Bitwise target criteria, see notes
+TUCD26              		meta.code
+TCOMM27             		Useful for selecting samples, see notes
+TUCD27              		meta.code.class
+TCOMM28             		Useful for selecting samples, see notes
+TUCD28              		meta.code.class
+TCOMM29             		Priorities for targeting, see notes
+TUCD29              		meta.code.class
+TCOMM30             		Number of survey_class>=3 targets within 40 arcsec
+TUCD30              		meta.code.class
+TCOMM31             		CATAID of object in TilingCatv11, see notes
+TUCD31              		meta.code.cross
+TCOMM32             		Mask value 0.0 to 1.0 around V<10 stars
+TUCD32              		meta.code
+TCOMM33             		Mask value 0.0 to 1.0 around V<12 stars
+TUCD33              		meta.code
+TCOMM34             		Visual classification, see notes
+TUCD34              		mata.code.qual
+TCOMM35             		Initials of classifiers, xxx for none
+TUCD35              		meta.id
+DATE-HDU            		2015-09-04T13:22:37
+STILVERS            		3.0-8
+STILCLAS            		uk.ac.starlink.votable.FitsPlusTableWriter
+DMU                 		EqInputCat
+NAME                		TilingCat
+VERSION             		v46
+DATE                		2015-05-22
+CONTACT             		Ivan Baldry <i.baldry@ljmu.ac.uk>
+AREA                		180.0
+DDP1_ZMIN           		0.0390699990093708
+DDP1_ZMAX           		0.2483299970626831
+DDP1_VZ             		6451530.309761721
+DDP1_NGAL           		34732
+DDP1_DENS           		0.005383528919866887
+DDP2_ZMIN           		0.03914999961853027
+DDP2_ZMAX           		0.1830800026655197
+DDP2_VZ             		2679079.755786839
+DDP2_NGAL           		26598
+DDP2_DENS           		0.009928035902084681
+DDP3_ZMIN           		0.03903000056743622
+DDP3_ZMAX           		0.09973999857902527
+DDP3_VZ             		432372.2344703938
+DDP3_NGAL           		7954
+DDP3_DENS           		0.01839618589233126
+comments            		['Science targets and information for tiling and spectroscopic', 'observation.']
+RPATH_0             		/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G9_0.fits
+RPATH_1             		/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G12_0.fits
+RPATH_2             		/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G15_0.fits
+VOL8                		2144.660584850632
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_ddp_n8.fits
+[0 1 2 3]
+Delta8 spans -1.0000 to 15.1673 over [0 1 2 3] tiers.
+
+---- d0 ----
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G9_ddp_n8_d0_0.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G12_ddp_n8_d0_0.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G15_ddp_n8_d0_0.fits.
+
+---- d1 ----
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G9_ddp_n8_d0_1.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G12_ddp_n8_d0_1.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G15_ddp_n8_d0_1.fits.
+
+---- d2 ----
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G9_ddp_n8_d0_2.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G12_ddp_n8_d0_2.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G15_ddp_n8_d0_2.fits.
+
+---- d3 ----
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G9_ddp_n8_d0_3.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G12_ddp_n8_d0_3.fits.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_G15_ddp_n8_d0_3.fits.
+
+
+Done.
+
+

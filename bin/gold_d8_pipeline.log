@@ -1,0 +1,86 @@
+====
+Starting job 4787612 at Thu 20 Jan 00:29:08 GMT 2022 for user dc-wils7.
+Running on nodes: m5154
+====
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma/home/durham/dc-wils7/data/GAMA4/
+Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
+Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py:3488: FutureWarning: elementwise == comparison failed and returning scalar instead; this will raise an error or perform elementwise comparison in the future.
+  result = self.as_array() == other
+WARNING: MergeConflictWarning: Cannot merge meta key 'FIELD' types <class 'str'> and <class 'str'>, choosing FIELD='G12' [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FILLFACTOR_INFRAC' types <class 'float'> and <class 'float'>, choosing FILLFACTOR_INFRAC=0.7773585948947632 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FIELD' types <class 'str'> and <class 'str'>, choosing FIELD='G15' [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FILLFACTOR_INFRAC' types <class 'float'> and <class 'float'>, choosing FILLFACTOR_INFRAC=0.7773609646472426 [astropy.utils.metadata]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'D8_LIMITS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Running gen_gold_lf.py; logging to logs/gama_lumfn.log
+WARNING: MergeConflictWarning: Cannot merge meta key 'FIELD' types <class 'str'> and <class 'str'>, choosing FIELD='G12' [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FILLFACTOR_INFRAC' types <class 'float'> and <class 'float'>, choosing FILLFACTOR_INFRAC=0.7773585948947632 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d-99_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d-99_VOLFRAC=0.465324451372754 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d-99_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d-99_TIERMEDd8=0.03291064999472004 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d0_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d0_VOLFRAC=0.2572469766671813 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d0_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d0_TIERMEDd8=-0.9140038123962729 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d1_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d1_VOLFRAC=0.1623689238032699 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d1_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d1_TIERMEDd8=-0.2217104809048164 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d2_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d2_VOLFRAC=0.1013628017984668 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d2_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d2_TIERMEDd8=1.069318485457967 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d3_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d3_VOLFRAC=0.01369684635832795 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d3_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d3_TIERMEDd8=4.790397371371391 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FIELD' types <class 'str'> and <class 'str'>, choosing FIELD='G15' [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'FILLFACTOR_INFRAC' types <class 'float'> and <class 'float'>, choosing FILLFACTOR_INFRAC=0.7773609646472426 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d-99_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d-99_VOLFRAC=0.4638037163601324 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d-99_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d-99_TIERMEDd8=0.01554145997244305 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d0_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d0_VOLFRAC=0.2637140534517429 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d0_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d0_TIERMEDd8=-0.9132001097083876 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d1_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d1_VOLFRAC=0.1646570021708841 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d1_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d1_TIERMEDd8=-0.2224344711551376 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d2_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d2_VOLFRAC=0.09177240503079605 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d2_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d2_TIERMEDd8=1.042296895133539 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d3_VOLFRAC' types <class 'float'> and <class 'float'>, choosing DDP1_d3_VOLFRAC=0.01605282298644453 [astropy.utils.metadata]
+WARNING: MergeConflictWarning: Cannot merge meta key 'DDP1_d3_TIERMEDd8' types <class 'float'> and <class 'float'>, choosing DDP1_d3_TIERMEDd8=5.15442595621854 [astropy.utils.metadata]
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/table/table.py:3488: FutureWarning: elementwise == comparison failed and returning scalar instead; this will raise an error or perform elementwise comparison in the future.
+  result = self.as_array() == other
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FORCE_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'IN_SAMPLE_VOLFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/fromnumeric.py:3438: RuntimeWarning: Mean of empty slice.
+  return mean(axis=axis, dtype=dtype, out=out, **kwargs)
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/_methods.py:189: RuntimeWarning: invalid value encountered in double_scalars
+  ret = ret.dtype.type(ret / rcount)
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/core/fromnumeric.py:3440: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+
+Done.

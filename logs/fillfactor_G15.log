@@ -1,0 +1,28 @@
+Reading rand.
+Creating big tree.
+Counting < 8 Mpc/h pairs for small trees.
+Creating split [1107711 ... 1186832] tree.
+Querying split [1107711 ... 1186832] tree.
+Creating split [1186833 ... 1265954] tree.
+Querying split [1186833 ... 1265954] tree.
+Creating split [1028589 ... 1107710] tree.
+Querying split [1028589 ... 1107710] tree.
+Creating split [0 ... 79122] tree.
+Querying split [0 ... 79122] tree.
+Creating split [791223 ... 870344] tree.
+Querying split [791223 ... 870344] tree.
+Creating split [79123 ... 158245] tree.
+Querying split [79123 ... 158245] tree.
+Creating split [553857 ... 632978] tree.
+Querying split [553857 ... 632978] tree.
+Creating split [632979 ... 712100] tree.
+Querying split [632979 ... 712100] tree.
+Creating split [949467 ... 1028588] tree.
+Querying split [949467 ... 1028588] tree.
+Creating split [712101 ... 791222] tree.
+Querying split [712101 ... 791222] tree.
+Creating split [158246 ... 237368] tree.
+Querying split [158246 ... 237368] tree.
+Flattening.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_N8_G15_0.fits.
+Finished in 0.26594858169555663 mins.

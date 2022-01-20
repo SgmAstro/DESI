@@ -19,8 +19,8 @@ def run_randomqa():
     for field in fields:
         print('Running random QA for field {}'.format(field))
         
-        pm.execute_notebook('docs/nb/randoms_qa.ipynb',\
-                            'test/pm_randoms_qa_{}.ipynb'.format(field),\
+        pm.execute_notebook('docs/nb/randoms_n8_qa.ipynb',\
+                            'test/pm_randoms_n8_{}_qa.ipynb'.format(field),\
                             parameters=dict(field=field),\
                             kernel='lumfn',\
                             )
@@ -29,22 +29,22 @@ def run_goldqa():
     print('Running gold QA')
 
     pm.execute_notebook('docs/nb/zmax_catQA.ipynb',\
-                            'test/zmax_catQA.ipynb',\
+                            'test/pm_zmax_catQA.ipynb',\
                             kernel='lumfn',\
                             )
 
     pm.execute_notebook('docs/nb/kE_catQA.ipynb',\
-                        'test/kE_catQA.ipynb',\
+                        'test/pm_kE_catQA.ipynb',\
                         kernel='lumfn',\
                         )
 
     pm.execute_notebook('docs/nb/ddp_QA.ipynb',\
-                        'test/ddp_QA.ipynb',\
+                        'test/pm_ddp_QA.ipynb',\
                         kernel='lumfn',\
                         )
 
     pm.execute_notebook('docs/nb/delta8_qa.ipynb',\
-                        'test/delta8_qa.ipynb',\
+                        'test/pm_delta8_qa.ipynb',\
                         kernel='lumfn',\
                         )
 

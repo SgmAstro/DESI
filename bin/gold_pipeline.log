@@ -1,0 +1,233 @@
+====
+Starting job 4787605 at Wed 19 Jan 23:16:17 GMT 2022 for user dc-wils7.
+Running on nodes: m5154
+====
+RESET SET TO BE 0
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma/home/durham/dc-wils7/data/GAMA4/
+Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
+Running gold pipeline; logging to logs/gama_gold.log
+Running gen_kEcat.py; logging to logs/gama_kE.log
+Running gen_zmax_cat.py; logging to logs/gama_zama.log
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The occurrence of roundoff error is detected, which prevents 
+  the requested tolerance from being achieved.  The error may be 
+  underestimated.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/.conda/envs/lumfn/lib/python3.9/site-packages/numpy/lib/function_base.py:2246: RuntimeWarning: invalid value encountered in _integral_comoving_distance_z1z2_scalar (vectorized)
+  outputs = ufunc(*inputs)
+/cosma/home/durham/dc-wils7/.local/lib/python3.9/site-packages/astropy/cosmology/flrw.py:1072: IntegrationWarning: The integral is probably divergent, or slowly convergent.
+  return quad(self._inv_efunc_scalar, z1, z2, args=self._inv_efunc_scalar_args)[0]
+/cosma/home/durham/dc-wils7/DESI/cosmo.py:14: RuntimeWarning: invalid value encountered in log10
+  return 5. * np.log10(cosmo.luminosity_distance(zs).value) + 25.
+Running ddp_limits.py; logging to logs/ddp_limits.log
+Running gen_ddp_cat.py; logging to logs/gama_ddp.log
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP1_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP2_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMIN' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_ZMAX' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_NGAL' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'DDP3_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Running gen_gold_lf.py; logging to logs/gama_lumfn.log
+
+Done.

@@ -1,0 +1,15 @@
+Creating boundary tree
+Querying boundary tree for split [1092233...1191525]
+Querying boundary tree for split [992940...1092232]
+Querying boundary tree for split [893646...992939]
+Querying boundary tree for split [595764...695057]
+Querying boundary tree for split [794352...893645]
+Querying boundary tree for split [297882...397175]
+Querying boundary tree for split [397176...496469]
+Querying boundary tree for split [695058...794351]
+Querying boundary tree for split [496470...595763]
+Querying boundary tree for split [0...99293]
+Querying boundary tree for split [198588...297881]
+Shuffling.
+Writing /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G12_0.fits.
+Finished in 0.055291517575581865 mins.

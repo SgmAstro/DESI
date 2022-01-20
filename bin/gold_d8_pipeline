@@ -44,7 +44,7 @@ cd $CODE_ROOT
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log'
 
-python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
+# python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 

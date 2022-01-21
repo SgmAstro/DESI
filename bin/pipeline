@@ -14,8 +14,9 @@ export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
 export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
 
 if (( $RESET > 0 )); then
+    echo
     echo '>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<.'
-
+    echo 
     rm $GOLD_DIR/*.fits
     rm $RANDOMS_DIR/*$FIELD*.fits
     rm $CODE_ROOT/logs/*.log
@@ -88,3 +89,4 @@ sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_DDP_D8_G9_JOBID:$RAND_
 
 echo 
 echo '>>>>>  DONE.  <<<<<'
+echo

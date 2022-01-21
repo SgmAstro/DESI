@@ -5,7 +5,7 @@ from   cosmo import volcom
 
 
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
-    dat = Table(dat, copy=True)
+    dat      = Table(dat, copy=True)
 
     if 'IN_SAMPLE' in dat.dtype.names:
         # e.g. FILLFACTOR > 0.8 cut   

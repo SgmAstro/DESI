@@ -117,9 +117,9 @@ dat.pprint()
 ##  Derived.
 dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
-dat['DDP1_DELTA8'] = ((dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR'])) - 1. 
-dat['DDP2_DELTA8'] = ((dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR'])) - 1. 
-dat['DDP3_DELTA8'] = ((dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / dat['FILLFACTOR'])) - 1. 
+dat['DDP1_DELTA8'] = (dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR']) - 1. 
+dat['DDP2_DELTA8'] = (dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR']) - 1. 
+dat['DDP3_DELTA8'] = (dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / dat['FILLFACTOR']) - 1. 
 
 for x in dat.meta.keys():
     print('{}\t\t{}'.format(x.ljust(20), dat.meta[x]))

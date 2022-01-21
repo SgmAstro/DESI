@@ -39,9 +39,9 @@ dat.pprint()
 # 1 cat. per field (G9, 12, 15).
 
 sclass_cut = (dat['SURVEY_CLASS'] >= 4)
-z_cut      = (dat['ZGAMA'] > 0.039) & (dat['ZGAMA'] < 0.263)
-r_cut      = (dat['R_PETRO'] > 12)
-nq_cut     = (dat['NQ'] >= 3)
+z_cut = (dat['ZGAMA'] > 0.039) & (dat['ZGAMA'] < 0.263)
+r_cut = (dat['R_PETRO'] > 12)
+nq_cut = (dat['NQ'] >= 3)
 
 print(np.mean(sclass_cut))
 print(np.mean(z_cut))
@@ -49,6 +49,7 @@ print(np.mean(r_cut))
 print(np.mean(nq_cut))
 
 dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
+dat.pprint()
 
 dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'].data)
 dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
@@ -74,7 +75,4 @@ if not os.path.isdir(os.environ['GOLD_DIR']):
 
     os.makedirs(os.environ['GOLD_DIR'])
 
-# 113687 vs TMR 80922.
-dat.meta['GOLD_NGAL'] = len(dat)
-dat.pprint()
 dat.write(os.environ['GOLD_DIR'] + '/gama_gold.fits', format='fits', overwrite=True)

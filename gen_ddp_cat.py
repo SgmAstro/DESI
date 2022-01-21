@@ -3,7 +3,7 @@ import argparse
 import fitsio
 
 from   astropy.table import Table
-from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
+from   ddp import get_ddps
 
 
 parser = argparse.ArgumentParser(description='Gen ddp cat.')
@@ -23,13 +23,11 @@ dat    = Table.read(fpath)
 Area   = dat.meta['AREA']
 
 print('Retrieved Area: {}'.format(Area))
+
 print('Judging DDP.')
 
-dat['DDP'], zlims = get_ddps(Area, dat['MALL_0P0'], dat['ZGAMA'])
+dat['DDP'], zlims = get_ddps(Area, dat['MCOLOR_0P0'], dat['ZGAMA'])
 dat.meta.update(zlims)
-dat.meta.update({'TMR_DDP1': str(tmr_DDP1),\
-                {'TMR_DDP2': str(tmr_DDP2),\
-                {'TMR_DDP3': str(tmr_DDP1)})
 
 print(zlims)
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p cosma                                                                                                                                                                                    
-#SBATCH -t 300                                                                                                                                                                                      
+#SBATCH -t 02:00:00 
 #SBATCH -o rand_ddp1_pipeline.log                                                                                                                                                                    
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
@@ -21,7 +21,7 @@ else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
-if [[ -z "${DRYRUN}" ]]; then
+if [ -z ${DRYRUN+x} ]; then
   # export DRYRUN='' 
   export DRYRUN='--dryrun'
 else

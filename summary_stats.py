@@ -13,14 +13,13 @@ sys.path.append('{}/DESI'.format(home))
 
 from   delta8_limits import delta8_tier, d8_limits
 
-dat   = Table.read(os.environ['GOLD_DIR'] + 'gama_gold_ddp.fits')
-names = ['ZMIN', 'ZMAX', 'NGAL', 'VZ', 'DENS']
+dat      = Table.read(os.environ['GOLD_DIR'] + 'gama_gold_ddp.fits')
+names    = ['ZMIN', 'ZMAX', 'NGAL', 'VZ', 'DENS']
 
 tmr_DDPs = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
 
-result = Table()
-
-rows = []
+result   = Table()
+rows     = []
 
 print('\n\n')
 
@@ -56,7 +55,7 @@ for idx in np.arange(4):
 print('\n\n')
 
 # Generate Table 3 of McNaught-Roberts (2014).
-result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8', 'fd8'])
+result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8 [1e3]', 'fd8'])
 result.pprint()
 
 print('\n\nDone.\n\n')

@@ -8,9 +8,9 @@ def renormalise_d8LF(cat, fdelta):
     
     cat = Table(cat, copy=True)
 
-    cat['PHI_N']           *= cat['PHI_N']
-    cat['PHI_N_ERROR']     *= cat['PHI_N_ERROR']
-    cat['PHI_IVMAX']       *= cat['PHI_IVMAX']
-    cat['PHI_IVMAX_ERROR'] *= cat['PHI_IVMAX_ERROR']
+    cat['PHI_N']           /= fdelta
+    cat['PHI_N_ERROR']     /= fdelta
+    cat['PHI_IVMAX']       /= fdelta
+    cat['PHI_IVMAX_ERROR'] /= fdelta
     
     return cat

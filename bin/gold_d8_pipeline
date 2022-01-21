@@ -40,23 +40,25 @@ cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
 
-# Dependency on randoms bd files, for fillfactor and bound_dist.
-# Hence field argument. 
-echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log'
-
-# python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
-
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 
 # References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
 python gen_gold_lf.py $DRYRUN > $CODE_ROOT/logs/gama_lumfn.log
 
+# Dependency on randoms bd files, for fillfactor and bound_dist.
+# Hence field argument. 
+echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log'
+
+# Defaults to randoms_ddp1.
+python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
+
 # echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
-# python gen_gold_lf.py --density_split --field G9  $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G9.log
-# python gen_gold_lf.py --density_split --field G12 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G12.log
-# python gen_gold_lf.py --density_split --field G15 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G15.log
+# Dependency on randoms_ddp1.
+python gen_gold_lf.py --density_split --field G9  $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G9.log
+python gen_gold_lf.py --density_split --field G12 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G12.log
+python gen_gold_lf.py --density_split --field G15 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G15.log
 
 echo
 echo 'Done.'

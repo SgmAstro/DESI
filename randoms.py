@@ -19,8 +19,8 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
 # Defaults to GAMA Gold limits. 
-parser.add_argument('--zmin', help='Minimum redshift limit', default=0.039)
-parser.add_argument('--zmax', help='Maximum redshift limit', default=0.263)
+parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
+parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
 
 args    = parser.parse_args()
 field   = args.field.upper()

@@ -1,1 +1,6 @@
 docs/nb/.ipynb_checkpoints
+logs/
+*~
+bin/*~
+bin/test.sh
+

@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH -p cosma                                                                                                                                                                                    
 #SBATCH -t 300                                                                                                                                                                                      
-#SBATCH -o rand_pipeline.log                                                                                                                                                                         
+#SBATCH -o rand_ddp1_pipeline.log                                                                                                                                                                    
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
 #SBATCH --ntasks-per-node=1    
 #SBATCH --open-mode=append
 
-# Submit with:  sbatch rand_pipeline
-# to qos of [debug, regular]
+# Submit with:  sbatch rand_ddp1_pipeline
+# to qos of []
 # See status with e.g. squeue -u mjwilson
 # 
 
@@ -22,16 +22,10 @@ else
 fi
 
 if [[ -z "${DRYRUN}" ]]; then
-  export DRYRUN='' 
-  # export DRYRUN='--dryrun'
+  # export DRYRUN='' 
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
-fi
-
-if [[ -z "${RESET}" ]]; then
-  export RESET=0
-else
-  echo  'RESET SET TO BE '$RESET
 fi
 
 export CODE_ROOT=$HOME/DESI/
@@ -54,23 +48,36 @@ cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
 
-if (( $RESET > 0 )); then
-    echo '>>>>>  TRASHING RANDOMS_DIR FOR '$FIELD' <<<<<'
-    
-    rm $RANDOMS_DIR/*$FIELD*.fits
+echo 'Running randoms ddp pipeline for field '$FIELD
+
+echo 'Generating DDP randoms.'
+
+
+DDP_FILE=$GOLD_DIR/gama_gold_ddp${DRYRUN/'--'/'_'}.fits
+
+if [ -f "$DDP_FILE" ]; then
+    echo "Found DDP file"
+else
+    echo $DDP_FILE' does not exist.'
+    exit 1
 fi
 
+ddp1_zmin=$(fitsheader $DDP_FILE -k 'DDP1_ZMIN' -e 1)
+ddp1_zmin=$(echo $ddp1_zmin | cut -d " " -f 9)
 
-echo 'Running randoms pipeline for field '$FIELD
+ddp1_zmax=$(fitsheader $DDP_FILE -k 'DDP1_ZMAX' -e 1)
+ddp1_zmax=$(echo $ddp1_zmax | cut -d " " -f 9)
 
-# Serial code (--dryrun)
-python randoms.py --field $FIELD $DRYRUN > $CODE_ROOT/logs/randoms_$FIELD.log
+echo 'DDP1_ZMIN:  '$ddp1_zmin
+echo 'DDP1_ZMAX:  '$ddp1_zmax
+
+python ~/DESI/randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN > $CODE_ROOT/logs/randoms_ddp_$FIELD.log
 
 # Uses Pool, should be on interactive. 
-python fillfactor.py --field $FIELD $DRYRUN > $CODE_ROOT/logs/fillfactor_$FIELD.log
+python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/fillfactor_$FIELD.log
 
 # Uses Pool, should be on interactive.
-python bound_dist.py --field $FIELD $DRYRUN > $CODE_ROOT/logs/bound_dist_$FIELD.log
+python bound_dist.py --field $FIELD --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/bound_dist_$FIELD.log
 
 # TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest

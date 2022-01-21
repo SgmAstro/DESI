@@ -28,8 +28,8 @@ print('Judging DDP.')
 dat['DDP'], zlims = get_ddps(Area, dat['MALL_0P0'], dat['ZGAMA'])
 dat.meta.update(zlims)
 dat.meta.update({'TMR_DDP1': str(tmr_DDP1),\
-                {'TMR_DDP2': str(tmr_DDP2),\
-                {'TMR_DDP3': str(tmr_DDP1)})
+                 'TMR_DDP2': str(tmr_DDP2),\
+                 'TMR_DDP3': str(tmr_DDP1)})
 
 print(zlims)
 

@@ -13,7 +13,7 @@ from   gama_limits import gama_field
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
-parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms')
+parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms_ddp1')
 
 args   = parser.parse_args()
 dryrun = args.dryrun

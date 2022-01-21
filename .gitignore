@@ -3,4 +3,4 @@ logs/
 *~
 bin/*~
 bin/test.sh
-
+bin/*.log

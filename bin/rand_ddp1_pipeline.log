@@ -43,3 +43,90 @@ Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
 Running randoms ddp pipeline for field G15
 Generating DDP randoms.
 /cosma/home/durham/dc-wils7/data/GAMA4//gama_gold_ddp_dryrun.fits does not exist.
+====
+Starting job 4804270 at Fri 21 Jan 14:19:15 GMT 2022 for user dc-wils7.
+Running on nodes: m5133
+====
+FIELD SET TO BE G9
+DRYRUN SET TO BE 
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma/home/durham/dc-wils7/data/GAMA4/
+Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
+Running randoms ddp pipeline for field G9
+Generating DDP randoms.
+Found DDP file
+DDP1_ZMIN:  0.0390699990093708
+DDP1_ZMAX:  0.2629899978637695
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Done.
+====
+Starting job 4804271 at Fri 21 Jan 14:20:05 GMT 2022 for user dc-wils7.
+Running on nodes: m5133
+====
+FIELD SET TO BE G12
+DRYRUN SET TO BE 
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma/home/durham/dc-wils7/data/GAMA4/
+Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
+Running randoms ddp pipeline for field G12
+Generating DDP randoms.
+Found DDP file
+DDP1_ZMIN:  0.0390699990093708
+DDP1_ZMAX:  0.2629899978637695
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Done.
+====
+Starting job 4804272 at Fri 21 Jan 14:20:51 GMT 2022 for user dc-wils7.
+Running on nodes: m5133
+====
+FIELD SET TO BE G15
+DRYRUN SET TO BE 
+
+Environment:
+
+Code: /cosma/home/durham/dc-wils7/DESI/
+Gold output dir.: /cosma/home/durham/dc-wils7/data/GAMA4/
+Randoms output dir: /cosma/home/durham/dc-wils7/data/GAMA4/randoms/
+Running randoms ddp pipeline for field G15
+Generating DDP randoms.
+Found DDP file
+DDP1_ZMIN:  0.0390699990093708
+DDP1_ZMAX:  0.2629899978637695
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'BOUND_PERCENT' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'RAND_DENS' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'NRAND8_PERR' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+WARNING: VerifyWarning: Keyword name 'FILLFACTOR_INFRAC' is greater than 8 characters or contains characters not allowed by the FITS standard; a HIERARCH card will be created. [astropy.io.fits.card]
+Done.

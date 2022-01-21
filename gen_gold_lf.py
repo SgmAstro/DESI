@@ -154,19 +154,19 @@ if __name__ == '__main__':
                 all_rands = [Table.read(_x) for _x in all_rpaths]
 
             # Calculated for DDP1 redshift limits. 
-            scale  = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])
+            fdelta = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])
             d8     = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in all_rands])
 
-            print('Field vol renormalization: {}'.format(scale))
+            print('Field vol renormalization: {}'.format(fdelta))
             print('Field d8  renormalization: {}'.format(d8))
 
-            scale = scale.mean()
-            d8    = d8.mean()
+            fdelta = fdelta.mean()
+            d8     = d8.mean()
 
-            print('Found mean vol. renormalisation scale of {:.3f}'.format(scale))
+            print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
             
-            result = renormalise_d8LF(result, 1. / scale)
+            result = renormalise_d8LF(result, fdelta)
 
             result.pprint()
 
@@ -177,7 +177,7 @@ if __name__ == '__main__':
             sch   *= (1. + d8) / (1. + 0.007)
 
             ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
-            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = scale
+            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = fdelta
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = d8
 
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))

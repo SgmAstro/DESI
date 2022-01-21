@@ -13,9 +13,9 @@
 # See status with e.g. squeue -u mjwilson                                                                                        
 #
 
-if [[ -z "${DRYRUN}" ]]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+if [ -z ${DRYRUN+x} ]; then
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
@@ -56,9 +56,9 @@ python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
 # Dependency on randoms_ddp1.
-python gen_gold_lf.py --density_split --field G9  $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G9.log
-python gen_gold_lf.py --density_split --field G12 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G12.log
-python gen_gold_lf.py --density_split --field G15 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G15.log
+python gen_gold_lf.py --density_split --field G9  --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G9.log
+python gen_gold_lf.py --density_split --field G12 --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G12.log
+python gen_gold_lf.py --density_split --field G15 --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G15.log
 
 echo
 echo 'Done.'

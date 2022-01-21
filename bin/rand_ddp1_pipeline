@@ -21,7 +21,7 @@ else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
-if [[ -z "${DRYRUN}" ]]; then
+if [ -z ${DRYRUN+x} ]; then
   # export DRYRUN='' 
   export DRYRUN='--dryrun'
 else

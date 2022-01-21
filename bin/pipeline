@@ -1,8 +1,8 @@
 #!/bin/bash
 export RESET=1
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'                                                                                                                                                                           
+# export DRYRUN=''
+export DRYRUN='--dryrun'                                                                                                                                                                           
 
 export CODE_ROOT=$HOME/DESI/
 
@@ -37,6 +37,7 @@ export RESET=0
 # Generate all steps up to reference LF. 
 GOLD_JOBID=$(sbatch --parsable --export=DRYRUN=$DRYRUN,RESET=$RESET gold_pipeline)
 
+echo
 echo '>>>>> GOLD JOB ID <<<<<'
 echo $GOLD_JOBID
 
@@ -45,25 +46,45 @@ RAND_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET
 RAND_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
 RAND_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
 
+# Dependency on gold ddp cat.
+RAND_DDP_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET  --dependency=afterok:$GOLD_JOBID rand_ddp1_pipeline)
+RAND_DDP_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET --dependency=afterok:$GOLD_JOBID rand_ddp1_pipeline)
+RAND_DDP_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET --dependency=afterok:$GOLD_JOBID rand_ddp1_pipeline)
+
+echo
 echo ' >>>>> RANDOM JOB IDS <<<<<'
 echo $RAND_G9_JOBID
 echo $RAND_G12_JOBID
 echo $RAND_G15_JOBID
-echo '-----'
+
+echo $RAND_DDP_G9_JOBID
+echo $RAND_DDP_G12_JOBID
+echo $RAND_DDP_G15_JOBID
 
 # Requires ddp cat, & randoms; no reset required.  
 RAND_D8_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_G9_JOBID  rand_d8_pipeline)
 RAND_D8_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G12_JOBID rand_d8_pipeline)
 RAND_D8_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_G15_JOBID rand_d8_pipeline)
 
+RAND_DDP_D8_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN  --dependency=afterok:$GOLD_JOBID:$RAND_DDP_G9_JOBID  rand_ddp1_d8_pipeline)
+RAND_DDP_D8_G12_JOBID=$(sbatch --parsable --export=FIELD=G12,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_DDP_G12_JOBID rand_ddp1_d8_pipeline)
+RAND_DDP_D8_G15_JOBID=$(sbatch --parsable --export=FIELD=G15,DRYRUN=$DRYRUN --dependency=afterok:$GOLD_JOBID:$RAND_DDP_G15_JOBID rand_ddp1_d8_pipeline)
+
+echo
 echo ' >>>>> RANDOM D8 JOB IDS <<<<<'
 echo $RAND_D8_G9_JOBID
 echo $RAND_D8_G12_JOBID
 echo $RAND_D8_G15_JOBID
-echo '-----'
 
-echo '>>>>>  DEPENDENT JOBS  <<<<<'
+echo $RAND_DDP_D8_G9_JOBID
+echo $RAND_DDP_D8_G12_JOBID
+echo $RAND_DDP_D8_G15_JOBID
 
+echo
+echo '>>>>>  GOLD D8 JOB IDS  <<<<<'
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
 # Note: runs all fields simultaneously.                                                                                                                                         
-sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_D8_G9_JOBID:$RAND_D8_G12_JOBID:$RAND_D8_G15_JOBID gold_d8_pipeline
+sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_DDP_D8_G9_JOBID:$RAND_DDP_D8_G12_JOBID:$RAND_DDP_D8_G15_JOBID gold_d8_pipeline
+
+echo 
+echo '>>>>>  DONE.  <<<<<'

@@ -2,8 +2,8 @@ import os
 import numpy as np
 import astropy.units as u
 
-from astropy.coordinates import SkyCoord
-from astropy.table import Table, vstack, hstack
+from   astropy.coordinates import SkyCoord
+from   astropy.table import Table, vstack, hstack
 
 
 root = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'

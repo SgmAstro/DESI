@@ -28,11 +28,20 @@ def run_randomqa():
 def run_goldqa():
     print('Running gold QA')
 
-    pm.execute_notebook('docs/nb/zmax_catQA.ipynb',\
-                            'test/pm_zmax_catQA.ipynb',\
-                            kernel='lumfn',\
-                            )
+    tests = ['zmax_catQA', 'kE_catQA', 'ddp_QA', 'lumfn', 'delta8_qa']
 
+    for test in tests:
+        try:
+            pm.execute_notebook('docs/nb/{}.ipynb'.format(test),\
+                                'test/pm_{}.ipynb'.format(test),\
+                                kernel='lumfn',\
+            )
+
+        except Error as E:
+            print('Failed on {} test with error: '.format(test))
+            print(E)
+
+    '''
     pm.execute_notebook('docs/nb/kE_catQA.ipynb',\
                         'test/pm_kE_catQA.ipynb',\
                         kernel='lumfn',\
@@ -52,7 +61,7 @@ def run_goldqa():
                         'test/pm_delta8_qa.ipynb',\
                         kernel='lumfn',\
                         )
-
+    '''
     # jack knife qa. 
     # d8 LF. 
     # desi qa. 

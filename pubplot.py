@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-def set_size(width, fraction=1):
+def set_size(width=240, fraction=1):
     """ Set aesthetic figure dimensions to avoid scaling in latex.
 
     Parameters
@@ -44,6 +44,8 @@ nice_fonts = {
     "font.family": "serif",
     "font.serif" : "Times New Roman",
 }
+
+figsize = set_size(width)
 
 matplotlib.rcParams.update(nice_fonts)
 

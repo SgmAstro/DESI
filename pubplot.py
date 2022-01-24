@@ -48,7 +48,6 @@ nice_fonts = {
     "font.serif" : "Times New Roman",
 }
 
-figsize = set_size(width)
-
+matplotlib.rcParams['figure.figsize'] = set_size()
 matplotlib.rcParams.update(nice_fonts)
 

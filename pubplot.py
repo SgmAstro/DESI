@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-def set_size(width=240, fraction=1):
+def set_size(width=240, fraction=1, equal=False):
     """ Set aesthetic figure dimensions to avoid scaling in latex.
 
     Parameters
@@ -26,15 +26,18 @@ def set_size(width=240, fraction=1):
     # Convert from pt to inches
     inches_per_pt = 1 / 72.27
 
-    # Golden ratio to set aesthetic figure height
-    golden_ratio = (5 ** 0.5 - 1) / 2
+    if equal == False:
+        golden_ratio = (5 ** 0.5 - 1) / 2
+    else:
+        # height = width
+        golden_ratio = 1.
 
     # Figure width in inches
     fig_width_in = fig_width_pt * inches_per_pt
     # Figure height in inches
     fig_height_in = fig_width_in * golden_ratio
 
-    return fig_width_in, fig_height_in
+    return (fig_width_in, fig_height_in)
 
 
 plt.style.use(os.environ['CODE_ROOT'] + '/style.mplstyle')

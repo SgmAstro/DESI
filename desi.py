@@ -8,23 +8,23 @@ from   ros_tools import tile2rosette, calc_rosr
 from   gama_limits import gama_field
 
 
-root  = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
-tpix  = Table.read(root + 'tilepix.fits')
+root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
+tpix   = Table.read(root + 'tilepix.fits')
 
-tiles = np.arange(1000)
-ros   = np.array([tile2rosette(x) for x in tiles])
+tiles  = np.arange(1000)
+ros    = np.array([tile2rosette(x) for x in tiles])
 
 # https://desi.lbl.gov/trac/wiki/SurveyOps/OnePercent
 # G12: [1,2]; G15: [8,9,10, 17]
 
-gama  = np.isin(ros, [1,2,8,9,10,17])
+gama   = np.isin(ros, [1,2,8,9,10,17])
 
-tiles = tiles[gama]
+tiles  = tiles[gama]
 
-tpix  = tpix[np.isin(tpix['TILEID'].data, tiles)]
-hps   = np.unique(tpix['HEALPIX'].data)
+tpix   = tpix[np.isin(tpix['TILEID'].data, tiles)]
+hps    = np.unique(tpix['HEALPIX'].data)
 
-root += '/sv3/bright/'
+root  += '/sv3/bright/'
 
 fpaths = [root + '{}/{}/redrock-sv3-bright-{}.fits'.format(str(x)[:3], x, x) for x in hps]
 fpaths = [x for x in fpaths if os.path.exists(x)]
@@ -100,6 +100,8 @@ idx, d2d, d3d = c.match_to_catalog_3d(catalog)
 
 # Now idx are indices into catalog that are the closest objects to each of the coordinates in c, d2d are the on-sky distances between them
 gold_match   = gold[idx]
+
+del  gold_match['FIELD']
 
 desi_zs      = hstack([desi_zs, gold_match])
 desi_zs['GAMA_SEP'] = d2d.to(u.arcsec)

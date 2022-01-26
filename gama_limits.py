@@ -11,14 +11,15 @@ def gama_field(ras, decs):
     result = np.array(['None'] * len(ras), dtype=np.str)
 
     for field in fields:
-        ra_min = gama_limits[field]['ra_min']
-        ra_max = gama_limits[field]['ra_max']
+        ra_min   = gama_limits[field]['ra_min']
+        ra_max   = gama_limits[field]['ra_max']
 
-        dec_min = gama_limits[field]['dec_min']
-        dec_max = gama_limits[field]['dec_max']
+        dec_min  = gama_limits[field]['dec_min']
+        dec_max  = gama_limits[field]['dec_max']
 
         in_field = (ras >= ra_min) & (ras <= ra_max) & (decs >= dec_min) & (decs <= dec_max)
 
         result[in_field] = field
 
-    return result
+    return  result
+

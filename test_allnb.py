@@ -11,7 +11,7 @@ def test_allnbs():
 
     run_goldqa()
 
-    # run_delta8qa()
+    run_delta8qa()
     
     print('Done.')
     

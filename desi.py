@@ -6,8 +6,9 @@ from   astropy.coordinates import SkyCoord
 from   astropy.table import Table, vstack, hstack
 from   ros_tools import tile2rosette
 
-root = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
-tpix = Table.read(root + 'tilepix.fits')
+
+root  = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
+tpix  = Table.read(root + 'tilepix.fits')
 
 tiles = np.arange(1000)
 ros   = np.array([tile2rosette(x) for x in tiles])
@@ -35,9 +36,11 @@ print('Gathering DESI zs.')
 for x in fpaths:
     zbest = Table.read(x, hdu='REDSHIFTS')
     fmap  = Table.read(x, hdu='FIBERMAP')
+    efmap = Table.read(x, hdu='EXP_FIBERMAP')
 
     # row ordered.
     assert np.all(zbest['TARGETID'] == fmap['TARGETID'])
+    assert np.all(zbest['TARGETID'] == efmap['TARGETID'])
 
     del fmap['TARGETID']
     
@@ -58,6 +61,10 @@ fpath = root + '/GAMA4/gama_gold.fits'
 gold = Table.read(fpath)
 gold.pprint()
 
+##  Cut DESI to good redshifts.
+desi_zs       = desi_zs[(desi_zs['ZWARN'] == 0) & (desi_zs['DELTACHI2'] > 40)]
+
+
 # DESI
 c             = SkyCoord(ra=desi_zs['TARGET_RA']*u.degree, dec=desi_zs['TARGET_DEC']*u.degree)
 
@@ -73,9 +80,9 @@ gold_match   = gold[idx]
 desi_zs      = hstack([desi_zs, gold_match])
 desi_zs['GAMA_SEP'] = d2d
 
-max_sep      = 1.0 * u.arcsec
+max_sep      = 0.5 * u.arcsec
 
-print(np.mean(desi_zs['GAMA_SEP'] < max_sep))
+print('Fraction matched to 0.5 arcseconds: {:.6f}'.format(np.mean(desi_zs['GAMA_SEP'] < max_sep)))
 
 opath = fpath.replace('gama', 'desi')
 

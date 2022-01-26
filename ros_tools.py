@@ -1,3 +1,7 @@
+# https://github.com/desihub/LSS/blob/3d65b099a763a41179cb8e706f85482b3633a254/py/LSS/SV3/cattools.py#L21
+
+import numpy as np
+
 def tile2rosette(tile):
     if tile < 433:
         return (tile-1)//27

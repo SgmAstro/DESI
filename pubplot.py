@@ -6,7 +6,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-def set_size(width=240, fraction=1):
+def set_size(width=240, fraction=2):
     """ Set aesthetic figure dimensions to avoid scaling in latex.
 
     Parameters

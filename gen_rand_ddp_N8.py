@@ -66,8 +66,14 @@ rand.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
 ddp1_zmin = dat.meta['DDP1_ZMIN']
 ddp1_zmax = dat.meta['DDP1_ZMAX']
+ddp2_zmin = dat.meta['DDP2_ZMIN']
+ddp2_zmax = dat.meta['DDP2_ZMAX']
+ddp3_zmin = dat.meta['DDP3_ZMIN']
+ddp3_zmax = dat.meta['DDP3_ZMAX']
 
 rand['IN_DDP1']     = (rand['Z'] > ddp1_zmin) & (rand['Z'] < ddp1_zmax)
+rand['IN_DDP2']     = (rand['Z'] > ddp2_zmin) & (rand['Z'] < ddp2_zmax)
+rand['IN_DDP3']     = (rand['Z'] > ddp3_zmin) & (rand['Z'] < ddp3_zmax)
 
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.

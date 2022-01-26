@@ -1,7 +1,7 @@
-# https://github.com/desihub/LSS/blob/3d65b099a763a41179cb8e706f85482b3633a254/py/LSS/SV3/cattools.py#L21
-
 import numpy as np
 
+
+# https://github.com/desihub/LSS/blob/3d65b099a763a41179cb8e706f85482b3633a254/py/LSS/SV3/cattools.py#L21  
 def tile2rosette(tile):
     if tile < 433:
         return (tile-1)//27
@@ -18,8 +18,6 @@ def tile2rosette(tile):
         if tile > 480:
             return tile//30    
     return 999999 #shouldn't be any more?
-
-
 
 def calc_rosr(rosn,ra,dec):
     #given rosetter number and ra,dec, calculate distance from center 

@@ -154,18 +154,19 @@ for tier in utiers:
     print()
     print('---- d{} ----'.format(tier))
 
-    isin  = (dat['DDP1_DELTA8_TIER'].data == tier)    
+    isin     = (dat['DDP1_DELTA8_TIER'].data == tier)    
     to_write = dat[isin]
+
+    dat.meta['DDP1_D{}_NGAL'.format(tier)] = len(to_write)
 
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
 
     for field in ['G9', 'G12', 'G15']:    
-        isin = to_write['FIELD'] == field
+        isin           = to_write['FIELD'] == field
         to_write_field = to_write[isin]
 
-        opath = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
-    
+        opath       = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
         opath_field = opath.replace('gold', 'gold_{}'.format(field))
 
         print('Writing {}.'.format(opath_field))

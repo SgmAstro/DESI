@@ -1,6 +1,7 @@
 '''
 Generate publication ready plots
 '''
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -31,13 +32,14 @@ def set_size(width=240, fraction=1):
 
     # Figure width in inches
     fig_width_in = fig_width_pt * inches_per_pt
+
     # Figure height in inches
     fig_height_in = fig_width_in * golden_ratio
 
-    return fig_width_in, fig_height_in
+    return  (fig_width_in, fig_height_in)
 
 
-plt.style.use(os.environ['CODE_ROOT'] + '/style.mplstyle')
+plt.style.use(os.environ['HOME'] + '/DESI/style.mplstyle')
 
 nice_fonts = {
     "text.usetex": True,
@@ -45,7 +47,7 @@ nice_fonts = {
     "font.serif" : "Times New Roman",
 }
 
-figsize = set_size(width)
+plt.rcParams["figure.figsize"] = set_size()
 
 matplotlib.rcParams.update(nice_fonts)
 

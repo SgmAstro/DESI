@@ -1,32 +1,16 @@
 import os
+import sys
 import numpy as np
 import astropy.units as u
 
 from   astropy.coordinates import SkyCoord
 from   astropy.table import Table, vstack, hstack
 
+sys.path.append('{}/DESI'.format(os.environ['HOME']))
+from   ros_tools import tile2rosette, calc_rosr
 
 root = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
 tpix = Table.read(root + 'tilepix.fits')
-
-# https://github.com/desihub/LSS/blob/3d65b099a763a41179cb8e706f85482b3633a254/py/LSS/SV3/cattools.py#L21
-def tile2rosette(tile):
-    if tile < 433:
-        return (tile-1)//27
-    else:
-        if tile >= 433 and tile < 436:
-            return 13
-        if tile >= 436 and tile < 439:
-            return 14
-        if tile >= 439 and tile < 442:
-            return 15
-        if tile >= 442 and tile <=480:
-            return (tile-442)//3
-            
-        if tile > 480:
-            return tile//30    
-    return 999999 #shouldn't be any more?
-
 
 tiles = np.arange(1000)
 ros   = np.array([tile2rosette(x) for x in tiles])

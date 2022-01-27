@@ -1,0 +1,73 @@
+#!/usr/bin/bash     
+#
+# ----  serialorparallel  ----
+# 
+#  Note: 
+#    achieves a clean environment for this scipt:
+#  
+#
+#
+#  RAND_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
+#
+#
+#  Testing:  
+#    export eflags='FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET'
+#
+#
+#  Solves:
+#    RAND_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
+#
+#  Wrap a similar call to run in serial (bash), or parallel (sbatch).
+#
+#
+#  Example usage
+#
+#  ./serialorparallel -e $eflags -s rand_pipeline
+
+unset dependency
+unset parsable
+unset export
+unset script
+
+while getopts 'd:p:e:s' flag;
+do
+    case "${flag}" in
+        d) dependency=${OPTARG};;
+        p) parsable=${OPTARG};;
+        e) export=${OPTARG};;
+	s) script=${OPTARG};;
+    esac
+done
+
+echo $script
+echo
+echo
+echo "sbatch $parsable --export=$export $dependency $script"
+echo
+echo
+
+parts=($(echo "$export" | tr ',' '\n'))
+
+# echo $parts
+
+for part in "${parts[@]}"
+do
+    blah=($(echo "$part" | tr '=' '\n'))
+
+    var="${blah[0]}"
+    val="${blah[1]}"
+
+    # var=($(echo $var | sed 's/=//g'))
+    # val=($(echo $val | sed 's/=//g'))
+ 
+    # echo
+    # echo $var
+    # echo $val
+  
+    echo "export $var=$val"
+    echo
+done
+
+echo $script
+echo
+echo

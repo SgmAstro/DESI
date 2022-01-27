@@ -14,8 +14,9 @@
 #
 #  Example usage
 #
-#  ./serialorparallel -e $eflags -d $GOLD_JOBID -s rand_pipeline
+#  ./serialorparallel -p 1 -e FIELD=G9,DRYRUN='__dryrun' -d 99 -s rand_pipeline
 
+unset parallel
 unset export
 unset dependency
 unset script
@@ -23,6 +24,9 @@ unset script
 # dependency: a comma separated list of jobids. 
 # export: a comma separated list of env vars, VAR=VAL.
 # script: script to run, e.g. rand_pipeline
+
+echo
+echo
 
 while getopts ":p:d:e:s:" flag;
 do
@@ -34,36 +38,37 @@ do
     esac
 done
 
-# if parallel:
-echo
-echo
-echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
-echo
-echo
+if [ "$parallel" -eq "1" ]; then
+   # sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script     
 
-# if not parallel:
-parts=($(echo "$export" | tr ',' '\n'))
+   echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
+   echo
+   echo
+   exit;
+fi
 
-# echo $parts
+if [ "$parallel" -eq "0" ]; then
+   parts=($(echo "$export" | tr ',' '\n'))
+   # echo $parts   
 
-for part in "${parts[@]}"
-do
-    blah=($(echo "$part" | tr '=' '\n'))
+   for part in "${parts[@]}"
+   do
+       blah=($(echo "$part" | tr '=' '\n'))
+       
+       var="${blah[0]}"
+       val="${blah[1]}"
+       
+       echo "export $var=$val"
+   done
 
-    var="${blah[0]}"
-    val="${blah[1]}"
+   echo
+   echo './'$script
+   echo
+   echo
+   exit;
+fi
 
-    # var=($(echo $var | sed 's/=//g'))
-    # val=($(echo $val | sed 's/=//g'))
- 
-    # echo
-    # echo $var
-    # echo $val
-  
-    echo "export $var=$val"
-done
-
+echo  "ERROR:  serialorparallel"
 echo
-echo $script
 echo
-echo
+exit;

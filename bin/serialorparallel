@@ -2,15 +2,7 @@
 #
 # ----  serialorparallel  ----
 # 
-#  Note: 
-#    achieves a clean environment for this scipt:
-#  
-#
-#
-#  RAND_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
-#
-#
-#  Testing:  
+#  Testing env:  
 #    export eflags='FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET'
 #
 #
@@ -22,30 +14,34 @@
 #
 #  Example usage
 #
-#  ./serialorparallel -e $eflags -s rand_pipeline
+#  ./serialorparallel -e $eflags -d $GOLD_JOBID -s rand_pipeline
 
-unset dependency
-unset parsable
 unset export
+unset dependency
 unset script
 
-while getopts 'd:p:e:s' flag;
+# dependency: a comma separated list of jobids. 
+# export: a comma separated list of env vars, VAR=VAL.
+# script: script to run, e.g. rand_pipeline
+
+while getopts ":p:d:e:s:" flag;
 do
     case "${flag}" in
+	p) parallel=${OPTARG};;
         d) dependency=${OPTARG};;
-        p) parsable=${OPTARG};;
         e) export=${OPTARG};;
 	s) script=${OPTARG};;
     esac
 done
 
-echo $script
+# if parallel:
 echo
 echo
-echo "sbatch $parsable --export=$export $dependency $script"
+echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
 echo
 echo
 
+# if not parallel:
 parts=($(echo "$export" | tr ',' '\n'))
 
 # echo $parts
@@ -65,9 +61,9 @@ do
     # echo $val
   
     echo "export $var=$val"
-    echo
 done
 
+echo
 echo $script
 echo
 echo

@@ -1,0 +1,90 @@
+
+ fitsdiff: 5.0
+ a: /cosma5/data/durham/dc-wils7//v4/gama_gold_ddp.fits
+ b: /cosma5/data/durham/dc-wils7//v3/gama_gold_ddp.fits
+ Maximum number of different data values to be reported: 10
+ Relative tolerance: 1e-06, Absolute tolerance: 1e-06
+
+Extension HDU 1 (TilingCat, 1):
+
+   Headers contain differences:
+     Headers have different number of cards:
+      a: 218
+      b: 214
+     Extra keyword 'GOLD_NGAL' in a: 113687
+     Extra keyword 'TMR_DDP1' in a: '[-21.8, -20.1]'
+     Extra keyword 'TMR_DDP2' in a: '[-20.6, -19.3]'
+     Extra keyword 'TMR_DDP3' in a: '[-21.8, -20.1]'
+     Keyword DDP1_DENS has different values:
+        a> 0.006042196899455394
+        b> 0.005383528919866887
+     Keyword DDP1_NGAL has different values:
+        a> 45889
+        b> 34732
+     Keyword DDP1_VZ  has different values:
+        a> 7594754.153764196
+        b> 6451530.309761721
+     Keyword DDP1_ZMAX has different values:
+        a> 0.2629899978637695
+        b> 0.2483299970626831
+     Keyword DDP2_DENS has different values:
+        a> 0.01035841825568372
+        b> 0.009928035902084681
+     Keyword DDP2_NGAL has different values:
+        a> 32698
+         ? -
+        b> 26598
+         ?   +
+     Keyword DDP2_VZ  has different values:
+        a> 3156659.558717707
+        b> 2679079.755786839
+     Keyword DDP2_ZMAX has different values:
+        a> 0.1937000006437302
+        b> 0.1830800026655197
+     Keyword DDP3_DENS has different values:
+        a> 0.01910797832470021
+        b> 0.01839618589233126
+     Keyword DDP3_NGAL has different values:
+        a> 8748
+        b> 7954
+     Keyword DDP3_VZ  has different values:
+        a> 457819.2340050841
+        b> 432372.2344703938
+     Keyword DDP3_ZMAX has different values:
+        a> 0.1015800014138222
+        b> 0.09973999857902527
+
+   Data contains differences:
+     Column CARTESIAN_X data differs in row 0:
+        a> -245.24125652386456
+        b> -427.8330938224349
+     Column CARTESIAN_X data differs in row 1:
+        a> -719.9340667453704
+        b> -329.1495629694051
+     Column CARTESIAN_X data differs in row 2:
+        a> -438.3880940653836
+        b> -313.90729155002373
+     Column CARTESIAN_X data differs in row 3:
+        a> -325.9851692787255
+        b> -265.7648322504193
+     Column CARTESIAN_X data differs in row 4:
+        a> -409.30744566436306
+        b> -429.8204948973231
+     Column CARTESIAN_X data differs in row 5:
+        a> -612.8576499598569
+        b> -494.50458449144605
+     Column CARTESIAN_X data differs in row 6:
+        a> -233.93801379220335
+        b> -308.8472360150555
+     Column CARTESIAN_X data differs in row 7:
+        a> -390.5412315651098
+        b> -350.19949533803214
+     Column CARTESIAN_X data differs in row 8:
+        a> -352.97464017087464
+        b> -730.4847811262921
+     Column CARTESIAN_X data differs in row 9:
+        a> -305.6064005417072
+        b> -228.11923502076007
+     ...4240102 additional difference(s) found.
+     ...
+     4240112 different table data element(s) found (86.74% different).

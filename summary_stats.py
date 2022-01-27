@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import argparse
 
+from   astropy.io    import ascii
 from   astropy.table import Table
 from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 
@@ -37,6 +38,9 @@ names  = ['DDP', 'MIN_M', 'MAX_M'] + names
 result = Table(rows=rows, names=names)
 result.pprint()
 
+# https://arxiv.org/pdf/1409.4681.pdf
+ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'])
+
 rows = []
 
 rand = Table.read('{}/data/GAMA4/randoms/randoms_bd_ddp_n8_G9_0.fits'.format(os.environ['HOME']))
@@ -57,5 +61,8 @@ print('\n\n')
 # Generate Table 3 of McNaught-Roberts (2014).
 result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8 [1e3]', 'fd8'])
 result.pprint()
+
+# https://arxiv.org/pdf/1409.4681.pdf
+ascii.write(result, 'tables/Tab3.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'])
 
 print('\n\nDone.\n\n')

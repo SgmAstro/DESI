@@ -13,6 +13,7 @@ np.random.seed(314)
 
 parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args = parser.parse_args()
 dryrun = args.dryrun
@@ -31,7 +32,11 @@ if dryrun:
   dat   = dat[idx]
   opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
-  
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)  
+
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 
 rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])

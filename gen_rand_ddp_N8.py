@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+
 
 args   = parser.parse_args()
 field  = args.field.upper()
@@ -37,6 +39,13 @@ fpath = os.environ['RANDOMS_DIR'] + '/{}_bd_{}_{:d}.fits'.format(prefix, field, 
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
+opath = fpath.replace('bd', 'bd_ddp_n8')
+
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
+    
 rand = Table.read(fpath)
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
@@ -98,9 +107,7 @@ for ut in utiers:
 
     print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
     print('DDP1_d{}_TIERMEDd8 OF {:.4f} ADDED.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
-    
-opath = fpath.replace('bd', 'bd_ddp_n8')
-    
+        
 print('Writing {}'.format(opath))
 
 rand.write(opath, format='fits', overwrite=True)

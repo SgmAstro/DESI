@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser(description='Find boundary distance for all ran
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
 
@@ -37,6 +38,13 @@ fpath = os.environ['RANDOMS_DIR'] + '/{}_N8_{}_{:d}.fits'.format(prefix, field, 
 
 if dryrun:
     fpath= fpath.replace('.fits', '_dryrun.fits')
+
+opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
+    
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
 
 # Output is sorted by fillfactor.py;   
 rand  = Table.read(fpath)
@@ -107,8 +115,6 @@ rand = rand[idx]
 
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
-
-opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
 
 print('Writing {}.'.format(opath))
 

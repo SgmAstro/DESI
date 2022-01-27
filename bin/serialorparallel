@@ -65,7 +65,7 @@ if [ "$parallel" -eq "0" ]; then
 
    ./$script > $script'.log'
    
-   echo "-99"
+   echo "0"
    exit;
 fi
 

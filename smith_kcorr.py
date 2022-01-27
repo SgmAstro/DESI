@@ -117,7 +117,7 @@ class GAMA_KCorrection(object):
             restframe_colour = np.copy(restframe_colour)
             
             # Fig. 13 of https://arxiv.org/pdf/1701.06581.pdf
-            restframe_colour = 0.603 * np.ones_line(restframe_colour)
+            restframe_colour = 0.603 * np.ones_like(restframe_colour)
 
         K[idx] = self.__A(restframe_colour[idx])*(redshift[idx]-self.z0)**4 + \
                  self.__B(restframe_colour[idx])*(redshift[idx]-self.z0)**3 + \

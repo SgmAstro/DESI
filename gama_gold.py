@@ -1,18 +1,30 @@
 import os
+import argparse
 import numpy as np
 import astropy.io.fits as fits
 
-from astropy.table import Table
-from cosmo import cosmo, distmod
-from gama_limits import gama_field
-from cartesian import cartesian
+from   astropy.table import Table
+from   cosmo import cosmo, distmod
+from   gama_limits import gama_field
+from   cartesian import cartesian
 
 
-root  = os.environ['TILING_CATDIR']
-fpath = root + '/TilingCatv46.fits'
+root   = os.environ['TILING_CATDIR']
+fpath  = root + '/TilingCatv46.fits'
+opath  = os.environ['GOLD_DIR'] + '/gama_gold.fits'
 
-dat   = Table.read(fpath)
-dat   = Table(dat, masked=False)
+parser = argparse.ArgumentParser(description='Gen kE cat.')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+
+args   = parser.parse_args()
+
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
+
+dat    = Table.read(fpath)
+dat    = Table(dat, masked=False)
 
 # TODO: Inherit this from somewhere sensible.
 dat.meta['AREA'] = 180.
@@ -77,4 +89,4 @@ if not os.path.isdir(os.environ['GOLD_DIR']):
 # 113687 vs TMR 80922.
 dat.meta['GOLD_NGAL'] = len(dat)
 dat.pprint()
-dat.write(os.environ['GOLD_DIR'] + '/gama_gold.fits', format='fits', overwrite=True)
+dat.write(opath, format='fits', overwrite=True)

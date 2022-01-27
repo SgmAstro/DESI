@@ -31,6 +31,7 @@ def get_ddps(Area, M_0P0s, zs):
         zmin    = np.atleast_1d(bright_curve(lims[0]))[0]
         
         exclude = (zs > zmax) | (zs < zmin)
+
         in_ddp  = in_ddp & ~exclude  
         in_ddpz = ~exclude
         
@@ -50,7 +51,7 @@ def get_ddps(Area, M_0P0s, zs):
         zlims['DDP{}_NGAL'.format(i+1)] = np.count_nonzero(in_ddp) 
         zlims['DDP{}_DENS'.format(i+1)] = np.count_nonzero(in_ddp) / zlims['DDP{}_VZ'.format(i+1)] 
                 
-    return  result, zlims
+    return  result, zlims, faint_curve(M_0P0s)
 
 
 if __name__ == '__main__':

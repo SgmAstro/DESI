@@ -14,7 +14,7 @@
 #
 #  Example usage
 #
-#  ./serialorparallel -p 1 -e FIELD=G9,DRYRUN='__dryrun' -d 99 -s rand_pipeline
+#  serialorparallel -p 1 -e FIELD=G9,DRYRUN='--dryrun' -d 99 -s rand_pipeline
 
 unset parallel
 unset export
@@ -38,37 +38,36 @@ do
     esac
 done
 
-if [ "$parallel" -eq "1" ]; then
-   # sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script     
+if [[ -z "${dependency}" ]]; then
+  :
+else
+  dependency='--dependency=afterok:'$dependency
+fi
 
-   echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
-   echo
-   echo
+if [ "$parallel" -eq "1" ]; then
+   # echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
+   echo "JOBID=$(sbatch --parsable --export=$export $dependency $script)"
    exit;
 fi
 
 if [ "$parallel" -eq "0" ]; then
    parts=($(echo "$export" | tr ',' '\n'))
-   # echo $parts   
 
    for part in "${parts[@]}"
    do
-       blah=($(echo "$part" | tr '=' '\n'))
+       varval=($(echo "$part" | tr '=' '\n'))
        
-       var="${blah[0]}"
-       val="${blah[1]}"
+       var="${varval[0]}"
+       val="${varval[1]}"
        
-       echo "export $var=$val"
+       export $var=$val
    done
 
-   echo
-   echo './'$script
-   echo
-   echo
+   ./$script > $script'.log'
+   
+   echo "-99"
    exit;
 fi
 
 echo  "ERROR:  serialorparallel"
-echo
-echo
 exit;

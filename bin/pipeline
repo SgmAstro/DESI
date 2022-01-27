@@ -1,8 +1,9 @@
 #!/bin/bash
-export RESET=1
+export USESBATCH=0
+export RESET=0
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'                                                                                                                                                                           
+# export DRYRUN=''
+export DRYRUN='--dryrun'                                                                                                                                                                           
 
 export CODE_ROOT=$HOME/DESI/
 
@@ -17,6 +18,7 @@ if (( $RESET > 0 )); then
     echo
     echo '>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<.'
     echo 
+
     rm $GOLD_DIR/*.fits
     rm $RANDOMS_DIR/*$FIELD*.fits
     rm $CODE_ROOT/logs/*.log
@@ -36,8 +38,14 @@ fi
 export RESET=0
 
 # Generate all steps up to reference LF. 
-GOLD_JOBID=$(sbatch --parsable --export=DRYRUN=$DRYRUN,RESET=$RESET gold_pipeline)
 
+# GOLD_JOBID=$(sbatch --parsable --export=DRYRUN=$DRYRUN,RESET=$RESET gold_pipeline) 
+GOLD_JOBID=$(serialorparallel -p $USESBATCH -e 'DRYRUN='$DRYRUN',RESET='$RESET -s gold_pipeline)
+
+echo $GOLD_JOBID
+
+exit
+:"
 echo
 echo '>>>>> GOLD JOB ID <<<<<'
 echo $GOLD_JOBID
@@ -95,3 +103,4 @@ sbatch --export=DRYRUN=$DRYRUN --dependency=afterok:$RAND_DDP_D8_G9_JOBID,$RAND_
 echo 
 echo '>>>>>  DONE.  <<<<<'
 echo
+"

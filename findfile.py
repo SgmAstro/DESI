@@ -24,7 +24,6 @@ def findfile(ftype, dryrun=False, prefix='', field=None)
 
     else:
         file_types = {'ddp_n8_d0': {'dir': gold_dir, 'id': 'gama_gold', 'ftype': ''}
-
         fpath      = parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
         
     return  fpath

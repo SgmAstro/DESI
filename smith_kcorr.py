@@ -99,7 +99,7 @@ class GAMA_KCorrection(object):
         return self.__Y_interpolator(colour_clipped)
 
 
-    def k(self, redshift, restframe_colour):
+    def k(self, redshift, restframe_colour, median=False):
         """
         Polynomial fit to the GAMA K-correction for z<0.5
         The K-correction is extrapolated linearly for z>0.5
@@ -110,9 +110,15 @@ class GAMA_KCorrection(object):
         Returns:
             array of K-corrections
         """
-        K = np.zeros(len(redshift))
+        K   = np.zeros(len(redshift))
         idx = redshift <= 0.5
         
+        if median:
+            restframe_colour = np.copy(restframe_colour)
+            
+            # Fig. 13 of https://arxiv.org/pdf/1701.06581.pdf
+            restframe_colour = 0.603 * np.ones_line(restframe_colour)
+
         K[idx] = self.__A(restframe_colour[idx])*(redshift[idx]-self.z0)**4 + \
                  self.__B(restframe_colour[idx])*(redshift[idx]-self.z0)**3 + \
                  self.__C(restframe_colour[idx])*(redshift[idx]-self.z0)**2 + \
@@ -124,14 +130,14 @@ class GAMA_KCorrection(object):
         
         return  K    
 
-    def k_nonnative_zref(self, refz, redshift, restframe_colour):
+    def k_nonnative_zref(self, refz, redshift, restframe_colour, median=False):
         refzs = refz * np.ones_like(redshift)
         
-        return  self.k(redshift, restframe_colour) - self.k(refzs, restframe_colour) - 2.5 * np.log10(1. + refz)
+        return  self.k(redshift, restframe_colour, median=median) - self.k(refzs, restframe_colour, median=median) - 2.5 * np.log10(1. + refz)
 
     def rest_gmr_index(self, rest_gmr, kcoeff=False):
         bins = np.array([-100., 0.18, 0.35, 0.52, 0.69, 0.86, 1.03, 100.])
-        idx = np.digitize(rest_gmr, bins)
+        idx  = np.digitize(rest_gmr, bins)
         '''
         if kcoeff==True:
             for i in enumerate(rest_gmr):

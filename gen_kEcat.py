@@ -68,6 +68,16 @@ dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], d
 dat['Z_THETA_QALL'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
 dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
 
+##  ----  DDP  ----
+##  Note:  assumes median rest-frame colour and QALL.
+dat['DDPKCORR_R0P1'] = kcorr_r.k(dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+dat['DDPKCORR_G0P1'] = kcorr_g.k(dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+
+dat['DDPKCORR_R0P0'] = kcorr_r.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+dat['DDPKCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+
+dat['DDPMALL_0P0']   = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['DDPKCORR_R0P0'], dat['EQ_ALL_0P0'])
+
 dat.pprint()
 
 print('Writing {}.'.format(opath))

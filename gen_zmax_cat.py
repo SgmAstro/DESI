@@ -75,7 +75,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen zmax cat.')
     parser.add_argument('-a', '--aall', help='All Q, no red/blue split.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
-
+    parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    
     args = parser.parse_args()
     aall = args.aall
     dryrun = args.dryrun
@@ -95,6 +96,11 @@ if __name__ == '__main__':
         fpath = fpath.replace('.fits', '_dryrun.fits')
         opath = opath.replace('.fits', '_dryrun.fits')
 
+    if args.nooverwrite:
+        if os.path.isfile(opath):
+            print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+            exit(0)
+        
     print('Reading {}.'.format(fpath))
         
     dat = Table.read(fpath)

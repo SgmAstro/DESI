@@ -16,7 +16,8 @@ np.random.seed(314)
 parser  = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
-parser.add_argument('--prefix', help='filename prefix', default='randoms')
+parser.add_argument('--prefix',       help='filename prefix', default='randoms')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 # Defaults to GAMA Gold limits. 
 parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
@@ -28,6 +29,7 @@ dryrun  = args.dryrun
 zmin    = args.zmin
 zmax    = args.zmax
 prefix  = args.prefix 
+
 
 start   = time.time()
 
@@ -47,14 +49,20 @@ nrand = np.int64(np.ceil(vol * rand_density))
 
 opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 
+if dryrun:
+    nrand = 500
+    opath = opath.replace('.fits', '_dryrun.fits')
+
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
+
 if not os.path.isdir(os.environ['RANDOMS_DIR']):
     print('Creating {}'.format(os.environ['RANDOMS_DIR']))
 
     os.makedirs(os.environ['RANDOMS_DIR'])
 
-if dryrun:
-    nrand = 500
-    opath = opath.replace('.fits', '_dryrun.fits')
     
 print(vol, rand_density, nrand / 1.e6)
 

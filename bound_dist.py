@@ -42,10 +42,8 @@ if dryrun:
 opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
     
 if args.nooverwrite:
-    if os.path.isfile(fpath) and os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
+    if os.path.isfile(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-
         exit(0)
 
 # Output is sorted by fillfactor.py;   

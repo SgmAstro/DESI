@@ -14,20 +14,17 @@
 #
 #  Example usage
 #
-#  serialorparallel -p 1 -e FIELD=G9,DRYRUN='--dryrun' -d 99 -s rand_pipeline
+#  serialorparallel -p 1 -e DRYRUN='--dryrun',NOOVERWRITE='' -d 99 -s gold_pipeline 
+#  serialorparallel -p 1 -e FIELD=G9,DRYRUN='--dryrun' -d 99 -s rand_ddp1_pipeline
 
 unset parallel
-unset export
 unset dependency
+unset export
 unset script
 
 # dependency: a comma separated list of jobids. 
 # export: a comma separated list of env vars, VAR=VAL.
 # script: script to run, e.g. rand_pipeline
-
-echo
-echo
-
 while getopts ":p:d:e:s:" flag;
 do
     case "${flag}" in
@@ -38,15 +35,20 @@ do
     esac
 done
 
+# echo $dependency
+
 if [[ -z "${dependency}" ]]; then
   :
 else
-  dependency='--dependency=afterok:'$dependency
+  dependency='--dependency=afterok:'$dependency' '
 fi
 
+# echo $dependency
+
+
 if [ "$parallel" -eq "1" ]; then
-   # echo "sbatch --parsable --export="$export" --dependency=afterok:"$dependency" "$script
-   echo "JOBID=$(sbatch --parsable --export=$export $dependency $script)"
+   # echo "sbatch --parsable --export=$export $dependency $script"
+   echo "$(sbatch --parsable --export=$export $dependency $script)"
    exit;
 fi
 
@@ -63,7 +65,9 @@ if [ "$parallel" -eq "0" ]; then
        export $var=$val
    done
 
-   ./$script > $script'.log'
+   echo '$script > $script.log'
+
+   $script > $script'.log'
    
    echo "0"
    exit;

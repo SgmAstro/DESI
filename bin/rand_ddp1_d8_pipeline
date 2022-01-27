@@ -12,7 +12,7 @@
 # See status with e.g. squeue -u mjwilson
 # 
 if [[ -z "${FIELD}" ]]; then
-  export FIELD="G9"
+  export FIELD="G15"
 else
   echo 'FIELD SET TO BE '$FIELD
 fi

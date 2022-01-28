@@ -43,7 +43,7 @@ Vmax    = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
 vol          = Vmax - Vmin
-rand_density = 9.e-1
+rand_density = 5.e-1
 
 nrand        = np.int64(np.ceil(vol * rand_density))
 

@@ -9,6 +9,7 @@ from   gama_limits import gama_limits
 from   astropy.table import Table
 from   cartesian import cartesian
 from   gama_limits import gama_field
+from   runtime import calc_runtime
 
 
 np.random.seed(314)
@@ -43,11 +44,11 @@ Vmax    = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
 vol          = Vmax - Vmin
-rand_density = 5.e-1
+rand_density = 1.
 
 nrand        = np.int64(np.ceil(vol * rand_density))
 
-opath     = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+opath        = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 
 if dryrun:
     nrand = 500
@@ -64,7 +65,7 @@ if not os.path.isdir(os.environ['RANDOMS_DIR']):
     os.makedirs(os.environ['RANDOMS_DIR'])
 
     
-print(vol, rand_density, nrand / 1.e6)
+print('Volume [1e6]: {:.2f}; rand_density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, rand_density, nrand / 1.e6))
 
 boundary_percent = 1.
 
@@ -146,8 +147,8 @@ randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])
 
 print(randoms.meta)
 
-print('Writing {}.'.format(opath))
+runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=randoms)
 
 randoms.write(opath, format='fits', overwrite=True)
 
-print('Finished in {} mins.'.format((time.time() - start) / 60.))
+runtime = calc_runtime(start, 'Finished'.format(opath))

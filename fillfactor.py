@@ -24,103 +24,101 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 args   = parser.parse_args()
 
 # @profile
-def main(args):
-    field  = args.field.upper()
+field  = args.field.upper()
 
-    # HACK:
-    dryrun = True # args.dryrun
-    prefix = args.prefix
+dryrun = args.dryrun
+prefix = args.prefix
 
-    # https://www.dur.ac.uk/icc/cosma/cosma5/
-    nproc  = args.nproc
-    realz  = args.realz
+# https://www.dur.ac.uk/icc/cosma/cosma5/
+nproc  = args.nproc
+realz  = args.realz
 
-    fpath  = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
-    start  = time.time()
+fpath  = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+start  = time.time()
 
-    print('Reading rand.')
+print('Reading rand.')
 
-    if dryrun:
-        fpath = fpath.replace('.fits', '_dryrun.fits')
+if dryrun:
+    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-    opath  = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
+opath  = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
 
-    if args.nooverwrite:
-        if os.path.isfile(fpath) and os.path.isfile(opath):
-            print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
-            print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-            exit(0)
+if args.nooverwrite:
+    if os.path.isfile(fpath) and os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
     
-    # Read randoms file, split by field (DDP1, or not).
-    rand      = Table.read(fpath)
+# Read randoms file, split by field (DDP1, or not).
+rand      = Table.read(fpath)
     
-    runtime   = calc_runtime(start, 'Read randoms')
+runtime   = calc_runtime(start, 'Read randoms')
 
-    rand.sort('CARTESIAN_X')
+rand.sort('CARTESIAN_X')
 
-    runtime   = calc_runtime(start, 'Sorted randoms by X')
+runtime   = calc_runtime(start, 'Sorted randoms by X')
 
-    split_idx = np.arange(len(rand))
-    splits    = np.array_split(split_idx, nproc)
+split_idx = np.arange(len(rand))
+splits    = np.array_split(split_idx, nproc)
 
-    runtime   = calc_runtime(start, 'Split randoms by {} nproc'.format(nproc))
+runtime   = calc_runtime(start, 'Split randoms by {} nproc'.format(nproc))
 
-    points    = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
-    points    = np.array(points, copy=True)
+points    = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
+points    = np.array(points, copy=True)
 
-    print('Creating big tree.')
+print('Creating big tree.')
 
-    big_tree  = KDTree(points)
-    runtime   = calc_runtime(start, 'Created big (randoms) tree')
+big_tree  = KDTree(points)
+runtime   = calc_runtime(start, 'Created big (randoms) tree')
 
-    del rand
+del rand
     
-    def process_one(split):
-        _points  = np.c_[points[split,0], points[split,1], points[split,2]] 
-        _points  = np.array(_points, copy=True)
+def process_one(split):
+    _points  = np.c_[points[split,0], points[split,1], points[split,2]] 
+    _points  = np.array(_points, copy=True)
     
-        print('Creating split [{} ... {}] tree.'.format(split[0], split[-1]))
+    print('Creating split [{} ... {}] tree.'.format(split[0], split[-1]))
     
-        kd_tree  = KDTree(_points)
+    kd_tree  = KDTree(_points)
 
-        print('Querying split [{} ... {}] tree.'.format(split[0], split[-1]))
+    print('Querying split [{} ... {}] tree.'.format(split[0], split[-1]))
 
-        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query_ball_tree.html#scipy.spatial.KDTree.query_ball_tree
-        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.count_neighbors.html#scipy.spatial.KDTree.count_neighbors
-        indexes  = kd_tree.query_ball_tree(big_tree, r=8.)
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query_ball_tree.html#scipy.spatial.KDTree.query_ball_tree
+    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.count_neighbors.html#scipy.spatial.KDTree.count_neighbors
+    indexes  = kd_tree.query_ball_tree(big_tree, r=8.)
 
-        del  kd_tree
+    del  kd_tree
     
-        return  [len(idx) for idx in indexes]
+    return  [len(idx) for idx in indexes]
 
-    runtime = calc_runtime(start, 'Counting < 8 Mpc/h pairs for small trees.')
+runtime = calc_runtime(start, 'Counting < 8 Mpc/h pairs for small trees.')
 
-    with Pool(nproc) as p:
-        result = p.map(process_one, splits)
+with Pool(nproc) as p:
+    result = p.map(process_one, splits)
 
-    runtime = calc_runtime(start, 'Done with queries')
+runtime = calc_runtime(start, 'Done with queries')
 
-    flat_result = []
-
-    for rr in result:
-        flat_result += rr
-
-    rand                 = Table.read(fpath)
-    rand.sort('CARTESIAN_X')
-
-    rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-    rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
-    rand.meta['RSPHERE'] = 8.
-
-    # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
-    rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
-
-    runtime = calc_runtime(start, 'Writing {}.'.format(opath))
-
-    rand.write(opath, format='fits', overwrite=True)
-
-    runtime = calc_runtime(start, 'Finished')
+flat_result = []
     
+for rr in result:
+    flat_result += rr
+
+rand                 = Table.read(fpath)
+rand.sort('CARTESIAN_X')
+
+rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
+rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
+rand.meta['RSPHERE'] = 8.
+    
+# TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
+rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
+
+runtime = calc_runtime(start, 'Writing {}.'.format(opath))
+
+rand.write(opath, format='fits', overwrite=True)
+
+runtime = calc_runtime(start, 'Finished')
+
 
 if __name__ == '__main__':
     #
@@ -128,4 +126,5 @@ if __name__ == '__main__':
     # 
     # mprof run fillfactor.py
     # mprof plot --output mprof_plot.pdf
-    main(args)
+    # main(args)
+    pass

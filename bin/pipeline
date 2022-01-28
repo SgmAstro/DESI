@@ -40,6 +40,11 @@ fi
 #  ----  Total of eight jobs, with correct dependency logic  ----
 export RESET=0
 
+# We'll always run the main branch. 
+cd $HOME/DESI/
+
+git checkout main
+
 # Generate all steps up to reference LF. 
 GOLD_JOBID=$(serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s gold_pipeline)
 

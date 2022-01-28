@@ -1,5 +1,4 @@
 #!/bin/bash
-
 exec > >(tee "pipeline.log") 2>&1
 
 export USESBATCH=0
@@ -53,7 +52,7 @@ git clone https://github.com/SgmAstro/DESI.git
 
 cd ~/tmp/DESI/
 
-git checkout nooverwrite
+git checkout main
 
 export CODE_ROOT=~/tmp/DESI/
 

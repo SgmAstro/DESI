@@ -25,6 +25,7 @@ fpath   = root + '/gama_gold.fits'
 opath   = root + '/gama_gold_kE.fits'
 
 if dryrun:
+  fpath = os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
   opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
 dat = Table.read(fpath)

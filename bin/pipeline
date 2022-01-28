@@ -1,15 +1,15 @@
 #!/bin/bash
-export USESBATCH=1
+export USESBATCH=0
 export RESET=1
 
-export DRYRUN=''
-# export DRYRUN='--dryrun'                                                                                                                                                
+# export DRYRUN=''
+export DRYRUN='--dryrun'                                                                                                                                                
+
 export NOOVERWRITE=''
 #export NOOVERWRITE='--nooverwrite'
 
-# ----------------------------- #
-export CODE_ROOT=$HOME/DESI/
 
+# ----------------------------- #
 export TILING_CATDIR=$HOME/data/
 export GOLD_DIR=$HOME/data/GAMA4/
 export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
@@ -40,10 +40,24 @@ fi
 #  ----  Total of eight jobs, with correct dependency logic  ----
 export RESET=0
 
-# We'll always run the main branch. 
-cd $HOME/DESI/
+#  ---------------------------------------------
+cd $HOME
+
+rm -r ~/tmp; mkdir -p ~/tmp
+
+cd ~/tmp/
+
+git clone https://github.com/SgmAstro/DESI.git
+
+cd ~/tmp/DESI/
 
 git checkout main
+
+export CODE_ROOT=~/tmp/DESI/
+
+#  --------------------------------------------- 
+
+exit;
 
 # Generate all steps up to reference LF. 
 GOLD_JOBID=$(serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s gold_pipeline)

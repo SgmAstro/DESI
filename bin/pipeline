@@ -1,12 +1,12 @@
 #!/bin/bash
 export USESBATCH=1
-export RESET=1
+export RESET=0
 
 export DRYRUN=''
 # export DRYRUN='--dryrun'                                                                                                                                                                           
 
-export NOOVERWRITE=''
-# export NOOVERWRITE='--nooverwrite'
+# export NOOVERWRITE=''
+export NOOVERWRITE='--nooverwrite'
 
 # ----------------------------- #
 export CODE_ROOT=$HOME/DESI/

@@ -53,8 +53,8 @@ def run_diff(new_version=4, over=None):
 
     fd    = fd.report('{}/{}.txt'.format(rundiff_dir, cc.split('.')[0]), overwrite=True)
 
-  new     = [x for x in npaths if x not in common]
-  missing = [x for x in opaths if x not in common]
+  new     = [x for x in npaths if os.path.basename(x) not in common]
+  missing = [x for x in opaths if os.path.basename(x) not in common]
 
   write_filelist(new, '{}/new.txt'.format(rundiff_dir))
   write_filelist(missing, '{}/missing.txt'.format(rundiff_dir))

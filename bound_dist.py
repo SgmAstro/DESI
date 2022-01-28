@@ -31,7 +31,8 @@ prefix = args.prefix
 
 start = time.time()
 
-nproc = 12
+# https://www.dur.ac.uk/icc/cosma/cosma5/
+nproc = 16
 realz = 0
 
 fpath = os.environ['RANDOMS_DIR'] + '/{}_N8_{}_{:d}.fits'.format(prefix, field, realz)

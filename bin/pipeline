@@ -1,10 +1,9 @@
 #!/bin/bash
-export USESBATCH=0
+export USESBATCH=1
 export RESET=1
 
-# export DRYRUN=''
-export DRYRUN='--dryrun'                                                                                                                                                                           
-
+export DRYRUN=''
+# export DRYRUN='--dryrun'                                                                                                                                                
 export NOOVERWRITE=''
 #export NOOVERWRITE='--nooverwrite'
 

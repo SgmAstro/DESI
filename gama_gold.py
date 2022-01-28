@@ -7,7 +7,7 @@ import astropy.io.fits as fits
 from   astropy.table   import Table
 from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
-from   cartesian       import cartesian
+from   cartesian       import cartesian, rotate
 
 
 root   = os.environ['TILING_CATDIR']
@@ -73,6 +73,12 @@ xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
 dat['CARTESIAN_X'] = xyz[:,0]
 dat['CARTESIAN_Y'] = xyz[:,1]
 dat['CARTESIAN_Z'] = xyz[:,2]
+
+xyz = rotate(dat['RA'], dat['DEC'], xyz)
+
+dat['ROTCARTESIAN_X'] = xyz[:,0]
+dat['ROTCARTESIAN_Y'] = xyz[:,1]
+dat['ROTCARTESIAN_Z'] = xyz[:,2]
 
 # Randomise rows.
 idx = np.arange(len(dat))

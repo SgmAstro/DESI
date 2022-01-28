@@ -1,8 +1,12 @@
 import os
+import gc
+import sys
+import tqdm
 import time
 import fitsio
 import argparse
-import numpy as np
+import multiprocessing
+import numpy             as np
 import astropy.io.fits   as fits
 import matplotlib.pyplot as plt
 
@@ -50,37 +54,61 @@ if args.nooverwrite:
 # Output is sorted by fillfactor.py;   
 rand      = Table.read(fpath)
 
-runtime   = calc_runtime(start, 'Read randoms')
+runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
     
 body      = rand[rand['IS_BOUNDARY'] == 0]
 boundary  = rand[rand['IS_BOUNDARY'] == 1]
 
 split_idx = np.arange(len(body))
-splits    = np.array_split(split_idx, nproc)
+splits    = np.array_split(split_idx, 10 * nproc)
 
 bids      = boundary['RANDID']
 
 boundary  = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
 boundary  = np.array(boundary, copy=True)
 
-runtime   = calc_runtime(start, 'Creating boundary tree')
-
 kd_tree   = KDTree(boundary)
+
+runtime   = calc_runtime(start, 'Created boundary tree.')
 
 # points  = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']] 
 # points  = [x for x in points]
 # dd, ii  = kd_tree.query(points, k=1)
 
 del rand
+del boundary
+del split_idx
 
-def process_one(split):
+gc.collect()
+
+'''
+local_vars = list(locals().items())                                                                                                                                                                  
+
+for var, obj in local_vars:                                                                                                                                                                           
+    print(var, sys.getsizeof(obj))                                                                                                                                                                   
+
+exit()
+'''
+
+runtime   = calc_runtime(start, 'Deleted rand.')
+
+def process_one(split, pid=0):
     points = np.c_[body[split]['CARTESIAN_X'], body[split]['CARTESIAN_Y'], body[split]['CARTESIAN_Z']] 
     points = [x for x in points]
 
-    print('Querying boundary tree for split [{}...{}]'.format(split[0], split[-1]))
+    try:
+        pid  = multiprocessing.current_process().name.ljust(20)
+
+    except Exception as e:
+        print(e)
+
+
+    # print('Querying boundary tree for split [{}...{}]'.format(split[0], split[-1]))
     
     dd, ii = kd_tree.query(points, k=1)
     
+    del  points
+
     return  dd.tolist(), ii.tolist()
 
 '''
@@ -93,15 +121,26 @@ for split in splits:
 
 result = np.array(result)
 '''
-with Pool(nproc) as p:
-    result  = p.map(process_one, splits)
 
-runtime   = calc_runtime(start, 'Finished queries with {} nproc'.format(nproc))
+runtime = calc_runtime(start, 'POOL:  Querying bound dist for body points.')
+
+with Pool(nproc) as pool:
+    # result  = p.map(process_one, splits)
+
+    results = []
+
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits), total=len(splits)):
+        results.append(result)
+
+    pool.close()
+    pool.join()
+
+runtime = calc_runtime(start, 'POOL:  Done with queries')
 
 flat_result = []
 flat_ii     = []
 
-for rr in result:
+for rr in results:
     flat_result += rr[0]
     flat_ii     += rr[1]
 
@@ -123,7 +162,7 @@ rand = rand[idx]
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
-runtime = calc_runtime(start, 'Writing {}'.format(opath))
+runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 
 rand.write(opath, format='fits', overwrite=True)
 

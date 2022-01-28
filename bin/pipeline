@@ -54,7 +54,6 @@ cd ~/tmp/DESI/
 git checkout main
 
 export CODE_ROOT=~/tmp/DESI/
-exit;
 
 #  --------------------------------------------- 
 

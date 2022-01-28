@@ -65,8 +65,6 @@ if [ "$parallel" -eq "0" ]; then
        export $var=$val
    done
 
-   # echo $script' > '$script'.log'
-
    $script > $script'.log'
    
    echo "0"

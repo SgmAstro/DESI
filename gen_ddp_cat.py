@@ -1,5 +1,6 @@
 import os
 import argparse
+import runtime
 import fitsio
 
 from   astropy.table import Table

@@ -1,6 +1,7 @@
 import os
 import time
 import argparse
+import runtime
 import numpy as np
 
 from   cosmo import distmod

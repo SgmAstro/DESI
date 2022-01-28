@@ -2,7 +2,7 @@ import os
 import glob
 import astropy.io.fits as     fits
 
-from   pathlib import Path
+from   pathlib         import Path
 from   astropy.io.fits import FITSDiff
 
 
@@ -32,7 +32,7 @@ def run_diff(new_version=4, over=None):
 
   common  = list(set([os.path.basename(x) for x in npaths]).intersection([os.path.basename(x) for x in opaths]))
 
-  rundiff_dir = 'rundiffs/v{}/'.format(new_version)
+  rundiff_dir = '{}/rundiffs/v{}/'.format(os.environ['TILING_CATDIR'], new_version)
 
   Path(rundiff_dir).mkdir(parents=True, exist_ok=True)
 

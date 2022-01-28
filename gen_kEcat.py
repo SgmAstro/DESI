@@ -1,5 +1,6 @@
 import os
 import argparse
+import runtime
 import numpy as np
 
 from astropy.table import Table
@@ -11,26 +12,23 @@ from abs_mag import abs_mag
 
 np.random.seed(314)
 
-parser = argparse.ArgumentParser(description='Gen kE cat.')
+parser  = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
-args = parser.parse_args()
-dryrun = args.dryrun
+args    = parser.parse_args()
+dryrun  = args.dryrun
 
-root = os.environ['GOLD_DIR']
-fpath = root + '/gama_gold.fits'
+root    = os.environ['GOLD_DIR']
+
+fpath   = root + '/gama_gold.fits'
+opath   = root + '/gama_gold_kE.fits'
+
+if dryrun:
+  opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
 dat = Table.read(fpath)
 dat.pprint()
-
-opath=root + '/gama_gold_kE.fits'
-
-if dryrun:
-  idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
-  
-  dat   = dat[idx]
-  opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
 if args.nooverwrite:
     if os.path.isfile(opath):

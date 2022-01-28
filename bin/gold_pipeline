@@ -34,15 +34,13 @@ else
   echo 'NOOVERWRITE SET TO BE '$NOOVERWRITE
 fi
 
+# export CODE_ROOT=$HOME/DESI/
+# export TILING_CATDIR=$HOME/data/
+# export GOLD_DIR=$HOME/data/GAMA4/
+# export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
 
-export CODE_ROOT=$HOME/DESI/
-
-export TILING_CATDIR=$HOME/data/
-export GOLD_DIR=$HOME/data/GAMA4/
-export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
-
-export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
-export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
+export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
+export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
 
 echo
 echo 'Environment:'
@@ -63,24 +61,24 @@ fi
 
 echo 'Running gold pipeline; logging to logs/gama_gold.log'
 
-python gama_gold.py $NOOVERWRITE > $CODE_ROOT/logs/gama_gold.log
+python gama_gold.py $NOOVERWRITE > $GOLD_DIR/logs/gama_gold.log
 
 echo 'Running gen_kEcat.py; logging to logs/gama_kE.log'
 
-python gen_kEcat.py $DRYRUN $NOOVERWRITE > $CODE_ROOT/logs/gama_kE.log
+python gen_kEcat.py $DRYRUN $NOOVERWRITE > $GOLD_DIR/logs/gama_kE.log
 
 echo 'Running gen_zmax_cat.py; logging to logs/gama_zama.log'
 
 # Max. runtime 60 minutes.
-python gen_zmax_cat.py $DRYRUN $NOOVERWRITE > $CODE_ROOT/logs/gama_zmax.log
+python gen_zmax_cat.py $DRYRUN $NOOVERWRITE > $GOLD_DIR/logs/gama_zmax.log
 
 echo 'Running ddp_limits.py; logging to logs/ddp_limits.log'
 
-python ddp_limits.py $NOOVERWRITE > $CODE_ROOT/logs/ddp_limits.log
+python ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
 
 echo 'Running gen_ddp_cat.py; logging to logs/gama_ddp.log'
 
-python gen_ddp_cat.py $DRYRUN $NOOVERWRITE > $CODE_ROOT/logs/gama_ddp.log  
+python gen_ddp_cat.py $DRYRUN $NOOVERWRITE > $GOLD_DIR/logs/gama_ddp.log  
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 echo

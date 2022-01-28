@@ -10,7 +10,7 @@ from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
-from   memory_profiler     import profile
+# from   memory_profiler     import profile
 
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
@@ -23,7 +23,7 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 
 args   = parser.parse_args()
 
-@profile
+# @profile
 def main(args):
     field  = args.field.upper()
 
@@ -74,7 +74,7 @@ def main(args):
     runtime   = calc_runtime(start, 'Created big (randoms) tree')
 
     del rand
-    '''
+    
     def process_one(split):
         _points  = np.c_[points[split,0], points[split,1], points[split,2]] 
         _points  = np.array(_points, copy=True)
@@ -120,7 +120,7 @@ def main(args):
     rand.write(opath, format='fits', overwrite=True)
 
     runtime = calc_runtime(start, 'Finished')
-    '''
+    
 
 if __name__ == '__main__':
     #

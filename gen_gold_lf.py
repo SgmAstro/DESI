@@ -14,12 +14,17 @@ from   lumfn import lumfn
 from   schechter import schechter, named_schechter
 from   gama_limits import gama_field, gama_limits
 from   renormalise_d8LF import renormalise_d8LF
+from   delta8_limits import d8_limits
 
 
 def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
+
+    if not os.path.isfile(fpath):
+        print('WARNING:  Failed to find {}'.format(fpath))
+        return 1
 
     gama_zmax = Table.read(fpath)
 
@@ -65,6 +70,8 @@ def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     
     result.write(opath, format='fits', overwrite=True)
 
+    return 0
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
@@ -73,6 +80,8 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
 
+    parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    
     args   = parser.parse_args()
 
     field  = args.field
@@ -96,6 +105,14 @@ if __name__ == '__main__':
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
         opath = fpath.replace('zmax', 'vmax')
+
+        # 
+        if args.nooverwrite:
+            if os.path.isfile(opath) and os.path.isfile(opath.replace('vmax', 'lumfn')):
+                
+                print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
+                exit(0)
+            
         '''
         all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
@@ -116,10 +133,10 @@ if __name__ == '__main__':
                 
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
-            utiers = np.array([3])
+            utiers = np.array([8])
 
         else:
-            utiers = np.arange(4)
+            utiers = np.arange(len(d8_limits))
                     
         all_rands = None 
 
@@ -137,7 +154,10 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
+
+            if failure:
+                continue
         
             print('PROCESS CAT FINISHED.')
                     

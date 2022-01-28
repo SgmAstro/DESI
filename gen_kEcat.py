@@ -13,6 +13,7 @@ np.random.seed(314)
 
 parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args = parser.parse_args()
 dryrun = args.dryrun
@@ -31,7 +32,11 @@ if dryrun:
   dat   = dat[idx]
   opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
-  
+if args.nooverwrite:
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)  
+
 dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
 
 rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZGAMA'], dat['GMR'])
@@ -62,6 +67,16 @@ dat['MCOLOR_0P0'] = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['KCORR_R0P0'], d
 
 dat['Z_THETA_QALL'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
 dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
+
+##  ----  DDP  ----
+##  Note:  assumes median rest-frame colour and QALL.
+dat['DDPKCORR_R0P1'] = kcorr_r.k(dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+dat['DDPKCORR_G0P1'] = kcorr_g.k(dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+
+dat['DDPKCORR_R0P0'] = kcorr_r.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+dat['DDPKCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZGAMA'], dat['REST_GMR_0P1'], median=True)
+
+dat['DDPMALL_0P0']   = abs_mag(dat['R_PETRO'], dat['DISTMOD'], dat['DDPKCORR_R0P0'], dat['EQ_ALL_0P0'])
 
 dat.pprint()
 

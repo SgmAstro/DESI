@@ -1,0 +1,77 @@
+#!/usr/bin/bash     
+#
+# ----  serialorparallel  ----
+# 
+#  Testing env:  
+#    export eflags='FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET'
+#
+#
+#  Solves:
+#    RAND_G9_JOBID=$(sbatch  --parsable --export=FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET rand_pipeline)
+#
+#  Wrap a similar call to run in serial (bash), or parallel (sbatch).
+#
+#
+#  Example usage
+#
+#  serialorparallel -p 1 -e DRYRUN='--dryrun',NOOVERWRITE='' -d 99 -s gold_pipeline 
+#  serialorparallel -p 1 -e FIELD=G9,DRYRUN='--dryrun' -d 99 -s rand_ddp1_pipeline
+
+unset parallel
+unset dependency
+unset export
+unset script
+
+# dependency: a comma separated list of jobids. 
+# export: a comma separated list of env vars, VAR=VAL.
+# script: script to run, e.g. rand_pipeline
+while getopts ":p:d:e:s:" flag;
+do
+    case "${flag}" in
+	p) parallel=${OPTARG};;
+        d) dependency=${OPTARG};;
+        e) export=${OPTARG};;
+	s) script=${OPTARG};;
+    esac
+done
+
+# echo $dependency
+
+if [[ -z "${dependency}" ]]; then
+  :
+else
+  dependency='--dependency=afterok:'$dependency' '
+fi
+
+# echo $dependency
+
+
+if [ "$parallel" -eq "1" ]; then
+   # echo "sbatch --parsable --export=$export $dependency $script"
+   echo "$(sbatch --parsable --export=$export $dependency $script)"
+   exit;
+fi
+
+if [ "$parallel" -eq "0" ]; then
+   parts=($(echo "$export" | tr ',' '\n'))
+
+   for part in "${parts[@]}"
+   do
+       varval=($(echo "$part" | tr '=' '\n'))
+       
+       var="${varval[0]}"
+       val="${varval[1]}"
+       
+       export $var=$val
+   done
+
+   # echo $script' > '$script'.log'
+
+   $script > $script'.log'
+   
+   echo "0"
+   exit;
+fi
+
+echo  "ERROR:  serialorparallel"
+exit;

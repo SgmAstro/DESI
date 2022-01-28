@@ -14,8 +14,8 @@
 #
 
 if [ -z ${DRYRUN+x} ]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
@@ -43,14 +43,14 @@ cd $CODE_ROOT
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 
 # References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
-# python gen_gold_lf.py $DRYRUN > $CODE_ROOT/logs/gama_lumfn.log
+python gen_gold_lf.py $DRYRUN > $CODE_ROOT/logs/gama_lumfn.log
 
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log'
 
 # Defaults to randoms_ddp1.
-# python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
+python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
 
 # echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 

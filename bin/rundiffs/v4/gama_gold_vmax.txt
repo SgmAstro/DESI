@@ -1,0 +1,68 @@
+
+ fitsdiff: 5.0
+ a: /cosma5/data/durham/dc-wils7//v4/gama_gold_vmax.fits
+ b: /cosma5/data/durham/dc-wils7//v3/gama_gold_vmax.fits
+ Maximum number of different data values to be reported: 10
+ Relative tolerance: 1e-06, Absolute tolerance: 1e-06
+
+Extension HDU 1 (TilingCat, 1):
+
+   Headers contain differences:
+     Headers have different number of cards:
+      a: 107
+      b: 125
+     Extra keyword 'GOLD_NGAL' in a: 113687
+     Extra keyword 'DDP1_DENS' in b: 0.005383528919866887
+     Extra keyword 'DDP1_NGAL' in b: 34732
+     Extra keyword 'DDP1_VZ' in b: 6451530.309761721
+     Extra keyword 'DDP1_ZMAX' in b: 0.2483299970626831
+     Extra keyword 'DDP1_ZMIN' in b: 0.0390699990093708
+     Extra keyword 'DDP2_DENS' in b: 0.009928035902084681
+     Extra keyword 'DDP2_NGAL' in b: 26598
+     Extra keyword 'DDP2_VZ' in b: 2679079.755786839
+     Extra keyword 'DDP2_ZMAX' in b: 0.1830800026655197
+     Extra keyword 'DDP2_ZMIN' in b: 0.03914999961853027
+     Extra keyword 'DDP3_DENS' in b: 0.01839618589233126
+     Extra keyword 'DDP3_NGAL' in b: 7954
+     Extra keyword 'DDP3_VZ' in b: 432372.2344703938
+     Extra keyword 'DDP3_ZMAX' in b: 0.09973999857902527
+     Extra keyword 'DDP3_ZMIN' in b: 0.03903000056743622
+     Extra keyword 'RPATH_0' in b: '/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G9_0.fits'
+     Extra keyword 'RPATH_1' in b: '/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G12_0.fits'
+     Extra keyword 'RPATH_2' in b: '/cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G15_0.fits'
+     Extra keyword 'VOL8'   in b: 2144.660584850632
+
+   Data contains differences:
+     Column MCOLOR_0P0 data differs in row 0:
+        a> -17.28288200453336
+        b> -19.514288898304457
+     Column MCOLOR_0P0 data differs in row 1:
+        a> -19.57819528092627
+        b> -19.59281940013149
+     Column MCOLOR_0P0 data differs in row 2:
+        a> -19.83317066958331
+        b> -19.945070914239654
+     Column MCOLOR_0P0 data differs in row 3:
+        a> -19.82472623096576
+        b> -19.678222349682667
+     Column MCOLOR_0P0 data differs in row 4:
+        a> -19.24496856686621
+        b> -20.53782775391534
+     Column MCOLOR_0P0 data differs in row 5:
+        a> -20.978091889010262
+        b> -20.464857177055965
+     Column MCOLOR_0P0 data differs in row 6:
+        a> -19.15170954475067
+        b> -18.89293481444552
+     Column MCOLOR_0P0 data differs in row 7:
+        a> -20.33575346103273
+        b> -20.368130796655105
+     Column MCOLOR_0P0 data differs in row 8:
+        a> -21.108184931558036
+        b> -20.465896797609915
+     Column MCOLOR_0P0 data differs in row 9:
+        a> -18.459635808316214
+        b> -17.511605097987193
+     ...521599 additional difference(s) found.
+     ...
+     521609 different table data element(s) found (76.53% different).

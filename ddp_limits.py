@@ -1,4 +1,5 @@
 import os
+import argparse
 import numpy             as np
 import matplotlib.pyplot as plt
 import cosmo             as cosmo
@@ -10,6 +11,12 @@ from   rest_gmr          import smith_rest_gmr
 from   tmr_ecorr         import tmr_ecorr, tmr_q
 from   abs_mag           import abs_mag
 from   data.ke_params    import *
+
+
+parser = argparse.ArgumentParser(description='Gen kE cat.')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+
+args   = parser.parse_args()
 
 
 kcorr_r  = GAMA_KCorrection(band='R')
@@ -41,6 +48,15 @@ for rlim in rlims:
 
     for aall, all_type in zip([True, False], ['QALL', 'QCOLOR']):
         for gmr_0P1 in gmrs_0p1:
+            opath    = root + 'ddrp_limit_{:d}.fits'.format(count)
+
+            if args.nooverwrite & os.path.isfile(opath):
+                print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+                
+                count += 1
+
+                continue
+
             gmr_0P1  = gmr_0P1 * np.ones_like(zs)
             gmr_0P0  = kcorr_RG.rest_gmr_nonnative(gmr_0P1)
 
@@ -49,9 +65,6 @@ for rlim in rlims:
             Mrs_0P0  = abs_mag(rs, mus, ks, es)
 
             dat      = Table(np.c_[zs, ks, es, Mrs_0P0], names=['Z', 'K', 'E', 'M0P0_{}'.format(all_type)])
-            
-            opath    = root + 'ddrp_limit_{:d}.fits'.format(count)
-            
             dat.meta = {'RLIM': rlim, 'ALL': aall, 'GMR_0P1': gmr_0P1[0], 'GMR_0P0': gmr_0P0[0]}
             
             dat.write(opath, format='fits', overwrite=True)

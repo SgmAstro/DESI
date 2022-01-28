@@ -14,6 +14,7 @@ from   gama_limits import gama_field
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms_ddp1')
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
 dryrun = args.dryrun
@@ -24,6 +25,12 @@ fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 if dryrun:
     fpath = fpath.replace('.fits', '_dryrun.fits')
 
+    
+if args.nooverwrite:
+    if os.path.isfile(fpath.replace('ddp', 'ddp_n8')):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath.replace('ddp', 'ddp_n8')))
+        exit(0)  
+    
 print('Reading: {}'.format(fpath))
 
 # Read ddp cat.    

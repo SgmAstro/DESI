@@ -25,13 +25,14 @@ unset script
 # dependency: a comma separated list of jobids. 
 # export: a comma separated list of env vars, VAR=VAL.
 # script: script to run, e.g. rand_pipeline
-while getopts ":p:d:e:s:" flag;
+while getopts ":p:d:e:s:c:" flag;
 do
     case "${flag}" in
 	p) parallel=${OPTARG};;
         d) dependency=${OPTARG};;
         e) export=${OPTARG};;
 	s) script=${OPTARG};;
+	c) coderoot=${OPTARG};;
     esac
 done
 
@@ -48,7 +49,7 @@ fi
 
 if [ "$parallel" -eq "1" ]; then
    # echo "sbatch --parsable --export=$export $dependency $script"
-   echo "$(sbatch --parsable --export=$export $dependency $script)"
+   echo "$(sbatch --parsable --export=$export,CODE_ROOT=$coderoot $dependency $script)"
    exit;
 fi
 

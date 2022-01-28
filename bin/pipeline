@@ -121,3 +121,5 @@ echo
 echo '>>>>>  DONE.  <<<<<'
 echo
 echo
+
+rm -r ~/tmp;

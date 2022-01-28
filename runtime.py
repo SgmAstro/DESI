@@ -1,5 +1,10 @@
 import time
+import warnings
 
+from   astropy.io.fits.verify import VerifyWarning
+
+# Suppress verify warnings, e.g. HIERARCH card length. 
+warnings.simplefilter('ignore', category=VerifyWarning)
 
 def calc_runtime(start, log=None):
     runtime  = time.time() - start

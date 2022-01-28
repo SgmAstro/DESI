@@ -39,7 +39,7 @@ result = Table(rows=rows, names=names)
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf
-ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'])
+ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
 
 rows = []
 
@@ -47,7 +47,7 @@ rand = Table.read('{}/data/GAMA4/randoms/randoms_bd_ddp_n8_G9_0.fits'.format(os.
 
 print('\n\n')
 
-for idx in np.arange(4):    
+for idx in np.arange(9):    
     nd8 = 0 
     
     for field in ['G9', 'G12', 'G15']:
@@ -63,6 +63,6 @@ result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8 [1e3]', 'fd8
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf
-ascii.write(result, 'tables/Tab3.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'])
+ascii.write(result, 'tables/Tab3.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
 
 print('\n\nDone.\n\n')

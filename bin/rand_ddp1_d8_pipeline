@@ -1,16 +1,12 @@
 #!/bin/bash
 #SBATCH -p cosma                                                                                                                                                                                     
-#SBATCH -t 04:00:00 
-#SBATCH -o rand_ddp1_d8_pipeline.log                                                                                                                                                                
+#SBATCH -t 04:00:00                                                                                                                                                                                 
+#SBATCH -o rand_ddp1_d8_pipeline.log                                                                                                                                                                 
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
-#SBATCH --ntasks-per-node=1   
-#SBATCH --open-mode=append
+#SBATCH --ntasks-per-node=1                                                                                                                                                                          
+#SBATCH --open-mode=append   
 
-# Submit with:  sbatch rand_pipeline
-# to qos of [debug, regular]
-# See status with e.g. squeue -u mjwilson
-# 
 if [[ -z "${FIELD}" ]]; then
   export FIELD="G15"
 else
@@ -24,14 +20,13 @@ else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
-export CODE_ROOT=$HOME/DESI/
+# export CODE_ROOT=$HOME/DESI/
+# export TILING_CATDIR=$HOME/data/
+# export GOLD_DIR=$HOME/data/GAMA4/
+# export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
 
-export TILING_CATDIR=$HOME/data/
-export GOLD_DIR=$HOME/data/GAMA4/
-export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
-
-export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
-export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
+export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
+export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
 
 echo
 echo 'Environment:'
@@ -56,7 +51,7 @@ else
 fi
 
 # Assumes python gen_ddp_N8.py has been run. 
-python gen_rand_ddp_N8.py --field $FIELD --prefix 'randoms_ddp1' $DRYRUN > $CODE_ROOT/logs/rand_ddp_N8_$FIELD.log
+python gen_rand_ddp_N8.py --field $FIELD --prefix 'randoms_ddp1' $DRYRUN > $RANDOMS_DIR/logs/rand_ddp_N8_$FIELD.log
 
 # TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest

@@ -1,6 +1,7 @@
 import os
 import fitsio
 import argparse
+import runtime
 import numpy as np
 import matplotlib.pyplot as plt
 

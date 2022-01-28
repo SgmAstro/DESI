@@ -20,14 +20,13 @@ else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
-export CODE_ROOT=$HOME/DESI/
+# export CODE_ROOT=$HOME/DESI/
+# export TILING_CATDIR=$HOME/data/
+# export GOLD_DIR=$HOME/data/GAMA4/
+# export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
 
-export TILING_CATDIR=$HOME/data/
-export GOLD_DIR=$HOME/data/GAMA4/
-export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
-
-export PATH=$HOME/.conda/envs/lumfn/bin/:$HOME/DESI/bin/:$PATH
-export PYTHONPATH=$HOME/$HOME/DESI/:$PYTHONPATH
+export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
+export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
 
 echo
 echo 'Environment:'
@@ -43,22 +42,22 @@ cd $CODE_ROOT
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn.log'
 
 # References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
-python gen_gold_lf.py $DRYRUN > $CODE_ROOT/logs/gama_lumfn.log
+python gen_gold_lf.py $DRYRUN > $GOLD_DIR/logs/gama_lumfn.log
 
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/gama_ddp_n8.log'
 
 # Defaults to randoms_ddp1.
-python gen_ddp_n8.py $DRYRUN > $CODE_ROOT/logs/gama_ddp_n8.log
+python gen_ddp_n8.py $DRYRUN > $GOLD_DIR/logs/gama_ddp_n8.log
 
 # echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
 # Dependency on randoms_ddp1.
-python gen_gold_lf.py --density_split --field G9  --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G9.log
-python gen_gold_lf.py --density_split --field G12 --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G12.log
-python gen_gold_lf.py --density_split --field G15 --prefix randoms_ddp1 $DRYRUN > $CODE_ROOT/logs/gama_lumfn_d8_G15.log
+python gen_gold_lf.py --density_split --field G9  --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G9.log
+python gen_gold_lf.py --density_split --field G12 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G12.log
+python gen_gold_lf.py --density_split --field G15 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G15.log
 
 echo
 echo 'Done.'

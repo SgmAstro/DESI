@@ -21,7 +21,7 @@ parser = argparse.ArgumentParser(description='Calculate fill factor using random
 parser.add_argument('-f', '--field', type=str, help='Sselect equatorial GAMA field: G9, G12, G15', default='G9')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
-parser.add_argument('--nproc', help='nproc', default=12, type=np.int32)
+parser.add_argument('--nproc', help='nproc', default=16, type=np.int32)
 parser.add_argument('--maxtasksperchild', help='maxtasksperchild', default=1000, type=np.int32)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')

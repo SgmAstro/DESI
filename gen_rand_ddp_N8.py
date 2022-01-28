@@ -17,7 +17,6 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
-
 args   = parser.parse_args()
 field  = args.field.upper()
 dryrun = args.dryrun

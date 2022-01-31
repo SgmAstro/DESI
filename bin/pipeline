@@ -1,11 +1,11 @@
 #!/bin/bash
 exec > >(tee "pipeline.log") 2>&1
 
-export USESBATCH=0
+export USESBATCH=1
 export RESET=1
 
-# export DRYRUN=''
-export DRYRUN='--dryrun'                                                                                                                                                
+export DRYRUN=''
+# export DRYRUN='--dryrun'                                                                                                                                                
 
 export NOOVERWRITE=''
 #export NOOVERWRITE='--nooverwrite'

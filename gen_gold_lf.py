@@ -189,7 +189,7 @@ if __name__ == '__main__':
             
             result = renormalise_d8LF(result, fdelta)
             
-            result['REF_SCHECHTER'] = named_schechter(result['MEDIAN_M'], name='TMR')
+            result['REF_SCHECHTER'] = named_schechter(result['MEDIAN_M'], named_type='TMR')
             
             result.pprint()
 

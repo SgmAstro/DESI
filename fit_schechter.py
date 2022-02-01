@@ -1,8 +1,8 @@
 import  os
+import  argparse
 import  numpy as np
 import  getdist.plots as gdplt
 
-from    schechter import schechter
 from    astropy.table import Table
 from    cobaya.run import run
 from    scipy import stats
@@ -12,12 +12,17 @@ from    getdist.mcsamples import MCSamplesFromCobaya
 # desienv master
 # srun -N 1 -n 1 python fit_schechter.py
 
-known = False
+parser  = argparse.ArgumentParser(description='MCMC fitting of measured Schechter function.')
+parser.add_argument('--known',  action='store_true', help='Run for toy luminosity function.')
 
-root  = os.environ['CSCRATCH'] + '/norberg/GAMA4/'
+args  = parser.parse_args()
+known = args.known
+
+root  = os.environ['GOLD_DIR']
 fpath = root + '/gama_gold_lumfn.fits'
 lumfn = Table.read(fpath)
 
+'''
 if known:
     lumfn['PHI_N'] = schechter(lumfn['MEDIAN_M'], -2.01, -20.89, -1.25)
     lumfn['PHI_N_ERROR'] = 1.e-2 * lumfn['PHI_N']
@@ -25,7 +30,10 @@ if known:
 else:
     # Bins with no objects currently results in Nans. 
     lumfn = lumfn[lumfn['PHI_N'] > 0.]
-    
+'''
+
+lumfn = lumfn[lumfn['PHI_N'] > 0.]
+ 
 lumfn.pprint()
 
 def chi2(log10phistar, Mstar, alpha):

@@ -57,7 +57,7 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
 
     return  fpath
 
-def allfile_check(dryrun=dryrun, prefix=prefix, field=field):
+def allfile_check(dryrun=False, prefix='', field=None):
     fpaths = [findfile(xx, dryrun=dryrun, prefix=prefix, field=field) for xx in supported]
 
     return  np.all([os.path.isfile(fp) for fp in fpaths]) 

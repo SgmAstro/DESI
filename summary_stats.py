@@ -1,7 +1,8 @@
 import os
 import sys
-import numpy as np
 import argparse
+import subprocess
+import numpy as np
 
 from   astropy.io    import ascii
 from   astropy.table import Table
@@ -15,7 +16,7 @@ from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   delta8_limits import delta8_tier, d8_limits
 
 dat      = Table.read(os.environ['GOLD_DIR'] + 'gama_gold_ddp.fits')
-names    = ['ZMIN', 'ZMAX', 'DDP1ZLIMS_NGAL', 'VZ', 'DENS']
+names    = ['ZMIN', 'ZMAX', 'ZLIMS_NGAL', 'VZ', 'DENS']
 
 tmr_DDPs = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
 tmr_ngold_ratio = np.array([1.002, 0.591, 0.097])
@@ -35,7 +36,6 @@ for ddp in np.arange(1, 4, 1):
             row += [dat.meta['DDP{}_{}'.format(ddp, col)]]
         except:
             row += [dat.meta['DDP{}{}'.format(ddp, col)]]
-
     
     row += [dat.meta['DDP{}_NGAL'.format(ddp)]/ dat.meta['GOLD_NGAL']]
     row += [tmr_ngold_ratio[ddp-1]]
@@ -45,6 +45,7 @@ for ddp in np.arange(1, 4, 1):
 
     dat.meta['DDP{}_NGAL'.format(ddp)]/ dat.meta['GOLD_NGAL']
 
+# TODO: GOLD_TMR -> REF_TMR.
 names += ['N_NGOLD', 'N_NGOLD_TMR']
     
 names  = ['DDP', 'MIN_M', 'MAX_M'] + names
@@ -92,5 +93,7 @@ result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab3.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
+
+subprocess.run('cd {}/tables; pdflatex compile_tables.tex'.format(os.environ['CODE_ROOT']), shell=True, check=True)
 
 print('\n\nDone.\n\n')

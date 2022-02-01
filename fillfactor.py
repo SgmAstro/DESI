@@ -156,7 +156,6 @@ rand.sort('CARTESIAN_X')
 
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
-rand['FILLFACTOR']   = np.clip(rand['FILLFACTOR'], 0., 1.)
 
 rand.meta['RSPHERE'] = 8.
     

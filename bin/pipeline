@@ -54,6 +54,8 @@ cd ~/tmp/DESI/
 
 git checkout main
 
+echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
+
 export CODE_ROOT=~/tmp/DESI/
 
 export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH

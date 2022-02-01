@@ -4,7 +4,7 @@ from   astropy.table import Table
 from   cosmo import volcom
 
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
     dat = Table(dat, copy=True)
 
     if 'IN_SAMPLE' in dat.dtype.names:
@@ -37,7 +37,11 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.1), Mcol='MCOLOR_0P0'):
 
         ivmax   = 1. / vmax
         ivmax2  = 1. / vmax**2.
+
+        # TODO: remove NaNs from dataset by setting M to mid bin.
         
+        # nsample == 0; set M to mid bin.
+
         result.append([median,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\

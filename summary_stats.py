@@ -5,19 +5,22 @@ import argparse
 
 from   astropy.io    import ascii
 from   astropy.table import Table
-from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 
 
 home  = os.environ['HOME']
 
 sys.path.append('{}/DESI'.format(home))
 
+from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   delta8_limits import delta8_tier, d8_limits
 
 dat      = Table.read(os.environ['GOLD_DIR'] + 'gama_gold_ddp.fits')
-names    = ['ZMIN', 'ZMAX', 'NGAL', 'VZ', 'DENS']
+names    = ['ZMIN', 'ZMAX', 'DDP1ZLIMS_NGAL', 'VZ', 'DENS']
 
 tmr_DDPs = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
+tmr_ngold_ratio = np.array([1.002, 0.591, 0.097])
+tmr_ddp_ratio = np.array([1., 0.589, 0.097])
+
 
 result   = Table()
 rows     = []
@@ -28,14 +31,39 @@ for ddp in np.arange(1, 4, 1):
     row = [ddp, tmr_DDPs[ddp-1][0], tmr_DDPs[ddp-1][1]]
     
     for col in names:
-        row += [dat.meta['DDP{}_{}'.format(ddp, col)]]
+        try:
+            row += [dat.meta['DDP{}_{}'.format(ddp, col)]]
+        except:
+            row += [dat.meta['DDP{}{}'.format(ddp, col)]]
 
+    
+    row += [dat.meta['DDP{}_NGAL'.format(ddp)]/ dat.meta['GOLD_NGAL']]
+    row += [tmr_ngold_ratio[ddp-1]]
+        
     row = tuple(row)                
     rows.append(row)
 
-# TODO:  Note NGAL in TMR is within DDP redshift limits, not NGAL to DDP.   
+    dat.meta['DDP{}_NGAL'.format(ddp)]/ dat.meta['GOLD_NGAL']
+
+names += ['N_NGOLD', 'N_NGOLD_TMR']
+    
 names  = ['DDP', 'MIN_M', 'MAX_M'] + names
 result = Table(rows=rows, names=names)
+
+result['ZLIMS_NGAL'] = result['ZLIMS_NGAL'] / 10**3
+result['VZ'] = result['VZ'] / 10**6
+result['DENS'] = result['DENS'] / 10**-3
+result['N_GAL/N_GAL_MAX'] = result['ZLIMS_NGAL'] / max(result['ZLIMS_NGAL'])
+
+for name in names:
+    result[name] = np.round(result[name], 3)
+    
+result.rename_column('ZLIMS_NGAL', '$N_{GAL} / 10^3$')
+result.rename_column('VZ', '$V_{DDP}$ / 10^6$')
+result.rename_column('DENS', '$\\rho_{DDP} / 10^{-3}$')
+result.rename_column('N_NGOLD', '$N/N_{GOLD}$')
+result.rename_column('N_NGOLD_TMR', '$N/N_{GOLD}_{TMR}$')
+
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf
@@ -59,7 +87,7 @@ for idx in np.arange(9):
 print('\n\n')
 
 # Generate Table 3 of McNaught-Roberts (2014).
-result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8 [1e3]', 'fd8'])
+result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]', 'fd8'])
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf

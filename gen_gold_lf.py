@@ -33,7 +33,7 @@ def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
         # print('WARNING:  Missing FIELD keyword, adding it.')
         # gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
 
-        raise RuntimeError('FIELD MISSING FROM DTYPES.')
+        raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
     found_fields = np.unique(gama_zmax['FIELD'].data)
         
@@ -158,9 +158,11 @@ if __name__ == '__main__':
             failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
 
             if failure:
+                print('FAILED on d0 tier {:d}; skipping.'.format(idx))
+
                 continue
         
-            print('PROCESS CAT FINISHED.')
+            print('LF process cat. complete.')
                     
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
@@ -190,6 +192,8 @@ if __name__ == '__main__':
             result = renormalise_d8LF(result, fdelta)
             
             result['REF_SCHECHTER'] = named_schechter(result['MCOLOR_0P0'], name='TMR')
+
+            print('LF renormalization and ref. schechter complete.')
             
             result.pprint()
 

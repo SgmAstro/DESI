@@ -191,7 +191,7 @@ if __name__ == '__main__':
             
             result = renormalise_d8LF(result, fdelta)
             
-            result['REF_SCHECHTER'] = named_schechter(result['MCOLOR_0P0'], name='TMR')
+            result['REF_SCHECHTER'] = named_schechter(result['MEDIAN_M'], name='TMR')
 
             print('LF renormalization and ref. schechter complete.')
             

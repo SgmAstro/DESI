@@ -154,6 +154,8 @@ for rr in results:
 rand                 = Table.read(fpath)
 rand.sort('CARTESIAN_X')
 
+rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
+
 rand.meta['RSPHERE'] = 8.
     
 # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.

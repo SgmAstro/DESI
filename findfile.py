@@ -7,6 +7,14 @@ from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
 
+supported = ['gold',\
+             'kE',\
+             'zmax',\
+             'vmax',\
+             'lumfn',\
+             'ddp',\
+             'ddp_n8']
+
 def gather_cat(fpaths):
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)
@@ -49,18 +57,15 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
 
     return  fpath
 
+def allfile_check(dryrun=dryrun, prefix=prefix, field=field):
+    fpaths = [findfile(xx, dryrun=dryrun, prefix=prefix, field=field) for xx in supported]
+
+    return  np.all([os.path.isfile(fp) for fp in fpaths]) 
+
 
 if __name__ == '__main__':
     fields = ['G9', 'G12', 'G15']
-
-    fpaths = []
-    fpaths.append(findfile('gold',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('kE',        dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('zmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('vmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('lumfn',     dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp',       dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp_n8',    dryrun=False, prefix='', field=None))
+    fpaths = [findfile(xx, dryrun=False, prefix='', field=None) for xx in supported]
 
     for field in fields:
         for ii, _ in enumerate(d8_limits):

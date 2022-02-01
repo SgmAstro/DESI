@@ -151,6 +151,9 @@ rand['BOUND_ID']   = 0
 rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
 rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0]   = bids[np.array(flat_ii)]
 
+rand['FILLFACTOR']   = np.clip(rand['FILLFACTOR'], 0., 1.)
+rand['FILLFACTOR'][rand['BOUND_DIST'] > 8.] = 1
+
 runtime = calc_runtime(start, 'Shuffling')
 
 # randomise rows.                                                                                                                                                

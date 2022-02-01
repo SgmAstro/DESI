@@ -15,6 +15,6 @@ def delta8_tier(delta8):
     result = -99 * np.ones(len(delta8), dtype=np.int)
 
     for i, lims in enumerate(d8_limits):
-        result[(delta8 > lims[0]) & (delta8 <= lims[1])] = i
+        result[(delta8 >= lims[0]) & (delta8 < lims[1])] = i
 
     return  result

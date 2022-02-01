@@ -15,7 +15,7 @@ sys.path.append('{}/DESI'.format(home))
 from   delta8_limits import delta8_tier, d8_limits
 
 dat      = Table.read(os.environ['GOLD_DIR'] + 'gama_gold_ddp.fits')
-names    = ['ZMIN', 'ZMAX', 'NGAL', 'VZ', 'DENS']
+names    = ['ZMIN', 'ZMAX', 'DDP1ZLIMS_NGAL', 'VZ', 'DENS']
 
 tmr_DDPs = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
 
@@ -54,12 +54,12 @@ for idx in np.arange(9):
         dat  = Table.read('{}/data/GAMA4/gama_gold_{}_ddp_n8_d0_{}.fits'.format(os.environ['HOME'], field, idx))
         nd8 += len(dat) / 1.e3
     
-    rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], nd8, rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
+    rows.append(('d{}'.format(idx+1), d8_limits[idx][0], d8_limits[idx][1], nd8, rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
 
 print('\n\n')
 
 # Generate Table 3 of McNaught-Roberts (2014).
-result = Table(rows=rows, names=['Label', 'Min_d8', 'Max_d8', 'N_d8 [1e3]', 'fd8'])
+result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]', 'fd8'])
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf

@@ -188,6 +188,8 @@ if __name__ == '__main__':
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
             
             result = renormalise_d8LF(result, fdelta)
+            
+            result['REF_M'] = named_schechter(result['M'], name='TMR')
 
             result.pprint()
 

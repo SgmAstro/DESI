@@ -52,8 +52,8 @@ git clone https://github.com/SgmAstro/DESI.git
 
 cd ~/tmp/DESI/
 
-#git checkout main
-git checkout bounddist_fixes
+git checkout main
+
 echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
 
 export CODE_ROOT=~/tmp/DESI/

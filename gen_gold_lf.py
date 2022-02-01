@@ -100,12 +100,12 @@ if __name__ == '__main__':
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
+        fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
         
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
-        opath = fpath.replace('zmax', 'vmax')
+        opath = fpath.replace('ddp', 'vmax')
 
         # 
         if args.nooverwrite:
@@ -120,6 +120,10 @@ if __name__ == '__main__':
         if dryrun:
             all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
         '''
+
+        print(f'Reading: {fpath}')
+        print(f'Writing: {opath}')
+
         process_cat(fpath, opath, rand_paths=[])
 
     else:

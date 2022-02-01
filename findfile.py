@@ -15,7 +15,10 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}'):
 
     gold_dir   = os.environ['GOLD_DIR']
     rand_dir   = os.environ['RANDOMS_DIR']
-    
+
+    if isinstance(field, list):
+        return [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier for ff in field)]
+        
     if field == None:
         file_types = {'gold':   {'dir': gold_dir, 'id': 'gama',      'ftype': 'gold'},\
                       'kE':     {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'kE'},\

@@ -38,7 +38,9 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
         ivmax   = 1. / vmax
         ivmax2  = 1. / vmax**2.
 
-        # nsample == 0; set M to mid bin.  Ideally, no nans.
+        # TODO: remove NaNs from dataset by setting M to mid bin.
+        
+        # nsample == 0; set M to mid bin.
 
         result.append([median,\
                        nsample / dM / vol,\

@@ -1,12 +1,13 @@
 import os
 import argparse
-import numpy as np
+import runtime
+import numpy           as np
 import astropy.io.fits as fits
 
-from   astropy.table import Table
-from   cosmo import cosmo, distmod
-from   gama_limits import gama_field
-from   cartesian import cartesian
+from   astropy.table   import Table
+from   cosmo           import cosmo, distmod
+from   gama_limits     import gama_field
+from   cartesian       import cartesian, rotate
 
 
 root   = os.environ['TILING_CATDIR']
@@ -73,6 +74,12 @@ dat['CARTESIAN_X'] = xyz[:,0]
 dat['CARTESIAN_Y'] = xyz[:,1]
 dat['CARTESIAN_Z'] = xyz[:,2]
 
+xyz = rotate(dat['RA'], dat['DEC'], xyz)
+
+dat['ROTCARTESIAN_X'] = xyz[:,0]
+dat['ROTCARTESIAN_Y'] = xyz[:,1]
+dat['ROTCARTESIAN_Z'] = xyz[:,2]
+
 # Randomise rows.
 idx = np.arange(len(dat))
 idx = np.random.choice(idx, size=len(idx), replace=False)
@@ -90,3 +97,8 @@ if not os.path.isdir(os.environ['GOLD_DIR']):
 dat.meta['GOLD_NGAL'] = len(dat)
 dat.pprint()
 dat.write(opath, format='fits', overwrite=True)
+
+idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
+dat   = dat[idx]
+
+dat.write(os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits', format='fits', overwrite=True)

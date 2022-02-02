@@ -1,5 +1,6 @@
 import os
 import sys
+import runtime
 import argparse
 import pylab as pl
 import numpy as np
@@ -32,7 +33,7 @@ def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
         # print('WARNING:  Missing FIELD keyword, adding it.')
         # gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
 
-        raise RuntimeError('FIELD MISSING FROM DTYPES.')
+        raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
     found_fields = np.unique(gama_zmax['FIELD'].data)
         
@@ -51,7 +52,7 @@ def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     else:
         rand  = None
 
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0'], rand=rand)
+    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ'], rand=rand)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     
@@ -99,12 +100,12 @@ if __name__ == '__main__':
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_zmax.fits'
+        fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
         
         if dryrun:
             fpath = fpath.replace('.fits', '_dryrun.fits')
 
-        opath = fpath.replace('zmax', 'vmax')
+        opath = fpath.replace('ddp', 'vmax')
 
         # 
         if args.nooverwrite:
@@ -119,6 +120,10 @@ if __name__ == '__main__':
         if dryrun:
             all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
         '''
+
+        print(f'Reading: {fpath}')
+        print(f'Writing: {opath}')
+
         process_cat(fpath, opath, rand_paths=[])
 
     else:
@@ -157,13 +162,15 @@ if __name__ == '__main__':
             failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
 
             if failure:
+                print('FAILED on d0 tier {:d}; skipping.'.format(idx))
+
                 continue
         
-            print('PROCESS CAT FINISHED.')
+            print('LF process cat. complete.')
                     
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
-            result.pprint()
+            # result.pprint()
 
             if all_rands == None:
                 all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
@@ -187,7 +194,12 @@ if __name__ == '__main__':
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
             
             result = renormalise_d8LF(result, fdelta)
+            
+            result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
+            result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
+            print('LF renormalization and ref. schechter complete.')
+            
             result.pprint()
 
             # 
@@ -213,7 +225,7 @@ if __name__ == '__main__':
                 header[key] = str(result.meta[key])
 
             hdr            = fits.Header(header)
-            result_hdu     = fits.BinTableHDU(result, name='VMAX', header=hdr)
+            result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
             hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 

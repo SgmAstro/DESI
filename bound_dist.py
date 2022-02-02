@@ -16,7 +16,7 @@ from   multiprocessing import Pool
 from   runtime         import calc_runtime
 
 '''
-Script to calculate the maximimum distance [Mpc/h] of each random from the boundary. 
+Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
 '''
 
 np.random.seed(314)
@@ -150,6 +150,10 @@ rand['BOUND_ID']   = 0
 
 rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
 rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0]   = bids[np.array(flat_ii)]
+
+sphere_radius = rand.meta['RSPHERE']
+rand['FILLFACTOR']   = np.clip(rand['FILLFACTOR'], 0., 1.)
+rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1
 
 runtime = calc_runtime(start, 'Shuffling')
 

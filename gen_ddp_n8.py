@@ -1,12 +1,12 @@
 import os
 import fitsio
 import argparse
+import runtime
 import numpy as np
 import matplotlib.pyplot as plt
 
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
-from   cartesian import cartesian
 from   delta8_limits import delta8_tier, d8_limits
 from   gama_limits import gama_field
 

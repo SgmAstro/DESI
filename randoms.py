@@ -7,7 +7,7 @@ from   cosmo import cosmo, volcom
 from   scipy.interpolate import interp1d
 from   gama_limits import gama_limits
 from   astropy.table import Table
-from   cartesian import cartesian
+from   cartesian import cartesian, rotate
 from   gama_limits import gama_field
 from   runtime import calc_runtime
 
@@ -44,7 +44,7 @@ Vmax    = volcom(zmax, Area)
 
 # Assumse one gama field, of 60. sq. deg. 
 vol          = Vmax - Vmin
-rand_density = 1.
+rand_density = 2.
 
 nrand        = np.int64(np.ceil(vol * rand_density))
 
@@ -117,6 +117,12 @@ assert  np.all(randoms['FIELD'].data == field)
 randoms['CARTESIAN_X'] = xyz[:,0]
 randoms['CARTESIAN_Y'] = xyz[:,1]
 randoms['CARTESIAN_Z'] = xyz[:,2]
+
+xyz = rotate(randoms['RANDOM_RA'], randoms['RANDOM_DEC'], xyz)
+
+randoms['ROTCARTESIAN_X'] = xyz[:,0]
+randoms['ROTCARTESIAN_Y'] = xyz[:,1]
+randoms['ROTCARTESIAN_Z'] = xyz[:,2]
 
 print('Applying boundary.')
 

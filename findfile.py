@@ -2,64 +2,86 @@ import os
 import time
 import glob
 import datetime
+import numpy as np
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
 
-def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}'):
+fields    = ['G9', 'G12', 'G15']
+supported = ['gold',\
+             'kE',\
+             'zmax',\
+             'vmax',\
+             'lumfn',\
+             'ddp',\
+             'ddp_n8']
+
+def gather_cat(fpaths):
+    tables      = [Table.read(x) for x in fpaths]
+    tables      = vstack(tables)
+
+    # TODO:  Headers, e.g. Area, ngal etc.  
+    tables.meta = {}
+
+    return  tables 
+
+
+def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):
     if dryrun:
         dryrun = '_dryrun'
     else:
         dryrun = ''
 
+    realz      = str(realz)
+
     gold_dir   = os.environ['GOLD_DIR']
     rand_dir   = os.environ['RANDOMS_DIR']
-    
+
+    if isinstance(field, list):
+        return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
+        
     if field == None:
-        file_types = {'gold':   {'dir': gold_dir, 'id': 'gama',      'ftype': 'gold'},\
-                      'kE':     {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'kE'},\
-                      'zmax':   {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'zmax'},\
-                      'vmax':   {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'vmax'},\
-                      'lumfn':  {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'lumfn'},\
-                      'ddp':    {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'ddp'},\
-                      'ddp_n8': {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'ddp_n8'}}
+        file_types = {'gold':   {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\
+                      'kE':     {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'kE'},\
+                      'zmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'zmax'},\
+                      'vmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'vmax'},\
+                      'lumfn':  {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'lumfn'},\
+                      'ddp':    {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp'},\
+                      'ddp_n8': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
 
         parts      = file_types[ftype]
         fpath      = parts['dir'] + '{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
-        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': 'gama_gold',              'ftype': 'ddp_n8_d0_{}'.format(utier)},\
-                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': 'gama_gold',              'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
-                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': 'gama_gold',              'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
-                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype':'0'},\
-                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype':'0'},\
-                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype':'0'},\
-                      'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype':'0'},\
-                      'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype':'0'},\
-                      'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype':'0'},\
-                      'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype':'0'},\
-                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype':'0'}
+        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
+                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
+                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
+                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
+                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
+                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
+                      'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
+                      'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
+                      'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
+                      'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
+                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
         parts      = file_types[ftype]
+        fpath      = f'' + parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
-        fpath      = parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
-        
     return  fpath
 
+def file_check(dryrun=None):
+    try:
+        dryrun = os.environ['DRYRUN']
 
-if __name__ == '__main__':
-    fields = ['G9', 'G12', 'G15']
+    except Exception as E:
+        print(E)
 
-    fpaths = []
-    fpaths.append(findfile('gold',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('kE',        dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('zmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('vmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('lumfn',     dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp',       dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp_n8',    dryrun=False, prefix='', field=None))
+        dryrun = ''
+
+    fpaths = [findfile(xx, dryrun=False, prefix='', field=None) for xx in supported]
 
     for field in fields:
         fpaths.append(findfile('randoms',            dryrun=False, prefix='', field=field))
@@ -106,7 +128,12 @@ if __name__ == '__main__':
 
         print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
 
-    if len(fp) == 0:
-        print('WARNING: NO FILES FOUND!')        
-    
-    print('\n\nDone.\n\n')
+    # print('\n\n----  Multiple fields    ----\n')
+
+    return  ~np.all([os.path.isfile(fp) for fp in all_paths])
+
+
+if __name__ == '__main__':
+    failure = file_check()
+
+    print('\n\nSuccess: {}\n\n'.format(~failure))

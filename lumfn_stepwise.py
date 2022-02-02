@@ -23,7 +23,7 @@ def lum_visible(x, dM=0.1):
     else:
         return  -x/dM + 1./2.
 
-def lumfn_stepwise_eval(vmax, phis, phi_Ms, Mcol='', Mmin_col=''):
+def lumfn_stepwise_eval(vmax, phis, phi_Ms, Mcol='MCOLOR_0P0', Mmin_col='DDPMALL_0P0_VISZ'):
     '''
     Eqn. 2.12, of Efstathiou, Ellis & Peterson.   
     '''
@@ -33,7 +33,7 @@ def lumfn_stepwise_eval(vmax, phis, phi_Ms, Mcol='', Mmin_col=''):
     dM    = np.diff(phi_Ms)
     dM    = dM[0]
     
-    num   = np.count_nonzero(lum_binner(Ms - Mk))
+    num   = np.count_nonzero(lum_binner(Ms - phi_Ms))
 
     facs  = []
 
@@ -54,9 +54,9 @@ def lumfn_stepwise_eval(vmax, phis, phi_Ms, Mcol='', Mmin_col=''):
     # dM * phis.
     return  num / den
     
-def lumfn_stepwise(vmax, Mcol='DDPMALL_0P0', Mmin_col='MVIS_Z'):
+def lumfn_stepwise(vmax, Mcol='MCOLOR_0P0', Mmin_col='DDPMALL_0P0_VISZ'):
     phi_Ms   = np.arange(-26., -16., 0.5) 
-    phi_init = np.ones_like(phi_MS)
+    phi_init = np.ones_like(phi_Ms)
 
     diff     = 1.e99
     
@@ -75,6 +75,10 @@ if __name__ == '__main__':
 
 
     print('\n\n')
+
+    fpath = findfile('vmax')
+
+    print(fpath)
 
     vmax = Table.read(findfile('vmax'))
     vmax.pprint()

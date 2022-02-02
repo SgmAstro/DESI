@@ -1,11 +1,16 @@
 import papermill as pm
 
+from   tidyup import tidyup
 
+
+# TODO: Define elsewhere.
 fields = ['G9', 'G12', 'G15']
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs():
     print('Running all tests.')
+
+    tidyup()
     
     run_randomqa()
 

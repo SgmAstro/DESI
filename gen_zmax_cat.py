@@ -1,6 +1,7 @@
 import os
 import time
 import argparse
+import runtime
 import numpy as np
 
 from   cosmo import distmod
@@ -68,7 +69,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 
              print('{:.3f}% complete after {:.2f} mins.'.format(100. * i / len(theta_zs), runtime))
    '''
-   with Pool(processes=12) as pool:
+   with Pool(processes=14) as pool:
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
        result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
    

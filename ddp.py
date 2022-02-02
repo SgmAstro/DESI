@@ -7,14 +7,14 @@ from   cosmo             import volcom
 from   scipy.interpolate import interp1d
 
 
-tmr_DDP1     = [-21.8, -20.1]
-tmr_DDP2     = [-20.6, -19.3]
-tmr_DDP3     = [-19.6, -17.8]
+tmr_DDP1       = [-21.8, -20.1]
+tmr_DDP2       = [-20.6, -19.3]
+tmr_DDP3       = [-19.6, -17.8]
 
-root         = os.environ['GOLD_DIR'] + '/ddrp_limits/'
+root           = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 
-_bright_curve = fitsio.read(root + '/ddrp_limit_3.fits')  #  7 (12.0 QCOLOR 0.131)
-_faint_curve  = fitsio.read(root + '/ddrp_limit_17.fits') # 27 (19.8 QCOLOR 1.067)
+_bright_curve  = fitsio.read(root + '/ddrp_limit_3.fits')  #  7 (12.0 QCOLOR 0.131)
+_faint_curve   = fitsio.read(root + '/ddrp_limit_17.fits') # 27 (19.8 QCOLOR 1.067)
 
 # TODO: extend the curve limits and put bounds_error back on.
 bright_curve   = interp1d(_bright_curve['M0P0_QALL'], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
@@ -49,8 +49,11 @@ def get_ddps(Area, M_0P0s, zs):
         
         zlims['DDP{}_ZMIN'.format(i+1)] = zmin
         zlims['DDP{}_ZMAX'.format(i+1)] = zmax
+
         zlims['DDP{}_VZ'.format(i+1)]   = volcom(zmax, Area) - volcom(zmin, Area)
+
         zlims['DDP{}ZLIMS_NGAL'.format(i+1)] = np.count_nonzero(in_ddpz)
+
         zlims['DDP{}_NGAL'.format(i+1)] = np.count_nonzero(in_ddp) 
         zlims['DDP{}_DENS'.format(i+1)] = np.count_nonzero(in_ddp) / zlims['DDP{}_VZ'.format(i+1)] 
                 

@@ -7,6 +7,7 @@ from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
 
+fields    = ['G9', 'G12', 'G15']
 supported = ['gold',\
              'kE',\
              'zmax',\
@@ -57,14 +58,15 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
 
     return  fpath
 
-def allfile_check(dryrun=False, prefix='', field=None):
-    fpaths = [findfile(xx, dryrun=dryrun, prefix=prefix, field=field) for xx in supported]
+def file_check(dryrun=None):
+    try:
+        dryrun = os.environ['DRYRUN']
 
-    return  np.all([os.path.isfile(fp) for fp in fpaths]) 
+    except Exception as E:
+        print(E)
 
+        dryrun = ''
 
-if __name__ == '__main__':
-    fields = ['G9', 'G12', 'G15']
     fpaths = [findfile(xx, dryrun=False, prefix='', field=None) for xx in supported]
 
     for field in fields:
@@ -103,9 +105,10 @@ if __name__ == '__main__':
 
     print('\n\n----  Multiple fields    ----\n')
 
-    fpaths   = findfile('ddp_n8_d0', dryrun=False, prefix='', field=fields, utier=6)
-    all_cats = gather_cat(fpaths)
+    # return  np.all([os.path.isfile(fp) for fp in fpaths])
 
-    all_cats.pprint()
+
+if __name__ == '__main__':
+    file_check()
 
     print('\n\nDone.\n\n')

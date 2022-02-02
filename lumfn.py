@@ -18,7 +18,12 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
     vol    = dat.meta['VOLUME']
     vol   *= vol_frac
 
+    assert  dat[Mcol].min() >= Ms.min()
+    assert  dat[Mcol].max() <= Ms.max()
+
+    # default:  bins[i-1] <= x < bins[i]
     idxs   = np.digitize(dat[Mcol], bins=Ms)
+
     result = []
 
     ds     = np.diff(Ms)
@@ -29,8 +34,12 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
     for idx in np.arange(len(Ms) - 1):
         sample  = dat[idxs == idx]
         nsample = len(sample)
-        
-        median  = np.median(sample[Mcol])
+
+        if nsample > 0:
+            median = np.median(sample[Mcol])
+        else:
+            # TODO:
+            median = 0.5 * (Ms[idx] + Ms[idx+1])
 
         vmax    = sample['VMAX'].data
         vmax   *= vol_frac

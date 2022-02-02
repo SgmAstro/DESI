@@ -170,7 +170,7 @@ if __name__ == '__main__':
                     
             result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
 
-            result.pprint()
+            # result.pprint()
 
             if all_rands == None:
                 all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
@@ -195,7 +195,7 @@ if __name__ == '__main__':
             
             result = renormalise_d8LF(result, fdelta)
             
-            result['REF_SCHECHTER'] = named_schechter(result['MEDIAN_M'], name='TMR')
+            result['REF_SCHECHTER'] = named_schechter(result['MEDIAN_M'], named_type='TMR')
 
             print('LF renormalization and ref. schechter complete.')
             

@@ -224,7 +224,7 @@ if __name__ == '__main__':
                 header[key] = str(result.meta[key])
 
             hdr            = fits.Header(header)
-            result_hdu     = fits.BinTableHDU(result, name='VMAX', header=hdr)
+            result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
             hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 

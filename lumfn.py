@@ -1,8 +1,47 @@
-import numpy as np
+import numpy         as     np
 
 from   astropy.table import Table
-from   cosmo import volcom
+from   cosmo         import volcom
 
+
+def multifield_lumfn(lumfn_list):
+    tables = [Table.read(x) for x in lumfn_list]
+    
+    def sum_rule(tables, col):
+        data = [table[col].data for table in tables]
+        data = np.c_[data].T
+        
+        return np.sum(data, axis=1)
+
+    def mean_rule(tables, col):
+        data = [table[col].data for table in tables]
+        data = np.c_[data].T
+        
+        return np.mean(data, axis=1)
+
+    def quadsum_rule(tables, col):
+        data = [table[col].data for table in tables]
+        data = np.c_[data].T
+        
+        return  np.sqrt(np.sum(data**2., axis=1))
+
+    
+    result   = Table()
+    
+    sum_cols  = ['N']
+    mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER']
+    qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
+        
+    for m in mean_cols:
+        result[m] = mean_rule(tables, m)
+
+    for s in sum_cols:
+        result[s] = sum_rule(tables, s)
+        
+    for q in qsum_cols:
+        result[q] = quadsum_rule(tables, q)
+    
+    return  result
 
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
     dat = Table(dat, copy=True)

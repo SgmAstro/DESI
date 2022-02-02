@@ -1,5 +1,5 @@
 #!/bin/bash
-exec > >(tee $GOLD_DIR"/logs/pipeline.log") 2>&1
+exec > >(tee 'pipeline.log') 2>&1
 
 export USESBATCH=1
 export RESET=1

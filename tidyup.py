@@ -10,7 +10,7 @@ RANDDIR = os.environ['RANDOMS_DIR']
 
 def tidyup():
     # File check summary. 
-    sys.stdout = open(GOLDDIR + 'summary.txt', 'w')
+    sys.stdout = open(GOLDDIR + 'summary.log', 'w')
 
     file_check()
 

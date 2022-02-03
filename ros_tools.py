@@ -6,6 +6,7 @@ import numpy as np
 def tile2rosette(tile):
     if tile < 433:
         return (tile-1)//27
+    
     else:
         if tile >= 433 and tile < 436:
             return 13
@@ -18,7 +19,8 @@ def tile2rosette(tile):
             
         if tile > 480:
             return tile//30    
-    return 999999 #shouldn't be any more?
+
+    return 999999
 
 roscen = {0:(150.100,2.182),\
           1:(179.6,0),\
@@ -43,12 +45,12 @@ roscen = {0:(150.100,2.182),\
 
 def calc_rosr(rosn, ra, dec):
     # Given rosetter number and ra,dec, calculate distance from center 
-    ra   = ra*np.pi/180.
-    dec  = dec*np.pi/180.
+    ra       = ra*np.pi/180.
+    dec      = dec*np.pi/180.
     rac,decc = roscen[rosn]
-    rac  = rac*np.pi/180.
-    decc = decc*np.pi/180.
-    cd   = np.sin(dec)*np.sin(decc)+np.cos(dec)*np.cos(decc)*np.cos(rac-ra)
-    ad   = np.arccos(cd)*180./np.pi
+    rac      = rac*np.pi/180.
+    decc     = decc*np.pi/180.
+    cd       = np.sin(dec)*np.sin(decc)+np.cos(dec)*np.cos(decc)*np.cos(rac-ra)
+    ad       = np.arccos(cd)*180./np.pi
 
-    return ad
+    return  ad

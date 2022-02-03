@@ -52,7 +52,7 @@ def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     else:
         rand  = None
 
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ'], rand=rand)
+    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'], rand=rand)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
     

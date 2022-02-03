@@ -7,7 +7,26 @@ from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
 
-def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}'):
+fields    = ['G9', 'G12', 'G15']
+supported = ['gold',\
+             'kE',\
+             'zmax',\
+             'vmax',\
+             'lumfn',\
+             'ddp',\
+             'ddp_n8']
+
+def gather_cat(fpaths):
+    tables      = [Table.read(x) for x in fpaths]
+    tables      = vstack(tables)
+
+    # TODO:  Headers, e.g. Area, ngal etc.  
+    tables.meta = {}
+
+    return  tables 
+
+
+def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama'):
     if dryrun:
         dryrun = '_dryrun'
     else:
@@ -15,39 +34,40 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}'):
 
     gold_dir   = os.environ['GOLD_DIR']
     rand_dir   = os.environ['RANDOMS_DIR']
-    
+
+    if isinstance(field, list):
+        return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
+        
     if field == None:
-        file_types = {'gold':   {'dir': gold_dir, 'id': 'gama',      'ftype': 'gold'},\
-                      'kE':     {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'kE'},\
-                      'zmax':   {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'zmax'},\
-                      'vmax':   {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'vmax'},\
-                      'lumfn':  {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'lumfn'},\
-                      'ddp':    {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'ddp'},\
-                      'ddp_n8': {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'ddp_n8'}}
+        file_types = {'gold':   {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\
+                      'kE':     {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'kE'},\
+                      'zmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'zmax'},\
+                      'vmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'vmax'},\
+                      'lumfn':  {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'lumfn'},\
+                      'ddp':    {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp'},\
+                      'ddp_n8': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
 
         parts      = file_types[ftype]
         fpath      = parts['dir'] + '{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else:
-        file_types = {'ddp_n8_d0': {'dir': gold_dir, 'id': 'gama_gold', 'ftype': 'ddp_n8_d0_{}'.format(utier)}}
+        file_types = {'ddp_n8_d0': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8_d0_{}'.format(utier)}}
         parts      = file_types[ftype]
 
-        fpath      = parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
-        
+        fpath      = f'' + parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
+
     return  fpath
 
+def file_check(dryrun=None):
+    try:
+        dryrun = os.environ['DRYRUN']
 
-if __name__ == '__main__':
-    fields = ['G9', 'G12', 'G15']
+    except Exception as E:
+        print(E)
 
-    fpaths = []
-    fpaths.append(findfile('gold',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('kE',        dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('zmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('vmax',      dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('lumfn',     dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp',       dryrun=False, prefix='', field=None))
-    fpaths.append(findfile('ddp_n8',    dryrun=False, prefix='', field=None))
+        dryrun = ''
+
+    fpaths = [findfile(xx, dryrun=False, prefix='', field=None) for xx in supported]
 
     for field in fields:
         for ii, _ in enumerate(d8_limits):
@@ -81,5 +101,14 @@ if __name__ == '__main__':
             mtime = ''
 
         print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
+
+
+    print('\n\n----  Multiple fields    ----\n')
+
+    # return  np.all([os.path.isfile(fp) for fp in fpaths])
+
+
+if __name__ == '__main__':
+    file_check()
 
     print('\n\nDone.\n\n')

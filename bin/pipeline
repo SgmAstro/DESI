@@ -1,5 +1,5 @@
 #!/bin/bash
-exec > >(tee "pipeline.log") 2>&1
+exec > >(tee 'pipeline.log') 2>&1
 
 export USESBATCH=1
 export RESET=1
@@ -10,11 +10,14 @@ export DRYRUN=''
 export NOOVERWRITE=''
 #export NOOVERWRITE='--nooverwrite'
 
-
 # ----------------------------- #
 # export TILING_CATDIR=$HOME/data/
 # export GOLD_DIR=$HOME/data/GAMA4/
 # export RANDOMS_DIR=$HOME/data/GAMA4/randoms/
+
+echo 'Assuming RESET='$RESET
+echo 'Assuming DRYRUN='$DRYRUN
+echo 'Assuming NOOVERWRITE='$NOOVERWRITE
 
 if (( $RESET > 0 )); then
     echo
@@ -52,7 +55,7 @@ git clone https://github.com/SgmAstro/DESI.git
 
 cd ~/tmp/DESI/
 
-git checkout main
+git checkout bounddist_fixes # main
 
 echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
 

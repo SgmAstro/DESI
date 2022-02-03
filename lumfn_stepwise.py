@@ -14,64 +14,64 @@ def lum_visible(x, dM=0.1):
     '''                                                                                                                          
     Eqn. 2.10b, H(x), of Efstathiou, Ellis & Peterson.                                                                            
     '''
-    if x >= (dM/2.):
-        return  0.0
 
-    elif x <= (dM/2.):
-        return  1.0
+    result = -x/dM + 1./2.
 
-    else:
-        return  -x/dM + 1./2.
+    result[x >= (dM / 2.)] = 0.0
+    result[x <= (dM / 2.)] = 1.0
+    
+    return  result
 
-def lumfn_stepwise_eval(vmax, phis, phi_Ms, Mcol='MCOLOR_0P0', Mmin_col='DDPMALL_0P0_VISZ'):
+def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MCOLOR_0P0', Mmin_col='DDPMALL_0P0_VISZ'):
     '''
     Eqn. 2.12, of Efstathiou, Ellis & Peterson.   
     '''
     Ms    = vmax[Mcol]
     Mmins = vmax[Mmin_col]
 
-    dM    = np.diff(phi_Ms)
-    dM    = dM[0]
-    
-    num   = np.count_nonzero(lum_binner(Ms - phi_Ms))
+    num   = np.count_nonzero(lum_binner(Ms - phi_M))
 
-    facs  = []
+    facs  = lum_visible(phi_M - Mmins) 
+    facs[facs > 0.0] /= np.sum(dM * phis[:,None] * lum_visible(phi_Ms[:,None] - Mmins[facs > 0.0]), axis=0)
 
-    for Mmin in Mmins:
-        fac   = lum_visible(phi_Ms - Mmin)
-        fac  *= dM * phis
-        fac   = np.sum(fac)
-        
-        facs.append(fac)
-
-    fac   = np.array(fac)
-        
-    den   = lum_visible(Ms - Mmins)
-    den  /= fac
-    
-    den   = np.sum(den)
-
+    facs  = np.sum(facs) 
+     
     # dM * phis.
-    return  num / den
+    return  num / facs
     
 def lumfn_stepwise(vmax, Mcol='MCOLOR_0P0', Mmin_col='DDPMALL_0P0_VISZ'):
-    phi_Ms   = np.arange(-26., -16., 0.5) 
-    phi_init = np.ones_like(phi_Ms)
+    dM        = 0.1
 
-    diff     = 1.e99
-    
+    phi_Ms    = np.arange(-26., -16., dM) 
+    phi_init  = 1.e-5 * np.ones_like(phi_Ms)
+
+    diff      = 1.e99
+    phis      = phi_init 
+
+    iteration = 0
+
     while  (diff > 1.e-6):
-        new_phis = lumfn_stepwise_eval(vmax, phi_init, phi_Ms, Mcol=Mcol, Mmin_col=Mmin_col)
-        diff     = (new_phis - phi_init)**2.
-
-        #  Update previous estimate. 
-        phi_init = new_phis
+        print('Solving for iteration {} with diff. {}'.format(iteration, diff))
         
-    return  phi_Ms, new_phis
+        new_phis = []
+    
+        for i, (phi_M, phi) in enumerate(zip(phi_Ms, phis)):
+            new_phis.append(lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol=Mcol, Mmin_col=Mmin_col))
+
+        new_phis = np.array(new_phis)
+        
+        diff     = np.sum((new_phis - phis)**2.)
+    
+        #  Update previous estimate. 
+        phis     = new_phis
+        
+    return  phi_Ms, phis
         
 
 if __name__ == '__main__':
-    from astropy.table import Table
+    import pylab as pl
+    
+    from   astropy.table import Table
 
 
     print('\n\n')
@@ -81,8 +81,16 @@ if __name__ == '__main__':
     print(fpath)
 
     vmax = Table.read(findfile('vmax'))
+    # vmax = vmax[:70000]
+
     vmax.pprint()
 
-    result = lumfn_stepwise(vmax)
+    phi_Ms, phis = lumfn_stepwise(vmax)
+
+    pl.plot(phi_Ms, np.log10(phis))
+
+    pl.xlim(-16., -26.)
+
+    pl.savefig('stepwise.pdf')
 
     print('\n\nDone.\n\n')

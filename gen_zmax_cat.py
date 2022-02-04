@@ -83,11 +83,13 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--aall', help='All Q, no red/blue split.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     
     args = parser.parse_args()
     aall = args.aall
     dryrun = args.dryrun
-    
+    survey  = args.survey.lower()
+
     rlim = 19.8
     rmax = 12.0
 
@@ -96,15 +98,18 @@ if __name__ == '__main__':
     print('Assuming {:.4f} < r < {:.4f}'.format(rmax, rlim))
     print('Assuming Q ALL = {}'.format(aall))
     
-    root = os.environ['GOLD_DIR']
+    #root = os.environ['GOLD_DIR']
 
-    fpath = root + '/gama_gold_kE.fits'
-    opath = root + '/gama_gold_zmax.fits'
+    #fpath = root + '/gama_gold_kE.fits'
+    #opath = root + '/gama_gold_zmax.fits'
+    
+    #if dryrun:
+    #    fpath = fpath.replace('.fits', '_dryrun.fits')
+    #    opath = opath.replace('.fits', '_dryrun.fits')
 
-    if dryrun:
-        fpath = fpath.replace('.fits', '_dryrun.fits')
-        opath = opath.replace('.fits', '_dryrun.fits')
-
+    fpath  = findfile(ftype='kE', dryrun=dryrun, survey=survey)
+    opath  = fpath.replace('kE', 'zmax')
+    
     if args.nooverwrite:
         if os.path.isfile(opath):
             print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))

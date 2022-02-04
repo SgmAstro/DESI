@@ -13,35 +13,44 @@ from   cartesian         import cartesian
 from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
 
+from   gama_limits   import gama_field, gama_fields
+from   desi_fields   import desi_fields
+from   findfile      import findfile, fetch_fields
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args    = parser.parse_args()
 field   = args.field.upper()
 dryrun  = args.dryrun
 prefix  = args.prefix
+survey  = args.survey.lower()
 
 start   = time.time()
 
 realz   = 0
 
-fpath   = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+#fpath   = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
-if dryrun:
-    fpath = fpath.replace('.fits', '_dryrun.fits')
+#if dryrun:
+#    fpath = fpath.replace('.fits', '_dryrun.fits')
+
+fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey)
 
 dat     = Table.read(fpath)
 
 runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6), xx=dat)
 
-fpath   = os.environ['RANDOMS_DIR'] + '/{}_bd_{}_{:d}.fits'.format(prefix, field, realz)
+#fpath   = os.environ['RANDOMS_DIR'] + '/{}_bd_{}_{:d}.fits'.format(prefix, field, realz)
 
-if dryrun:
-    fpath = fpath.replace('.fits', '_dryrun.fits')
+#if dryrun:
+#    fpath = fpath.replace('.fits', '_dryrun.fits')
+
+fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field survey=survey)
 
 opath   = fpath.replace('bd', 'bd_ddp_n8')
 

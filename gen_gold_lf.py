@@ -7,16 +7,19 @@ import numpy as np
 import astropy.io.fits as fits
 import matplotlib.pyplot as plt
 
-from   astropy.table import Table, vstack
-from   vmaxer import vmaxer
-from   smith_kcorr import test_plots, test_nonnative_plots
-from   cosmo import distmod, volcom
-from   lumfn import lumfn
-from   schechter import schechter, named_schechter
-from   gama_limits import gama_field, gama_limits
+from   astropy.table    import Table, vstack
+from   vmaxer           import vmaxer
+from   smith_kcorr      import test_plots, test_nonnative_plots
+from   cosmo            import distmod, volcom
+from   lumfn            import lumfn
+from   schechter        import schechter, named_schechter
+from   gama_limits      import gama_field, gama_limits
 from   renormalise_d8LF import renormalise_d8LF
-from   delta8_limits import d8_limits
+from   delta8_limits    import d8_limits
 
+from   gama_limits      import gama_field, gama_fields
+from   desi_fields      import desi_fields
+from   findfile         import findfile, fetch_fields
 
 def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
     assert 'vmax' in vmax_opath
@@ -100,14 +103,17 @@ if __name__ == '__main__':
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
         
-        if dryrun:
-            fpath = fpath.replace('.fits', '_dryrun.fits')
+        #fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+        
+        #if dryrun:
+        #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-        opath = fpath.replace('ddp', 'vmax')
+        #opath = fpath.replace('ddp', 'vmax')
 
-        # 
+        fpath = findfile(ftype='ddp', dryrun=dryrun, survey='gama')
+        opath = findfile(ftype='vmax', dryrun=dryrun, survey='gama')
+
         if args.nooverwrite:
             if os.path.isfile(opath) and os.path.isfile(opath.replace('vmax', 'lumfn')):
                 
@@ -131,11 +137,14 @@ if __name__ == '__main__':
 
         field = field.upper()
 
-        rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
+        #rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
         
-        if dryrun:
-            rpath = rpath.replace('.fits', '_dryrun.fits')
-                
+        #if dryrun:
+        #    rpath = rpath.replace('.fits', '_dryrun.fits')
+         
+        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey='gama')
+
+        
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
             utiers = np.array([8])
@@ -149,13 +158,17 @@ if __name__ == '__main__':
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
-            ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
-            ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
             
-            if dryrun:
-                ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
-                ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
+            #ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
+            #ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
+            
+            #if dryrun:
+            #    ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
+            #    ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
 
+            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey='gama')
+            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey='gama')
+    
             print()
             print('Reading: {}'.format(ddp_fpath))
             
@@ -173,10 +186,17 @@ if __name__ == '__main__':
             # result.pprint()
 
             if all_rands == None:
-                all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
+                
+                findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey='gama')
+                
+                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey='gama') for ff in fields]
+                
+                #all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
-                if dryrun:
-                    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
+                all_rpaths = []
+                
+                #if dryrun:
+                #    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
 
                 all_rands = [Table.read(_x) for _x in all_rpaths]
 

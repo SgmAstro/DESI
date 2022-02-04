@@ -4,30 +4,39 @@ import runtime
 import numpy as np
 
 from astropy.table import Table
-from smith_kcorr import GAMA_KCorrection
-from rest_gmr import smith_rest_gmr
-from tmr_ecorr import tmr_ecorr, tmr_q
-from abs_mag import abs_mag
+from smith_kcorr   import GAMA_KCorrection
+from rest_gmr      import smith_rest_gmr
+from tmr_ecorr     import tmr_ecorr, tmr_q
+from abs_mag       import abs_mag
 
+from   gama_limits   import gama_field, gama_fields
+from   desi_fields   import desi_fields
+from   findfile      import findfile, fetch_fields
 
 np.random.seed(314)
 
 parser  = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args    = parser.parse_args()
 dryrun  = args.dryrun
+survey  = args.survey.lower()
 
 root    = os.environ['GOLD_DIR']
 
-fpath   = root + '/gama_gold.fits'
-opath   = root + '/gama_gold_kE.fits'
+#fpath   = root + '/gama_gold.fits'
+#opath   = root + '/gama_gold_kE.fits'
 
-if dryrun:
-  fpath = os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
-  opath = opath.replace('.fits', '_dryrun.fits')                                                     
+#if dryrun:
+#  fpath = os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
+#  opath = opath.replace('.fits', '_dryrun.fits')                                                     
 
+fpath  = findfile(ftype='gold', dryrun=dryrun, survey=survey)
+opath  = findfile(ftype='kE', dryrun=dryrun, survey=survey)
+fields = fetch_fields(survey)
+    
 dat = Table.read(fpath)
 dat.pprint()
 

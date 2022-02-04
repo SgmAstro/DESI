@@ -8,23 +8,35 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   gama_limits import gama_field
-
+from   gama_limits   import gama_field, fields
+from   desi_fields   import desi_fields
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args   = parser.parse_args()
 dryrun = args.dryrun
 prefix = args.rand_prefix
+survey = args.survey
 
-fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+survey = survey.lower()
 
-if dryrun:
-    fpath = fpath.replace('.fits', '_dryrun.fits')
+if survey == 'gama':
+    fields = fields   
+elif survey == 'desi':
+    fields = desi_fields
+else:
+    raise NotImplementedError
 
+#fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+
+#if dryrun:
+ #   fpath = fpath.replace('.fits', '_dryrun.fits')
+
+fpath = findfile(ftype='ddp', dryrun=dryrun, survey='gama')
     
 if args.nooverwrite:
     if os.path.isfile(fpath.replace('ddp', 'ddp_n8')):
@@ -46,10 +58,15 @@ kd_tree_all  = KDTree(points)
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
 realz  = 0
-rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_G{}_{:d}.fits'.format(prefix, ff, realz) for ff in [9, 12, 15]]
 
-if dryrun:
-    rpaths = [rpath.replace('.fits', '_dryrun.fits') for rpath in rpaths]
+# ----
+# BE CAREFUL HERE
+rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey='gama') for ff in fields]
+
+#rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_G{}_{:d}.fits'.format(prefix, ff, realz) for ff in [9, 12, 15]]
+
+#if dryrun:
+#    rpaths = [rpath.replace('.fits', '_dryrun.fits') for rpath in rpaths]
 
 print('Reading: {}'.format(rpaths))
 
@@ -89,7 +106,8 @@ dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
-for field in ['G9', 'G12', 'G15']:
+
+for field in fields:
     dat_in_field  =  dat[(dat['FIELD']  == field)]
     rand_in_field = rand[(rand['FIELD'] == field)]
     
@@ -170,7 +188,8 @@ for tier in utiers:
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
 
-    for field in ['G9', 'G12', 'G15']:    
+    
+    for field in fields:    
         isin           = to_write['FIELD'] == field
         to_write_field = to_write[isin]
 
@@ -180,7 +199,13 @@ for tier in utiers:
         print('Writing {}.'.format(opath_field))
 
         # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-        to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.    
+        # TODO:  Work out DESI area factor (or refactor)
+        if survey == 'gama':
+            to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.
+        else:
+            to_write_field.meta['AREA'] =  to_write.meta['AREA']
+
+            
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

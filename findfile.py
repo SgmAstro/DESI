@@ -7,8 +7,19 @@ import numpy as np
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
+import gama_fields
+
 
 fields    = ['G9', 'G12', 'G15']
+
+if survey == ‘GAMA’:
+    fields = gama_fields
+elif survey == ‘DESI’:
+    fields = desi_fields
+else:
+    raise NotImplementedError
+
+
 supported = ['gold',\
              'kE',\
              'zmax',\

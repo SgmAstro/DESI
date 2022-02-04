@@ -7,18 +7,8 @@ import numpy as np
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
-import gama_fields
-
-
-fields    = ['G9', 'G12', 'G15']
-
-if survey == ‘GAMA’:
-    fields = gama_fields
-elif survey == ‘DESI’:
-    fields = desi_fields
-else:
-    raise NotImplementedError
-
+from gama_limits import fields
+from desi_fields import desi_fields
 
 supported = ['gold',\
              'kE',\
@@ -39,6 +29,15 @@ def gather_cat(fpaths):
 
 
 def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):
+    
+    survey = survey.lower()
+    if survey == 'gama':
+        fields = fields   
+    elif survey == 'desi':
+        fields = desi_fields
+    else:
+        raise NotImplementedError
+    
     if dryrun:
         dryrun = '_dryrun'
     else:

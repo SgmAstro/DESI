@@ -8,7 +8,7 @@ gama_limits = {fields[0]: {'ra_min': 129.,  'ra_max': 141.,  'dec_min': -2., 'de
                fields[2]: {'ra_min': 211.5, 'ra_max': 223.5, 'dec_min': -2., 'dec_max': 3.}}
 
 def gama_field(ras, decs):
-    result = np.array(['None'] * len(ras), dtype=np.str)
+    result = np.array(['NAN'] * len(ras), dtype=np.str)
 
     for field in fields:
         ra_min   = gama_limits[field]['ra_min']

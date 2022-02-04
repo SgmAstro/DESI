@@ -27,7 +27,16 @@ def gather_cat(fpaths):
 
     return  tables 
 
+def fetch_fields(survey):
+    if survey == 'gama':
+        fields = gama_fields   
+    elif survey == 'desi':
+        fields = desi_fields
+    else:
+        raise NotImplementedError
 
+    return fields
+        
 def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):
     
     survey = survey.lower()

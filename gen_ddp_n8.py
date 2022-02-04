@@ -8,8 +8,9 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   gama_limits   import gama_field, fields
+from   gama_limits   import gama_field, gama_fields
 from   desi_fields   import desi_fields
+from   findfile      import findfile, fetch_fields
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
@@ -20,16 +21,8 @@ parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 args   = parser.parse_args()
 dryrun = args.dryrun
 prefix = args.rand_prefix
-survey = args.survey
+survey = args.survey.lower()
 
-survey = survey.lower()
-
-if survey == 'gama':
-    fields = fields   
-elif survey == 'desi':
-    fields = desi_fields
-else:
-    raise NotImplementedError
 
 #fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
 
@@ -37,7 +30,8 @@ else:
  #   fpath = fpath.replace('.fits', '_dryrun.fits')
 
 fpath = findfile(ftype='ddp', dryrun=dryrun, survey='gama')
-    
+fields = fetch_fields(survey)
+
 if args.nooverwrite:
     if os.path.isfile(fpath.replace('ddp', 'ddp_n8')):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath.replace('ddp', 'ddp_n8')))
@@ -205,7 +199,6 @@ for tier in utiers:
         else:
             to_write_field.meta['AREA'] =  to_write.meta['AREA']
 
-            
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

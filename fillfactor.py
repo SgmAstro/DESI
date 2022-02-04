@@ -16,10 +16,14 @@ from   multiprocessing     import Pool
 from   runtime             import calc_runtime
 from   memory_profiler     import profile
 
+from   gama_limits         import gama_fields
+from   desi_fields         import desi_fields
+from   findfile            import findfile
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
-parser.add_argument('-f', '--field', type=str, help='Sselect equatorial GAMA field: G9, G12, G15', default='G9')
+parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nproc', help='nproc', default=16, type=np.int32)
 parser.add_argument('--maxtasksperchild', help='maxtasksperchild', default=1000, type=np.int32)
@@ -31,6 +35,8 @@ args   = parser.parse_args()
 field  = args.field.upper()
 dryrun = args.dryrun
 prefix = args.prefix
+survey = args.survey
+survey = survey.lower()
 
 maxtasksperchild = args.maxtasksperchild
 
@@ -38,13 +44,14 @@ maxtasksperchild = args.maxtasksperchild
 nproc  = args.nproc
 realz  = args.realz
 
-fpath  = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+#fpath  = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey)
+
 start  = time.time()
 
-if dryrun:
-    fpath = fpath.replace('.fits', '_dryrun.fits')
+#opath  = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
+opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey)
 
-opath  = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
 
 if args.nooverwrite:
     if os.path.isfile(fpath) and os.path.isfile(opath):

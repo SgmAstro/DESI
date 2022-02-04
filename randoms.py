@@ -69,6 +69,7 @@ if survey == 'GAMA':
     randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
     
 elif survey == 'DESI':
+    # TODO:  field is useless, interpret as ros?
     randoms   = desi_randoms()
     nrand     = len(randoms)
 
@@ -89,7 +90,7 @@ vol     = Vmax - Vmin
 
 rand_density = nrand / vol
 
-##  IO.
+##  IO: findfile. 
 opath     = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 
 if dryrun:
@@ -165,13 +166,12 @@ if survey == 'GAMA':
     randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > np.percentile(randoms['RANDOM_DEC'], 100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC'], boundary_percent)]        = 1
 
-elif survey == 'DESI':
+elif survey == 'DESI':    
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   > np.percentile(randoms['ROS_DIST'],   100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
     
 else:
     raise  NotImplementedError(f'No implementation for survey: {survey}')    
-
 
 randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
 randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1

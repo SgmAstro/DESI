@@ -14,6 +14,8 @@ root   = os.environ['TILING_CATDIR']
 fpath  = root + '/TilingCatv46.fits'
 opath  = os.environ['GOLD_DIR'] + '/gama_gold.fits'
 
+opath = findfile(ftype='gold', dryrun=False, survey='gama')
+
 parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 

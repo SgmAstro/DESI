@@ -110,7 +110,12 @@ desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
 desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
 
 ##  HACK: PHOTSYS ASSUMED S. 
+desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
 desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
+
+desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
+desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
+
 desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
 desi_zs.pprint()

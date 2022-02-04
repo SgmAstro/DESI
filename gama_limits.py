@@ -1,6 +1,9 @@
 import numpy as np
 
+# TODO: remove
 fields      = np.array(['G9', 'G12', 'G15'], dtype=np.str) 
+
+gama_fields = np.array(['G9', 'G12', 'G15'], dtype=np.str)
 
 # from https://github.com/michaelJwilson/lumfn/blob/master/py/lumfn/GAMA4/in_gama.py
 gama_limits = {fields[0]: {'ra_min': 129.,  'ra_max': 141.,  'dec_min': -2., 'dec_max': 3.},

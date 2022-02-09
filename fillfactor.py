@@ -14,7 +14,7 @@ from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
-from   memory_profiler     import profile
+#from   memory_profiler     import profile
 
 from   gama_limits         import gama_fields
 from   desi_fields         import desi_fields

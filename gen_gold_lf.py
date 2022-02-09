@@ -32,7 +32,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
         return  1
 
     zmax = Table.read(fpath)
-
+    print(fpath)
+    
     if 'FIELD' not in zmax.dtype.names:
         raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
@@ -41,7 +42,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
     print('Found fields: {}'.format(found_fields))
 
     zsurv = f'Z{survey}'.upper()
-                            
+    
     minz = zmax[zsurv].min()
     maxz = zmax[zsurv].max()
     
@@ -102,8 +103,8 @@ if __name__ == '__main__':
         # 0.039 < z < 0.263.
         # Note: not split by field. 
         
-        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey='gama')
-        opath = findfile(ftype='vmax', dryrun=dryrun, survey='gama')
+        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)
+        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey)
 
         if args.nooverwrite:
             overwrite_check(opath)

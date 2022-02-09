@@ -40,6 +40,7 @@ realz   = 0
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
 fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey)
+print(fpath)
 
 dat     = Table.read(fpath)
 
@@ -50,7 +51,7 @@ runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6)
 #if dryrun:
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field survey=survey)
+fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
 
 opath   = fpath.replace('bd', 'bd_ddp_n8')
 

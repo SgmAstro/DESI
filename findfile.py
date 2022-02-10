@@ -6,9 +6,8 @@ import numpy as np
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-
-from gama_limits import gama_fields
-from desi_fields import desi_fields
+from   gama_limits import gama_fields
+from   desi_fields import desi_fields
 
 supported = ['gold',\
              'kE',\
@@ -19,6 +18,11 @@ supported = ['gold',\
              'ddp_n8']
 
 def gather_cat(fpaths):
+    if len(fpaths) == 0:
+        return  None
+
+    assert  np.all(np.array([os.path.isfile(x) for x in fpaths]))
+
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)
 
@@ -30,25 +34,39 @@ def gather_cat(fpaths):
 def fetch_fields(survey):
     if survey == 'gama':
         fields = gama_fields   
+
     elif survey == 'desi':
         fields = desi_fields
+
     else:
         raise NotImplementedError
 
     return fields
+
+def overwrite_check(opath):
+    if os.path.isfile(opath):
+        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+        exit(0)
         
-def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):
-    
+def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):    
     survey = survey.lower()
+
+    # Special case:                                                                                                                                                                                 
+    if (ftype == 'gold') & dryrun & (survey == 'gama'):
+        return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
+
     if survey == 'gama':
         fields = gama_fields   
+
     elif survey == 'desi':
         fields = desi_fields
+
     else:
         raise NotImplementedError
     
     if dryrun:
         dryrun = '_dryrun'
+
     else:
         dryrun = ''
 
@@ -70,7 +88,7 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
                       'ddp_n8': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
 
         parts      = file_types[ftype]
-        fpath      = parts['dir'] + '{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
+        fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
         file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
@@ -87,7 +105,7 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
                      }
         
         parts      = file_types[ftype]
-        fpath      = f'' + parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
+        fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
     return  fpath
 

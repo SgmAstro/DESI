@@ -14,7 +14,7 @@ from   desi_randoms import desi_randoms
 np.random.seed(314)
 
 parser  = argparse.ArgumentParser(description='Select GAMA field.')
-parser.add_argument('-f', '--field',  type=str, help='select equatorial GAMA field: G9, G12, G15', required=True)
+parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str)
 parser.add_argument('--realz',        help='Realization', default=0, type=np.int)
@@ -63,6 +63,7 @@ if survey == 'GAMA':
 
     ras       = np.random.uniform(ra_min, ra_max, nrand)
 
+    ## TODO: move rand_density into different file and call?
     rand_density = 2.
     vol       = volcom(zmax, Area) - volcom(zmin, Area)
 

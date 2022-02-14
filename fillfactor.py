@@ -14,11 +14,8 @@ from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
-#from   memory_profiler     import profile
 
-from   gama_limits         import gama_fields
-from   desi_fields         import desi_fields
-from   findfile            import findfile
+from   findfile            import findfile, fetch_fields
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
@@ -39,6 +36,9 @@ survey = args.survey
 survey = survey.lower()
 
 maxtasksperchild = args.maxtasksperchild
+
+fields = fetch_fields(survey)
+assert field in fields, 'Error: Field not in fields'
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
 nproc  = args.nproc

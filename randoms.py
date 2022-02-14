@@ -3,13 +3,15 @@ import time
 import numpy as np
 import argparse
 
-from   cosmo import cosmo, volcom
+from   cosmo             import cosmo, volcom
 from   scipy.interpolate import interp1d
-from   astropy.table import Table
-from   cartesian import cartesian, rotate
-from   runtime import calc_runtime
-from   desi_randoms import desi_randoms
+from   astropy.table     import Table
+from   cartesian         import cartesian, rotate
+from   runtime           import calc_runtime
+from   desi_randoms      import desi_randoms
+from   findfile          import fetch_fields
 
+from   gama_limits import gama_limits
 
 np.random.seed(314)
 
@@ -28,7 +30,7 @@ parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', de
 args    = parser.parse_args()
 field   = args.field.upper()
 dryrun  = args.dryrun
-survey  = args.survey
+survey  = args.survey.lower()
 zmin    = args.zmin
 zmax    = args.zmax
 prefix  = args.prefix 
@@ -41,7 +43,10 @@ fields = fetch_fields(survey)
 assert field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 ##  ras and decs.                                                                                                                                                              
-if survey == 'GAMA':
+if survey == 'gama':
+    
+    from gama_limits import gama_field
+    
     Area    = 60.
 
     # TODO:
@@ -56,6 +61,15 @@ if survey == 'GAMA':
     ctheta_min = np.cos(np.pi/2. - np.radians(dec_min))
     ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
+    ## TODO: move rand_density into different file and call?
+    rand_density = 4.
+    vol       = volcom(zmax, Area) - volcom(zmin, Area)
+    
+    if dryrun == True:
+        nrand = 500
+    else:
+        nrand     = np.int64(np.ceil(vol * rand_density))
+    
     cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
     theta     = np.arccos(cos_theta)
     decs      = np.pi/2. - theta
@@ -63,26 +77,21 @@ if survey == 'GAMA':
 
     ras       = np.random.uniform(ra_min, ra_max, nrand)
 
-    ## TODO: move rand_density into different file and call?
-    rand_density = 2.
-    vol       = volcom(zmax, Area) - volcom(zmin, Area)
-
-    nrand     = np.int64(np.ceil(vol * rand_density))
-
     randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
     
-elif survey == 'DESI':
+elif survey == 'desi':
     # TODO:  field is useless, interpret as ros?
     randoms   = desi_randoms(field)
     nrand     = len(randoms)
 
+    # TODO: add dryrun nrand fix (as above in GAMA)
+    
     # Original density of 2500 per sq. deg. 
     Area      = nrand / 2500. 
 
 else:
     raise  NotImplementedError(f'No implementation for survey: {survey}')
-
-
+    
 ##  Vs and zs.
 dz      = 1.e-4
 
@@ -132,6 +141,8 @@ print('Applying rotation.')
 ras      = randoms['RANDOM_RA']
 decs     = randoms['RANDOM_DEC']
 
+print(len(ras), len(decs), len(zs))
+
 xyz      = cartesian(ras, decs, zs)
 
 ras      = ras.astype(np.float32)
@@ -143,7 +154,13 @@ xyz      = xyz.astype(np.float32)
 randoms['Z'] = zs
 randoms['V'] = Vdraws
 randoms['RANDID'] = np.arange(len(randoms))
-randoms['FIELD']  = field(ras, decs)
+
+
+# TODO: CLEAN UP ONCE CODE IS WORKING
+if survey == 'gama':
+    randoms['FIELD'] = gama_field(ras, decs)
+else:
+    randoms['FIELD'] = desi_field(ras, decs)
 
 # assert  np.all(randoms['FIELD'].data == field)
 
@@ -162,14 +179,14 @@ print('Applying boundary.')
 
 randoms['IS_BOUNDARY'] = 0
 
-if survey == 'GAMA':
+if survey == 'gama':
     randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  > np.percentile(randoms['RANDOM_RA'],  100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  < np.percentile(randoms['RANDOM_RA'],  boundary_percent)]        = 1
 
     randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > np.percentile(randoms['RANDOM_DEC'], 100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC'], boundary_percent)]        = 1
 
-elif survey == 'DESI':    
+elif survey == 'desi':    
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   > np.percentile(randoms['ROS_DIST'],   100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
     

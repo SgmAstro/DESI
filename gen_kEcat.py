@@ -37,12 +37,7 @@ fields  = fetch_fields(survey)
 dat     = Table.read(fpath)
 dat.pprint()
 
-# TODO: Check this / fix GMR in desi.py
-try:
-    rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat[zsurv], dat['GMR'])
-except:
-    dat['GMR'] = dat['GMR_1']
-    rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat[zsurv], dat['GMR'])
+rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat[zsurv], dat['GMR'])
 
 dat['REST_GMR_0P1']      = rest_gmr_0p1
 dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int32)

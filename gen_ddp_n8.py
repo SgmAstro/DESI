@@ -50,7 +50,7 @@ kd_tree_all  = KDTree(points)
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey='gama') for ff in fields]
+rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey) for ff in fields]
 
 print('Reading: {}'.format(rpaths))
 

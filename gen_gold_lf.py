@@ -13,12 +13,9 @@ from   smith_kcorr      import test_plots, test_nonnative_plots
 from   cosmo            import distmod, volcom
 from   lumfn            import lumfn
 from   schechter        import schechter, named_schechter
-from   gama_limits      import gama_field, gama_limits
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 
-from   gama_limits      import gama_field, gama_fields
-from   desi_fields      import desi_fields
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
@@ -124,7 +121,7 @@ if __name__ == '__main__':
         #if dryrun:
         #    rpath = rpath.replace('.fits', '_dryrun.fits')
          
-        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey='gama')
+        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey)
 
         
         if dryrun:
@@ -148,8 +145,8 @@ if __name__ == '__main__':
             #    ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
             #    ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
 
-            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey='gama')
-            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey='gama')
+            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx)
+            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
@@ -169,9 +166,13 @@ if __name__ == '__main__':
 
             if all_rands == None:
                 
-                findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey='gama')
+                # issue here
+                findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
                 
-                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey='gama') for ff in fields]
+                _fields = fetch_fields(survey=survey)
+                
+                # issue here
+                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey) for ff in _fields]
                 
                 #all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 

@@ -110,14 +110,19 @@ desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
 desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
 
 ##  HACK: PHOTSYS ASSUMED S. 
+desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
 desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
+
+desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
+desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
+
 desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
 desi_zs.pprint()
 
+# TODO: FIND_FILE
 root  = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold.fits'
-
 opath = fpath.replace('gama_gold', 'desi_sv3_gold')
 
 print('Writing {}'.format(opath))
@@ -126,6 +131,11 @@ desi_zs.write(opath, format='fits', overwrite=True)
 
 ##  ----  GAMA GOLD
 gold  = Table.read(fpath)
+
+del gold['CARTESIAN_X']
+del gold['CARTESIAN_Y']
+del gold['CARTESIAN_Z']
+
 gold.pprint()
 
 # DESI
@@ -171,7 +181,7 @@ gold['GOOD_MATCH'] = gold['DESI_SEP'] < 0.3
 
 gold['ROS_DIST'] = 1.e99
 
-f<or rosn in uros:
+for rosn in uros:
     new_dist = calc_rosr(rosn, gold['RA'].data, gold['DEC'].data)
     
     gold['ROS_DIST'] = np.minimum(gold['ROS_DIST'].data, new_dist)
@@ -188,6 +198,9 @@ gold.write(opath, format='fits', overwrite=True)
 
 ## --------------------
 desi_zs = desi_zs[desi_zs['IN_GOLD']]
+desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
+desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
+
 
 opath  = fpath.replace('gama', 'desi')
 

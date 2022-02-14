@@ -7,86 +7,85 @@ import numpy as np
 import astropy.io.fits as fits
 import matplotlib.pyplot as plt
 
-from   astropy.table import Table, vstack
-from   vmaxer import vmaxer
-from   smith_kcorr import test_plots, test_nonnative_plots
-from   cosmo import distmod, volcom
-from   lumfn import lumfn
-from   schechter import schechter, named_schechter
-from   gama_limits import gama_field, gama_limits
+from   astropy.table    import Table, vstack
+from   vmaxer           import vmaxer
+from   smith_kcorr      import test_plots, test_nonnative_plots
+from   cosmo            import distmod, volcom
+from   lumfn            import lumfn
+from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
-from   delta8_limits import d8_limits
+from   delta8_limits    import d8_limits
+
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
-def process_cat(fpath, vmax_opath, field=None, rand_paths=[]):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
 
     if not os.path.isfile(fpath):
         print('WARNING:  Failed to find {}'.format(fpath))
-        return 1
+        return  1
 
-    gama_zmax = Table.read(fpath)
-
-    if 'FIELD' not in gama_zmax.dtype.names:
-        # print('WARNING:  Missing FIELD keyword, adding it.')
-        # gama_zmax['FIELD'] = gama_field(gama_zmax['RA'].data, gama_zmax['DEC'].data)
-
+    zmax = Table.read(fpath)
+    print(fpath)
+    
+    if 'FIELD' not in zmax.dtype.names:
         raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
-    found_fields = np.unique(gama_zmax['FIELD'].data)
+    found_fields = np.unique(zmax['FIELD'].data)
         
     print('Found fields: {}'.format(found_fields))
-                            
-    zmin = gama_zmax['ZGAMA'].min()
-    zmax = gama_zmax['ZGAMA'].max()
+
+    zsurv = f'Z{survey}'.upper()
     
-    print('Found redshift limits: {:.3f} < z < {:.3f}'.format(zmin, zmax))
+    minz = zmax[zsurv].min()
+    maxz = zmax[zsurv].max()
+    
+    print('Found redshift limits: {:.3f} < z < {:.3f}'.format(minz, maxz))
 
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
 
-    if len(rand_paths) > 0:
-        rand  = vstack([Table.read(_x) for _x in rand_paths])
-    else:
-        rand  = None
+    rand  = gather_cat(rand_paths)
 
-    gama_vmax = vmaxer(gama_zmax, zmin, zmax, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ'], rand=rand)
+    vmax  = vmaxer(zmax, minz, maxz, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'], rand=rand)
 
-    print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(gama_vmax['ZMAX'] <= 0.0)))
+    print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
     
     # TODO: Why do we need this?                                                                                                   
-    gama_vmax = gama_vmax[gama_vmax['ZMAX'] >= 0.0]
+    vmax = vmax[vmax['ZMAX'] >= 0.0]
     
     print('Writing {}.'.format(opath))
 
-    gama_vmax.write(opath, format='fits', overwrite=True)
+    vmax.write(opath, format='fits', overwrite=True)
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
-    result = lumfn(gama_vmax)
+    result = lumfn(vmax)
 
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
 
-    return 0
+    return  0
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
     parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=False, default=None)
+    parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('-d', '--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
-
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     
     args   = parser.parse_args()
 
     field  = args.field
     dryrun = args.dryrun
+    survey = args.survey
     density_split = args.density_split
     prefix = args.prefix
 
@@ -100,42 +99,31 @@ if __name__ == '__main__':
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
-        fpath = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
         
-        if dryrun:
-            fpath = fpath.replace('.fits', '_dryrun.fits')
+        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)
+        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey)
 
-        opath = fpath.replace('ddp', 'vmax')
-
-        # 
         if args.nooverwrite:
-            if os.path.isfile(opath) and os.path.isfile(opath.replace('vmax', 'lumfn')):
-                
-                print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
-                exit(0)
-            
-        '''
-        all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
-
-        if dryrun:
-            all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
-        '''
+            overwrite_check(opath)
 
         print(f'Reading: {fpath}')
         print(f'Writing: {opath}')
 
-        process_cat(fpath, opath, rand_paths=[])
+        process_cat(fpath, opath, rand_paths=[], survey=survey)
 
     else:
         print('Generating Gold density-split LF.')
 
         field = field.upper()
 
-        rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
+        #rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
         
-        if dryrun:
-            rpath = rpath.replace('.fits', '_dryrun.fits')
-                
+        #if dryrun:
+        #    rpath = rpath.replace('.fits', '_dryrun.fits')
+         
+        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey)
+
+        
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
             utiers = np.array([8])
@@ -149,13 +137,17 @@ if __name__ == '__main__':
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
-            ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
-            ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
             
-            if dryrun:
-                ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
-                ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
+            #ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
+            #ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
+            
+            #if dryrun:
+            #    ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
+            #    ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
 
+            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx)
+            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx)
+    
             print()
             print('Reading: {}'.format(ddp_fpath))
             
@@ -173,10 +165,21 @@ if __name__ == '__main__':
             # result.pprint()
 
             if all_rands == None:
-                all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
+                
+                # issue here
+                findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
+                
+                _fields = fetch_fields(survey=survey)
+                
+                # issue here
+                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey) for ff in _fields]
+                
+                #all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
-                if dryrun:
-                    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
+                all_rpaths = []
+                
+                #if dryrun:
+                #    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
 
                 all_rands = [Table.read(_x) for _x in all_rpaths]
 

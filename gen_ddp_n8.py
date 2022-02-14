@@ -8,28 +8,33 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   gama_limits import gama_field
+from   gama_limits   import gama_field, gama_fields
+from   desi_fields   import desi_fields
+from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
 
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+parser.add_argument('--realz', help='Realization', default=0, type=int)
 parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
+realz  = args.realz
 dryrun = args.dryrun
 prefix = args.rand_prefix
+survey = args.survey.lower()
 
-fpath  = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
+zsurv  = f'z{survey}'.upper()
 
-if dryrun:
-    fpath = fpath.replace('.fits', '_dryrun.fits')
+fields = fetch_fields(survey)
 
-    
+fpath  = findfile(ftype='ddp',    dryrun=dryrun, survey=survey)
+opath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
+
 if args.nooverwrite:
-    if os.path.isfile(fpath.replace('ddp', 'ddp_n8')):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath.replace('ddp', 'ddp_n8')))
-        exit(0)  
+    overwrite_check(opath)
     
 print('Reading: {}'.format(fpath))
 
@@ -45,25 +50,11 @@ kd_tree_all  = KDTree(points)
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-realz  = 0
-rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_G{}_{:d}.fits'.format(prefix, ff, realz) for ff in [9, 12, 15]]
-
-if dryrun:
-    rpaths = [rpath.replace('.fits', '_dryrun.fits') for rpath in rpaths]
+rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey) for ff in fields]
 
 print('Reading: {}'.format(rpaths))
 
-rand = None
-
-for rpath in rpaths:
-    if not os.path.isfile(rpath):
-        raise  RuntimeError('Expect random bound dist. file for {}; Run bound_dist.py for this field'.format(rpath))
-
-    if rand == None:
-        rand = Table.read(rpath)
-
-    else:
-        rand = vstack([rand, Table.read(rpath)])
+rand = gather_cat(rpaths)
 
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
@@ -89,7 +80,7 @@ dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
-for field in ['G9', 'G12', 'G15']:
+for field in fields:
     dat_in_field  =  dat[(dat['FIELD']  == field)]
     rand_in_field = rand[(rand['FIELD'] == field)]
     
@@ -131,13 +122,12 @@ dat['DDP3_DELTA8'] = ((dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS'
 for x in dat.meta.keys():
     print('{}\t\t{}'.format(x.ljust(20), dat.meta[x]))
 
-print('Writing {}'.format(fpath.replace('ddp', 'ddp_n8')))
+print('Writing {}'.format(opath))
 
-dat.write(fpath.replace('ddp', 'ddp_n8'), overwrite=True, format='fits')
-
+dat.write(opath, overwrite=True, format='fits')
 
 #  ----  Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range)  ----
-dat = dat[(dat['ZGAMA'] > dat.meta['DDP1_ZMIN']) & (dat['ZGAMA'] < dat.meta['DDP1_ZMAX'])]
+dat = dat[(dat[zsurv] > dat.meta['DDP1_ZMIN']) & (dat[zsurv] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
 utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
@@ -169,18 +159,23 @@ for tier in utiers:
 
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
-
-    for field in ['G9', 'G12', 'G15']:    
+    
+    for field in fields:    
         isin           = to_write['FIELD'] == field
         to_write_field = to_write[isin]
 
-        opath       = fpath.replace('ddp', 'ddp_n8_d0_{:d}'.format(tier))
-        opath_field = opath.replace('gold', 'gold_{}'.format(field))
+        opath_field    = findfile('ddp_n8_d0', dryrun=dryrun, field=field, utier=tier, survey=survey, realz=realz)  
 
         print('Writing {}.'.format(opath_field))
 
         # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-        to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.    
+        # TODO:  Work out DESI area factor (or refactor)
+        if survey == 'gama':
+            to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.
+
+        else:
+            to_write_field.meta['AREA'] =  to_write.meta['AREA']
+
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

@@ -10,7 +10,7 @@ def desi_randoms(field):
     rand = Table.read('/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random0/rancomb_brightwdup_Alltiles.fits')
     # rand.pprint()
 
-    # TODO:  Check TARGETID is a unique idetifier, or bug.  If not, use RA. 
+    # TODO:  Check TARGETID is a unique identifier, or bug.  If not, use RA. 
     rand             = unique(rand, keys='TARGETID')
     rand['ROS']      = tile2rosette(rand['TILEID'])
     rand['ROS_DIST'] = 1.e99

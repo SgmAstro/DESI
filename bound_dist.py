@@ -14,6 +14,7 @@ from   scipy.spatial   import KDTree
 from   astropy.table   import Table
 from   multiprocessing import Pool
 from   runtime         import calc_runtime
+from   findfile        import findfile
 
 '''
 Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
@@ -24,6 +25,7 @@ np.random.seed(314)
 parser = argparse.ArgumentParser(description='Find boundary distance for all randoms in a specified field..')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -32,6 +34,7 @@ args   = parser.parse_args()
 field  = args.field.upper()
 dryrun = args.dryrun
 prefix = args.prefix
+survey = args.survey.lower()
 
 start  = time.time()
 
@@ -45,6 +48,10 @@ if dryrun:
     fpath= fpath.replace('.fits', '_dryrun.fits')
 
 opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
+    
+fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey)
+opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
+
     
 if args.nooverwrite:
     if os.path.isfile(opath):

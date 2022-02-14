@@ -4,6 +4,7 @@ import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
+from   findfile        import findfile
 from   astropy.table   import Table
 from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
@@ -13,6 +14,8 @@ from   cartesian       import cartesian, rotate
 root   = os.environ['TILING_CATDIR']
 fpath  = root + '/TilingCatv46.fits'
 opath  = os.environ['GOLD_DIR'] + '/gama_gold.fits'
+
+opath = findfile(ftype='gold', dryrun=False, survey='gama')
 
 parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
@@ -79,6 +82,9 @@ xyz = rotate(dat['RA'], dat['DEC'], xyz)
 dat['ROTCARTESIAN_X'] = xyz[:,0]
 dat['ROTCARTESIAN_Y'] = xyz[:,1]
 dat['ROTCARTESIAN_Z'] = xyz[:,2]
+
+dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
+dat['DETMAG'] = dat['R_PETRO']
 
 # Randomise rows.
 idx = np.arange(len(dat))

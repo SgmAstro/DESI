@@ -11,13 +11,14 @@ from   rest_gmr          import smith_rest_gmr
 from   tmr_ecorr         import tmr_ecorr, tmr_q
 from   abs_mag           import abs_mag
 from   data.ke_params    import *
-
+from   survey            import survey_specifics
 
 parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args   = parser.parse_args()
-
+survey  = args.survey.lower()
 
 kcorr_r  = GAMA_KCorrection(band='R')
 kcorr_RG = GAMA_KCorrection_color()
@@ -27,7 +28,8 @@ gmrs_0p1 = np.array([0.131, 0.298, 0.443, 0.603, 0.785, 0.933, 1.067])
 gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 
 # bright and faint limits.   
-rlims    = [12., 19.8]
+limits = survey_specifics(survey)
+rlims = [limits['rmax'], limits['rlim']]
 
 zs       = np.arange(0.01, 0.6, 0.01)
 mus      = cosmo.distmod(zs)

@@ -131,6 +131,11 @@ desi_zs.write(opath, format='fits', overwrite=True)
 
 ##  ----  GAMA GOLD
 gold  = Table.read(fpath)
+
+del gold['CARTESIAN_X']
+del gold['CARTESIAN_Y']
+del gold['CARTESIAN_Z']
+
 gold.pprint()
 
 # DESI

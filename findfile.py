@@ -88,7 +88,7 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
                       'ddp_n8': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
 
         parts      = file_types[ftype]
-        fpath      = parts['dir'] + '{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
+        fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
         file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
@@ -105,7 +105,7 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
                      }
         
         parts      = file_types[ftype]
-        fpath      = f'' + parts['dir'] + '{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
+        fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
     return  fpath
 

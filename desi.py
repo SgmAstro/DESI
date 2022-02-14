@@ -120,9 +120,9 @@ desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (
 
 desi_zs.pprint()
 
+# TODO: FIND_FILE
 root  = os.environ['CSCRATCH'] + '/norberg/'
 fpath = root + '/GAMA4/gama_gold.fits'
-
 opath = fpath.replace('gama_gold', 'desi_sv3_gold')
 
 print('Writing {}'.format(opath))
@@ -176,7 +176,7 @@ gold['GOOD_MATCH'] = gold['DESI_SEP'] < 0.3
 
 gold['ROS_DIST'] = 1.e99
 
-f<or rosn in uros:
+for rosn in uros:
     new_dist = calc_rosr(rosn, gold['RA'].data, gold['DEC'].data)
     
     gold['ROS_DIST'] = np.minimum(gold['ROS_DIST'].data, new_dist)
@@ -193,6 +193,9 @@ gold.write(opath, format='fits', overwrite=True)
 
 ## --------------------
 desi_zs = desi_zs[desi_zs['IN_GOLD']]
+desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
+desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
+
 
 opath  = fpath.replace('gama', 'desi')
 

@@ -25,6 +25,8 @@ faint_curve_r  = interp1d(_faint_curve['Z'],          _faint_curve['M0P0_QALL'],
 
 def get_ddps(Area, M_0P0s, zs):
     result   = np.zeros(len(zs) * 3, dtype=int).reshape(len(zs), 3)
+    resultz   = np.zeros(len(zs) * 3, dtype=int).reshape(len(zs), 3)
+
     zlims    = {}
     
     for i, lims in enumerate([tmr_DDP1, tmr_DDP2, tmr_DDP3]):
@@ -39,6 +41,7 @@ def get_ddps(Area, M_0P0s, zs):
         in_ddpz = ~exclude
         
         result[in_ddp, i] = 1
+        resultz[in_ddpz, i] = 1
 
         ddp_zs  = zs[in_ddp]
 
@@ -57,7 +60,7 @@ def get_ddps(Area, M_0P0s, zs):
         zlims['DDP{}_NGAL'.format(i+1)] = np.count_nonzero(in_ddp) 
         zlims['DDP{}_DENS'.format(i+1)] = np.count_nonzero(in_ddp) / zlims['DDP{}_VZ'.format(i+1)] 
                 
-    return  result, zlims, faint_curve_r(zs)
+    return  result, resultz, zlims, faint_curve_r(zs)
 
 
 if __name__ == '__main__':

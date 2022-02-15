@@ -10,7 +10,7 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="R3"
+  export FIELD="R1"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD

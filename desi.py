@@ -3,14 +3,14 @@ import runtime
 import numpy as np
 import astropy.units as u
 
-from   astropy.coordinates import SkyCoord
-from   astropy.table import Table, vstack, hstack, unique, join
-from   ros_tools import tile2rosette, calc_rosr
-from   gama_limits import gama_field
-from   desiutil.dust import mwdust_transmission
+from   astropy.coordinates           import SkyCoord
+from   astropy.table                 import Table, vstack, hstack, unique, join
+from   ros_tools                     import tile2rosette, calc_rosr
+from   gama_limits                   import gama_field
+from   desiutil.dust                 import mwdust_transmission
 from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
-from   cartesian import cartesian, rotate
-from   cosmo           import cosmo, distmod
+from   cartesian                     import cartesian, rotate
+from   cosmo                         import cosmo, distmod
 
 
 root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
@@ -92,6 +92,12 @@ del  desi_zs['Z']
 ##  Cut DESI to good redshifts.                                                                                                                                                                    
 desi_zs['GAMA_FIELD'] = gama_field(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data)
 
+##  HACK: PHOTSYS ASSUMED S. 
+desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
+desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
+
+desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
+
 archive = Table(desi_zs, copy=True)
 
 xyz     = cartesian(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data, desi_zs['ZDESI'].data)
@@ -108,14 +114,7 @@ desi_zs['ROTCARTESIAN_Z'] = xyz[:,2]
 
 desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
 desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
-
-##  HACK: PHOTSYS ASSUMED S. 
-desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
-desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
-
-desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
 desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
-
 desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
 desi_zs.pprint()

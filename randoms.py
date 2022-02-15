@@ -9,8 +9,9 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields
-from   gama_limits       import gama_limits
+from   findfile          import fetch_fields, findfile
+from   gama_limits       import gama_limits, gama_field
+
 
 np.random.seed(314)
 
@@ -84,7 +85,7 @@ if survey == 'gama':
 elif survey == 'desi':
     if 'NERSC_HOST' in os.environ.keys():
         # Support to run on nersc only.
-        randoms = desi_randoms(field)
+        randoms = desi_randoms(ros=int(field[1:]))
         nrand   = len(randoms)
 
         # TODO: add dryrun nrand fix (as above in GAMA)
@@ -159,12 +160,8 @@ randoms['Z'] = zs
 randoms['V'] = Vdraws
 randoms['RANDID'] = np.arange(len(randoms))
 
-
-# TODO: CLEAN UP ONCE CODE IS WORKING
-if survey == 'gama':
-    randoms['FIELD'] = gama_field(ras, decs)
-else:
-    randoms['FIELD'] = desi_field(ras, decs)
+randoms['FIELD']      = field
+randoms['GAMA_FIELD'] = gama_field(ras, decs)
 
 # assert  np.all(randoms['FIELD'].data == field)
 

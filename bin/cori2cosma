@@ -1,0 +1,9 @@
+#!/bin/bash                                                                                                                                                                                         
+exec > >(tee 'cori2cosma.log') 2>&1
+
+echo $GOLD_DIR
+echo $RANDOMS_DIR
+echo $CODE_ROOT
+
+# ./cori2cosma dc-wils7
+scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/randoms/randoms_R*_0.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/randoms/

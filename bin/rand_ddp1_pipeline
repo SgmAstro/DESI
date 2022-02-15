@@ -36,7 +36,8 @@ else
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='--survey gama'
+  export SURVEY='desi'
+  export SURVEYARG='--survey desi'
 else
   export SURVEYARG='--survey '$SURVEY
 

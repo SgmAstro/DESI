@@ -13,9 +13,8 @@ from   cartesian       import cartesian, rotate
 def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
-    opath  = os.environ['GOLD_DIR'] + '/gama_gold.fits'
 
-    opath = findfile(ftype='gold', dryrun=False, survey='gama')
+    opath  = findfile(ftype='gold', dryrun=False, survey='gama')
 
     # TODO: findfile overwrite check.
     if args.nooverwrite:

@@ -10,7 +10,7 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="G15"
+  export FIELD="R3"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
@@ -30,14 +30,15 @@ else
 fi
 
 if [[ -z "${NOOVERWRITE}" ]]; then
-  # export NOOVERWRITE=''
-  export NOOVERWRITE='--nooverwrite'
+  export NOOVERWRITE=''
+  # export NOOVERWRITE='--nooverwrite'
 else
   echo  'RESET SET TO BE '$NOOVERWRITE
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='--survey gama'
+  export SURVEY='desi'
+  export SURVEYARG='--survey desi'
 else
   export SURVEYARG='--survey '$SURVEY
 

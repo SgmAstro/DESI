@@ -16,7 +16,7 @@
 #
 
 if [[ -z "${RESET}" ]]; then
-  export RESET=1
+  export RESET=0
 else
   echo 'RESET SET TO BE '$RESET
 fi
@@ -35,7 +35,8 @@ else
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='--survey gama'
+  export SURVEY='desi'
+  export SURVEYARG='--survey desi'
 else
   export SURVEYARG='--survey '$SURVEY
 
@@ -64,16 +65,16 @@ fi
 
 echo 'Running gold pipeline; logging to logs/'$SURVEY'gold.log'
 
-python gen_gold.py $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/gama_gold.log
+python gen_gold.py $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
 
 echo 'Running gen_kEcat.py; logging to logs/'$SURVEY'_kE.log'
 
-python gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/gama_kE.log
+python gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
 
 echo 'Running gen_zmax_cat.py; logging to logs/'$SURVEY'_zama.log'
 
 # Max. runtime 60 minutes.
-python gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/gama_zmax.log
+python gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
 
 echo 'Running ddp_limits.py; logging to logs/ddp_limits.log'
 
@@ -81,7 +82,7 @@ python ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
 
 echo 'Running gen_ddp_cat.py; logging to logs/'$SURVEY'_ddp.log'
 
-python gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/gama_ddp.log  
+python gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
 
 echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
 echo

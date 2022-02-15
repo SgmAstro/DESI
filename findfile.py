@@ -6,8 +6,8 @@ import numpy as np
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-from   gama_limits import gama_fields
-from   desi_fields import desi_fields
+from   gama_limits   import gama_fields
+from   desi_fields   import desi_fields
 
 supported = ['gold',\
              'kE',\

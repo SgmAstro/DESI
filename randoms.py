@@ -37,12 +37,13 @@ realz   = args.realz
 
 start   = time.time()
 
-fields = fetch_fields(survey)
+fields  = fetch_fields(survey)
 
-assert field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
+assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 ##  TODO: findfile.                                                                                                                                                                                  
-opath     = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+##  opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
+opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
@@ -83,13 +84,13 @@ if survey == 'gama':
 elif survey == 'desi':
     if 'NERSC_HOST' in os.environ.keys():
         # Support to run on nersc only.
-        randoms   = desi_randoms(field)
-        nrand     = len(randoms)
+        randoms = desi_randoms(field)
+        nrand   = len(randoms)
 
         # TODO: add dryrun nrand fix (as above in GAMA)
     
         # Original density of 2500 per sq. deg. 
-        Area      = nrand / 2500. 
+        Area    = nrand / 2500. 
 
     else:
         print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')

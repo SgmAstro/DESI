@@ -43,6 +43,19 @@ def fetch_fields(survey):
 
     return fields
 
+def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
+    assert survey == 'gama', 'TODO: Support DESI.'
+
+    # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
+    if versioned:
+        ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
+        ff.sort(key=os.path.getmtime)
+
+        return  ff[-1]
+
+    else:
+        return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
+
 def overwrite_check(opath):
     if os.path.isfile(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))

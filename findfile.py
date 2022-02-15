@@ -48,7 +48,7 @@ def overwrite_check(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
         exit(0)
         
-def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey='gama', realz=0):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0):    
     survey = survey.lower()
 
     # Special case:                                                                                                                                                                                 
@@ -107,6 +107,10 @@ def findfile(ftype, dryrun=False, prefix='', field=None, utier='{utier}', survey
         parts      = file_types[ftype]
         fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
+        if prefix != None:
+            assert 'randoms' in prefix;
+            fpath.replace('randoms', prefix)
+        
     return  fpath
 
 def file_check(dryrun=None):

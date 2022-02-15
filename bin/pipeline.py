@@ -6,7 +6,21 @@ import  subprocess
 
 from    pathlib import Path
 from    subprocess import check_output
+from    findfile import fetch_fields
 
+
+def run_command(cmd, run=False):
+    print(cmd)
+
+    cmd = cmd.split()
+
+    if run:
+        out = check_output(cmd)   
+    
+    else:
+        out = '-99'
+
+    return out
 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
@@ -14,6 +28,7 @@ parser.add_argument('--reset',        help='Reset', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--dryrun',       help='Dryrun', action='store_true', default=True)
 parser.add_argument('--survey',       help='Survey', default='gama')
+parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
 
 args        = parser.parse_args()
 use_sbatch  = args.use_sbatch
@@ -21,6 +36,7 @@ reset       = args.reset
 nooverwrite = args.nooverwrite
 dryrun      = args.dryrun
 survey      = args.survey
+freshclone  = args.freshclone 
 
 if dryrun:
     dryrun  = '--dryrun' 
@@ -32,36 +48,31 @@ if nooverwrite:
 else:
     nooverwrite = ''
     
-# print(use_sbatch)
-# print(reset)
-# print(nooverwrite)
-# print(dryrun)
-
-sys.stdout  = open('pipeline.py.log', 'w')
+sys.stdout  = open('pipeline.log', 'w')
 
 os.environ['USESBATCH']   = str(int(use_sbatch)) 
 os.environ['RESET']	  = str(int(reset))
 os.environ['DRYRUN']	  = dryrun
+os.environ['SURVEY']      = survey
 os.environ['NOOVERWRITE'] = nooverwrite
 
-print(f'Assuming $USESBATCH={use_sbatch}')
-print(f'Assuming $RESET={reset}')
-print(f'Assuming $DRYRUN={dryrun}')
-print(f'Assuming $NOOVERWRITE={nooverwrite}')
+print('\n\nAssuming $USESBATCH={}'.format(use_sbatch))
+print('Assuming $RESET={}'.format(reset))
+print('Assuming $SURVEY={}'.format(survey))
+print('Assuming $DRYRUN={}'.format(dryrun))
+print('Assuming $NOOVERWRITE={}\n\n'.format(nooverwrite))
 
 if reset:
     print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
 
     for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
         for ext in ['fits', 'log']:
-            cmd = f'rm {root}/*.{ext}'
+            cmd = 'rm {}/*.{}'.format(root, ext)
 
             # Split on whitespace.
             cmd = cmd.split()
-
-            print(cmd)
             
-            # out = check_output(cmd)
+            # out = run_command(cmd)
             
 #  ----  Total of eight jobs, with correct dependency logic  ----                                                                                                                                    
 os.environ['RESET'] = '0'
@@ -71,21 +82,23 @@ home = os.environ['HOME']
 
 os.chdir(f'{home}')
 
-cmds = []
+if freshclone:
+   cmds = []
 
-cmds.append('rm -rf ~/tmp; mkdir -p ~/tmp')
-cmds.append('cd ~/tmp/')
-cmds.append('git clone https://github.com/SgmAstro/DESI.git')
-cmds.append('cd ~/tmp/DESI/')
-cmds.append('git checkout main')
-# echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
+   cmds.append('rm -rf ~/tmp; mkdir -p ~/tmp')
+   cmds.append('cd ~/tmp/')
+   cmds.append('git clone https://github.com/SgmAstro/DESI.git')
+   cmds.append('cd ~/tmp/DESI/')
+   cmds.append('git checkout main')
+   
+   # echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
 
-for cmd in cmds:
-    print(cmd)
-    
-    # out = check_output(cmd)
+   for cmd in cmds:    
+       out = run_command(cmd)
+
 
 code_root = os.environ['CODE_ROOT'] = '~/tmp/DESI/'
+
 os.environ['PATH'] = f'{home}/.conda/envs/lumfn/bin/:{code_root}/bin/:' + os.environ['PATH']
 os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']
 
@@ -94,71 +107,84 @@ Path(os.environ['RANDOMS_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
 
 #  ---------------------------------------------
 # Generate all steps up to reference LF. 
-cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s gold_pipeline -c $CODE_ROOT'
+cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -s gold_pipeline -c $CODE_ROOT'
 
 print(cmd)
 
-# gold_jobid = int(check_output(cmd))
+gold_jobid = int(run_command(cmd))
 
 print('\n>>>>> GOLD JOB ID <<<<<')
 print(gold_jobid)
+print('\n\n')
 
 #
 # https://slurm.schedmd.com/sbatch.html
 #
 
-sys.stdout.close()
+fields = fetch_fields(survey=survey)
 
-'''
-# No dependency.  Generate all steps up to random fill factor and bound_dist. 
-RAND_G9_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE  -s rand_pipeline -c $CODE_ROOT)
-RAND_G12_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)
-RAND_G15_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)
+rand_jobids     = {}
+rand_ddp_jobids = {}
 
-# Dependency on $GOLD_JOBID (gold ddp cat generated by gold_pipeline).
-# Generate ddp1 randoms limited to ddp1 z limits - with corresponding fillfactors, bound_dist etc.  
-RAND_DDP_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT)
-RAND_DDP_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT)
-RAND_DDP_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT)
+for field in fields:
+    # No dependency.  Generate all steps up to random fill factor and bound_dist.      
+    # RAND_G9_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE  -s rand_pipeline -c $CODE_ROOT)                                             
+    # RAND_G12_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)                                             
+    # RAND_G15_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)     
 
-echo
-echo ' >>>>> RANDOM JOB IDS <<<<<'
-echo $RAND_G9_JOBID
-echo $RAND_G12_JOBID
-echo $RAND_G15_JOBID
+    cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY  -s rand_pipeline -c $CODE_ROOT'
+    rand_jobids[field] = int(run_command(cmd))
 
-echo $RAND_DDP_G9_JOBID
-echo $RAND_DDP_G12_JOBID
-echo $RAND_DDP_G15_JOBID
+for field in fields:
+    # Dependency on $GOLD_JOBID (gold ddp cat generated by gold_pipeline). 
+    # Generate ddp1 randoms limited to ddp1 z limits - with corresponding fillfactors, bound_dist etc. 
+    # RAND_DDP_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT)                    
+    # RAND_DDP_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT)                    
+    # RAND_DDP_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -d $GOLD_JOBID -s rand_ddp1_pipeline -c $CODE_ROOT) 
+    
+    cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
+    rand_ddp_jobids[field] = int(run_command(cmd))  
 
-# Requires ddp cat, & randoms; no reset required.  
-RAND_D8_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE   -d $GOLD_JOBID,$RAND_G9_JOBID  -s rand_d8_pipeline -c $CODE_ROOT)
-RAND_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G12_JOBID -s rand_d8_pipeline -c $CODE_ROOT)
-RAND_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G15_JOBID -s rand_d8_pipeline -c $CODE_ROOT)
+print('\n\n>>>>> RANDOM JOB IDS <<<<<')
+print(rand_jobids)
+print(rand_ddp_jobids)
+print('\n\n')
 
-RAND_DDP_D8_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE   -d $GOLD_JOBID,$RAND_DDP_G9_JOBID  -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
-RAND_DDP_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_DDP_G12_JOBID -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
-RAND_DDP_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_DDP_G15_JOBID -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
+rand_d8_jobids     = {}
+rand_ddp_d8_jobids = {}
 
-echo
-echo ' >>>>> RANDOM D8 JOB IDS <<<<<'
-echo $RAND_D8_G9_JOBID
-echo $RAND_D8_G12_JOBID
-echo $RAND_D8_G15_JOBID
+for field in fields:
+    # Requires ddp cat, & randoms; no reset required. 
+    # RAND_D8_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE   -d $GOLD_JOBID,$RAND_G9_JOBID  -s rand_d8_pipeline -c $CODE_ROOT) 
+    # RAND_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G12_JOBID -s rand_d8_pipeline -c $CODE_ROOT)
+    # RAND_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G15_JOBID -s rand_d8_pipeline -c $CODE_ROOT) 
+    rand_jobid = rand_jobids[field]
+    cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid},{rand_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
+    rand_d8_jobids[field] = int(run_command(cmd)) 
 
-echo $RAND_DDP_D8_G9_JOBID
-echo $RAND_DDP_D8_G12_JOBID
-echo $RAND_DDP_D8_G15_JOBID
+    # RAND_DDP_D8_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE   -d $GOLD_JOBID,$RAND_DDP_G9_JOBID  -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
+    # RAND_DDP_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_DDP_G12_JOBID -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
+    # RAND_DDP_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_DDP_G15_JOBID -s rand_ddp1_d8_pipeline -c $CODE_ROOT) 
+
+    rand_ddp_jobid = rand_jobids[field]
+    cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid},{rand_ddp_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
+    
+    rand_ddp_d8_jobids[field] = int(run_command(cmd))     
+
+print('\n\n>>>>> RANDOM D8 JOB IDS <<<<<')
+print(rand_d8_jobids)
+print(rand_ddp_d8_jobids)
+print('\n\n')
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
-# Note: runs all fields simultaneously.                                                                                                                                         
-GOLD_D8_JOBID=$(serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE -d $RAND_DDP_D8_G9_JOBID,$RAND_DDP_D8_G12_JOBID,$RAND_DDP_D8_G15_JOBID -s gold_d8_pipeline -c $CODE_ROOT)
+# Note: runs all fields simultaneously.  
+dependencies = ','.join(rand_ddp_d8_jobids)
 
-echo
-echo '>>>>>  GOLD D8 JOB IDS  <<<<<'
-echo $GOLD_D8_JOBID
-echo
-echo '>>>>>  DONE.  <<<<<'
-echo
-echo
-'''
+cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
+gold_d8_jobid = int(run_command(cmd))
+
+print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')
+print(gold_d8_jobid)
+print('\n\n>>>>>  DONE.  <<<<<\n\n')
+
+sys.stdout.close()

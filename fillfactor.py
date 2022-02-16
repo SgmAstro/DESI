@@ -38,6 +38,7 @@ survey = survey.lower()
 maxtasksperchild = args.maxtasksperchild
 
 fields = fetch_fields(survey)
+
 assert field in fields, 'Error: Field not in fields'
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
@@ -49,7 +50,6 @@ fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, pre
 start  = time.time()
 
 opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
 
 if args.nooverwrite:
     if os.path.isfile(fpath) and os.path.isfile(opath):
@@ -96,20 +96,20 @@ for var, obj in local_vars:
 def process_one(split, pid=0):
     _points  = np.c_[big_tree.data[split,0], big_tree.data[split,1], big_tree.data[split,2]] 
     _points  = np.array(_points, copy=True)
-
+    '''
     try:
         pid  = multiprocessing.current_process().name.ljust(20)
 
     except Exception as e:
         print(e)
-    
-    # msg      = 'POOL {}:  Creating split [{} ... {}] tree.'.format(pid, split[0], split[-1])
-    # runtime  = calc_runtime(start, msg)
+    '''
+    msg      = 'POOL {}:  Creating split [{} ... {}] tree.'.format(pid, split[0], split[-1])
+    runtime  = calc_runtime(start, msg)
         
     kd_tree  = KDTree(_points)
 
-    # msg      = 'POOL {}:  Querying split [{} ... {}] tree.'.format(pid, split[0], split[-1])
-    # runtime  = calc_runtime(start, msg)
+    msg      = 'POOL {}:  Querying split [{} ... {}] tree.'.format(pid, split[0], split[-1])
+    runtime  = calc_runtime(start, msg)
 
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query_ball_tree.html#scipy.spatial.KDTree.query_ball_tree
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.count_neighbors.html#scipy.spatial.KDTree.count_neighbors
@@ -127,16 +127,23 @@ def process_one(split, pid=0):
     return  flat
 
 
-runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees.')
+runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees of {} splits.'.format(len(splits)))
+
+now     = time.time()
+
+results = [process_one(splits[0], pid=0)]
+
+split_time  = time.time() - now
+split_time /= 60.
+
+runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(splits) * split_time))
 
 # maxtasksperchild=maxtasksperchild
 with Pool(nproc) as pool:
     # result = pool.map(process_one,  splits)
     # result = pool.imap(process_one, splits)
 
-    results = []
-
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits), total=len(splits)):
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
 
     pool.close()

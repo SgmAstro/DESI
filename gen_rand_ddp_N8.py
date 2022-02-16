@@ -12,10 +12,8 @@ from   scipy.spatial     import KDTree
 from   cartesian         import cartesian
 from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
+from   findfile          import fetch_fields, findfile
 
-from   gama_limits   import gama_field, gama_fields
-from   desi_fields   import desi_fields
-from   findfile      import findfile, fetch_fields
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
@@ -29,6 +27,10 @@ field   = args.field.upper()
 dryrun  = args.dryrun
 prefix  = args.prefix
 survey  = args.survey.lower()
+
+fields  = fetch_fields(survey)
+
+assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 start   = time.time()
 

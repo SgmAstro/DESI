@@ -6,8 +6,8 @@ import numpy as np
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-from   gama_limits import gama_fields
-from   desi_fields import desi_fields
+from   gama_limits   import gama_fields
+from   desi_fields   import desi_fields
 
 supported = ['gold',\
              'kE',\
@@ -42,6 +42,19 @@ def fetch_fields(survey):
         raise NotImplementedError
 
     return fields
+
+def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
+    assert survey == 'gama', 'TODO: Support DESI.'
+
+    # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
+    if versioned:
+        ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
+        ff.sort(key=os.path.getmtime)
+
+        return  ff[-1]
+
+    else:
+        return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
 
 def overwrite_check(opath):
     if os.path.isfile(opath):

@@ -1,3 +1,2 @@
-# NOT COMPLETE; JUST FOR TESTING
-
-desi_fields = ['R0', 'R1', 'R2']
+# G12: [1,2]; G15: [8,9,10, 17]
+desi_fields = ['R2'] # ['R1', 'R2', 'R8', 'R9', 'R10', 'R17']

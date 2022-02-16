@@ -49,9 +49,8 @@ if dryrun:
 
 opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
     
-fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey)
-opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
-
+fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
     
 if args.nooverwrite:
     if os.path.isfile(opath):

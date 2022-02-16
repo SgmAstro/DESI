@@ -44,13 +44,11 @@ assert field in fields, 'Error: Field not in fields'
 nproc  = args.nproc
 realz  = args.realz
 
-#fpath  = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
-fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey)
+fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 start  = time.time()
 
-#opath  = fpath.replace('{}_{}'.format(prefix, field), '{}_N8_{}'.format(prefix, field))
-opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey)
+opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 
 if args.nooverwrite:

@@ -9,16 +9,23 @@ from    subprocess import check_output
 from    findfile import fetch_fields
 
 
-def run_command(cmd, run=False):
-    print(cmd)
-
+def run_command(cmd):
     cmd = cmd.split()
 
-    if run:
-        out = check_output(cmd)   
+    # print('Command: {}'.format(cmd))
+
+    env = {}
+    # env.update(os.environ)
+
+    # print('Calling ...')
+
+    out = check_output(cmd)
+    out = out.decode('utf-8') 
+    out = out.replace('\n', '')
     
-    else:
-        out = '-99'
+    # print(out)
+
+    out = int(out)
 
     return out
 
@@ -30,9 +37,10 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 parser.add_argument('--dryrun',       help='Dryrun', action='store_true', default=True)
 parser.add_argument('--survey',       help='Survey', default='gama')
 parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
+parser.add_argument('--log',          help='Log stdout.', action='store_true')
 
 args        = parser.parse_args()
-use_sbatch  = args.use_sbatch
+use_sbatch  = int(args.use_sbatch)
 reset       = args.reset
 nooverwrite = args.nooverwrite
 dryrun      = args.dryrun
@@ -48,11 +56,26 @@ if nooverwrite:
     nooverwrite = '--nooverwrite'
 else:
     nooverwrite = ''
-    
-sys.stdout  = open('pipeline.log', 'w')
 
-os.environ['USESBATCH']   = str(int(use_sbatch)) 
-os.environ['RESET']	  = str(int(reset))
+if args.log:
+    sys.stdout  = open('pipeline.log', 'w')
+
+if reset:
+    print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
+
+    for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
+        for ext in ['fits', 'log']:
+            cmd = 'rm {}/*.{}'.format(root, ext)
+
+            # Split on whitespace.                                                                                                                                                                    
+            cmd = cmd.split()
+
+            # out = run_command(cmd)                                                                                                                                                                  
+if reset:
+    os.environ['RESET']   = str(1)
+else:
+    os.environ['RESET']   = str(0)
+
 os.environ['DRYRUN']	  = dryrun
 os.environ['SURVEY']      = survey
 os.environ['NOOVERWRITE'] = nooverwrite
@@ -63,18 +86,6 @@ print('Assuming $SURVEY={}'.format(survey))
 print('Assuming $DRYRUN={}'.format(dryrun))
 print('Assuming $NOOVERWRITE={}\n\n'.format(nooverwrite))
 
-if reset:
-    print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
-
-    for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
-        for ext in ['fits', 'log']:
-            cmd = 'rm {}/*.{}'.format(root, ext)
-
-            # Split on whitespace.
-            cmd = cmd.split()
-            
-            # out = run_command(cmd)
-            
 #  ----  Total of eight jobs, with correct dependency logic  ----                                                                                                                                    
 os.environ['RESET'] = '0'
 
@@ -97,27 +108,30 @@ if freshclone:
    for cmd in cmds:    
        out = run_command(cmd)
 
+   code_root = os.environ['CODE_ROOT'] = '~/tmp/DESI/'
 
-code_root = os.environ['CODE_ROOT'] = '~/tmp/DESI/'
+   os.environ['PATH'] = f':{code_root}/bin/:' + os.environ['PATH']
+   os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']
 
-os.environ['PATH'] = f'{home}/.conda/envs/lumfn/bin/:{code_root}/bin/:' + os.environ['PATH']
-os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']
+else:
+    code_root = '/cosma/home/durham/{}/DESI/'.format(os.environ['USER'])
+
+    os.environ['PATH'] = f'{home}/.conda/envs/lumfn/bin/:' + os.environ['PATH']
+    os.environ['PYTHONPATH'] = '~/DESI/:' + os.environ['PYTHONPATH']
 
 Path(os.environ['GOLD_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
 Path(os.environ['RANDOMS_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
 
 #  ---------------------------------------------
 # Generate all steps up to reference LF. 
-cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -s gold_pipeline -c $CODE_ROOT'
-
-print(cmd)
-
-gold_jobid = int(run_command(cmd))
+cmd = 'serialorparallel -p {:d} -e DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -s gold_pipeline -c {}'.format(int(use_sbatch), dryrun, int(reset), nooverwrite, survey, code_root)
+'''
+gold_jobid = run_command(cmd)
 
 print('\n>>>>> GOLD JOB ID <<<<<')
 print(gold_jobid)
 print('\n\n')
-
+'''
 #
 # https://slurm.schedmd.com/sbatch.html
 #
@@ -133,8 +147,10 @@ for field in fields:
     # RAND_G12_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)                                             
     # RAND_G15_JOBID=$(serialorparallel -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE -s rand_pipeline -c $CODE_ROOT)     
 
-    cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY  -s rand_pipeline -c $CODE_ROOT'
+    cmd = 'serialorparallel -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -s rand_pipeline -c {}'.format(int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, code_root)
     rand_jobids[field] = int(run_command(cmd))
+
+exit(0)
 
 for field in fields:
     # Dependency on $GOLD_JOBID (gold ddp cat generated by gold_pipeline). 

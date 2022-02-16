@@ -171,7 +171,7 @@ print(rand_jobids)
 print(rand_ddp_jobids)
 print('\n\n')
 
-exit(0)
+raise  NotImplementedError()
 
 rand_d8_jobids     = {}
 rand_ddp_d8_jobids = {}
@@ -183,7 +183,7 @@ for field in fields:
     # RAND_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G15_JOBID -s rand_d8_pipeline -c $CODE_ROOT) 
     rand_jobid = rand_jobids[field]
     cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,RESET=$RESET,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid},{rand_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
-    rand_d8_jobids[field] = int(run_command(cmd)) 
+    rand_d8_jobids[field] = run_command(cmd)
 
     # RAND_DDP_D8_G9_JOBID=$(serialorparallel   -p $USESBATCH -e FIELD=G9,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE   -d $GOLD_JOBID,$RAND_DDP_G9_JOBID  -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
     # RAND_DDP_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_DDP_G12_JOBID -s rand_ddp1_d8_pipeline -c $CODE_ROOT)
@@ -192,7 +192,7 @@ for field in fields:
     rand_ddp_jobid = rand_jobids[field]
     cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid},{rand_ddp_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
     
-    rand_ddp_d8_jobids[field] = int(run_command(cmd))     
+    rand_ddp_d8_jobids[field] = run_command(cmd)
 
 print('\n\n>>>>> RANDOM D8 JOB IDS <<<<<')
 print(rand_d8_jobids)
@@ -204,10 +204,11 @@ print('\n\n')
 dependencies = ','.join(rand_ddp_d8_jobids)
 
 cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
-gold_d8_jobid = int(run_command(cmd))
+gold_d8_jobid = run_command(cmd)
 
 print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')
 print(gold_d8_jobid)
 print('\n\n>>>>>  DONE.  <<<<<\n\n')
 
-sys.stdout.close()
+if args.log:
+    sys.stdout.close()

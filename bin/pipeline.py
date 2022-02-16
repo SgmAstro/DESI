@@ -29,7 +29,7 @@ def run_command(cmd):
 
     return out
 
-
+# python3 pipeline.py --dryrun --survey desi --use_sbatch --log
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')
@@ -46,6 +46,9 @@ nooverwrite = args.nooverwrite
 dryrun      = args.dryrun
 survey      = args.survey
 freshclone  = args.freshclone 
+
+if reset & (survey == 'desi'):
+    raise NotImplementedError()
 
 if dryrun:
     dryrun  = '--dryrun' 

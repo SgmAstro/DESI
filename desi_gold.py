@@ -100,6 +100,9 @@ def desi_gold():
     desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
     desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
 
+    desi_zs['W1MAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_W1'].data / mwdust_transmission(desi_zs['EBV'].data, 'W1', 'S', match_legacy_surveys=True))
+    desi_zs['W2MAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_W2'].data / mwdust_transmission(desi_zs['EBV'].data, 'W2', 'S', match_legacy_surveys=True))
+    
     desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
     desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
     

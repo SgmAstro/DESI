@@ -22,6 +22,7 @@ def run_command(cmd, run=False):
 
     return out
 
+
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')

@@ -15,7 +15,7 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="G15"
+  export FIELD="R1"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
@@ -63,10 +63,10 @@ echo 'Running randoms ddp pipeline for field '$FIELD
 echo 'Generating DDP randoms.'
 
 
-DDP_FILE=$GOLD_DIR/gama_gold_ddp${DRYRUN/'--'/'_'}.fits
+DDP_FILE=$GOLD_DIR'/'$SURVEY'_gold_ddp'${DRYRUN/'--'/'_'}'.fits'
 
 if [ -f "$DDP_FILE" ]; then
-    echo "Found DDP file"
+    echo "Found DDP file: "$DDP_FILE
 else
     echo $DDP_FILE' does not exist.'
     exit 1

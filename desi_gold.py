@@ -120,8 +120,7 @@ def desi_gold():
     full_cols       = ['NTILE', 'TILES', 'TILELOCIDS', 'LOCATION_ASSIGNED', 'TILELOCID_ASSIGNED', 'COMP_TILE', 'FRACZ_TILELOCID', 'BITWEIGHTS', 'PROB_OBS']
                        
     for cols, cat in zip([clustering_cols, full_cols], [clustering, full]):
-        cols       += ['TARGETID']
-                       
+        cols       += ['TARGETID']                       
         desi_zs     = join(desi_zs, cat[cols], keys='TARGETID')
                        
     ##  Archive step. 
@@ -156,9 +155,9 @@ def desi_gold():
     ##  ----  GAMA GOLD
     gold  = Table.read(fpath)
 
-    del gold['CARTESIAN_X']
-    del gold['CARTESIAN_Y']
-    del gold['CARTESIAN_Z']
+    del  gold['CARTESIAN_X']
+    del  gold['CARTESIAN_Y']
+    del  gold['CARTESIAN_Z']
     
     gold.pprint()
 
@@ -180,8 +179,8 @@ def desi_gold():
 
     del  gold_match['FIELD']
     
-    desi_zs      = hstack([desi_zs, gold_match])
-    desi_zs['GAMA_SEP'] = d2d.to(u.arcsec)
+    desi_zs               = hstack([desi_zs, gold_match])
+    desi_zs['GAMA_SEP']   = d2d.to(u.arcsec)
     desi_zs['GOOD_MATCH'] = desi_zs['GAMA_SEP'] < 0.3
     
     max_sep      = 0.5 * u.arcsec

@@ -28,6 +28,8 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--nproc', type=int, help='Number of processors', default=16)
+parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
 
@@ -35,19 +37,12 @@ field  = args.field.upper()
 dryrun = args.dryrun
 prefix = args.prefix
 survey = args.survey.lower()
+nproc  = args.nproc
+realz  = args.realz
 
 start  = time.time()
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
-nproc  = 16
-realz  = 0
-
-fpath  = os.environ['RANDOMS_DIR'] + '/{}_N8_{}_{:d}.fits'.format(prefix, field, realz)
-
-if dryrun:
-    fpath= fpath.replace('.fits', '_dryrun.fits')
-
-opath = fpath.replace('{}_N8'.format(prefix), '{}_bd'.format(prefix))
     
 fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)

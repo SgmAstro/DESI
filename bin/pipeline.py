@@ -29,12 +29,13 @@ def run_command(cmd):
 
     return out
 
-# python3 pipeline.py --dryrun --survey desi --use_sbatch --log
+# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
+# Head:   python3 pipeline.py --survey desi   
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--dryrun',       help='Dryrun', action='store_true', default=True)
+parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
 parser.add_argument('--survey',       help='Survey', default='gama')
 parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
 parser.add_argument('--log',          help='Log stdout.', action='store_true')
@@ -170,6 +171,8 @@ print('\n\n>>>>> RANDOM JOB IDS <<<<<')
 print(rand_jobids)
 print(rand_ddp_jobids)
 print('\n\n')
+
+exit(0)
 
 raise  NotImplementedError()
 

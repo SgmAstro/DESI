@@ -1,11 +1,12 @@
+import os
 import numpy         as     np
 
 from   astropy.table import Table, unique
 from   ros_tools     import tile2rosette, calc_rosr
 
 
-def desi_randoms(field):
-    # TODO: Handle NERSC (generation) vs Cosma (read only).
+def desi_randoms(ros):
+    assert  'NERSC_HOST' in os.environ.keys()
     # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.  
     rand = Table.read('/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random0/rancomb_brightwdup_Alltiles.fits')
     # rand.pprint()
@@ -13,9 +14,10 @@ def desi_randoms(field):
     # TODO:  Check TARGETID is a unique identifier, or bug.  If not, use RA. 
     rand             = unique(rand, keys='TARGETID')
     rand['ROS']      = tile2rosette(rand['TILEID'])
+
     rand['ROS_DIST'] = 1.e99
 
-    rand = rand[rand['ROS'] == int(field[1:])]
+    rand = rand[rand['ROS'] == ros]
     
     for rosn in np.unique(rand['ROS']):
         isin = (rand['ROS'].data == rosn)

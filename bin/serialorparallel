@@ -44,16 +44,21 @@ else
   dependency='--dependency=afterok:'$dependency' '
 fi
 
+parallel=$((parallel + 0))
+
+# echo $parallel
 # echo $dependency
+# echo $export
+# echo $script
+# echo $coderoot
 
-
-if [ "$parallel" -eq "1" ]; then
+if [ $parallel -eq '1' ]; then
    # echo "sbatch --parsable --export=$export $dependency $script"
    echo "$(sbatch --parsable --export=$export,CODE_ROOT=$coderoot $dependency $script)"
    exit;
 fi
 
-if [ "$parallel" -eq "0" ]; then
+if [ $parallel -eq '0' ]; then
    parts=($(echo "$export" | tr ',' '\n'))
 
    for part in "${parts[@]}"

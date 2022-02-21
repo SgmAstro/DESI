@@ -2,11 +2,12 @@ import os
 import time
 import numpy as np
 import argparse
+import itertools
 import astropy.io.fits   as     fits 
 
 from   cosmo             import cosmo, volcom
 from   scipy.interpolate import interp1d
-from   astropy.table     import Table
+from   astropy.table     import Table, vstack
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
@@ -20,6 +21,7 @@ parser  = argparse.ArgumentParser(description='Calculate a set of boundary point
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
+parser.add_argument('--sampling',     help='Sampling rate', default=90000)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -35,7 +37,8 @@ survey  = args.survey.lower()
 zmin    = args.zmin
 zmax    = args.zmax
 prefix  = args.prefix 
-realz   = args.realz
+sampling = args.sampling
+realz   = 0
 
 start   = time.time()
 
@@ -49,38 +52,54 @@ opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, p
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
-    from gama_limits import gama_field
-    
+    area       = 60. 
+
     ra_min     = gama_limits[field]['ra_min']
     ra_max     = gama_limits[field]['ra_max']
 
     dec_min    = gama_limits[field]['dec_min']
     dec_max    = gama_limits[field]['dec_max']
 
-    if dryrun == True:
-        nrand  = 500
-    
-    else:
-        nrand  = 1.e4
+    pairs      = {'RA': (ra_min, ra_max), 'DEC': (dec_min, dec_max), 'Z': (zmin, zmax)}
+    names      = list(pairs.keys())
 
-    ras        = ra_min
-    ras[::2]   = ra_max
-    decs       = np.arange(dec_min, dec_max, 1. / 60. / 60. / 10.) 
-    
-    np.random.shuffle(ras)
-    np.random.shuffle(decs)
+    randoms    = []
 
-    randoms    = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
+    for key0 in names:
+        keys         = list(pairs.keys())
+        keys.remove(key0)
+        
+        key1         = keys[0]
+        key2         = keys[1]
 
-    ras        = np.arange(ra_min, ra_max, 1. / 60. / 60. / 10.)
-    decs       = dec_min
-    decs[::2]  = dec_max 
+        print('Solving for {} boundary ({}, {})'.format(key0, key1, key2))
+        
+        pair0        = pairs[key0]
+        pair1        = pairs[key1]
+        pair2        = pairs[key2]
 
-    np.random.shuffle(ras)
-    np.random.shuffle(decs)
+        continuous   = np.linspace(pair1[0], pair1[1], sampling)
+        continuous   = np.tile(continuous, 2)
 
-    randoms    = vstack((rand, Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])))
-    nrand      = len(rand)
+        np.random.shuffle(continuous)
+         
+        continuous2  = np.linspace(pair2[0], pair2[1], sampling)
+        continuous2  = np.tile(continuous2, 2)
+
+        np.random.shuffle(continuous2)
+
+        discrete      = pair0[0] * np.ones_like(continuous)
+        discrete[::2] = pair0[1]
+
+        np.random.shuffle(discrete)
+
+        to_add        = Table(np.c_[discrete, continuous, continuous2], names=['BOUND_{}'.format(key0), 'BOUND_{}'.format(key1), 'BOUND_{}'.format(key2)])
+        to_add        = to_add['BOUND_RA', 'BOUND_DEC', 'BOUND_Z']
+
+        randoms.append(to_add)
+
+    randoms = vstack(randoms)
+    randoms.rename_column('BOUND_Z', 'Z')
 
 elif survey == 'desi':
     if 'NERSC_HOST' in os.environ.keys():
@@ -100,31 +119,23 @@ if dryrun:
 else:
     nrand = len(randoms)
 
-
-dz      = 1.e-6
-zs      = np.arange(zmin, zmax+dz, dz)
-
-np.random.shuffle(zs)
-
-zs      = zs[:len(rand)]
-Vs      = volcom(zs) - volcom(zmin)
-
 print('Solved {:d} for field {}'.format(nrand, field))
 
-randoms['Z']          = zs
-randoms['V']          = volcom(zs) - volcom(zmin)
+randoms.pprint()
+
+randoms['V']          = volcom(randoms['Z'], area=area) - volcom(zmin, area=area)
 randoms['BOUNDID']    = np.arange(len(randoms))
 
 randoms['FIELD']      = field
-randoms['GAMA_FIELD'] = gama_field(ras, decs)
+randoms['GAMA_FIELD'] = gama_field(randoms['BOUND_RA'], randoms['BOUND_DEC'])
 
-xyz                    = cartesian(ras, decs, zs)
+xyz                    = cartesian(randoms['BOUND_RA'], randoms['BOUND_DEC'], randoms['Z'])
 
 randoms['CARTESIAN_X'] = xyz[:,0]
 randoms['CARTESIAN_Y'] = xyz[:,1]
 randoms['CARTESIAN_Z'] = xyz[:,2]
 
-xyz                    = rotate(randoms['RANDOM_RA'], randoms['RANDOM_DEC'], xyz)
+xyz                    = rotate(randoms['BOUND_RA'], randoms['BOUND_DEC'], xyz)
 
 randoms['ROTCARTESIAN_X'] = xyz[:,0]
 randoms['ROTCARTESIAN_Y'] = xyz[:,1]
@@ -132,17 +143,21 @@ randoms['ROTCARTESIAN_Z'] = xyz[:,2]
 
 randoms.meta = {'ZMIN': zmin,\
                 'ZMAX': zmax,\
-                'DZ':     dz,\
                 'NBOUND': nrand,\
                 'FIELD': field,\
-                'Area': Area}
+                'SAMPLING': sampling,\
+                'Area': area}
 
 print(randoms.meta)
 
-runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=randoms)
-
 randoms.meta['EXTNAME'] = 'BOUNDARY'
 
-randoms.write(opath, append=True)  
+if os.path.isfile(opath):
+    runtime = calc_runtime(start, f'Appending BOUNDARY extension to {opath}', xx=randoms)
+
+else:
+    raise  RuntimeError(f'Failed to find {opath} needed to append.')
+
+randoms.write(opath, append=True, overwrite=True)  
 
 runtime = calc_runtime(start, 'Finished'.format(opath))

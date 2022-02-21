@@ -33,7 +33,7 @@ if [[ $SURVEY = 'gama' ]]
 then
     export FIELDS=('G9' 'G12' 'G15')
 else
-    export FIELDS=('R3')
+    export FIELDS=('R1' 'R2' 'R8', 'R9', 'R10', 'R17')
 fi
 
 

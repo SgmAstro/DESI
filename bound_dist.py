@@ -28,7 +28,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--nproc', type=int, help='Number of processors', default=16)
+parser.add_argument('--nproc', type=int, help='Number of processors', default=1)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
@@ -153,8 +153,10 @@ rand['BOUND_DIST'][rand['IS_BOUNDARY'] == 0] = np.array(flat_result)
 rand['BOUND_ID'][rand['IS_BOUNDARY'] == 0]   = bids[np.array(flat_ii)]
 
 sphere_radius = rand.meta['RSPHERE']
-rand['FILLFACTOR']   = np.clip(rand['FILLFACTOR'], 0., 1.)
+rand['FILLFACTOR_POISSON']   = rand['FILLFACTOR']
+rand['FILLFACTOR']           = np.clip(rand['FILLFACTOR'], 0., 1.)
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1
+
 
 runtime = calc_runtime(start, 'Shuffling')
 

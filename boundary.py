@@ -114,7 +114,6 @@ else:
 
 if dryrun:
     nrand = 500
-    opath = opath.replace('.fits', '_dryrun.fits')
 
 else:
     nrand = len(randoms)

@@ -44,12 +44,11 @@ assert field in fields, 'Error: Field not in fields'
 nproc  = args.nproc
 realz  = args.realz
 
-fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 start  = time.time()
 
-opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
+opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 if args.nooverwrite:
     if os.path.isfile(fpath) and os.path.isfile(opath):
@@ -158,7 +157,8 @@ for rr in results:
 
 rand                 = Table.read(fpath)
 rand.sort('CARTESIAN_X')
-
+'''
+# HACK
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
 
@@ -166,7 +166,7 @@ rand.meta['RSPHERE'] = 8.
     
 # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
 rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
-
+'''
 runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 
 rand.write(opath, format='fits', overwrite=True)

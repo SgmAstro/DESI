@@ -126,8 +126,6 @@ if not os.path.isdir(os.environ['RANDOMS_DIR']):
     
 print('Volume [1e6]: {:.2f}; rand_density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, rand_density, nrand / 1.e6))
 
-boundary_percent = 1.
-
 zs      = np.arange(0.0, zmax+dz, dz)
 Vs      = volcom(zs, Area) 
 
@@ -175,35 +173,18 @@ randoms['ROTCARTESIAN_X'] = xyz[:,0]
 randoms['ROTCARTESIAN_Y'] = xyz[:,1]
 randoms['ROTCARTESIAN_Z'] = xyz[:,2]
 
-print('Applying boundary.')
-
-
-randoms['IS_BOUNDARY'] = 0
-
-if survey == 'gama':
-    randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  > np.percentile(randoms['RANDOM_RA'],  100. - boundary_percent)] = 1
-    randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  < np.percentile(randoms['RANDOM_RA'],  boundary_percent)]        = 1
-
-    randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > np.percentile(randoms['RANDOM_DEC'], 100. - boundary_percent)] = 1
-    randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC'], boundary_percent)]        = 1
-
+'''
 elif survey == 'desi':    
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   > np.percentile(randoms['ROS_DIST'],   100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
+'''
     
-else:
-    raise  NotImplementedError(f'No implementation for survey: {survey}')    
-
-randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
-randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
-
 randoms.meta = {'ZMIN': zmin,\
                 'ZMAX': zmax,\
                 'DZ':     dz,\
                 'NRAND': nrand,\
                 'FIELD': field,\
                 'Area': Area,\
-                'BOUND_PERCENT': boundary_percent,\
                 'VOL': vol,\
                 'RAND_DENS': rand_density,\
                 'VOL8': (4./3.)*np.pi*(8.**3.)}

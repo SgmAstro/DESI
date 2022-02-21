@@ -166,20 +166,13 @@ if __name__ == '__main__':
 
             if all_rands == None:
                 
-                # issue here
                 findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
                 
                 _fields = fetch_fields(survey=survey)
                 
-                # issue here
                 all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey) for ff in _fields]
-                
-                #all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
 
                 all_rpaths = []
-                
-                #if dryrun:
-                #    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
 
                 all_rands = [Table.read(_x) for _x in all_rpaths]
 

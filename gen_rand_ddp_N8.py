@@ -12,7 +12,7 @@ from   scipy.spatial     import KDTree
 from   cartesian         import cartesian
 from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
-from   findfile          import fetch_fields, findfile
+from   findfile          import fetch_fields, findfile, overwrite_check
 
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
@@ -53,14 +53,12 @@ runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6)
 #if dryrun:
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
+fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
-opath   = fpath.replace('bd', 'bd_ddp_n8')
+#opath   = fpath.replace('bd', 'bd_ddp_n8')
+opath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
-if args.nooverwrite:
-    if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+overwrite_check(opath)
     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)

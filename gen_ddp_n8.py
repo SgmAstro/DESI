@@ -54,7 +54,7 @@ rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey) f
 
 print('Reading: {}'.format(rpaths))
 
-rand = gather_cat(rpaths)
+rand   = gather_cat(rpaths)
 
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
@@ -79,6 +79,32 @@ dat['RANDSEP']    = dd
 dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
+
+dat['VMAX_CMP']   = -99.
+
+dat['ORDER']      = np.arange(len(dat))
+rand['ORDER']     = np.arange(len(rand))
+
+dat.sort('ZMAX')
+rand.sort('Z')
+
+rand_zs           = rand['Z']
+rand_fs           = rand['FILLFACTOR']
+
+for i, zmax in enumerate(dat['ZMAX']):
+    dat['VMAX_CMP'][i]  = dat['VMAX']
+
+    isin            = rand_zs <= zmax
+    volavg_fillfrac = np.mean(rand_fs[isin] > 0.8)
+ 
+    dat['VMAX_CMP'][i] *= volavg_fillfrac
+
+
+dat  = dat[np.argsort(dat['ORDER'])]
+rand = rand[np.argsort(rand['ORDER'])]
+
+del dat['ORDER']
+del rand['ORDER']
 
 for field in fields:
     dat_in_field  =  dat[(dat['FIELD']  == field)]

@@ -63,6 +63,9 @@ assert  field in fields, f'Provided {field} field is not compatible with those a
 ##  opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
+if args.nooverwrite:
+    overwrite_check(opath)
+
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
     area       = 60. 

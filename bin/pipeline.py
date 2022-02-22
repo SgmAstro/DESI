@@ -30,7 +30,7 @@ def run_command(cmd):
     return out
 
 # Sbatch: python3 pipeline.py --survey gama --use_sbatch --log --nooverwrite
-# Head:   python3 pipeline.py --survey desi --reset 
+# Head:   python3 pipeline.py --survey gama --nooverwrite 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')

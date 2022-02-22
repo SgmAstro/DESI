@@ -9,7 +9,7 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile
+from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
 
 
@@ -43,6 +43,9 @@ fields  = fetch_fields(survey)
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+
+if args.nooverwrite:
+    overwrite_check(opath)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    

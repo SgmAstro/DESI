@@ -14,7 +14,8 @@ if __name__ == '__main__':
     args   = parser.parse_args()
 
     survey = args.survey
-
+    nooverwrite = args.nooverwrite
+    
     if survey == 'gama':
         gama_gold(args)
 

@@ -91,7 +91,11 @@ rand.sort('Z')
 rand_zs           = rand['Z']
 rand_fs           = rand['FILLFACTOR']
 
-for i, zmax in enumerate(dat['ZMAX']):
+_idxs             = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-2))
+
+for i, _idx in enumerate(np.unique(_idxs)):
+    zmax            = np.mean(dat['ZMAX'][_idxs == _idx])
+
     isin            = rand_zs <= zmax
     volavg_fillfrac = np.mean(rand_fs[isin] > 0.8)
  

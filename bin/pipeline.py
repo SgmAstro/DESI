@@ -29,7 +29,7 @@ def run_command(cmd):
 
     return out
 
-# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
+# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log --reset
 # Head:   python3 pipeline.py --survey desi --reset 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
@@ -211,7 +211,7 @@ print('\n\n')
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
 # Note: runs all fields simultaneously.  
-dependencies = ','.join(rand_ddp_d8_jobids)
+dependencies = ','.join(rand_ddp_d8_jobids.values())
 
 # possibly missing RESET=$RESET
 #cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'

@@ -6,8 +6,8 @@ import numpy as np
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-from   gama_limits import gama_fields
-from   desi_fields import desi_fields
+from   gama_limits   import gama_fields
+from   desi_fields   import desi_fields
 
 supported = ['gold',\
              'kE',\
@@ -43,12 +43,25 @@ def fetch_fields(survey):
 
     return fields
 
+def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
+    assert survey == 'gama', 'TODO: Support DESI.'
+
+    # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
+    if versioned:
+        ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
+        ff.sort(key=os.path.getmtime)
+
+        return  ff[-1]
+
+    else:
+        return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
+
 def overwrite_check(opath):
     if os.path.isfile(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
         exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False):    
     survey = survey.lower()
 
     # Special case:                                                                                                                                                                                 
@@ -66,7 +79,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     
     if dryrun:
         dryrun = '_dryrun'
-
+        debug  = True
     else:
         dryrun = ''
 
@@ -97,10 +110,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                       'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
                       'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
                       'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
-                      'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
-                      'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
-                      'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
+                      #'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
+                      #'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
+                      #'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
+                      #'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
                       'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
@@ -109,7 +122,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
         if prefix != None:
             assert 'randoms' in prefix;
-            fpath.replace('randoms', prefix)
+            
+            dirname = os.path.dirname(fpath)
+            fpath = os.path.basename(fpath)
+            
+            fpath = fpath.replace('randoms', prefix)
+            fpath = dirname + '/' + fpath
+        
+        
+    if debug:
+        print(f'DEBUG: findfile returns {fpath}')
         
     return  fpath
 

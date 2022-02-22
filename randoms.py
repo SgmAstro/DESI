@@ -9,9 +9,9 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields
+from   findfile          import fetch_fields, findfile
+from   gama_limits       import gama_limits, gama_field
 
-from   gama_limits import gama_limits
 
 np.random.seed(314)
 
@@ -19,7 +19,7 @@ parser  = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
-parser.add_argument('--realz',        help='Realization', default=0, type=np.int)
+parser.add_argument('--realz',        help='Realization', default=0, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -38,13 +38,14 @@ realz   = args.realz
 
 start   = time.time()
 
-fields = fetch_fields(survey)
+fields  = fetch_fields(survey)
 
-assert field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
+assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
+
+opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
 ##  ras and decs.                                                                                                                                                              
-if survey == 'gama':
-    
+if survey == 'gama':    
     from gama_limits import gama_field
     
     Area    = 60.
@@ -68,7 +69,7 @@ if survey == 'gama':
     if dryrun == True:
         nrand = 500
     else:
-        nrand     = np.int64(np.ceil(vol * rand_density))
+        nrand     = int(np.ceil(vol * rand_density))
     
     cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
     theta     = np.arccos(cos_theta)
@@ -80,14 +81,19 @@ if survey == 'gama':
     randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
     
 elif survey == 'desi':
-    # TODO:  field is useless, interpret as ros?
-    randoms   = desi_randoms(field)
-    nrand     = len(randoms)
+    if 'NERSC_HOST' in os.environ.keys():
+        # Support to run on nersc only.
+        randoms = desi_randoms(ros=int(field[1:]))
+        nrand   = len(randoms)
 
-    # TODO: add dryrun nrand fix (as above in GAMA)
+        # TODO: add dryrun nrand fix (as above in GAMA)
     
-    # Original density of 2500 per sq. deg. 
-    Area      = nrand / 2500. 
+        # Original density of 2500 per sq. deg. 
+        Area    = nrand / 2500. 
+
+    else:
+        print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
+        exit(0)
 
 else:
     raise  NotImplementedError(f'No implementation for survey: {survey}')
@@ -102,17 +108,14 @@ vol     = Vmax - Vmin
 
 rand_density = nrand / vol
 
-##  IO: findfile. 
-opath     = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
-
 if dryrun:
     nrand = 500
-    opath = opath.replace('.fits', '_dryrun.fits')
+    #opath = opath.replace('.fits', '_dryrun.fits')
 
-if args.nooverwrite:
-    if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+#if args.nooverwrite:
+#    if os.path.isfile(opath):
+#        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+#        exit(0)
 
 if not os.path.isdir(os.environ['RANDOMS_DIR']):
     print('Creating {}'.format(os.environ['RANDOMS_DIR']))
@@ -120,8 +123,6 @@ if not os.path.isdir(os.environ['RANDOMS_DIR']):
     os.makedirs(os.environ['RANDOMS_DIR'])
     
 print('Volume [1e6]: {:.2f}; rand_density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, rand_density, nrand / 1.e6))
-
-boundary_percent = 1.
 
 zs      = np.arange(0.0, zmax+dz, dz)
 Vs      = volcom(zs, Area) 
@@ -155,12 +156,8 @@ randoms['Z'] = zs
 randoms['V'] = Vdraws
 randoms['RANDID'] = np.arange(len(randoms))
 
-
-# TODO: CLEAN UP ONCE CODE IS WORKING
-if survey == 'gama':
-    randoms['FIELD'] = gama_field(ras, decs)
-else:
-    randoms['FIELD'] = desi_field(ras, decs)
+randoms['FIELD']      = field
+randoms['GAMA_FIELD'] = gama_field(ras, decs)
 
 # assert  np.all(randoms['FIELD'].data == field)
 
@@ -174,35 +171,18 @@ randoms['ROTCARTESIAN_X'] = xyz[:,0]
 randoms['ROTCARTESIAN_Y'] = xyz[:,1]
 randoms['ROTCARTESIAN_Z'] = xyz[:,2]
 
-print('Applying boundary.')
-
-
-randoms['IS_BOUNDARY'] = 0
-
-if survey == 'gama':
-    randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  > np.percentile(randoms['RANDOM_RA'],  100. - boundary_percent)] = 1
-    randoms['IS_BOUNDARY'][randoms['RANDOM_RA']  < np.percentile(randoms['RANDOM_RA'],  boundary_percent)]        = 1
-
-    randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] > np.percentile(randoms['RANDOM_DEC'], 100. - boundary_percent)] = 1
-    randoms['IS_BOUNDARY'][randoms['RANDOM_DEC'] < np.percentile(randoms['RANDOM_DEC'], boundary_percent)]        = 1
-
+'''
 elif survey == 'desi':    
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   > np.percentile(randoms['ROS_DIST'],   100. - boundary_percent)] = 1
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
+'''
     
-else:
-    raise  NotImplementedError(f'No implementation for survey: {survey}')    
-
-randoms['IS_BOUNDARY'][randoms['V'] >= np.percentile(randoms['V'], 100. - boundary_percent)] = 1
-randoms['IS_BOUNDARY'][randoms['V'] <= np.percentile(randoms['V'],  boundary_percent)] = 1
-
 randoms.meta = {'ZMIN': zmin,\
                 'ZMAX': zmax,\
                 'DZ':     dz,\
                 'NRAND': nrand,\
                 'FIELD': field,\
                 'Area': Area,\
-                'BOUND_PERCENT': boundary_percent,\
                 'VOL': vol,\
                 'RAND_DENS': rand_density,\
                 'VOL8': (4./3.)*np.pi*(8.**3.)}

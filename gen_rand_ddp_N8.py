@@ -12,10 +12,8 @@ from   scipy.spatial     import KDTree
 from   cartesian         import cartesian
 from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
+from   findfile          import fetch_fields, findfile, overwrite_check
 
-from   gama_limits   import gama_field, gama_fields
-from   desi_fields   import desi_fields
-from   findfile      import findfile, fetch_fields
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
@@ -30,6 +28,10 @@ dryrun  = args.dryrun
 prefix  = args.prefix
 survey  = args.survey.lower()
 
+fields  = fetch_fields(survey)
+
+assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
+
 start   = time.time()
 
 realz   = 0
@@ -39,7 +41,7 @@ realz   = 0
 #if dryrun:
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey)
+fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 print(fpath)
 
 dat     = Table.read(fpath)
@@ -51,14 +53,12 @@ runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6)
 #if dryrun:
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
+fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
-opath   = fpath.replace('bd', 'bd_ddp_n8')
+#opath   = fpath.replace('bd', 'bd_ddp_n8')
+opath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
-if args.nooverwrite:
-    if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+overwrite_check(opath)
     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
@@ -120,13 +120,13 @@ print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 for ut in utiers:    
     ddp1_rand = rand[rand['IN_DDP1']]
-    in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
+    in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
         
-    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)
-    rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier])
+    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
+    rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
 
-    print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
-    print('DDP1_d{}_TIERMEDd8 OF {:.4f} ADDED.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+    print('DDP1_d{}_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
+    print('DDP1_d{}_TIERMEDd8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

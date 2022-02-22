@@ -44,12 +44,11 @@ assert field in fields, 'Error: Field not in fields'
 nproc  = args.nproc
 realz  = args.realz
 
-fpath = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 start  = time.time()
 
-opath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
+opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 if args.nooverwrite:
     if os.path.isfile(fpath) and os.path.isfile(opath):
@@ -127,16 +126,23 @@ def process_one(split, pid=0):
     return  flat
 
 
-runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees.')
+runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees of {} splits.'.format(len(splits)))
+
+now     = time.time()
+
+results = [process_one(splits[0], pid=0)]
+
+split_time  = time.time() - now
+split_time /= 60.
+
+runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(splits) * split_time))
 
 # maxtasksperchild=maxtasksperchild
 with Pool(nproc) as pool:
     # result = pool.map(process_one,  splits)
     # result = pool.imap(process_one, splits)
 
-    results = []
-
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits), total=len(splits)):
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
 
     pool.close()
@@ -161,14 +167,24 @@ rand.sort('CARTESIAN_X')
 
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
-
 rand.meta['RSPHERE'] = 8.
-    
+
+'''
 # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
 rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
+'''
+
+boundary = Table.read(fpath, 'BOUNDARY')
+
+header   = fits.Header()
+
+hx       = fits.HDUList()
+hx.append(fits.PrimaryHDU(header=header))
+hx.append(fits.convenience.table_to_hdu(rand))
+hx.append(fits.convenience.table_to_hdu(boundary))
 
 runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 
-rand.write(opath, format='fits', overwrite=True)
+hx.writeto(opath, overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')

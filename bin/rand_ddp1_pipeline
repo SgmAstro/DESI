@@ -1,5 +1,6 @@
 #!/bin/bash
-#SBATCH -p cosma                                                                                                                                                                                    
+#SBATCH -p cordelia                                                                                                                                                                  
+#SBATCH --mem=20G  
 #SBATCH -t 04:00:00 
 #SBATCH -o rand_ddp1_pipeline.log                                                                                                                                                                    
 #SBATCH -A durham                                                                                                                                                                                    
@@ -81,13 +82,15 @@ ddp1_zmax=$(echo $ddp1_zmax | cut -d " " -f 9)
 echo 'DDP1_ZMIN:  '$ddp1_zmin
 echo 'DDP1_ZMAX:  '$ddp1_zmax
 
-python randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/randoms_ddp_$FIELD.log
+python randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/randoms_ddp1_$FIELD.log
+
+python boundary.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/boundary_ddp1_$FIELD.log
 
 # Uses Pool, should be on interactive. 
-python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/fillfactor_ddp_$FIELD.log
+python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/fillfactor_ddp1_$FIELD.log
 
 # Uses Pool, should be on interactive.
-python bound_dist.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/bound_dist_ddp_$FIELD.log
+python bound_dist.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/bound_dist_ddp1_$FIELD.log
 
 # TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest

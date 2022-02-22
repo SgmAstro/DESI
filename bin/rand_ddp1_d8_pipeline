@@ -2,7 +2,7 @@
 #SBATCH -p cordelia
 #SBATCH --mem=50G
 #SBATCH -t 04:00:00                                                                                                                                                                                 
-#SBATCH -o rand_ddp1_d8_pipeline.log                                                                                                                                                                 
+#SBATCH -o ~/data/GAMA4/randoms/logs/rand_ddp1_d8_pipeline.log                                                                                                                                         
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
 #SBATCH --ntasks-per-node=1                                                                                                                                                                          

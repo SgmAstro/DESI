@@ -9,7 +9,6 @@ from    pathlib import Path
 from    subprocess import check_output
 from    findfile import fetch_fields
 
-
 def run_command(cmd):
     print('Command: {}'.format(cmd))
 
@@ -72,13 +71,12 @@ if reset:
     print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
 
     for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
-        for ext in ['fits', 'log']:
-            cmd = 'rm {}/*.{}'.format(root, ext)
+        cmd = 'rm -f {}/logs/*.log'.format(root)
 
-            # Split on whitespace.                                                                                                                                                                    
-            cmd = cmd.split()
+        print(cmd)
 
-            # out = run_command(cmd)                                                                                                                                                                  
+        os.system(cmd)
+
 if reset:
     os.environ['RESET']   = str(1)
 else:

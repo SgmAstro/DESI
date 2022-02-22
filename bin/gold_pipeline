@@ -2,7 +2,7 @@
 #SBATCH -p cordelia
 #SBATCH --mem=20G                                                                                                    
 #SBATCH -t 02:00:00 
-#SBATCH -o ~/data/GAMA4/logs/gold_pipeline.log
+#SBATCH -o /cosma/home/durham/dc-wils7/data/GAMA4/logs/gold_pipeline.log
 #SBATCH -A durham 
 #SBATCH --nodes=1                                                                                                          
 #SBATCH --ntasks-per-node=1                                                                                               

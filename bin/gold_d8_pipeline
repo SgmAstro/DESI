@@ -1,6 +1,6 @@
 #!/bin/bash                                                                                                               
 #SBATCH -p cordelia
-#SBATCH --mem=20G
+#SBATCH --mem=50G
 #SBATCH -t 02:00:00  
 #SBATCH -o gold_d8_pipeline.log                                                                                                                                                                     
 #SBATCH -A durham                                                                                                                                                                                    

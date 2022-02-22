@@ -120,7 +120,7 @@ print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 for ut in utiers:    
     ddp1_rand = rand[rand['IN_DDP1']]
-    in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
+    in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
         
     rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)
     rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier])

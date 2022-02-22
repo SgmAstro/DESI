@@ -125,14 +125,23 @@ for split in splits:
 result = np.array(result)
 '''
 
-runtime = calc_runtime(start, 'POOL:  Querying bound dist for body points.')
+runtime = calc_runtime(start, 'POOL:  Querying bound dist for body points of {} splits.'.format(len(splits)))
+
+now     = time.time()
+
+results = [process_one(splits[0], pid=0)]
+
+split_time  = time.time() - now
+split_time /= 60.
+
+runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(splits) * split_time))
 
 with Pool(nproc) as pool:
     # result  = p.map(process_one, splits)
 
     results = []
 
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits), total=len(splits)):
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
 
     pool.close()

@@ -126,7 +126,16 @@ def process_one(split, pid=0):
     return  flat
 
 
-runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees.')
+runtime = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees of {} splits.'.format(len(splits)))
+
+now     = time.time()
+
+results = [process_one(splits[0], pid=0)]
+
+split_time  = time.time() - now
+split_time /= 60.
+
+runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(splits) * split_time))
 
 # maxtasksperchild=maxtasksperchild
 with Pool(nproc) as pool:
@@ -135,7 +144,7 @@ with Pool(nproc) as pool:
 
     results = []
 
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits), total=len(splits)):
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
 
     pool.close()

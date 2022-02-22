@@ -112,10 +112,10 @@ if dryrun:
     nrand = 500
     #opath = opath.replace('.fits', '_dryrun.fits')
 
-if args.nooverwrite:
-    if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+#if args.nooverwrite:
+#    if os.path.isfile(opath):
+#        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+#        exit(0)
 
 if not os.path.isdir(os.environ['RANDOMS_DIR']):
     print('Creating {}'.format(os.environ['RANDOMS_DIR']))

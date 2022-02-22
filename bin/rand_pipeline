@@ -72,6 +72,8 @@ echo 'Running randoms pipeline for field '$FIELD
 # Serial code (--dryrun)
 python randoms.py --field $FIELD $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/randoms_$FIELD.log
 
+python boundary.py --field $FIELD $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/boundary_$FIELD.log
+
 # Uses Pool, should be on interactive. 
 python fillfactor.py --field $FIELD $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/fillfactor_$FIELD.log
 

@@ -134,7 +134,7 @@ runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(sp
 with Pool(nproc) as pool:
     # result  = p.map(process_one, splits)
 
-    results = []
+    #results = []
 
     for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
@@ -157,10 +157,6 @@ rand['BOUNDID']    = -99
 
 rand['BOUND_DIST'] = np.array(flat_result)
 rand['BOUNDID']    = bids[np.array(flat_ii)]
-
-# HACK
-# sphere_radius    = rand.meta['RSPHERE']
-
 
 sphere_radius = rand.meta['RSPHERE']
 

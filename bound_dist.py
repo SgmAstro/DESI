@@ -28,7 +28,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--nproc', type=int, help='Number of processors', default=1)
+parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
@@ -134,7 +134,7 @@ runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(sp
 with Pool(nproc) as pool:
     # result  = p.map(process_one, splits)
 
-    results = []
+    #results = []
 
     for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
@@ -158,11 +158,8 @@ rand['BOUNDID']    = -99
 rand['BOUND_DIST'] = np.array(flat_result)
 rand['BOUNDID']    = bids[np.array(flat_ii)]
 
-# HACK
-# sphere_radius    = rand.meta['RSPHERE']
-
-
 sphere_radius = rand.meta['RSPHERE']
+#sphere_radius = 8.
 
 # TODO: copy.copy?
 rand['FILLFACTOR_POISSON']   = rand['FILLFACTOR']

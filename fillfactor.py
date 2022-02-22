@@ -142,8 +142,6 @@ with Pool(nproc) as pool:
     # result = pool.map(process_one,  splits)
     # result = pool.imap(process_one, splits)
 
-    results = []
-
     for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
         results.append(result)
 
@@ -166,13 +164,13 @@ for rr in results:
 
 rand                 = Table.read(fpath)
 rand.sort('CARTESIAN_X')
-'''
+
 # HACK
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
-
 rand.meta['RSPHERE'] = 8.
-    
+
+'''
 # TODO: INHERIT FILL FACTOR THRESHOLD FROM PARAMS FILE.
 rand.meta['FILLFACTOR_INFRAC'] = np.mean(rand['FILLFACTOR'] > 0.8)
 '''

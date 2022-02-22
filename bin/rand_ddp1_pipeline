@@ -1,7 +1,6 @@
 #!/bin/bash
 #SBATCH -p cordelia                                                                                                                                                                  
 #SBATCH --mem=20G  
-
 #SBATCH -t 04:00:00 
 #SBATCH -o rand_ddp1_pipeline.log                                                                                                                                                                    
 #SBATCH -A durham                                                                                                                                                                                    
@@ -84,6 +83,8 @@ echo 'DDP1_ZMIN:  '$ddp1_zmin
 echo 'DDP1_ZMAX:  '$ddp1_zmax
 
 python randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/randoms_ddp1_$FIELD.log
+
+python boundary.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/boundary_ddp1_$FIELD.log
 
 # Uses Pool, should be on interactive. 
 python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG > $RANDOMS_DIR/logs/fillfactor_ddp1_$FIELD.log

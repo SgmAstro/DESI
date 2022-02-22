@@ -1,10 +1,19 @@
+import argparse
 import papermill as pm
 
 from   tidyup import tidyup
 
 
-# TODO: Define elsewhere.
-fields = ['G9', 'G12', 'G15']
+
+parser  = argparse.ArgumentParser(description='Select field.')
+parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
+
+args    = parser.parse_args()
+survey  = args.survey.lower()
+
+fields = fetchfields(survey)
+
+
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs():

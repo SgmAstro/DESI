@@ -17,13 +17,13 @@ parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold gala
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
-parser.add_argument('--rand_prefix', help='randoms filename prefix', default='randoms_ddp1')
+parser.add_argument('--prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
 realz  = args.realz
 dryrun = args.dryrun
-prefix = args.rand_prefix
+prefix = args.prefix
 survey = args.survey.lower()
 
 zsurv  = f'z{survey}'.upper()
@@ -82,30 +82,17 @@ dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 dat['FILLFACTOR_VMAX']   = -99.
 
-dat['ORDER']      = np.arange(len(dat))
-rand['ORDER']     = np.arange(len(rand))
-
-dat.sort('ZMAX')
-rand.sort('Z')
-
-rand_zs           = rand['Z']
-rand_fs           = rand['FILLFACTOR']
-
-_idxs             = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-2))
+_idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 
 for i, _idx in enumerate(np.unique(_idxs)):
-    zmax            = np.mean(dat['ZMAX'][_idxs == _idx])
+    zmax            = dat['ZMAX'][_idxs == _idx].max()
 
-    isin            = rand_zs <= zmax
-    volavg_fillfrac = np.mean(rand_fs[isin] > 0.8)
+    isin            = rand['Z'] <= zmax
+    volavg_fillfrac = np.mean(rand['FILLFACTOR'][isin] > 0.8)
  
-    dat['FILLFACTOR_VMAX'][i] = volavg_fillfrac
+    dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
 
-dat  = dat[np.argsort(dat['ORDER'])]
-rand = rand[np.argsort(rand['ORDER'])]
-
-del dat['ORDER']
-del rand['ORDER']
+    # print(zmax, volavg_fillfrac)
 
 for field in fields:
     dat_in_field  =  dat[(dat['FIELD']  == field)]
@@ -167,7 +154,7 @@ if -99 in utiers:
 for ii, xx in enumerate(d8_limits):
     dat.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-if not np.all(utiers == np.arange(4)):
+if not np.all(utiers == np.arange(9)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
     
 else:

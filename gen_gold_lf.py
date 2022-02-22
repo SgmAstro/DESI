@@ -142,7 +142,7 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD', 'FILLFACTOR_VMAX'])
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'])
 
             if failure:
                 print('FAILED on d0 tier {:d}; skipping.'.format(idx))

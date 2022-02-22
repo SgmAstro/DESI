@@ -17,8 +17,8 @@ parser = argparse.ArgumentParser(description='Gen kE cat.')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
-args   = parser.parse_args()
-survey  = args.survey.lower()
+args     = parser.parse_args()
+survey   = args.survey.lower()
 
 kcorr_r  = GAMA_KCorrection(band='R')
 kcorr_RG = GAMA_KCorrection_color()
@@ -28,11 +28,8 @@ gmrs_0p1 = np.array([0.131, 0.298, 0.443, 0.603, 0.785, 0.933, 1.067])
 gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 
 # bright and faint limits.   
-limits = survey_specifics(survey)
-rlims = [limits['rmax'], limits['rlim']]
-
-zs       = np.arange(0.01, 0.6, 0.01)
-mus      = cosmo.distmod(zs)
+limits   = survey_specifics(survey)
+rlims    = [limits['rmax'], limits['rlim']]
 
 root     = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 
@@ -42,6 +39,8 @@ if not os.path.isdir(root):
     os.makedirs(root)
 
 count    = 0
+
+zs  = mus = None
 
 for rlim in rlims:
     print('----------------------------------')
@@ -58,6 +57,10 @@ for rlim in rlims:
                 count += 1
 
                 continue
+
+            if (zs == None) | (mus == None):
+                zs   = np.arange(0.01, 0.6, 0.01)
+                mus  = cosmo.distmod(zs)
 
             gmr_0P1  = gmr_0P1 * np.ones_like(zs)
             gmr_0P0  = kcorr_RG.rest_gmr_nonnative(gmr_0P1)

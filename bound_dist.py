@@ -28,7 +28,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--nproc', type=int, help='Number of processors', default=1)
+parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()

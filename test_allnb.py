@@ -2,7 +2,7 @@ import argparse
 import papermill as pm
 
 from   tidyup   import   tidyup
-from   findfile import   fetch_fields
+from   findfile import fetch_fields
 
 parser  = argparse.ArgumentParser(description='Select field.')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')

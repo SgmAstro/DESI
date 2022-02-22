@@ -61,7 +61,7 @@ def overwrite_check(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
         exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False):    
     survey = survey.lower()
 
     # Special case:                                                                                                                                                                                 
@@ -79,7 +79,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     
     if dryrun:
         dryrun = '_dryrun'
-
+        debug  = True
     else:
         dryrun = ''
 
@@ -110,10 +110,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                       'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
                       'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
                       'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
-                      'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
-                      'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
-                      'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
+                      #'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
+                      #'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
+                      #'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
+                      #'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
                       'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
@@ -122,7 +122,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
         if prefix != None:
             assert 'randoms' in prefix;
-            fpath.replace('randoms', prefix)
+            
+            dirname = os.path.dirname(fpath)
+            fpath = os.path.basename(fpath)
+            
+            fpath = fpath.replace('randoms', prefix)
+            fpath = dirname + '/' + fpath
+        
+        
+    if debug:
+        print(f'DEBUG: findfile returns {fpath}')
         
     return  fpath
 

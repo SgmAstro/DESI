@@ -1,5 +1,6 @@
 #!/bin/bash
-#SBATCH -p cosma                                                                                                                                                                                     
+#SBATCH -p cordelia
+#SBATCH --mem=20G
 #SBATCH -t 04:00:00                                                                                                                                                                                 
 #SBATCH -o rand_ddp1_d8_pipeline.log                                                                                                                                                                 
 #SBATCH -A durham                                                                                                                                                                                    
@@ -54,7 +55,7 @@ else
 fi
 
 # Assumes python gen_ddp_N8.py has been run. 
-python gen_rand_ddp_N8.py --field $FIELD --prefix 'randoms_ddp1' $DRYRUN $SURVEYARG > $RANDOMS_DIR/logs/rand_ddp_N8_$FIELD.log
+python gen_rand_ddp_N8.py --field $FIELD --prefix 'randoms_ddp1' $DRYRUN $SURVEYARG > $RANDOMS_DIR/logs/rand_ddp1_N8_$FIELD.log
 
 # TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest

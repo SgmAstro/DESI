@@ -212,9 +212,6 @@ print('\n\n')
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
 # Note: runs all fields simultaneously.  
-dids = np.array(rand_ddp_d8_jobids.values())
-dids = dids.astype(str)
-
 dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
 
 # possibly missing RESET=$RESET

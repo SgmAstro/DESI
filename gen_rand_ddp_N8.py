@@ -122,11 +122,11 @@ for ut in utiers:
     ddp1_rand = rand[rand['IN_DDP1']]
     in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
         
-    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = np.mean(in_tier)
-    rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier])
+    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
+    rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
 
-    print('DDP1_d{}_VOLFRAC OF {:.4f} ADDED.'.format(ut, np.mean(in_tier)))
-    print('DDP1_d{}_TIERMEDd8 OF {:.4f} ADDED.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+    print('DDP1_d{}_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
+    print('DDP1_d{}_TIERMEDd8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

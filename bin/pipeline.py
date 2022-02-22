@@ -10,9 +10,9 @@ from    findfile import fetch_fields
 
 
 def run_command(cmd):
-    cmd = cmd.split()
+    print('Command: {}'.format(cmd))
 
-    # print('Command: {}'.format(cmd))
+    cmd = cmd.split()
 
     env = {}
     # env.update(os.environ)
@@ -30,7 +30,7 @@ def run_command(cmd):
     return out
 
 # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
-# Head:   python3 pipeline.py --survey desi   
+# Head:   python3 pipeline.py --survey desi --reset 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')
@@ -49,7 +49,10 @@ survey      = args.survey
 freshclone  = args.freshclone 
 
 if reset & (survey == 'desi'):
-    raise NotImplementedError()
+    raise  NotImplementedError()
+
+if reset & nooverwrite:
+    raise  ValueError('No overwrite and reset are incompatible.')
 
 if dryrun:
     dryrun  = '--dryrun' 

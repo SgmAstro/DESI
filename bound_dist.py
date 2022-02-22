@@ -176,7 +176,7 @@ rand = rand[idx]
 # Bound dist.
 # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query.html#scipy.spatial.KDTree.query
 
-runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
+runtime  = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 
 rand.write(opath, format='fits', overwrite=True)
 

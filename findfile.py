@@ -131,7 +131,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
         
     if debug:
-        print(f'DEBUG: FINDFILE RETURNS {fpath}')
+        print(f'DEBUG: findfile returns {fpath}')
         
     return  fpath
 

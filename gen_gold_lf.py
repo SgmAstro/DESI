@@ -206,8 +206,8 @@ if __name__ == '__main__':
 
             ##
             ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
-            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = fdelta
-            ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = d8
+            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
+            ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
 
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 

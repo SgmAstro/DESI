@@ -157,6 +157,19 @@ if os.path.isfile(opath):
 else:
     raise  RuntimeError(f'Failed to find {opath} needed to append.')
 
-randoms.write(opath, append=True, overwrite=True)  
+boundary = Table(randoms, copy=True)
+
+# https://github.com/desihub/redrock/blob/7952a4d8e2692a4a4f07b85286c4346579e447ce/py/redrock/external/desi.py#L64
+randoms  = Table.read(opath)
+randoms.meta['EXTNAME'] = 'RANDOMS'
+
+header   = fits.Header()
+
+hx       = fits.HDUList()
+hx.append(fits.PrimaryHDU(header=header))
+hx.append(fits.convenience.table_to_hdu(randoms))
+hx.append(fits.convenience.table_to_hdu(boundary))
+
+hx.writeto(opath, overwrite=True) 
 
 runtime = calc_runtime(start, 'Finished'.format(opath))

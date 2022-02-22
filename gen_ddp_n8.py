@@ -80,7 +80,7 @@ dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
-dat['VMAX_CMP']   = -99.
+dat['FILLFACTOR_VMAX']   = -99.
 
 dat['ORDER']      = np.arange(len(dat))
 rand['ORDER']     = np.arange(len(rand))
@@ -92,13 +92,10 @@ rand_zs           = rand['Z']
 rand_fs           = rand['FILLFACTOR']
 
 for i, zmax in enumerate(dat['ZMAX']):
-    dat['VMAX_CMP'][i]  = dat['VMAX']
-
     isin            = rand_zs <= zmax
     volavg_fillfrac = np.mean(rand_fs[isin] > 0.8)
  
-    dat['VMAX_CMP'][i] *= volavg_fillfrac
-
+    dat['FILLFACTOR_VMAX'][i] = volavg_fillfrac
 
 dat  = dat[np.argsort(dat['ORDER'])]
 rand = rand[np.argsort(rand['ORDER'])]

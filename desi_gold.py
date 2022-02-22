@@ -159,6 +159,16 @@ def desi_gold():
     del  gold['CARTESIAN_Y']
     del  gold['CARTESIAN_Z']
     
+    # TODO: CHECK THESE WITH TEST
+    del  gold['ROTCARTESIAN_X']
+    del  gold['ROTCARTESIAN_Y']
+    del  gold['ROTCARTESIAN_Z']
+    
+    # TODO: THESE PROBABLY NEED TO BE MOVED
+    del  gold['DETMAG']
+    del  gold['DISTMOD']
+    del  gold['LUMDIST']
+    
     gold.pprint()
 
     # DESI

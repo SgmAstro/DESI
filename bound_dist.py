@@ -159,7 +159,6 @@ rand['BOUND_DIST'] = np.array(flat_result)
 rand['BOUNDID']    = bids[np.array(flat_ii)]
 
 sphere_radius = rand.meta['RSPHERE']
-#sphere_radius = 8.
 
 # TODO: copy.copy?
 rand['FILLFACTOR_POISSON']   = rand['FILLFACTOR']

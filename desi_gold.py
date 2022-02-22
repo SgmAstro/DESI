@@ -92,6 +92,8 @@ def desi_gold():
 
     del  desi_zs['Z']
 
+    desi_zs['FIELD'] = desi_zs['ROS']
+
     ##  Cut DESI to good redshifts.                                                                                                                                                                
     desi_zs['GAMA_FIELD'] = gama_field(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data)
 

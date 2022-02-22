@@ -56,9 +56,13 @@ print('Reading: {}'.format(rpaths))
 
 rand   = gather_cat(rpaths)
 
+# HACK
+if 'FIELD' not in dat.dtype.names:
+    dat['FIELD'] = [f'R{ros}' for ros in dat['ROS'].data]
+'''
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
-
+'''
 for i, rpath in enumerate(rpaths):
     dat.meta['RPATH_{}'.format(i)] = rpath
 
@@ -93,14 +97,14 @@ for i, _idx in enumerate(np.unique(_idxs)):
     dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
 
     # print(zmax, volavg_fillfrac)
-
+'''
 for field in fields:
     dat_in_field  =  dat[(dat['FIELD']  == field)]
     rand_in_field = rand[(rand['FIELD'] == field)]
     
     for x in ['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z']:
         print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
-
+'''
 if not dryrun:
     # Typically, bounded by 1.6
     assert  np.all(dat['RANDSEP'].data < 3.), 'Failed to find matching random with < 5 Mpc/h separation.'

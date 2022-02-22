@@ -29,10 +29,16 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         return  1
 
     zmax = Table.read(fpath)
-    print(fpath)
+ 
+    # print(fpath)
     
     if 'FIELD' not in zmax.dtype.names:
-        raise  RuntimeError('FIELD MISSING FROM DTYPES.')
+        # HACK
+        if 'ROS' in zmax.dtype.names:
+            zmax['FIELD'] = zmax['ROS']
+
+        else:
+            raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
     found_fields = np.unique(zmax['FIELD'].data)
         
@@ -50,7 +56,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     rand  = gather_cat(rand_paths)
 
-    vmax  = vmaxer(zmax, minz, maxz, extra_cols=extra_cols, rand=rand)
+    vmax  = vmaxer(zmax, minz, maxz, extra_cols=extra_cols, rand=rand, zcol='Z{}'.format(survey.upper()))
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
     

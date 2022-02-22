@@ -27,7 +27,7 @@ if __name__ == '__main__':
         else:
             opath = findfile(ftype='gold', dryrun=False, survey='desi')
 
-            print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath}.')
+            print(f'As you are not running at nersc, the output of this script is assumed to be present at {opath}.')
     
     else:
         raise ValueError(f'Survey: {survey} is not supported.')

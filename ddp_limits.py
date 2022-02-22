@@ -58,7 +58,7 @@ for rlim in rlims:
 
                 continue
 
-            if (zs == None) | (mus == None):
+            if (zs is None) | (mus is None):
                 zs   = np.arange(0.01, 0.6, 0.01)
                 mus  = cosmo.distmod(zs)
 

@@ -172,10 +172,6 @@ print(rand_jobids)
 print(rand_ddp_jobids)
 print('\n\n')
 
-#exit(0)
-
-### ABOVE NOT WORKING
-
 rand_d8_jobids     = {}
 rand_ddp_d8_jobids = {}
 

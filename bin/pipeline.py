@@ -185,7 +185,7 @@ for field in fields:
     # RAND_D8_G12_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G12,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G12_JOBID -s rand_d8_pipeline -c $CODE_ROOT)
     # RAND_D8_G15_JOBID=$(serialorparallel  -p $USESBATCH -e FIELD=G15,DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE  -d $GOLD_JOBID,$RAND_G15_JOBID -s rand_d8_pipeline -c $CODE_ROOT) 
     rand_jobid = rand_jobids[field]
-    cmd = 'serialorparallel -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_ddp1_pipeline -c {}'
+    cmd = 'serialorparallel -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_d8_pipeline -c {}'
     
     cmd = cmd.format(int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, gold_jobid, rand_jobid, code_root)
 
@@ -200,7 +200,7 @@ for field in fields:
     rand_ddp_jobid = rand_jobids[field]
     #cmd = f'serialorparallel -p $USESBATCH -e FIELD={field},DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {gold_jobid},{rand_ddp_jobid} -s rand_ddp1_pipeline -c $CODE_ROOT'
     
-    cmd = 'serialorparallel -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_ddp1_pipeline -c {}'
+    cmd = 'serialorparallel -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_ddp1_d8_pipeline -c {}'
     cmd = cmd.format(int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, gold_jobid, rand_ddp_jobid, code_root)
     rand_ddp_d8_jobids[field] = run_command(cmd)
 

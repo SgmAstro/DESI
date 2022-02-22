@@ -41,7 +41,7 @@ realz   = 0
 #if dryrun:
 #    fpath = fpath.replace('.fits', '_dryrun.fits')
 
-fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey)
+fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 print(fpath)
 
 dat     = Table.read(fpath)

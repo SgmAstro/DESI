@@ -19,7 +19,7 @@ parser  = argparse.ArgumentParser(description='Select GAMA field.')
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
-parser.add_argument('--realz',        help='Realization', default=0, type=np.int)
+parser.add_argument('--realz',        help='Realization', default=0, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -42,8 +42,6 @@ fields  = fetch_fields(survey)
 
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
-##  TODO: findfile.                                                                                                                                                                                  
-##  opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
 ##  ras and decs.                                                                                                                                                              
@@ -112,7 +110,7 @@ rand_density = nrand / vol
 
 if dryrun:
     nrand = 500
-    opath = opath.replace('.fits', '_dryrun.fits')
+    #opath = opath.replace('.fits', '_dryrun.fits')
 
 if args.nooverwrite:
     if os.path.isfile(opath):

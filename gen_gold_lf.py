@@ -100,8 +100,8 @@ if __name__ == '__main__':
         # 0.039 < z < 0.263.
         # Note: not split by field. 
         
-        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)
-        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey)
+        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix)
+        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         #if dryrun:
         #    rpath = rpath.replace('.fits', '_dryrun.fits')
          
-        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey)
+        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
         
         if dryrun:
@@ -145,8 +145,8 @@ if __name__ == '__main__':
             #    ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
             #    ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
 
-            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx)
-            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx)
+            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
+            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
@@ -166,20 +166,13 @@ if __name__ == '__main__':
 
             if all_rands == None:
                 
-                # issue here
-                findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey)
+                findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
                 
                 _fields = fetch_fields(survey=survey)
                 
-                # issue here
-                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey) for ff in _fields]
-                
-                #all_rpaths = [os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_G{}_0.fits'.format(prefix, ff) for ff in [9, 12, 15]]
+                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
 
                 all_rpaths = []
-                
-                #if dryrun:
-                #    all_rpaths = [_rpath.replace('.fits', '_dryrun.fits') for _rpath in all_rpaths]
 
                 all_rands = [Table.read(_x) for _x in all_rpaths]
 

@@ -119,9 +119,8 @@ if survey == 'gama':
 
 elif survey == 'desi':
     # No requirement on NERSC HOST for boundary.
-    inner = 0.5 # deg.                                                                                                                                                                                 
-    outer = 1.5 # deg.                                                                                                                                                                                 
-    
+    inner = 0.5 # deg.                                                                                                                                                                            
+    outer = 1.5 # deg.                                                                                                                                                                                
     # HACK?
     area  = np.pi * (outer**2. - inner**2.)
         

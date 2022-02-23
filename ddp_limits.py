@@ -13,7 +13,8 @@ from   abs_mag           import abs_mag
 from   data.ke_params    import *
 from   survey            import survey_specifics
 
-parser = argparse.ArgumentParser(description='Gen kE cat.')
+
+parser = argparse.ArgumentParser(description='Gen kE DDP limit curves')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
@@ -31,7 +32,7 @@ gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 limits   = survey_specifics(survey)
 rlims    = [limits['rmax'], limits['rlim']]
 
-root     = os.environ['GOLD_DIR'] + '/ddrp_limits/'
+root     = os.environ['GOLD_DIR'] + f'/ddrp_limits/{survey}'
 
 if not os.path.isdir(root):
     print('Creating {}'.format(root))
@@ -40,7 +41,7 @@ if not os.path.isdir(root):
 
 count    = 0
 
-zs  = mus = None
+zs = mus = None
 
 for rlim in rlims:
     print('----------------------------------')
@@ -70,7 +71,7 @@ for rlim in rlims:
             Mrs_0P0  = abs_mag(rs, mus, ks, es)
 
             dat      = Table(np.c_[zs, ks, es, Mrs_0P0], names=['Z', 'K', 'E', 'M0P0_{}'.format(all_type)])
-            dat.meta = {'RLIM': rlim, 'ALL': aall, 'GMR_0P1': gmr_0P1[0], 'GMR_0P0': gmr_0P0[0]}
+            dat.meta = {'RLIM': rlim, 'ALL': aall, 'GMR_0P1': gmr_0P1[0], 'GMR_0P0': gmr_0P0[0], 'SURVEY': survey}
             
             dat.write(opath, format='fits', overwrite=True)
             

@@ -11,24 +11,30 @@ tmr_DDP1       = [-21.8, -20.1]
 tmr_DDP2       = [-20.6, -19.3]
 tmr_DDP3       = [-19.6, -17.8]
 
+
 root           = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 
-_bright_curve  = fitsio.read(root + '/ddrp_limit_3.fits')  #  7 (12.0 QCOLOR 0.131)
-_faint_curve   = fitsio.read(root + '/ddrp_limit_17.fits') # 27 (19.8 QCOLOR 1.067)
+def initialise_ddplimits(survey):
+    _bright_curve  = fitsio.read(root + f'/{survey}/ddrp_limit_3.fits')  #  7 (12.0 QCOLOR 0.131)
+    _faint_curve   = fitsio.read(root + f'/{survey}/ddrp_limit_17.fits') # 27 (19.8 QCOLOR 1.067)
 
-# TODO: extend the curve limits and put bounds_error back on.
-bright_curve   = interp1d(_bright_curve['M0P0_QALL'], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
-bright_curve_r = interp1d(_bright_curve['Z'],         _bright_curve['M0P0_QALL'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    # TODO: extend the curve limits and put bounds_error back on.
+    bright_curve   = interp1d(_bright_curve['M0P0_QALL'], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    bright_curve_r = interp1d(_bright_curve['Z'],         _bright_curve['M0P0_QALL'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
 
-faint_curve    = interp1d(_faint_curve['M0P0_QALL'],  _faint_curve['Z'],  kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
-faint_curve_r  = interp1d(_faint_curve['Z'],          _faint_curve['M0P0_QALL'],   kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
+    faint_curve    = interp1d(_faint_curve['M0P0_QALL'],  _faint_curve['Z'],  kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
+    faint_curve_r  = interp1d(_faint_curve['Z'],          _faint_curve['M0P0_QALL'],   kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
 
-def get_ddps(Area, M_0P0s, zs):
+    return  bright_curve, bright_curve_r, faint_curve, faint_curve_r
+
+def get_ddps(Area, M_0P0s, zs, survey):
     result   = np.zeros(len(zs) * 3, dtype=int).reshape(len(zs), 3)
-    resultz   = np.zeros(len(zs) * 3, dtype=int).reshape(len(zs), 3)
+    resultz  = np.zeros(len(zs) * 3, dtype=int).reshape(len(zs), 3)
 
     zlims    = {}
     
+    bright_curve, bright_curve_r, faint_curve, faint_curve_r = initialise_ddplimits(survey=survey)
+
     for i, lims in enumerate([tmr_DDP1, tmr_DDP2, tmr_DDP3]):
         in_ddp  = (M_0P0s >= lims[0]) & (M_0P0s <= lims[1])
 

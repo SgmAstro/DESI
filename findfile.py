@@ -43,11 +43,11 @@ def fetch_fields(survey):
 
     return fields
 
-def release_dir(user=os.environ['USER'], versioned=False, survey='gama', version=None):
+def release_dir(user=os.environ['USER'], survey='gama', version=None):
     #assert survey == 'gama', 'TODO: Support DESI.'
 
     # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
-    if versioned:
+    if version == 'latest':
         ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
         ff.sort(key=os.path.getmtime)
 
@@ -66,7 +66,6 @@ def overwrite_check(opath):
         
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
-    
     
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
@@ -91,9 +90,20 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     # TODO: Re-add checks for GOLD_DIR and RANDOMS_DIR
     if version == None:
-        gold_dir   = os.environ['GOLD_DIR']
-        rand_dir   = os.environ['RANDOMS_DIR']
+        try:
+            gold_dir   = os.environ['GOLD_DIR']
+            rand_dir   = os.environ['RANDOMS_DIR']
+            
+        except:
+            cwd = os.getcwd()
+            gold_dir = '/'.join(x for x in cwd.split('/')[:-3]) + '/data/{}'.format(version)
+            os.environ['GOLD_DIR'] = gold_dir
+            print(f'WARNING: DEFAULTING TO GOLD_DIR: {gold_dir}')
         
+            randoms_dir = os.environ['GOLD_DIR'] + '/randoms/'
+            os.environ['RANDOMS_DIR'] = randoms_dir
+            print(f'WARNING: DEFAULTING TO RANDOMS_DIR: {randoms_dir}')
+    
     else:
         gold_dir   = release_dir(version=version)
         rand_dir   = release_dir(version=version) + '/randoms/'

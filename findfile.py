@@ -88,21 +88,21 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     realz      = str(realz)
 
-    
-    
-    
-    
-    # TODO: Re-add checks for GOLD_DIR and RANDOMS_DIR
     if version == None:
         
         if 'GOLD_DIR' in os.environ:
             gold_dir = os.environ['GOLD_DIR']
-
         else:
-            gold_dir = os.environ['HOME'] + '/data/{}'.format
-
+            gold_dir = os.environ['HOME'] + '/data/GAMA4/'
             print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
-        
+
+            
+        if 'RANDOMS_DIR' in os.environ:
+            rand_dir = os.environ['RANDOMS_DIR']
+        else:
+            rand_dir = os.environ['HOME'] + 'data/GAMA4/randoms/'
+            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
+
         
         
         '''
@@ -159,7 +159,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
         if prefix != None:
-            assert 'randoms' in prefix;
+            #assert 'randoms' in prefix;
             
             dirname = os.path.dirname(fpath)
             fpath = os.path.basename(fpath)
@@ -173,7 +173,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
     return  fpath
 
-def file_check(dryrun=None):
+def file_check(dryrun=None, survey='gama'):
+    
+    fields = fetch_fields(survey)
+    
     try:
         dryrun = os.environ['DRYRUN']
 

@@ -28,13 +28,13 @@ def cartesian(ras, decs, zs, rotate=False):
     mean_phi   = np.median(phi)
     mean_theta = np.median(theta)
     
-    chis  = cosmo.comoving_distance(zs).value # Mpc/h
+    chis       = cosmo.comoving_distance(zs).value # Mpc/h
 
-    zs    = chis * np.cos(theta)
-    ys    = chis * np.sin(theta) * np.sin(phi)
-    xs    = chis * np.sin(theta) * np.cos(phi)
+    zs         = chis * np.cos(theta)
+    ys         = chis * np.sin(theta) * np.sin(phi)
+    xs         = chis * np.sin(theta) * np.cos(phi)
 
-    pos   = np.c_[xs, ys, zs]
+    pos        = np.c_[xs, ys, zs]
 
     if rotate:
         pos = rotate(ras, decs, pos)

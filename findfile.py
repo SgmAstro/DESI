@@ -92,29 +92,26 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
         
     if field == None:
-        file_types = {'gold':   {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\
-                      'kE':     {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'kE'},\
-                      'zmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'zmax'},\
-                      'vmax':   {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'vmax'},\
-                      'lumfn':  {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'lumfn'},\
-                      'ddp':    {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp'},\
-                      'ddp_n8': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
+        file_types = {'gold':       {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\
+                      'kE':         {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'kE'},\
+                      'zmax':       {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'zmax'},\
+                      'vmax':       {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'vmax'},\
+                      'lumfn':      {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'lumfn'},\
+                      'lumfn_step': {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'lumfn_step'},\
+                      'ddp':        {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp'},\
+                      'ddp_n8':     {'dir': gold_dir, 'id': f'{survey}_gold', 'ftype': 'ddp_n8'}}
 
         parts      = file_types[ftype]
         fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
-        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
-                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
-                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
-                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
-                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
-                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      #'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
-                      #'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
-                      #'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
-                      #'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
-                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
+        file_types = {'ddp_n8_d0':           {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
+                      'ddp_n8_d0_vmax':      {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
+                      'ddp_n8_d0_lumfn':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
+                      'randoms':             {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
+                      'randoms_n8':          {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
+                      'randoms_bd':          {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
+                      'randoms_bd_ddp_n8':   {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
         parts      = file_types[ftype]

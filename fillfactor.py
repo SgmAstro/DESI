@@ -15,7 +15,7 @@ from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
 
-from   findfile            import findfile, fetch_fields
+from   findfile            import findfile, fetch_fields, overwrite_check
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
@@ -51,10 +51,7 @@ start  = time.time()
 opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 if args.nooverwrite:
-    if os.path.isfile(fpath) and os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(fpath))
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+    overwrite_check(opath)
     
 # Read randoms file, split by field (DDP1, or not).
 rand      = Table.read(fpath)

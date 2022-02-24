@@ -14,7 +14,7 @@ from   scipy.spatial   import KDTree
 from   astropy.table   import Table
 from   multiprocessing import Pool
 from   runtime         import calc_runtime
-from   findfile        import findfile
+from   findfile        import findfile, overwrite_check
 
 '''
 Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
@@ -48,9 +48,7 @@ fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, 
 opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
     
 if args.nooverwrite:
-    if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+    overwrite_check(opath)
 
 # Output is sorted by fillfactor.py;   
 body      = Table.read(fpath)

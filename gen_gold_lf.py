@@ -19,7 +19,7 @@ from   delta8_limits    import d8_limits
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD']):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -29,10 +29,16 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
         return  1
 
     zmax = Table.read(fpath)
-    print(fpath)
+ 
+    # print(fpath)
     
     if 'FIELD' not in zmax.dtype.names:
-        raise  RuntimeError('FIELD MISSING FROM DTYPES.')
+        # HACK
+        if 'ROS' in zmax.dtype.names:
+            zmax['FIELD'] = zmax['ROS']
+
+        else:
+            raise  RuntimeError('FIELD MISSING FROM DTYPES.')
         
     found_fields = np.unique(zmax['FIELD'].data)
         
@@ -50,7 +56,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[]):
 
     rand  = gather_cat(rand_paths)
 
-    vmax  = vmaxer(zmax, minz, maxz, extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'], rand=rand)
+    vmax  = vmaxer(zmax, minz, maxz, extra_cols=extra_cols, rand=rand, zcol='Z{}'.format(survey.upper()))
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
     
@@ -122,7 +128,6 @@ if __name__ == '__main__':
         #    rpath = rpath.replace('.fits', '_dryrun.fits')
          
         rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
         
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
@@ -137,25 +142,16 @@ if __name__ == '__main__':
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
-            
-            #ddp_fpath = os.environ['GOLD_DIR'] + '/gama_gold_{}_ddp_n8_d0_{:d}.fits'.format(field, idx)
-            #ddp_opath = ddp_fpath.split('.')[0] + '_vmax.fits'
-            
-            #if dryrun:
-            #    ddp_fpath = ddp_fpath.replace('.fits', '_dryrun.fits')
-            #    ddp_opath = ddp_opath.replace('.fits', '_dryrun.fits')
-
             ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
             ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath])
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'])
 
             if failure:
                 print('FAILED on d0 tier {:d}; skipping.'.format(idx))
-
                 continue
         
             print('LF process cat. complete.')
@@ -164,21 +160,15 @@ if __name__ == '__main__':
 
             # result.pprint()
 
-            if all_rands == None:
-                
-                findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-                
+            if all_rands == None:                                
                 _fields = fetch_fields(survey=survey)
                 
                 all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
-
-                all_rpaths = []
-
-                all_rands = [Table.read(_x) for _x in all_rpaths]
+                all_rands = [Table.read(xx) for xx in all_rpaths]
 
             # Calculated for DDP1 redshift limits. 
-            fdelta = np.array([x.meta['DDP1_d{}_VOLFRAC'.format(idx)] for x in all_rands])
-            d8     = np.array([x.meta['DDP1_d{}_TIERMEDd8'.format(idx)] for x in all_rands])
+            fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
+            d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
 
             print('Field vol renormalization: {}'.format(fdelta))
             print('Field d8  renormalization: {}'.format(d8))

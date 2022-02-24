@@ -3,11 +3,11 @@ import  sys
 import  glob
 import  argparse
 import  subprocess
+import  numpy as np
 
 from    pathlib import Path
 from    subprocess import check_output
 from    findfile import fetch_fields
-
 
 def run_command(cmd):
     print('Command: {}'.format(cmd))
@@ -29,8 +29,8 @@ def run_command(cmd):
 
     return out
 
-# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
-# Head:   python3 pipeline.py --survey desi --reset 
+# Sbatch: python3 pipeline.py --survey gama --use_sbatch --log --nooverwrite
+# Head:   python3 pipeline.py --survey desi 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
 parser.add_argument('--reset',        help='Reset', action='store_true')
@@ -71,13 +71,12 @@ if reset:
     print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
 
     for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
-        for ext in ['fits', 'log']:
-            cmd = 'rm {}/*.{}'.format(root, ext)
+        cmd = 'rm -f {}/logs/*.log'.format(root)
 
-            # Split on whitespace.                                                                                                                                                                    
-            cmd = cmd.split()
+        print(cmd)
 
-            # out = run_command(cmd)                                                                                                                                                                  
+        os.system(cmd)
+
 if reset:
     os.environ['RESET']   = str(1)
 else:
@@ -211,7 +210,7 @@ print('\n\n')
 
 # Requires ddp cat. & random fill factor.                                                                                                                                                            
 # Note: runs all fields simultaneously.  
-dependencies = ','.join(rand_ddp_d8_jobids)
+dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
 
 # possibly missing RESET=$RESET
 #cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'

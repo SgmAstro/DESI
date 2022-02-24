@@ -88,8 +88,24 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     realz      = str(realz)
 
+    
+    
+    
+    
     # TODO: Re-add checks for GOLD_DIR and RANDOMS_DIR
     if version == None:
+        
+        if 'GOLD_DIR' in os.environ:
+            gold_dir = os.environ['GOLD_DIR']
+
+        else:
+            gold_dir = os.environ['HOME'] + '/data/{}'.format
+
+            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
+        
+        
+        
+        '''
         try:
             gold_dir   = os.environ['GOLD_DIR']
             rand_dir   = os.environ['RANDOMS_DIR']
@@ -103,7 +119,8 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
             randoms_dir = os.environ['GOLD_DIR'] + '/randoms/'
             os.environ['RANDOMS_DIR'] = randoms_dir
             print(f'WARNING: DEFAULTING TO RANDOMS_DIR: {randoms_dir}')
-    
+        '''
+        
     else:
         gold_dir   = release_dir(version=version)
         rand_dir   = release_dir(version=version) + '/randoms/'

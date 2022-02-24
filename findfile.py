@@ -43,8 +43,8 @@ def fetch_fields(survey):
 
     return fields
 
-def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
-    assert survey == 'gama', 'TODO: Support DESI.'
+def release_dir(user=os.environ['USER'], versioned=False, survey='gama', version=None):
+    #assert survey == 'gama', 'TODO: Support DESI.'
 
     # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
     if versioned:
@@ -52,6 +52,9 @@ def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
         ff.sort(key=os.path.getmtime)
 
         return  ff[-1]
+    
+    elif version != None:
+        return '/cosma/home/durham/{}/data/{}/'.format(user, version)
 
     else:
         return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
@@ -61,9 +64,10 @@ def overwrite_check(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
         exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
-
+    
+    
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
         return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
@@ -85,9 +89,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     realz      = str(realz)
 
-    gold_dir   = os.environ['GOLD_DIR']
-    rand_dir   = os.environ['RANDOMS_DIR']
+    # TODO: Re-add checks for GOLD_DIR and RANDOMS_DIR
+    if version == None:
+        gold_dir   = os.environ['GOLD_DIR']
+        rand_dir   = os.environ['RANDOMS_DIR']
+        
+    else:
+        gold_dir   = release_dir(version=version)
+        rand_dir   = release_dir(version=version) + '/randoms/'
 
+        
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
         

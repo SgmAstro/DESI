@@ -226,12 +226,5 @@ def file_check(dryrun=None):
 
 if __name__ == '__main__':
     failure = file_check()
-    '''
-    x = [findfile(xx, dryrun=False, field=None, survey='desi') for xx in supported]
     
-    for _ in x:
-        print(_)
-    '''
-    # /cosma5/data/durham/dc-wils7/GAMA4/desi_gold.fits
-
-    # print('\n\nSuccess: {}\n\n'.format(~failure))
+    print('\n\nSuccess: {}\n\n'.format(~failure))

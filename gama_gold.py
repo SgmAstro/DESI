@@ -98,6 +98,9 @@ def gama_gold(args):
     idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
     dat   = dat[idx]
     
+    dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
+                           'GOLD_NGAL': dat.meta['GOLD_NGAL']}
+    
     dat.write(os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits', format='fits', overwrite=True)
 
 

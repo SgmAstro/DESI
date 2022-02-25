@@ -14,6 +14,7 @@ supported = ['gold',\
              'zmax',\
              'vmax',\
              'lumfn',\
+             'lumfn_step',\
              'ddp',\
              'ddp_n8']
 
@@ -78,53 +79,37 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fields = desi_fields
 
     else:
-        raise NotImplementedError
+        raise NotImplementedError()
     
     if dryrun:
         dryrun = '_dryrun'
         debug  = True
+
     else:
         dryrun = ''
 
     realz      = str(realz)
 
-    if version == None:
-        
+    if version == None:        
         if 'GOLD_DIR' in os.environ:
             gold_dir = os.environ['GOLD_DIR']
+
         else:
             gold_dir = os.environ['HOME'] + '/data/GAMA4/'
-            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
 
+            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
             
         if 'RANDOMS_DIR' in os.environ:
             rand_dir = os.environ['RANDOMS_DIR']
-        else:
-            rand_dir = os.environ['HOME'] + 'data/GAMA4/randoms/'
-            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
 
-        
-        
-        '''
-        try:
-            gold_dir   = os.environ['GOLD_DIR']
-            rand_dir   = os.environ['RANDOMS_DIR']
-            
-        except:
-            cwd = os.getcwd()
-            gold_dir = '/'.join(x for x in cwd.split('/')[:-3]) + '/data/{}'.format(version)
-            os.environ['GOLD_DIR'] = gold_dir
-            print(f'WARNING: DEFAULTING TO GOLD_DIR: {gold_dir}')
-        
-            randoms_dir = os.environ['GOLD_DIR'] + '/randoms/'
-            os.environ['RANDOMS_DIR'] = randoms_dir
-            print(f'WARNING: DEFAULTING TO RANDOMS_DIR: {randoms_dir}')
-        '''
+        else:
+            rand_dir = os.environ['HOME'] + '/data/GAMA4/randoms/'
+
+            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
         
     else:
-        gold_dir   = release_dir(version=version)
-        rand_dir   = release_dir(version=version) + '/randoms/'
-
+        gold_dir = release_dir(version=version)
+        rand_dir = release_dir(version=version) + '/randoms/'
         
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
@@ -143,37 +128,36 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
-        file_types = {'ddp_n8_d0':           {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
-                      'ddp_n8_d0_vmax':      {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
-                      'ddp_n8_d0_lumfn':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
-                      'randoms':             {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
-                      'randoms_n8':          {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
-                      'randoms_bd':          {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_bd_ddp_n8':   {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
+        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
+                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
+                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
+                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
+                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
+                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
+                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
         parts      = file_types[ftype]
         fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
-        if prefix != None:
-            #assert 'randoms' in prefix;
+    if prefix != None:
+        assert 'randoms' in prefix;
+        assert 'randoms' in fpath
+
+        dirname = os.path.dirname(fpath)
+        fpath   = os.path.basename(fpath)
             
-            dirname = os.path.dirname(fpath)
-            fpath = os.path.basename(fpath)
-            
-            fpath = fpath.replace('randoms', prefix)
-            fpath = dirname + '/' + fpath
-        
+        fpath   = fpath.replace('randoms', prefix)
+        fpath   = dirname + '/' + fpath
         
     if debug:
         print(f'DEBUG: findfile returns {fpath}')
+
+    fpath = fpath.replace('//', '/')
         
     return  fpath
 
-def file_check(dryrun=None, survey='gama'):
-    
-    fields = fetch_fields(survey)
-    
+def file_check(dryrun=None):        
     try:
         dryrun = os.environ['DRYRUN']
 
@@ -182,24 +166,26 @@ def file_check(dryrun=None, survey='gama'):
 
         dryrun = ''
 
-    fpaths = [findfile(xx, dryrun=False, prefix='', field=None) for xx in supported]
+    fpaths = []
 
-    for field in fields:
-        fpaths.append(findfile('randoms',            dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_n8',         dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_bd',         dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1',       dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_n8',    dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_bd',    dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_bd_n8', dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_bd_ddp_n8',  dryrun=False, prefix='', field=field))
+    for survey in ['desi', 'gama']:
+        for xx in supported:
+            fpaths.append(findfile(xx, dryrun=False, survey=survey))
 
-        for ii, _ in enumerate(d8_limits):
-            fpaths.append(findfile('ddp_n8_d0',       dryrun=False, prefix='', field=field, utier=ii))
-            fpaths.append(findfile('ddp_n8_d0_vmax',  dryrun=False, prefix='', field=field, utier=ii))
-            fpaths.append(findfile('ddp_n8_d0_lumfn', dryrun=False, prefix='', field=field, utier=ii))
-    
-    
+        fields  = fetch_fields(survey)
+
+        for field in fields:
+            for prefix in [None, 'randoms_ddp1']:
+                fpaths.append(findfile('randoms',            dryrun=False, field=field, prefix=prefix))
+                fpaths.append(findfile('randoms_n8',         dryrun=False, field=field, prefix=prefix))
+                fpaths.append(findfile('randoms_bd',         dryrun=False, field=field, prefix=prefix))
+                fpaths.append(findfile('randoms_bd_ddp_n8',  dryrun=False, field=field, prefix=prefix))
+
+            for ii, _ in enumerate(d8_limits):
+                fpaths.append(findfile('ddp_n8_d0',       dryrun=False, field=field, utier=ii, survey=survey))
+                fpaths.append(findfile('ddp_n8_d0_vmax',  dryrun=False, field=field, utier=ii, survey=survey))
+                fpaths.append(findfile('ddp_n8_d0_lumfn', dryrun=False, field=field, utier=ii, survey=survey))
+        
     print('\n\n----  SUPPORTED FPATHS    ----\n')
 
     for fp in fpaths:
@@ -216,7 +202,8 @@ def file_check(dryrun=None, survey='gama'):
     rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
     all_paths   = gold_paths + rand_paths
     
-    unsupported = [x for x in all_paths if (x not in fpaths and 'dryrun' not in x)]
+    unsupported = [x for x in all_paths if x not in fpaths]
+    unsupported = [x for x in unsupported if 'dryrun' not in x]
 
     print('\n\n----  UNSUPPORTED FPATHS    ----\n')
     
@@ -236,5 +223,12 @@ def file_check(dryrun=None, survey='gama'):
 
 if __name__ == '__main__':
     failure = file_check()
+    '''
+    x = [findfile(xx, dryrun=False, field=None, survey='desi') for xx in supported]
+    
+    for _ in x:
+        print(_)
+    '''
+    # /cosma5/data/durham/dc-wils7/GAMA4/desi_gold.fits
 
-    print('\n\nSuccess: {}\n\n'.format(~failure))
+    # print('\n\nSuccess: {}\n\n'.format(~failure))

@@ -1,41 +1,34 @@
 import argparse
 import papermill as pm
 
-from   tidyup   import   tidyup
+from   tidyup   import tidyup
 from   findfile import fetch_fields
 
-parser  = argparse.ArgumentParser(description='Select field.')
-parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
-
-args    = parser.parse_args()
-survey  = args.survey.lower()
-
-fields = fetch_fields(survey)
-
 # https://docs.pytest.org/en/6.2.x/
-def test_allnbs(survey=survey):
+def test_allnbs(survey='gama'):
     print('Running all tests.')
-    
-    survey = survey.lower()
-    
-    # TODO: Check this
-    if survey != 'gama' and survey != 'desi':
-        raise NotImplementedError(f'No implementation for survey: {survey}')
+        
+    if (survey != 'gama') and (survey != 'desi'):
+        raise  NotImplementedError(f'No implementation for survey: {survey}')
     
     tidyup()
     
     run_randomqa(survey)
 
-    run_goldqa(survey)
-
-    run_delta8qa(survey)
+    # run_goldqa(survey)
+    
+    # run_delta8qa(survey)
     
     print('Done.')
     
 def run_randomqa(survey):
+    fields = fetch_fields(survey)
+
+    print(fields)
+
     for field in fields:
         print('Running random QA for field {}'.format(field))
-        
+
         pm.execute_notebook('docs/nb/randoms_n8_qa.ipynb',\
                             'test/pm_randoms_n8_{}_qa.ipynb'.format(field),\
                             parameters=dict(field=field,survey=survey),\
@@ -93,3 +86,6 @@ def run_delta8qa(survey):
                             parameters=dict(field=field, survey=survey),\
                             kernel='lumfn',\
                             )
+
+if __name__ == '__main__':
+    test_allnbs()

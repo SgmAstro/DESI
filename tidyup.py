@@ -1,10 +1,10 @@
 import os
 import sys
 
-from   findfile import file_check, fields
+from   findfile import file_check
 
-
-DRYRUN  = os.environ['DRYRUN']
+# HACK: commented out DRYRUN as not needed?
+#DRYRUN  = os.environ['DRYRUN']
 GOLDDIR = os.environ['GOLD_DIR']
 RANDDIR = os.environ['RANDOMS_DIR']
 

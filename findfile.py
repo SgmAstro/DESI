@@ -43,15 +43,18 @@ def fetch_fields(survey):
 
     return fields
 
-def release_dir(user=os.environ['USER'], versioned=True, survey='gama'):
-    assert survey == 'gama', 'TODO: Support DESI.'
+def release_dir(user=os.environ['USER'], survey='gama', version=None):
+    #assert survey == 'gama', 'TODO: Support DESI.'
 
     # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
-    if versioned:
+    if version == 'latest':
         ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
         ff.sort(key=os.path.getmtime)
 
         return  ff[-1]
+    
+    elif version != None:
+        return '/cosma/home/durham/{}/data/{}/'.format(user, version)
 
     else:
         return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
@@ -61,9 +64,9 @@ def overwrite_check(opath):
         print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
         exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
-
+    
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
         return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
@@ -85,9 +88,44 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     realz      = str(realz)
 
-    gold_dir   = os.environ['GOLD_DIR']
-    rand_dir   = os.environ['RANDOMS_DIR']
+    if version == None:
+        
+        if 'GOLD_DIR' in os.environ:
+            gold_dir = os.environ['GOLD_DIR']
+        else:
+            gold_dir = os.environ['HOME'] + '/data/GAMA4/'
+            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
 
+            
+        if 'RANDOMS_DIR' in os.environ:
+            rand_dir = os.environ['RANDOMS_DIR']
+        else:
+            rand_dir = os.environ['HOME'] + 'data/GAMA4/randoms/'
+            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
+
+        
+        
+        '''
+        try:
+            gold_dir   = os.environ['GOLD_DIR']
+            rand_dir   = os.environ['RANDOMS_DIR']
+            
+        except:
+            cwd = os.getcwd()
+            gold_dir = '/'.join(x for x in cwd.split('/')[:-3]) + '/data/{}'.format(version)
+            os.environ['GOLD_DIR'] = gold_dir
+            print(f'WARNING: DEFAULTING TO GOLD_DIR: {gold_dir}')
+        
+            randoms_dir = os.environ['GOLD_DIR'] + '/randoms/'
+            os.environ['RANDOMS_DIR'] = randoms_dir
+            print(f'WARNING: DEFAULTING TO RANDOMS_DIR: {randoms_dir}')
+        '''
+        
+    else:
+        gold_dir   = release_dir(version=version)
+        rand_dir   = release_dir(version=version) + '/randoms/'
+
+        
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
         
@@ -118,7 +156,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
         if prefix != None:
-            assert 'randoms' in prefix;
+            #assert 'randoms' in prefix;
             
             dirname = os.path.dirname(fpath)
             fpath = os.path.basename(fpath)
@@ -132,7 +170,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
     return  fpath
 
-def file_check(dryrun=None):
+def file_check(dryrun=None, survey='gama'):
+    
+    fields = fetch_fields(survey)
+    
     try:
         dryrun = os.environ['DRYRUN']
 

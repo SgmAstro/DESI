@@ -148,10 +148,6 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                       'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
                       'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
                       'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      #'randoms_ddp1':       {'dir': rand_dir, 'id': 'randoms_ddp1',           'ftype': realz},\
-                      #'randoms_ddp1_n8':    {'dir': rand_dir, 'id': 'randoms_ddp1_N8',        'ftype': realz},\
-                      #'randoms_ddp1_bd':    {'dir': rand_dir, 'id': 'randoms_ddp1_bd',        'ftype': realz},\
-                      #'randoms_ddp1_bd_n8': {'dir': rand_dir, 'id': 'randoms_ddp1_bd_ddp_n8', 'ftype': realz},\
                       'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
                      }
         
@@ -159,7 +155,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
         if prefix != None:
-            #assert 'randoms' in prefix;
+            assert 'randoms' in prefix;
             
             dirname = os.path.dirname(fpath)
             fpath = os.path.basename(fpath)
@@ -191,10 +187,6 @@ def file_check(dryrun=None, survey='gama'):
         fpaths.append(findfile('randoms',            dryrun=False, prefix='', field=field))
         fpaths.append(findfile('randoms_n8',         dryrun=False, prefix='', field=field))
         fpaths.append(findfile('randoms_bd',         dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1',       dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_n8',    dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_bd',    dryrun=False, prefix='', field=field))
-        fpaths.append(findfile('randoms_ddp1_bd_n8', dryrun=False, prefix='', field=field))
         fpaths.append(findfile('randoms_bd_ddp_n8',  dryrun=False, prefix='', field=field))
 
         for ii, _ in enumerate(d8_limits):

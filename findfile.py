@@ -113,6 +113,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
+
+    if ftype == 'summary_log':
+        return gold_dir + 'summary.log'
         
     if field == None:
         file_types = {'gold':       {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\

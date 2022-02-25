@@ -15,9 +15,9 @@ def test_allnbs(survey='gama'):
     
     run_randomqa(survey)
 
-    # run_goldqa(survey)
+    run_goldqa(survey)
     
-    # run_delta8qa(survey)
+    run_delta8qa(survey)
     
     print('Done.')
     
@@ -48,9 +48,9 @@ def run_goldqa(survey):
                                 kernel='lumfn',\
             )
 
-        except Error as E:
+        except:
             print('Failed on {} test with error: '.format(test))
-            print(E)
+            #print(E)
 
     '''
     pm.execute_notebook('docs/nb/kE_catQA.ipynb',\
@@ -78,14 +78,16 @@ def run_goldqa(survey):
     # desi qa. 
     
 def run_delta8qa(survey):
+    fields = fetch_fields(survey)
+    
     for field in fields:
         print('Running delta8 QA for field {}'.format(field))
-
-        pm.execute_notebook('docs/nb/delta8_qa.ipynb',\
-                            'test/pm_delta8_qa_{}.ipynb'.format(field),\
-                            parameters=dict(field=field, survey=survey),\
-                            kernel='lumfn',\
-                            )
+        
+        pm.execute_notebook('docs/nb/d8LF_qa.ipynb',\
+                    'test/pm_delta8_qa_{}.ipynb'.format(field),\
+                    parameters=dict(field=field, survey=survey),\
+                    kernel='lumfn',\
+                    )
 
 if __name__ == '__main__':
     test_allnbs()

@@ -130,9 +130,8 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     else:
         raise NotImplementedError()
     
-    # TODO: Re-add assert and test
-    #if field != None:
-    #    assert field in fields
+    if field != None:
+        assert field in fields
     
     if dryrun:
         dryrun = '_dryrun'

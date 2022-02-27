@@ -9,7 +9,7 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile
+from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
 
 
@@ -44,6 +44,9 @@ assert  field in fields, f'Provided {field} field is not compatible with those a
 
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
+if args.nooverwrite:
+    overwrite_check(opath)
+
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
     from gama_limits import gama_field
@@ -63,8 +66,8 @@ if survey == 'gama':
     ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
     ## TODO: move rand_density into different file and call?
-    rand_density = 4.
-    vol       = volcom(zmax, Area) - volcom(zmin, Area)
+    rand_density = 1.
+    vol          = volcom(zmax, Area) - volcom(zmin, Area)
     
     if dryrun == True:
         nrand = 500

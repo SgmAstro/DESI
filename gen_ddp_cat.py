@@ -33,7 +33,9 @@ Area   = dat.meta['AREA']
 print('Retrieved Area: {}'.format(Area))
 print('Judging DDP.')
 
-dat['DDP'], dat['DDPZLIMS'], zlims, dat['DDPMALL_0P0_VISZ'] = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv])
+#  dat['DDP'], dat['DDPZLIMS'], zlims, dat['DDPMALL_0P0_VISZ'] = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv], survey)
+dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv], survey)
+
 dat.meta.update(zlims)
 dat.meta.update({'TMR_DDP1': str(tmr_DDP1),\
                  'TMR_DDP2': str(tmr_DDP2),\

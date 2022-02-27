@@ -21,9 +21,10 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
-args    = parser.parse_args()
-dryrun  = args.dryrun
-survey  = args.survey.lower()
+args        = parser.parse_args()
+dryrun      = args.dryrun
+survey      = args.survey.lower()
+nooverwrite = args.nooverwrite
 
 zsurv   = f'z{survey}'.upper()
 
@@ -31,6 +32,9 @@ root    = os.environ['GOLD_DIR']
 
 fpath   = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 opath   = findfile(ftype='kE',   dryrun=dryrun, survey=survey)
+
+if args.nooverwrite:
+  overwrite_check(opath)
 
 fields  = fetch_fields(survey)
     

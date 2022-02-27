@@ -13,9 +13,22 @@ from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
-
+from   scipy.spatial.transform import Rotation as R
+from   ros_tools         import roscen
 
 np.random.seed(314)
+
+def rotate2rosette(ros_ra, ros_dec, pos):
+    pos        = np.array(pos, copy=True)
+    
+    rot        = R.from_rotvec(-np.radians(90. - ros_dec) * np.array([1, 0, 0]))
+    res        = rot.apply(pos)
+    
+    rot        = R.from_rotvec(np.radians(ros_ra - 90.) * np.array([0, 0, 1]))
+    
+    resres     = rot.apply(res)
+    
+    return  resres
 
 parser  = argparse.ArgumentParser(description='Calculate a set of boundary points')
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
@@ -49,6 +62,9 @@ assert  field in fields, f'Provided {field} field is not compatible with those a
 ##  TODO: findfile.                                                                                                                                                                                  
 ##  opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+
+if args.nooverwrite:
+    overwrite_check(opath)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
@@ -102,12 +118,41 @@ if survey == 'gama':
     randoms.rename_column('BOUND_Z', 'Z')
 
 elif survey == 'desi':
-    if 'NERSC_HOST' in os.environ.keys():
-        raise NotImplementedError()
+    # No requirement on NERSC HOST for boundary.
+    inner = 0.5 # deg.                                                                                                                                                                            
+    outer = 1.5 # deg.                                                                                                                                                                                
+    # HACK?
+    area  = np.pi * (outer**2. - inner**2.)
+        
+    ras   = np.arange(0., 360., 1.e-3)
+    idecs = (90. - inner) * np.ones_like(ras)
+    odecs = (90. - outer) * np.ones_like(ras)
+        
+    np.random.shuffle(ras)
 
-    else:
-        print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
-        exit(0)
+    randoms = np.c_[ras, idecs]
+    randoms = np.vstack((randoms, np.c_[ras, odecs]))
+
+    randoms = Table(randoms, names=['BOUND_RA', 'BOUND_DEC'])
+    randoms['Z'] = 0.2
+        
+    chis    = np.ones_like(randoms['Z'])
+    chis   *= cosmo.comoving_distance(0.2).value # Mpc/h
+    
+    xyz     = cartesian(randoms['BOUND_RA'], randoms['BOUND_DEC'], randoms['Z'], rotate=False)
+
+    rr      = int(field[1:])
+    rr      = roscen[rr]
+
+    ros_xyz = rotate2rosette(rr[0], rr[1], xyz)
+
+    ras     = np.degrees(np.arctan2(ros_xyz[:,1], ros_xyz[:,0]))
+      
+    thetas  = np.degrees(np.arccos(ros_xyz[:,2] / chis))
+    decs    = 90. - thetas
+
+    randoms = Table(np.c_[ras, decs], names=['BOUND_RA', 'BOUND_DEC'])
+    randoms['Z'] = np.random.uniform(zmin, zmax, len(randoms))
 
 else:
     raise  NotImplementedError(f'No implementation for survey: {survey}')

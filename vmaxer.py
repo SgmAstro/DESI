@@ -9,7 +9,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     assert  dat[zcol].max() >= zmax
 
     if rand != None:
-        extra_cols += ['FILLFACTOR']
+        extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
 
@@ -32,10 +32,14 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
         vmax_rand                        = rand[(zmin < rand['Z']) & (rand['Z'] < zmax)]
 
         result['IN_SAMPLE']              = result['FILLFACTOR'].data > 0.8
-        result.meta['IN_SAMPLE_VOLFRAC'] = np.mean(vmax_rand['FILLFACTOR'].data > 0.8)
+
+        fillfactor_vmax_min              = result['FILLFACTOR_VMAX'][result['ZMAX'] >= zmin].min()
+        fillfactor_vmax_max              = result['FILLFACTOR_VMAX'][result['ZMAX'] <= zmax].max()
+        
+        result['FILLFACTOR_VMAX']        = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
 
         print('Fraction of galaxies making fillfactor cut: {:.4f}; fraction of volume (randoms): {:.4f}'.format(np.mean(result['IN_SAMPLE']),\
-                                                                                                                result.meta['IN_SAMPLE_VOLFRAC']))
+                                                                                                                fillfactor_vmax_max))
 
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)

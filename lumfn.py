@@ -49,13 +49,12 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
     if 'IN_SAMPLE' in dat.dtype.names:
         # e.g. FILLFACTOR > 0.8 cut   
         dat      = dat[dat['IN_SAMPLE'] > 0]
-        vol_frac = dat.meta['IN_SAMPLE_VOLFRAC']
+        dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
 
     else:
-        vol_frac = 1.
+        dvmax    = dat['VMAX'].data
 
     vol    = dat.meta['VOLUME']
-    vol   *= vol_frac
 
     # assert  dat[Mcol].min() >= Ms.min()
     # assert  dat[Mcol].max() <= Ms.max()
@@ -80,8 +79,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
             # TODO:
             median = 0.5 * (Ms[idx] + Ms[idx+1])
 
-        vmax    = sample['VMAX'].data
-        vmax   *= vol_frac
+        vmax    = dvmax[idxs == idx]
 
         ivmax   = 1. / vmax
         ivmax2  = 1. / vmax**2.

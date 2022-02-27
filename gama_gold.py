@@ -4,7 +4,7 @@ import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
-from   findfile        import findfile
+from   findfile        import findfile, overwrite_check
 from   astropy.table   import Table
 from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
@@ -16,11 +16,8 @@ def gama_gold(args):
 
     opath  = findfile(ftype='gold', dryrun=False, survey='gama')
 
-    # TODO: findfile overwrite check.
     if args.nooverwrite:
-        if os.path.isfile(opath):
-            print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-            exit(0)
+        overwrite_check(opath)
 
     dat    = Table.read(fpath)
     dat    = Table(dat, masked=False)
@@ -100,6 +97,9 @@ def gama_gold(args):
 
     idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
     dat   = dat[idx]
+    
+    dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
+                           'GOLD_NGAL': dat.meta['GOLD_NGAL']}
     
     dat.write(os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits', format='fits', overwrite=True)
 

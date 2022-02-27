@@ -64,7 +64,9 @@ assert  field in fields, f'Provided {field} field is not compatible with those a
 opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
 if args.nooverwrite:
-    overwrite_check(opath)
+    overwrite_check(opath, ext='BOUNDARY')
+
+exit(0)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    

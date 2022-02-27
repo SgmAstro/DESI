@@ -4,6 +4,7 @@ import glob
 import datetime
 import subprocess
 import numpy as np
+import astropy.io.fits as   fits
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
@@ -83,10 +84,34 @@ def release_dir(user=os.environ['USER'], survey='gama', version=None):
     else:
         return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
 
-def overwrite_check(opath):
+def overwrite_check(opath, ext=None):
     if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+        exist     = True
+
+        if ext != None:
+            hdul  = fits.open(opath)
+            exist = False
+
+            # print(ext)
+            # print(hdul.info())
+
+            for hdu in hdul:
+                hdr = hdu.header
+
+                try:
+                    if hdr['EXTNAME'] == 'BOUNDARY':
+                        exist = True
+
+                        print(f'Found existing BOUNDARY extension to {opath} and overwrite forbidden (--nooverwrite).')
+                        
+                except KeyError as E:
+                    pass
+
+        else:
+            print(f'{opath} found on disk and overwrite forbidden (--nooverwrite).')
+
+        if exist:
+            exit(0)
         
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()

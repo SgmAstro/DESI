@@ -82,22 +82,24 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen zmax cat.')
-    parser.add_argument('-a', '--aall', help='All Q, no red/blue split.', action='store_true')
+    parser.add_argument('-a', '--aall',   help='All Q, no red/blue split.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+    parser.add_argument('--theta_def',    help='Specifier for definition of theta', default='Z_THETA_QCOLOR')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     
-    args   = parser.parse_args()
-    aall   = args.aall
-    dryrun = args.dryrun
-    survey = args.survey.lower()
+    args      = parser.parse_args()
+    aall      = args.aall
+    dryrun    = args.dryrun
+    survey    = args.survey.lower()
+    theta_def = args.theta_def()
 
     specifics = survey_specifics(survey)
 
-    rlim   = specifics['rlim']
-    rmax   = specifics['rmax']
+    rlim      = specifics['rlim']
+    rmax      = specifics['rmax']
 
-    start  = time.time()
+    start     = time.time()
 
     print('Assuming {:.4f} < r < {:.4f}'.format(rmax, rlim))
     print('Assuming Q ALL = {}'.format(aall))
@@ -119,7 +121,7 @@ if __name__ == '__main__':
     
     zmaxs, warn = zmax(dat['REST_GMR_0P1'],\
                        dat['REST_GMR_0P0'],\
-                       dat['Z_THETA_QCOLOR'],\
+                       dat[theta_def],\
                        dat['DELTA_DETMAG_FAINT'],\
                        aall=aall,\
                        debug=True)
@@ -133,13 +135,15 @@ if __name__ == '__main__':
     
     zmins, warn = zmax(dat['REST_GMR_0P1'],\
                        dat['REST_GMR_0P0'],\
-                       dat['Z_THETA_QCOLOR'],\
+                       dat[theta_def],\
                        dat['DELTA_DETMAG_BRIGHT'],\
                        aall=aall,\
                        debug=True)
 
     dat['ZMIN']      = zmins
     dat['ZMIN_WARN'] = warn
+
+    dat.meta['THETA_DEF'] = theta_def
 
     print('Writing {}.'.format(opath))
 

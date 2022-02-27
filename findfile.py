@@ -2,6 +2,7 @@ import os
 import time
 import glob
 import datetime
+import subprocess
 import numpy as np
 
 from   astropy.table import Table, vstack
@@ -31,6 +32,28 @@ def gather_cat(fpaths):
     tables.meta = {}
 
     return  tables 
+
+def write_desitable(opath='./test.fits', table=None, test=True):
+    assert 'fits' in opath
+
+    if test:
+        table      = Table()
+        table['a'] = [1, 4]
+        table['b'] = [2.0, 5.0]
+        table['c'] = ['x', 'y']
+
+    assert table != None
+
+    table.write(opath, format='fits', overwrite=True)
+
+    cmds   = []
+    cmds.append(f'chgrp desi {opath}')
+    cmds.append(f'chmod  770 {opath}')
+    
+    for cmd in cmds:
+        output = subprocess.check_output(cmd, shell=True)
+        
+        print(cmd, output)
 
 def fetch_fields(survey):
     if survey == 'gama':

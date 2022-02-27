@@ -34,16 +34,17 @@ def gather_cat(fpaths):
 
     return  tables 
 
-def write_desitable(opath='./test.fits', table=None, test=True):
-    assert 'fits' in opath
-
+def write_desitable(opath, table, test=False):
     if test:
         table      = Table()
         table['a'] = [1, 4]
         table['b'] = [2.0, 5.0]
         table['c'] = ['x', 'y']
 
+        opath      = './test.fits'
+
     assert table != None
+    assert 'fits' in opath
 
     table.write(opath, format='fits', overwrite=True)
 

@@ -4,11 +4,13 @@ import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
-from   findfile        import findfile, overwrite_check
+from   findfile        import findfile, overwrite_check, write_desitable
 from   astropy.table   import Table
 from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
 from   cartesian       import cartesian, rotate
+from   survey          import survey_specifics
+
 
 def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
@@ -22,8 +24,14 @@ def gama_gold(args):
     dat    = Table.read(fpath)
     dat    = Table(dat, masked=False)
 
-    # TODO: Inherit this from somewhere sensible.
-    dat.meta['AREA'] = 180.
+    keys   = list(dat.meta.keys())
+
+    for x in keys:
+        if x not in ['VERSION', 'DATE']:
+            del dat.meta[x]
+
+    specifics        = survey_specifics('gama')
+    dat.meta['AREA'] = specifics['area']
 
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
@@ -93,7 +101,8 @@ def gama_gold(args):
     # 113687 vs TMR 80922.
     dat.meta['GOLD_NGAL'] = len(dat)
     dat.pprint()
-    dat.write(opath, format='fits', overwrite=True)
+
+    write_desitable(opath, dat)
 
     idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
     dat   = dat[idx]

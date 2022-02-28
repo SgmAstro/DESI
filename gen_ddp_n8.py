@@ -50,7 +50,7 @@ kd_tree_all  = KDTree(points)
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey) for ff in fields]
+rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
 
 print('Reading: {}'.format(rpaths))
 
@@ -134,8 +134,11 @@ dat.pprint()
 dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
 dat['DDP1_DELTA8'] = ((dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR'])) - 1. 
-dat['DDP2_DELTA8'] = ((dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR'])) - 1. 
-dat['DDP3_DELTA8'] = ((dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / dat['FILLFACTOR'])) - 1. 
+
+# TODO: Check
+if 'ddp1' not in prefix:
+    dat['DDP2_DELTA8'] = ((dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR'])) - 1. 
+    dat['DDP3_DELTA8'] = ((dat['DDP3_N8'] / (dat.meta['VOL8'] * dat.meta['DDP3_DENS']) / dat['FILLFACTOR'])) - 1. 
 
 for x in dat.meta.keys():
     print('{}\t\t{}'.format(x.ljust(20), dat.meta[x]))

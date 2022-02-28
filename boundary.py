@@ -66,8 +66,6 @@ opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, p
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
 
-exit(0)
-
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
     area       = 60. 

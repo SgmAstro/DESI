@@ -24,7 +24,7 @@ nodes    = args.nodes
 
 if log == None:
     #  findfile
-    log  = os.environ['HOME'] + f'/data/GAMA4/logs/{script}.blah'
+    log  = os.environ['HOME'] + f'/data/GAMA4/logs/{script}.log'
     
 #
 ff       = open(f'/cosma/home/durham/dc-wils7/DESI/bin/{script}')
@@ -92,6 +92,7 @@ print('\n\n----  OUTPUT  ----\n')
 for xx in custom:
     print(xx)
 
+
 with open(f'{script}.log.tmp', 'w') as f:
     rest.remove('#!/bin/bash')
 
@@ -104,4 +105,5 @@ with open(f'{script}.log.tmp', 'w') as f:
         f.write(line)
         f.write('\n')
 
+print('\n\nWriting {}\n\n'.format(f'{script}.log.tmp'))
 print('\n\nDone.\n\n')

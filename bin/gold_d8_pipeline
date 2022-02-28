@@ -32,11 +32,10 @@ fi
 
 if [[ $SURVEY = 'gama' ]]
 then
-    export FIELDS=('G9' 'G12' 'G15')
+    declare -a FIELDS=('G9' 'G12' 'G15')
 else
-    export FIELDS=('R1' 'R2' 'R8' 'R9' 'R10' 'R17')
+    declare -a FIELDS=('R1' 'R2' 'R8' 'R9' 'R10' 'R17')
 fi
-
 
 export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
 export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
@@ -69,15 +68,16 @@ echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 # Density dependent schechter fn. given a ddp_n8 catalog.
 # Dependency on randoms_ddp1.
 #
+# Deprecated:
 # python gen_gold_lf.py --density_split --field G9  --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G9.log
 # python gen_gold_lf.py --density_split --field G12 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G12.log
 # python gen_gold_lf.py --density_split --field G15 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G15.log
 
-for FIELD in $FIELDS
+for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD
     
-     python gen_gold_lf.py --density_split --field $FIELD --prefix randoms_ddp1 $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn_d8_G9.log'
+    python gen_gold_lf.py --density_split --field $FIELD --prefix randoms_ddp1 $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn_d8_G9.log'
 done
 
 echo

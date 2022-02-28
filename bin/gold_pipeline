@@ -64,27 +64,27 @@ if (( $RESET > 0 )); then
     rm $GOLD_DIR/*.fits
 fi
 
-echo 'Running gold pipeline; logging to '$GOLD_DIR'logs/'$SURVEY'gold.log'
+echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'gold.log'
 
 python gen_gold.py $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
 
-echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'logs/'$SURVEY'_kE.log'
+echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
 
 python gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
 
-echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'logs/'$SURVEY'_zama.log'
+echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
 
 # Max. runtime 60 minutes.
 python gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
 
-echo 'Running ddp_limits.py; logging to '$GOLD_DIR'logs/ddp_limits.log'
+echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 
 python ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
 
-echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'logs/'$SURVEY'_ddp.log'
+echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
 
 python gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
 
-echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'logs/'$SURVEY'_lumfn.log'
+echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
 echo
 echo 'Done.'

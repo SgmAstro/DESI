@@ -38,6 +38,7 @@ survey = survey.lower()
 maxtasksperchild = args.maxtasksperchild
 
 fields = fetch_fields(survey)
+
 assert field in fields, 'Error: Field not in fields'
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
@@ -92,20 +93,20 @@ for var, obj in local_vars:
 def process_one(split, pid=0):
     _points  = np.c_[big_tree.data[split,0], big_tree.data[split,1], big_tree.data[split,2]] 
     _points  = np.array(_points, copy=True)
-
+    '''
     try:
         pid  = multiprocessing.current_process().name.ljust(20)
 
     except Exception as e:
         print(e)
-    
-    # msg      = 'POOL {}:  Creating split [{} ... {}] tree.'.format(pid, split[0], split[-1])
-    # runtime  = calc_runtime(start, msg)
+    '''
+    msg      = 'POOL {}:  Creating split [{} ... {}] tree.'.format(pid, split[0], split[-1])
+    runtime  = calc_runtime(start, msg)
         
     kd_tree  = KDTree(_points)
 
-    # msg      = 'POOL {}:  Querying split [{} ... {}] tree.'.format(pid, split[0], split[-1])
-    # runtime  = calc_runtime(start, msg)
+    msg      = 'POOL {}:  Querying split [{} ... {}] tree.'.format(pid, split[0], split[-1])
+    runtime  = calc_runtime(start, msg)
 
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query_ball_tree.html#scipy.spatial.KDTree.query_ball_tree
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.count_neighbors.html#scipy.spatial.KDTree.count_neighbors

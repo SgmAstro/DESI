@@ -94,6 +94,14 @@ elif survey == 'desi':
         # Original density of 2500 per sq. deg. 
         Area    = nrand / 2500. 
 
+    elif 'ddp1' in prefix:
+        # Assume you are on cosma, rewriting ddp1-like redshift limits to ddp1 randoms based on the assumed present randoms. 
+        randoms = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz)
+
+        print(f'As you are not running on nersc, an input of this script is assumed to be present at {randoms} for dryrun: {dryrun}.')
+
+        randoms = Table.read(randoms)
+
     else:
         print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
         exit(0)
@@ -113,12 +121,6 @@ rand_density = nrand / vol
 
 if dryrun:
     nrand = 500
-    #opath = opath.replace('.fits', '_dryrun.fits')
-
-#if args.nooverwrite:
-#    if os.path.isfile(opath):
-#        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-#        exit(0)
 
 if not os.path.isdir(os.environ['RANDOMS_DIR']):
     print('Creating {}'.format(os.environ['RANDOMS_DIR']))

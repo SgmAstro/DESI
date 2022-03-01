@@ -16,6 +16,7 @@ def desi_gold():
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
+
     root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
     tpix   = Table.read(root + 'tilepix.fits')
 
@@ -185,8 +186,11 @@ def desi_gold():
     gold_match   = gold[idx]
 
     del  gold_match['FIELD']
+
+    to_join               = Table(gold_match, copy=True) 
+    del to_join.meta
     
-    desi_zs               = hstack([desi_zs, gold_match])
+    desi_zs               = hstack([desi_zs, to_join])
     desi_zs['GAMA_SEP']   = d2d.to(u.arcsec)
     desi_zs['GOOD_MATCH'] = desi_zs['GAMA_SEP'] < 0.3
     
@@ -205,7 +209,10 @@ def desi_gold():
     
     desi_match    = archive[idx]
     
-    gold          = hstack([gold, desi_match])
+    to_join       = Table(desi_match, copy=True)
+    del to_join.meta
+
+    gold          = hstack([gold, to_join])
     gold['DESI_SEP'] = d2d.to(u.arcsec)
     gold['GOOD_MATCH'] = gold['DESI_SEP'] < 0.3
     

@@ -19,7 +19,7 @@ from   delta8_limits    import d8_limits
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD']):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'FIELD']):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -122,11 +122,6 @@ if __name__ == '__main__':
 
         field = field.upper()
 
-        #rpath = os.environ['RANDOMS_DIR'] + '/{}_bd_ddp_n8_{}_0.fits'.format(prefix, field)
-        
-        #if dryrun:
-        #    rpath = rpath.replace('.fits', '_dryrun.fits')
-         
         rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
         
         if dryrun:
@@ -148,7 +143,7 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'DDPMALL_0P0_VISZ', 'FIELD'])
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'])
 
             if failure:
                 print('FAILED on d0 tier {:d}; skipping.'.format(idx))
@@ -165,7 +160,7 @@ if __name__ == '__main__':
                 
                 all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
                 all_rands = [Table.read(xx) for xx in all_rpaths]
-
+ 
             # Calculated for DDP1 redshift limits. 
             fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
             d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])

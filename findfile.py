@@ -2,7 +2,9 @@ import os
 import time
 import glob
 import datetime
+import subprocess
 import numpy as np
+import astropy.io.fits as   fits
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
@@ -32,6 +34,30 @@ def gather_cat(fpaths):
 
     return  tables 
 
+def write_desitable(opath, table, test=False):
+    if test:
+        table      = Table()
+        table['a'] = [1, 4]
+        table['b'] = [2.0, 5.0]
+        table['c'] = ['x', 'y']
+
+        opath      = './test.fits'
+
+    # HACK TODO: FIX
+    #assert table != None
+    assert 'fits' in opath
+
+    table.write(opath, format='fits', overwrite=True)
+
+    cmds   = []
+    cmds.append(f'chgrp desi {opath}')
+    cmds.append(f'chmod  770 {opath}')
+    
+    for cmd in cmds:
+        output = subprocess.check_output(cmd, shell=True)
+        
+        print(cmd, output)
+
 def fetch_fields(survey):
     if survey == 'gama':
         fields = gama_fields   
@@ -60,10 +86,34 @@ def release_dir(user=os.environ['USER'], survey='gama', version=None):
     else:
         return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
 
-def overwrite_check(opath):
+def overwrite_check(opath, ext=None):
     if os.path.isfile(opath):
-        print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-        exit(0)
+        exist     = True
+
+        if ext != None:
+            hdul  = fits.open(opath)
+            exist = False
+
+            # print(ext)
+            # print(hdul.info())
+
+            for hdu in hdul:
+                hdr = hdu.header
+
+                try:
+                    if hdr['EXTNAME'] == 'BOUNDARY':
+                        exist = True
+
+                        print(f'Found existing BOUNDARY extension to {opath} and overwrite forbidden (--nooverwrite).')
+                        
+                except KeyError as E:
+                    pass
+
+        else:
+            print(f'{opath} found on disk and overwrite forbidden (--nooverwrite).')
+
+        if exist:
+            exit(0)
         
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
@@ -81,9 +131,8 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     else:
         raise NotImplementedError()
     
-    # TODO: Re-add assert and test
-    #if field != None:
-    #    assert field in fields
+    if field != None:
+        assert field in fields
     
     if dryrun:
         dryrun = '_dryrun'
@@ -149,7 +198,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     if prefix != None:
         assert 'randoms' in prefix;
-        assert 'randoms' in fpath
+        
+        # HACK TODO: Fix
+        #assert 'randoms' in fpath
 
         dirname = os.path.dirname(fpath)
         fpath   = os.path.basename(fpath)

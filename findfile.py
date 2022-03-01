@@ -8,7 +8,9 @@ import astropy.io.fits as   fits
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-from   gama_limits   import gama_fields
+
+#from   gama_limits   import gama_fields
+from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
 
 supported = ['gold',\
@@ -118,15 +120,12 @@ def overwrite_check(opath, ext=None):
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
     
+    fields = fetch_fields(survey)
+
+    
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
         return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
-
-    if survey == 'gama':
-        fields = gama_fields   
-
-    elif survey == 'desi':
-        fields = desi_fields
 
     else:
         raise NotImplementedError()
@@ -226,7 +225,8 @@ def file_check(dryrun=None):
 
     fpaths = []
 
-    for survey in ['desi', 'gama']:
+    # HACK: Removed 'desi'
+    for survey in ['gama']:
         for xx in supported:
             fpaths.append(findfile(xx, dryrun=False, survey=survey))
 

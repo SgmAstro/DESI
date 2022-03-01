@@ -43,25 +43,23 @@ parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', de
 parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
 
 
-args    = parser.parse_args()
-field   = args.field.upper()
-dryrun  = args.dryrun
-survey  = args.survey.lower()
-zmin    = args.zmin
-zmax    = args.zmax
-prefix  = args.prefix 
+args     = parser.parse_args()
+field    = args.field.upper()
+dryrun   = args.dryrun
+survey   = args.survey.lower()
+zmin     = args.zmin
+zmax     = args.zmax
+prefix   = args.prefix 
 sampling = args.sampling
-realz   = 0
+realz    = 0
 
-start   = time.time()
+start    = time.time()
 
-fields  = fetch_fields(survey)
+fields   = fetch_fields(survey)
 
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
-##  TODO: findfile.                                                                                                                                                                                  
-##  opath = os.environ['RANDOMS_DIR'] + '/{}_{}_{:d}.fits'.format(prefix, field, realz)
-opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+opath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
@@ -150,6 +148,9 @@ elif survey == 'desi':
       
     thetas  = np.degrees(np.arccos(ros_xyz[:,2] / chis))
     decs    = 90. - thetas
+
+    to_wrap = ras < 0.0
+    ras[to_wrap] += 360.
 
     randoms = Table(np.c_[ras, decs], names=['BOUND_RA', 'BOUND_DEC'])
     randoms['Z'] = np.random.uniform(zmin, zmax, len(randoms))

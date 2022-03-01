@@ -92,7 +92,7 @@ if __name__ == '__main__':
     aall      = args.aall
     dryrun    = args.dryrun
     survey    = args.survey.lower()
-    theta_def = args.theta_def()
+    theta_def = args.theta_def
 
     specifics = survey_specifics(survey)
 

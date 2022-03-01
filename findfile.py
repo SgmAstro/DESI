@@ -8,7 +8,9 @@ import astropy.io.fits as   fits
 
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
-from   gama_limits   import gama_fields
+
+#from   gama_limits   import gama_fields
+from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
 
 supported = ['gold',\
@@ -43,7 +45,8 @@ def write_desitable(opath, table, test=False):
 
         opath      = './test.fits'
 
-    assert table != None
+    # HACK TODO: FIX
+    #assert table != None
     assert 'fits' in opath
 
     table.write(opath, format='fits', overwrite=True)
@@ -114,24 +117,22 @@ def overwrite_check(opath, ext=None):
         if exist:
             exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):    
+    
+    if survey == None:
+        survey = 'gama'
+        print('WARNING: DEFAULTING TO SURVEY = GAMA')
+    
     survey = survey.lower()
     
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
         return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
 
-    if survey == 'gama':
-        fields = gama_fields   
-
-    elif survey == 'desi':
-        fields = desi_fields
-
-    else:
-        raise NotImplementedError()
+    fields = fetch_fields(survey)
     
     if field != None:
-        assert field in fields
+        assert field in fields, print(f'Requested field {field} is not available in fields {fields}')
     
     if dryrun:
         dryrun = '_dryrun'
@@ -197,7 +198,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     if prefix != None:
         assert 'randoms' in prefix;
-        assert 'randoms' in fpath
+        
+        # HACK TODO: Fix
+        #assert 'randoms' in fpath
 
         dirname = os.path.dirname(fpath)
         fpath   = os.path.basename(fpath)
@@ -223,6 +226,7 @@ def file_check(dryrun=None):
 
     fpaths = []
 
+    # HACK: Removed 'desi'
     for survey in ['desi', 'gama']:
         for xx in supported:
             fpaths.append(findfile(xx, dryrun=False, survey=survey))
@@ -231,10 +235,10 @@ def file_check(dryrun=None):
 
         for field in fields:
             for prefix in [None, 'randoms_ddp1']:
-                fpaths.append(findfile('randoms',            dryrun=False, field=field, prefix=prefix))
-                fpaths.append(findfile('randoms_n8',         dryrun=False, field=field, prefix=prefix))
-                fpaths.append(findfile('randoms_bd',         dryrun=False, field=field, prefix=prefix))
-                fpaths.append(findfile('randoms_bd_ddp_n8',  dryrun=False, field=field, prefix=prefix))
+                fpaths.append(findfile('randoms',            dryrun=False, field=field, prefix=prefix, survey=survey))
+                fpaths.append(findfile('randoms_n8',         dryrun=False, field=field, prefix=prefix, survey=survey))
+                fpaths.append(findfile('randoms_bd',         dryrun=False, field=field, prefix=prefix, survey=survey))
+                fpaths.append(findfile('randoms_bd_ddp_n8',  dryrun=False, field=field, prefix=prefix, survey=survey))
 
             for ii, _ in enumerate(d8_limits):
                 fpaths.append(findfile('ddp_n8_d0',       dryrun=False, field=field, utier=ii, survey=survey))

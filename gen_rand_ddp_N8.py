@@ -109,7 +109,8 @@ for ii, xx in enumerate(d8_limits):
 utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
 utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
-assert  np.all(utiers == utiers_zp), 'ERROR: zero point mismatch to d8 tiers for randoms.'
+# HACK (is this accounting for --dryrun?)
+#assert  np.all(utiers == utiers_zp), 'ERROR: zero point mismatch to d8 tiers for randoms.'
  
 print('Unique tiers: {}'.format(utiers))
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))

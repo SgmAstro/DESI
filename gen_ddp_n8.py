@@ -84,7 +84,7 @@ dat['RANDMATCH']  = rand['RANDID'][ii]
 dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
-dat['FILLFACTOR_VMAX']   = -99.
+dat['FILLFACTOR_VMAX'] = -99.
 
 _idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 

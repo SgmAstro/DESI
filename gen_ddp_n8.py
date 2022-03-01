@@ -50,11 +50,11 @@ kd_tree_all  = KDTree(points)
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-rpaths = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
+rpaths       = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
 
 print('Reading: {}'.format(rpaths))
 
-rand   = gather_cat(rpaths)
+rand         = gather_cat(rpaths)
 
 # HACK
 if 'FIELD' not in dat.dtype.names:
@@ -106,8 +106,18 @@ for field in fields:
         print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
 '''
 if not dryrun:
+    match_sep = 6.5
+
     # Typically, bounded by 1.6
-    assert  np.all(dat['RANDSEP'].data < 3.), 'Failed to find matching random with < 5 Mpc/h separation.'
+    # assert  np.all(dat['RANDSEP'].data < match_sep), 'Failed to find matching random with < 5 Mpc/h separation.'
+
+    if not np.all(dat['RANDSEP'].data < match_sep):
+        # Note: DESI randoms are less dense, larger expected separation.
+        print('WARNING: poor random match, with maximum comoving random separation >3Mpc/h.')
+
+        poor_match = dat['RANDSEP'].data > match_sep
+
+        print(dat[poor_match])
 
 # ----  Calculate DDPX_N8 for each gama gold galaxy.  ----
 for idx in range(3):

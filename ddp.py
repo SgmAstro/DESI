@@ -3,6 +3,7 @@ import fitsio
 import numpy             as np
 import matplotlib.pyplot as plt
 
+from   astropy.table     import Table
 from   cosmo             import volcom
 from   scipy.interpolate import interp1d
 
@@ -17,8 +18,14 @@ root           = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 def initialise_ddplimits(survey, Mcol='M0P0_QALL'):
     assert  Mcol == 'M0P0_QALL', 'Hard coded limit numbers and curves'
 
-    _bright_curve  = fitsio.read(root + f'/{survey}/ddrp_limit_3.fits')  #  7 (12.0 QCOLOR 0.131)
-    _faint_curve   = fitsio.read(root + f'/{survey}/ddrp_limit_17.fits') # 27 (19.8 QCOLOR 1.067)
+    bpath  = root + f'/{survey}_ddrp_limit_3.fits' #  7 (12.0 QCOLOR 0.131) 
+    fpath  = root + f'/{survey}_ddrp_limit_17.fits' # 27 (19.8 QCOLOR 1.067)
+
+    _bright_curve  = Table.read(bpath)
+    _faint_curve   = Table.read(fpath)
+
+    assert  _bright_curve.meta['SURVEY'] == survey, f'Survey mismatch for found ddp limit files: {bfpath}'
+    assert  _faint_curve.meta['SURVEY']  == survey, f'Survey mismatch for found ddp limit files: {fpath}'
 
     # TODO: extend the curve limits and put bounds_error back on.
     bright_curve   = interp1d(_bright_curve[Mcol], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
@@ -72,4 +79,8 @@ def get_ddps(Area, M_0P0s, zs, survey):
 
 
 if __name__ == '__main__':
+    survey = 'gama'
+    
+    initialise_ddplimits(survey, Mcol='M0P0_QALL')
+
     print('Done.')

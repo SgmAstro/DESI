@@ -36,27 +36,14 @@ start   = time.time()
 
 realz   = 0
 
-#fpath   = os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits'
-
-#if dryrun:
-#    fpath = fpath.replace('.fits', '_dryrun.fits')
-
-fpath  = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
-print(fpath)
+fpath   = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 
 dat     = Table.read(fpath)
 
 runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6), xx=dat)
 
-#fpath   = os.environ['RANDOMS_DIR'] + '/{}_bd_{}_{:d}.fits'.format(prefix, field, realz)
-
-#if dryrun:
-#    fpath = fpath.replace('.fits', '_dryrun.fits')
-
-fpath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
-#opath   = fpath.replace('bd', 'bd_ddp_n8')
-opath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+fpath   = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+opath   = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 overwrite_check(opath)
     
@@ -110,11 +97,21 @@ rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DEN
 
 rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
 
+rand['DDP1_DELTA8_ZEROPOINT'] = ((1 + rand['DDP1_N8']) / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
+rand['DDP2_DELTA8_ZEROPOINT'] = ((1 + rand['DDP2_N8']) / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
+rand['DDP3_DELTA8_ZEROPOINT'] = ((1 + rand['DDP3_N8']) / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
+
+rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
+
 for ii, xx in enumerate(d8_limits):
     rand.meta['D8{}LIMS'.format(ii)] = str(xx)
 
 utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
+utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
+# HACK (is this accounting for --dryrun?)
+#assert  np.all(utiers == utiers_zp), 'ERROR: zero point mismatch to d8 tiers for randoms.'
+ 
 print('Unique tiers: {}'.format(utiers))
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
@@ -126,7 +123,16 @@ for ut in utiers:
     rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
 
     print('DDP1_d{}_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
-    print('DDP1_d{}_TIERMEDd8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+    print('DDP1_d{}_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+
+    # Zero point. 
+    in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
+    
+    rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
+    rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
+
+    print('DDP1_d{}_ZEROPOINT_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
+    print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

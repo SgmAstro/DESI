@@ -66,9 +66,10 @@ dat['EQ_COLOR_0P0'] = tmr_ecorr(dat[zsurv], dat['REST_GMR_0P0'], aall=False)
 
 dat['MALL_0P0']     = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
 dat['MCOLOR_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
-dat['MQZERO_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], 0)
+dat['MQZERO_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], np.zeros_like(dat['EQ_ALL_0P0']))
 
-dat['Z_THETA_QALL']  = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
+dat['Z_THETA_QALL']   = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
+dat['Z_THETA_QZERO']  = dat['DISTMOD'] + dat['KCORR_R0P0'] + np.zeros_like(dat['EQ_ALL_0P0'])
 dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
 
 ##  ----  DDP  ----

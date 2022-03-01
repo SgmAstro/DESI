@@ -3,7 +3,7 @@ import argparse
 import numpy             as np
 import matplotlib.pyplot as plt
 import cosmo             as cosmo
-import os
+import astropy.io.fits   as fits
 
 from   astropy.table     import Table
 from   smith_kcorr       import GAMA_KCorrection, GAMA_KCorrection_color
@@ -32,7 +32,7 @@ gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 limits   = survey_specifics(survey)
 rlims    = [limits['rmax'], limits['rlim']]
 
-root     = os.environ['GOLD_DIR'] + f'/ddrp_limits/{survey}'
+root     = os.environ['GOLD_DIR'] + f'/ddrp_limits/'
 
 if not os.path.isdir(root):
     print('Creating {}'.format(root))
@@ -50,14 +50,20 @@ for rlim in rlims:
 
     for aall, all_type in zip([True, False], ['QALL', 'QCOLOR']):
         for gmr_0P1 in gmrs_0p1:
-            opath    = root + 'ddrp_limit_{:d}.fits'.format(count)
+            opath    = root + '{}_ddrp_limit_{:d}.fits'.format(survey, count)
 
             if args.nooverwrite & os.path.isfile(opath):
-                print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
-                
-                count += 1
+                hdul = fits.open(opath)
+                hdr  = hdul[0].header  # the primary HDU header
 
-                continue
+                assert 'SURVEY' in hdr
+
+                if hdr['SURVEY'].upper() == survey.upper():
+                    print('{} found on disk and overwrite forbidden (--nooverwrite).'.format(opath))
+                
+                    count += 1
+
+                    continue
 
             if (zs is None) | (mus is None):
                 zs   = np.arange(0.01, 0.6, 0.01)

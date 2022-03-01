@@ -188,7 +188,7 @@ def desi_gold():
     del  gold_match['FIELD']
 
     to_join               = Table(gold_match, copy=True) 
-    del to_join.meta
+    to_join.meta          = {}
     
     desi_zs               = hstack([desi_zs, to_join])
     desi_zs['GAMA_SEP']   = d2d.to(u.arcsec)
@@ -210,7 +210,7 @@ def desi_gold():
     desi_match    = archive[idx]
     
     to_join       = Table(desi_match, copy=True)
-    del to_join.meta
+    to_join.meta  = {}
 
     gold          = hstack([gold, to_join])
     gold['DESI_SEP'] = d2d.to(u.arcsec)

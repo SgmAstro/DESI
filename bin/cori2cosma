@@ -1,5 +1,5 @@
 #!/bin/bash                                                                                                                                                                                         
-exec > >(tee 'cori2cosma.log') 2>&1
+# exec > >(tee 'cori2cosma.log') 2>&1
 
 echo $GOLD_DIR
 echo $RANDOMS_DIR
@@ -10,9 +10,13 @@ echo $CODE_ROOT
 # /global/cscratch1/sd/mjwilson/norberg//GAMA4/gama_desi.fits
 # /global/cscratch1/sd/mjwilson/norberg//GAMA4/desi_sv3_gold.fits;
 
+echo ${1:-1}@login5.cosma.dur.ac.uk
+
 # Data.
-scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/gama_desi.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
-scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/desi_gold.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/gama_desi.fits     ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+# scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/desi_gold.fits     ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+# scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/desi_gama.fits     ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+# scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/desi_sv3_gold.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
 
 # Randoms.
-scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/randoms/randoms_R*_0.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/randoms/
+# scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/randoms/randoms_R*_0.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/randoms/

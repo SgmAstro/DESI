@@ -101,6 +101,9 @@ elif survey == 'desi':
         print(f'As you are not running on nersc, an input of this script is assumed to be present at {randoms} for dryrun: {dryrun}.')
 
         randoms = Table.read(randoms)
+        nrand   = len(randoms)
+
+        Area    = nrand / 2500.
 
     else:
         print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')

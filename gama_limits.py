@@ -1,8 +1,5 @@
 import numpy as np
 
-# TODO: remove
-# fields      = np.array(['G9', 'G12', 'G15'], dtype=np.str) 
-
 gama_fields = np.array(['G9', 'G12', 'G15'], dtype=np.str)
 
 # from https://github.com/michaelJwilson/lumfn/blob/master/py/lumfn/GAMA4/in_gama.py

@@ -9,7 +9,6 @@ import astropy.io.fits as   fits
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
-#from   gama_limits   import gama_fields
 from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
 
@@ -121,7 +120,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     
     if survey == None:
         survey = 'gama'
-        print('WARNING: DEFAULTING TO SURVEY = GAMA')
+        print('WARNING: DEFAULTING TO SURVEY = gama')
     
     survey = survey.lower()
     
@@ -226,7 +225,6 @@ def file_check(dryrun=None):
 
     fpaths = []
 
-    # HACK: Removed 'desi'
     for survey in ['desi', 'gama']:
         for xx in supported:
             fpaths.append(findfile(xx, dryrun=False, survey=survey))

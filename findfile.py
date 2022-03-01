@@ -120,15 +120,12 @@ def overwrite_check(opath, ext=None):
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey='gama', realz=0, debug=False, version=None):    
     survey = survey.lower()
     
-    fields = fetch_fields(survey)
-
-    
     # Special case:                                                                                                                                                                                 
     if (ftype == 'gold') & dryrun & (survey == 'gama'):
         return  os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits'
 
-    else:
-        raise NotImplementedError()
+    
+    fields = fetch_fields(survey)
     
     if field != None:
         assert field in fields

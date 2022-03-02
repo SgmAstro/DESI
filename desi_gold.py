@@ -246,7 +246,7 @@ def desi_gold():
 
     print('Writing {}'.format(opath))
 
-    desi_zs['AREA'] = 6.2904 * np.unique(desi_zs['FIELD'])
+    desi_zs.meta['AREA'] = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
     
     desi_zs.write(opath, format='fits', overwrite=True)
 

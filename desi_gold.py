@@ -93,7 +93,7 @@ def desi_gold():
 
     del  desi_zs['Z']
 
-    desi_zs['FIELD'] = desi_zs['ROS']
+    desi_zs['FIELD'] = [f'R{xx}' for xx in desi_zs['ROS'].data]
 
     ##  Cut DESI to good redshifts.                                                                                                                                                                
     desi_zs['GAMA_FIELD'] = gama_field(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data)

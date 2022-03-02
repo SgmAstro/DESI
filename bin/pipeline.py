@@ -29,7 +29,7 @@ def run_command(cmd):
 
     return out
 
-# Sbatch: python3 pipeline.py --survey gama --use_sbatch --log --nooverwrite
+# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log --reset
 # Head:   python3 pipeline.py --survey desi 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
@@ -48,8 +48,8 @@ dryrun      = args.dryrun
 survey      = args.survey
 freshclone  = args.freshclone 
 
-if reset & (survey == 'desi'):
-    raise  NotImplementedError()
+is reset & (survey == 'desi'):
+    raise  NotImplementedError('Reset not currently supported for DESI.')
 
 if reset & nooverwrite:
     raise  ValueError('No overwrite and reset are incompatible.')
@@ -74,7 +74,7 @@ if reset:
 
     for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
         cmds.append('rm -f {}/logs/*.log'.format(root))
-        cmds.append('rm -f {}/*_dryrun.fits'.format(root))
+        # cmds.append('rm -f {}/*_dryrun.fits'.format(root))
 
     for cmd in cmds:
         print(cmd)

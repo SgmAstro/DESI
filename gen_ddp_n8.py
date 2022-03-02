@@ -194,8 +194,6 @@ for tier in utiers:
     print('Available fields in tier: {}'.format(np.unique(dat['FIELD'].data)))
 
     for field in fields:    
-        field          = field[1:] 
-
         isin           = to_write['FIELD'] == field
         to_write_field = to_write[isin]
 

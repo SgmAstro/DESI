@@ -29,7 +29,7 @@ def run_command(cmd):
 
     return out
 
-# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log --reset
+# Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
 # Head:   python3 pipeline.py --survey desi 
 parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
 parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
@@ -48,7 +48,7 @@ dryrun      = args.dryrun
 survey      = args.survey
 freshclone  = args.freshclone 
 
-is reset & (survey == 'desi'):
+if reset & (survey == 'desi'):
     raise  NotImplementedError('Reset not currently supported for DESI.')
 
 if reset & nooverwrite:
@@ -217,8 +217,7 @@ print('\n\n')
 dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
 
 # possibly missing RESET=$RESET
-#cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
-
+# cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
 cmd = 'serialorparallel -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
 cmd = cmd.format(int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
 gold_d8_jobid = run_command(cmd)

@@ -70,9 +70,13 @@ if args.log:
 if reset:
     print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
 
-    for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
-        cmd = 'rm -f {}/logs/*.log'.format(root)
+    cmds = []
 
+    for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
+        cmds.append('rm -f {}/logs/*.log'.format(root))
+        cmds.append('rm -f {}/*_dryrun.fits'.format(root))
+
+    for cmd in cmds:
         print(cmd)
 
         os.system(cmd)

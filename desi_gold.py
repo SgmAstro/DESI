@@ -166,7 +166,11 @@ def desi_gold():
     del  gold['DETMAG']
     del  gold['DISTMOD']
     del  gold['LUMDIST']
-    
+    del  gold['GMR']
+
+    # HACK TODO
+    # del  gold['ZSURV']
+
     gold.pprint()
 
     # DESI

@@ -147,30 +147,29 @@ def lumfn_stepwise(vmax, Mcol='MALL_0P0', Mmin_col='DDPMALL_0P0_VISZ', survey='g
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold stepwise luminosity function.')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+    parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
     start  = time.time() 
 
-    args   = parser.parse_args()
+    args        = parser.parse_args()
+    survey      = args.survey
+    dryrun      = args.dryrun
+    nooverwrite = args.nooverwrite
 
-    survey = args.survey
-    
-    fpath  = findfile('ddp', version='v2')
-    opath  = findfile('lumfn_step')
+    fpath       = findfile('ddp', dryrun=dryrun)
+    opath       = findfile('lumfn_step', dryrun=dryrun)
 
-    print(fpath)
-    print(opath)
-    
-    if args.nooverwrite:
+    if nooverwrite:
         overwrite_check(opath)
 
     ddp    = Table.read(fpath)
     ddp.pprint()
 
-    phi_Ms, phis, weights = lumfn_stepwise(ddp, survey=survey)
-    result                = Table(np.c_[phi_Ms, phis], names=['Ms', 'PHI_STEP'])
+    phi_Ms, phis, weights  = lumfn_stepwise(ddp, survey=survey)
+    result                 = Table(np.c_[phi_Ms, phis], names=['Ms', 'PHI_STEP'])
 
-    runtime = calc_runtime(start, 'Writing {}'.format(opath))    
+    runtime                = calc_runtime(start, 'Writing {}'.format(opath))    
     result.write(opath, format='fits', overwrite=True)
 
     ddp                    = Table.read(fpath) 

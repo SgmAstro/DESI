@@ -35,7 +35,8 @@ def gama_gold(args):
 
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
-
+    dat['ZSURVEY'] = dat['ZGAMA']
+    
     for band in 'UGRIZ':
         dat.rename_column('{}_MODEL'.format(band), '{}MAG_DRED_SDSS'.format(band))
     
@@ -67,9 +68,9 @@ def gama_gold(args):
 
     dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'].data)
     dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
-    
     dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
-
+    dat['IN_LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
+    
     xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
     
     dat['CARTESIAN_X'] = xyz[:,0]

@@ -10,7 +10,7 @@ from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
 from   cartesian       import cartesian, rotate
 from   survey          import survey_specifics
-
+from   bitmask         import BitMask, galmask
 
 def gama_gold(args):
     root   = os.environ['TILING_CATDIR']

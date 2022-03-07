@@ -207,7 +207,9 @@ class BitMask(object):
 # TODO: Wrap in main?
 
 _bitdefs = yaml.safe_load('''
-    galmask:
+    lumfn_mask:
      - [DDPLIM, 0, "Galaxy not in DDP limits"]
      - [FILLFACTOR,  1, "Fillfactor < 0.8"]
 ''')
+
+lumfn_mask = BitMask('lumfn_mask', _bitdefs)

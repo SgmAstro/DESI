@@ -3,7 +3,6 @@ import numpy         as     np
 from   astropy.table import Table
 from   cosmo         import volcom
 
-
 def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     assert  dat[zcol].min() <= zmin
     assert  dat[zcol].max() >= zmax

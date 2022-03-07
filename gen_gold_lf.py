@@ -19,7 +19,7 @@ from   delta8_limits    import d8_limits
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'FIELD']):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=False):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -69,7 +69,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
-    result = lumfn(vmax)
+    result = lumfn(vmax, fillfactor=fillfactor)
 
     print('Writing {}.'.format(opath))
     
@@ -115,7 +115,7 @@ if __name__ == '__main__':
         print(f'Reading: {fpath}')
         print(f'Writing: {opath}')
 
-        process_cat(fpath, opath, rand_paths=[], survey=survey)
+        process_cat(fpath, opath, rand_paths=[], survey=survey, fillfactor=False)
 
     else:
         print('Generating Gold density-split LF.')
@@ -143,7 +143,7 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'])
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
 
             if failure:
                 print('FAILED on d0 tier {:d}; skipping.'.format(idx))

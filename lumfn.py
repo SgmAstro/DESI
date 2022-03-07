@@ -43,12 +43,12 @@ def multifield_lumfn(lumfn_list):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=False):
     dat = Table(dat, copy=True)
 
-    if 'IN_SAMPLE' in dat.dtype.names:
+    if fillfactor:
         # e.g. FILLFACTOR > 0.8 cut   
-        dat      = dat[dat['IN_SAMPLE'] > 0]
+        dat      = dat[dat['IN_LUMFN'] == 0]
         dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
 
     else:

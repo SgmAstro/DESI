@@ -22,7 +22,7 @@ parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA fiel
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
-parser.add_argument('--nproc', help='nproc', default=8, type=int)
+parser.add_argument('--nproc', help='nproc', default=12, type=int)
 parser.add_argument('--maxtasksperchild', help='maxtasksperchild', default=1000, type=np.int32)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
@@ -66,7 +66,7 @@ runtime   = calc_runtime(start, 'Creating big tree.')
 
 # Chunked in x.
 split_idx = np.arange(len(points))
-split_idx = np.array_split(split_idx, 10 * nproc)
+split_idx = np.array_split(split_idx, 8 * nproc)
 
 nchunk    = len(split_idx)
 
@@ -78,7 +78,7 @@ for i, idx in enumerate(split_idx):
     xmin       = split[:,0].min()
     xmax       = split[:,0].max()
     
-    buff       = 2. # Mpc 
+    buff       = .1  # [Mpc/h] 
 
     # TODO HARDCODE
     complement = (points[:,0] > (xmin - 8. - buff)) & (points[:,0] < (xmax + 8. + buff))
@@ -95,7 +95,7 @@ for i, idx in enumerate(split_idx):
     runs.append([split, complement])
 
 
-runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(len(split_idx)))
+runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(nchunk))
 
 del rand
 del points

@@ -3,11 +3,12 @@ import  sys
 import  glob
 import  argparse
 import  subprocess
-import  numpy as np
+import  numpy      as     np
 
-from    pathlib import Path
+from    pathlib    import Path
 from    subprocess import check_output
-from    findfile import fetch_fields
+from    findfile   import fetch_fields
+from    submit     import customise_script
 
 def run_command(cmd):
     print('Command: {}'.format(cmd))
@@ -39,6 +40,16 @@ parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
 parser.add_argument('--survey',       help='Survey', default='gama')
 parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
 parser.add_argument('--log',          help='Log stdout.', action='store_true')
+parser.add_argument('--custom',       help='Customised submission scripts.', default=True)
+
+# Customise submission scripts.
+parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
+parser.add_argument('--script_log',    help='Job log path.',           type=str, default=None)
+parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default=None)
+parser.add_argument('-m', '--memory',  help='Node memory usage [GB].', type=str, default=None)
+parser.add_argument('-t', '--time',    help='Job time to request.',    type=str, default=None)
+parser.add_argument('-a', '--account', help='Account for submission.', type=str, default=None)
+parser.add_argument('-n', '--nodes',   help='Nodes to request.',       type=int, default=None)
 
 args        = parser.parse_args()
 use_sbatch  = int(args.use_sbatch)
@@ -46,7 +57,16 @@ reset       = args.reset
 nooverwrite = args.nooverwrite
 dryrun      = args.dryrun
 survey      = args.survey
-freshclone  = args.freshclone 
+freshclone  = args.freshclone
+custom      = args.custom
+
+if custom:
+    customise_script(args)
+
+    custom = '/custom/'
+
+else:
+    custom = ''
 
 if reset & (survey == 'desi'):
     raise  NotImplementedError('Reset not currently supported for DESI.')
@@ -120,14 +140,14 @@ if freshclone:
 
    code_root = os.environ['CODE_ROOT'] = '~/tmp/DESI/'
 
-   os.environ['PATH'] = f':{code_root}/bin/:' + os.environ['PATH']
+   os.environ['PATH'] = f':{code_root}/bin/{custom}:' + os.environ['PATH']
    os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']
 
 else:
-    code_root = '/cosma/home/durham/{}/DESI/'.format(os.environ['USER'])
+    code_root = '{}/DESI/'.format(os.environ['HOME'])
 
-    os.environ['PATH'] = f'{home}/.conda/envs/lumfn/bin/:' + os.environ['PATH']
-    os.environ['PYTHONPATH'] = '~/DESI/:' + os.environ['PYTHONPATH']
+    os.environ['PATH'] = code_root + f'/bin/{custom}:' + os.environ['PATH']
+    os.environ['PYTHONPATH'] = code_root + '/:' + os.environ['PYTHONPATH']
 
 Path(os.environ['GOLD_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
 Path(os.environ['RANDOMS_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
@@ -141,6 +161,8 @@ gold_jobid = run_command(cmd)
 print('\n>>>>> GOLD JOB ID <<<<<')
 print(gold_jobid)
 print('\n\n')
+
+exit(0)
 
 #
 # https://slurm.schedmd.com/sbatch.html

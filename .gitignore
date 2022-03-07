@@ -4,3 +4,4 @@ logs/*.log
 bin/*~
 bin/test.sh
 bin/*.log
+bin/custom

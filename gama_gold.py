@@ -10,7 +10,7 @@ from   cosmo           import cosmo, distmod
 from   gama_limits     import gama_field
 from   cartesian       import cartesian, rotate
 from   survey          import survey_specifics
-from   bitmask         import BitMask, galmask
+from   bitmask         import BitMask, lumfn_mask
 
 def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
@@ -69,8 +69,8 @@ def gama_gold(args):
     dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'].data)
     dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
     dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
-    dat['IN_LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
-    
+    dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
+
     xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
     
     dat['CARTESIAN_X'] = xyz[:,0]

@@ -202,7 +202,7 @@ for tier in utiers:
         # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
         # TODO:  Work out DESI area factor (or refactor)
         if survey == 'gama':
-            to_write_field.meta['AREA'] =  to_write.meta['AREA'] / 3.
+            to_write_field.meta['AREA'] =  to_write.meta['AREA'] / len(fields)
 
         else:
             to_write_field.meta['AREA'] =  to_write.meta['AREA']

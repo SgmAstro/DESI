@@ -190,22 +190,18 @@ for tier in utiers:
 
     assert 'AREA' in dat.meta.keys()
     assert 'AREA' in to_write.meta.keys()
-    
+
+    print('Available fields in tier: {}'.format(np.unique(dat['FIELD'].data)))
+
     for field in fields:    
         isin           = to_write['FIELD'] == field
         to_write_field = to_write[isin]
 
         opath_field    = findfile('ddp_n8_d0', dryrun=dryrun, field=field, utier=tier, survey=survey, realz=realz)  
 
-        print('Writing {}.'.format(opath_field))
+        print('Writing {} galaxies from field {} to {}.'.format(len(to_write_field), np.unique(to_write_field['FIELD'].data), opath_field))
 
-        # TODO:  Here we're assuming each GAMA field has 1/3. of the area.
-        # TODO:  Work out DESI area factor (or refactor)
-        if survey == 'gama':
-            to_write_field.meta['AREA'] =  to_write.meta['AREA'] / len(fields)
-
-        else:
-            to_write_field.meta['AREA'] =  to_write.meta['AREA']
+        to_write_field.meta['AREA'] = to_write.meta['AREA'] / len(fields)
 
         to_write_field.write(opath_field, format='fits', overwrite=True)
 

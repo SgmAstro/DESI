@@ -36,6 +36,8 @@ def gama_gold(args):
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
 
+    dat['ZSURV']     = dat['ZGAMA']
+
     for band in 'UGRIZ':
         dat.rename_column('{}_MODEL'.format(band), '{}MAG_DRED_SDSS'.format(band))
     

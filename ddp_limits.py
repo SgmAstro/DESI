@@ -14,7 +14,7 @@ from   data.ke_params    import *
 from   survey            import survey_specifics
 
 
-parser = argparse.ArgumentParser(description='Gen kE DDP limit curves')
+parser   = argparse.ArgumentParser(description='Gen kE DDP limit curves')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 

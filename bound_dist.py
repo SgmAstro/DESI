@@ -28,7 +28,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
+parser.add_argument('--nproc', type=int, help='Number of processors', default=4)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
@@ -43,9 +43,8 @@ realz  = args.realz
 start  = time.time()
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
-    
-fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+opath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
     
 if args.nooverwrite:
     overwrite_check(opath)
@@ -54,87 +53,77 @@ if args.nooverwrite:
 body      = Table.read(fpath)
 boundary  = Table.read(fpath, 'BOUNDARY')
 
+body.sort('CARTESIAN_X')
+boundary.sort('CARTESIAN_X')
+
+bids      = boundary['BOUNDID']
+boundary  = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
+
+body      = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']]
+
 runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(body) / 1.e6), xx=body)
 
 split_idx = np.arange(len(body))
-splits    = np.array_split(split_idx, 10 * nproc)
+split_idx = np.array_split(split_idx, 10 * nproc)
 
-bids      = boundary['BOUNDID']
+nchunk    = len(split_idx)
 
-boundary  = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
-boundary  = np.array(boundary, copy=True)
+runs      = []
 
-kd_tree   = KDTree(boundary)
+for i, idx in enumerate(split_idx):
+    split      = body[idx]
 
-runtime   = calc_runtime(start, 'Created boundary tree.')
+    xmin       = split[:,0].min()
+    xmax       = split[:,0].max()
 
-# points  = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']] 
-# points  = [x for x in points]
-# dd, ii  = kd_tree.query(points, k=1)
+    buff       = 2. # Mpc                                                                                                                                                                                 
 
-del boundary
-del split_idx
+    # TODO HARDCODE                                                                                                                                                                                        
+    complement = (boundary[:,0] > (xmin - 8. - buff)) & (boundary[:,0] < (xmax + 8. + buff))
+    complement =  boundary[complement]
 
-# gc.collect()
+    cmin       = complement[:,0].min()
+    cmax       = complement[:,0].max()
 
-'''
-local_vars = list(locals().items())                                                                                                                                                                  
+    print('{:d}\t{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\t{:d}\t{:d}'.format(i, xmin, xmax, cmin, cmax, len(split), len(complement)))
 
-for var, obj in local_vars:                                                                                                                                                                           
-    print(var, sys.getsizeof(obj))                                                                                                                                                                   
+    # leafsize=5                                                                                                                                                                                           
+    split      = [x for x in split]
+    complement = KDTree(complement)
 
-exit()
-'''
+    runs.append([split, complement])
 
-runtime   = calc_runtime(start, 'Deleted rand.')
+runtime   = calc_runtime(start, 'Created boundary trees.')
 
-def process_one(split, pid=0):
-    points = np.c_[body[split]['CARTESIAN_X'], body[split]['CARTESIAN_Y'], body[split]['CARTESIAN_Z']] 
-    points = [x for x in points]
-
+def process_one(run, pid=0):
+    split      = run[0]
+    complement = run[1]
+    '''
     try:
         pid  = multiprocessing.current_process().name.ljust(20)
 
     except Exception as e:
         print(e)
-
-
-    # print('Querying boundary tree for split [{}...{}]'.format(split[0], split[-1]))
-    
-    dd, ii = kd_tree.query(points, k=1)
-    
-    del  points
+    '''
+    dd, ii     = complement.query(split, k=1)
+     
+    # del  points
 
     return  dd.tolist(), ii.tolist()
 
-'''
-# Serial.
-
-result = []
-
-for split in splits:
-    result += process_one(split)
-
-result = np.array(result)
-'''
-
-runtime = calc_runtime(start, 'POOL:  Querying bound dist for body points of {} splits.'.format(len(splits)))
+runtime = calc_runtime(start, 'POOL:  Querying bound dist for body points of {} splits.'.format(nchunk))
 
 now     = time.time()
 
-results = [process_one(splits[0], pid=0)]
+results = [process_one(runs[0], pid=0)]
 
 split_time  = time.time() - now
 split_time /= 60.
 
-runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(len(splits) * split_time))
+runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(nchunk * split_time))
 
 with Pool(nproc) as pool:
-    # result  = p.map(process_one, splits)
-
-    #results = []
-
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=splits[1:]), total=len(splits[1:])):
+    for result in tqdm.tqdm(pool.imap(process_one, iterable=runs[1:]), total=len(runs[1:])):
         results.append(result)
 
     pool.close()
@@ -146,22 +135,22 @@ flat_result = []
 flat_ii     = []
 
 for rr in results:
-    flat_result += rr[0]
-    flat_ii     += rr[1]
+    flat_result   += rr[0]
+    flat_ii       += rr[1]
 
-rand = Table.read(fpath)
-rand['BOUND_DIST'] = -99. 
-rand['BOUNDID']    = -99
+rand               = Table.read(fpath)
+rand.sort('CARTESIAN_X')
+
+# print(len(rand))
+# print(len(flat_result))
 
 rand['BOUND_DIST'] = np.array(flat_result)
 rand['BOUNDID']    = bids[np.array(flat_ii)]
 
-sphere_radius = rand.meta['RSPHERE']
+sphere_radius      = rand.meta['RSPHERE']
 
-# TODO: copy.copy?
-rand['FILLFACTOR_POISSON']   = rand['FILLFACTOR']
-rand['FILLFACTOR']           = np.clip(rand['FILLFACTOR'], 0., 1.)
-rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1
+rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
+rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
 runtime = calc_runtime(start, 'Shuffling')
 

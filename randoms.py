@@ -66,7 +66,7 @@ if survey == 'gama':
     ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
     ## TODO: move rand_density into different file and call?
-    rand_density = 1.
+    rand_density = 4.0
     vol          = volcom(zmax, Area) - volcom(zmin, Area)
     
     if dryrun == True:
@@ -185,13 +185,13 @@ elif survey == 'desi':
     randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
 '''
     
-randoms.meta = {'ZMIN': zmin,\
-                'ZMAX': zmax,\
-                'DZ':     dz,\
+randoms.meta = {'ZMIN':   zmin,\
+                'ZMAX':   zmax,\
+                'DZ':       dz,\
                 'NRAND': nrand,\
                 'FIELD': field,\
-                'Area': Area,\
-                'VOL': vol,\
+                'Area':   Area,\
+                'VOL':     vol,\
                 'RAND_DENS': rand_density,\
                 'VOL8': (4./3.)*np.pi*(8.**3.)}
 

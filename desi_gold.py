@@ -93,7 +93,7 @@ def desi_gold():
 
     del  desi_zs['Z']
 
-    desi_zs['FIELD'] = desi_zs['ROS']
+    desi_zs['FIELD'] = [f'R{xx}' for xx in desi_zs['ROS'].data]
 
     ##  Cut DESI to good redshifts.                                                                                                                                                                
     desi_zs['GAMA_FIELD'] = gama_field(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data)
@@ -166,7 +166,11 @@ def desi_gold():
     del  gold['DETMAG']
     del  gold['DISTMOD']
     del  gold['LUMDIST']
-    
+    del  gold['GMR']
+
+    # HACK TODO
+    # del  gold['ZSURV']
+
     gold.pprint()
 
     # DESI
@@ -242,7 +246,7 @@ def desi_gold():
 
     print('Writing {}'.format(opath))
 
-    desi_zs['AREA'] = 6.2904 * np.unique(desi_zs['FIELD'])
+    desi_zs.meta['AREA'] = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
     
     desi_zs.write(opath, format='fits', overwrite=True)
 

@@ -155,11 +155,11 @@ if __name__ == '__main__':
 
     survey = args.survey
     
-    fpath  = findfile('ddp', version='v2')
+    fpath  = findfile('ddp')
     opath  = findfile('lumfn_step')
 
-    print(fpath)
-    print(opath)
+    # print(fpath)
+    # print(opath)
     
     if args.nooverwrite:
         overwrite_check(opath)
@@ -167,11 +167,12 @@ if __name__ == '__main__':
     ddp    = Table.read(fpath)
     ddp.pprint()
 
-    phi_Ms, phis, weights = lumfn_stepwise(ddp, survey=survey)
-    result                = Table(np.c_[phi_Ms, phis], names=['Ms', 'PHI_STEP'])
+    phi_Ms, phis, weights  = lumfn_stepwise(ddp, survey=survey)
+    result                 = Table(np.c_[phi_Ms, phis], names=['Ms', 'PHI_STEP'])
 
-    runtime = calc_runtime(start, 'Writing {}'.format(opath))    
+    runtime                = calc_runtime(start, 'Writing {}'.format(opath))    
     result.write(opath, format='fits', overwrite=True)
+
 
     ddp                    = Table.read(fpath) 
     ddp['WEIGHT_STEPWISE'] = weights

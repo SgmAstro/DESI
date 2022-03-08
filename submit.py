@@ -131,7 +131,7 @@ def customise_script(args, debug=False):
             f.write(line)
             f.write('\n')
 
-    print('\n\nWriting {}'.format(opath))
+    print('\nWriting {}'.format(opath))
 
     os.system(f'chmod 770 {opath}')
 

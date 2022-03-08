@@ -7,18 +7,24 @@ import numpy as np
 from   astropy.io    import ascii
 from   astropy.table import Table
 
-
 home  = os.environ['HOME']
-
 sys.path.append('{}/DESI'.format(home))
 
 from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   delta8_limits import delta8_tier, d8_limits
+from   findfile      import findfile, fetch_fields
 
 
-dat              = Table.read(os.environ['GOLD_DIR'] + '/gama_gold_ddp.fits')
+parser = argparse.ArgumentParser(description='Generate summary stats')
+parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+args   = parser.parse_args()
+survey = args.survey
+fields = fetch_fields(survey)
+
+fpath            = findfile(ftype='ddp', survey=survey)
+dat              = Table.read(fpath)
+
 names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
-
 tmr_DDPs         = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
 tmr_ngold_ratios = np.array([1.002, 0.591, 0.097])
 tmr_ddp_ratios   = np.array([1., 0.589, 0.097])
@@ -66,27 +72,36 @@ result.pprint()
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
 
-exit(0)
-
 rows = []
 
-rand = Table.read('{}/randoms_bd_ddp_n8_G9_0.fits'.format(os.environ['RANDOMS_DIR']))
+if survey == 'gama':
+    field = 'G9'
+else:
+    field = 'R2'
+
+utier = 0
+    
+fpath = findfile(ftype='randoms_bd_ddp_n8', field=field, survey=survey, utier=utier)
+rand  = Table.read(fpath)
 
 print('\n\n')
 
 for idx in np.arange(9):    
     nd8 = 0 
     
-    for field in ['G9', 'G12', 'G15']:
-        dat  = Table.read('{}/data/GAMA4/gama_gold_{}_ddp_n8_d0_{}.fits'.format(os.environ['HOME'], field, idx))
-        nd8 += len(dat) / 1.e3
+    for field in fields:
+        
+        fpath = findfile(ftype='ddp_n8_d0', field=field, utier=idx, survey=survey)
+        dat   = Table.read(fpath) 
+        nd8  += len(dat) / 1.e3
     
-    rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], nd8, rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
+    rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], np.round(nd8, 3), rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
 
 print('\n\n')
 
 # Generate Table 3 of McNaught-Roberts (2014).
 result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]', 'fd8'])
+
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf

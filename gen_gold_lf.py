@@ -173,7 +173,9 @@ if __name__ == '__main__':
 
             print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
-            
+
+            ##  TODO 
+            ##  fdelta_ddp
             result = renormalise_d8LF(result, fdelta)
             
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')

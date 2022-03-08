@@ -12,5 +12,9 @@ def renormalise_d8LF(cat, fdelta):
     cat['PHI_N_ERROR']     /= fdelta
     cat['PHI_IVMAX']       /= fdelta
     cat['PHI_IVMAX_ERROR'] /= fdelta
-    
+
+    ## TODO
+    ## DDP1 < M < DDP1
+    ## cat['PHI_IVMAX_ERROR'] *= fdelta/fdelta_ddp 
+
     return cat

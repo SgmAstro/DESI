@@ -162,8 +162,6 @@ print('\n>>>>> GOLD JOB ID <<<<<')
 print(gold_jobid)
 print('\n\n')
 
-exit(0)
-
 #
 # https://slurm.schedmd.com/sbatch.html
 #

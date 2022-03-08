@@ -66,7 +66,7 @@ if survey == 'gama':
     ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
     ## TODO: move rand_density into different file and call?
-    rand_density = 4.0
+    rand_density = 1.0
     vol          = volcom(zmax, Area) - volcom(zmin, Area)
     
     if dryrun == True:

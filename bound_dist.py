@@ -28,7 +28,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--nproc', type=int, help='Number of processors', default=4)
+parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
@@ -64,7 +64,7 @@ body      = np.c_[body['CARTESIAN_X'], body['CARTESIAN_Y'], body['CARTESIAN_Z']]
 runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(body) / 1.e6), xx=body)
 
 split_idx = np.arange(len(body))
-split_idx = np.array_split(split_idx, 10 * nproc)
+split_idx = np.array_split(split_idx, 8 * nproc)
 
 nchunk    = len(split_idx)
 
@@ -76,7 +76,7 @@ for i, idx in enumerate(split_idx):
     xmin       = split[:,0].min()
     xmax       = split[:,0].max()
 
-    buff       = 2. # Mpc                                                                                                                                                                                 
+    buff       = .1 # Mpc                                                                                                                                                                                 
 
     # TODO HARDCODE                                                                                                                                                                                        
     complement = (boundary[:,0] > (xmin - 8. - buff)) & (boundary[:,0] < (xmax + 8. + buff))

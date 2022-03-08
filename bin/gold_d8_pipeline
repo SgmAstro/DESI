@@ -67,12 +67,6 @@ echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
 # Density dependent schechter fn. given a ddp_n8 catalog.
 # Dependency on randoms_ddp1.
-#
-# Deprecated:
-# python gen_gold_lf.py --density_split --field G9  --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G9.log
-# python gen_gold_lf.py --density_split --field G12 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G12.log
-# python gen_gold_lf.py --density_split --field G15 --prefix randoms_ddp1 $DRYRUN > $GOLD_DIR/logs/gama_lumfn_d8_G15.log
-
 for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD

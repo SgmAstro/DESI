@@ -47,8 +47,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
     dat = Table(dat, copy=True)
 
     if fillfactor:
-        # e.g. FILLFACTOR > 0.8 cut   
-        dat      = dat[dat['IN_LUMFN'] == 0]
+        dat      = dat[dat['IN_D8LUMFN'] == 0]
         dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
 
     else:

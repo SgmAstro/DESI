@@ -7,10 +7,13 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     assert  dat[zcol].min() <= zmin
     assert  dat[zcol].max() >= zmax
 
+    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
+
     if rand != None:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
+    cols        = list(set(cols))
 
     area        = dat.meta['AREA']
     VV          = volcom(zmax, area) - volcom(zmin, area)

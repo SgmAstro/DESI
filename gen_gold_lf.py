@@ -19,7 +19,7 @@ from   delta8_limits    import d8_limits
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=False):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], fillfactor=False):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath

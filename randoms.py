@@ -22,6 +22,7 @@ parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type
 parser.add_argument('--realz',        help='Realization', default=0, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('rdens', help='Randoms density per Mpc^3', default=1.0)
 
 # Defaults to GAMA Gold limits. 
 parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
@@ -35,6 +36,7 @@ zmin    = args.zmin
 zmax    = args.zmax
 prefix  = args.prefix 
 realz   = args.realz
+rand_density = args.rdens
 
 start   = time.time()
 
@@ -65,8 +67,6 @@ if survey == 'gama':
     ctheta_min = np.cos(np.pi/2. - np.radians(dec_min))
     ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
-    ## TODO: move rand_density into different file and call?
-    rand_density = 1.0
     vol          = volcom(zmax, Area) - volcom(zmin, Area)
     
     if dryrun == True:

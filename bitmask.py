@@ -208,7 +208,7 @@ class BitMask(object):
 
 _bitdefs = yaml.safe_load('''
     lumfn_mask:
-     - [DDPLIM, 0, "Galaxy not in DDP limits"]
+     - [DDP1ZLIM, 0, "Galaxy not in DDP limits"]
      - [FILLFACTOR,  1, "Fillfactor < 0.8"]
 ''')
 

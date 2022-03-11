@@ -1,10 +1,13 @@
+import sys
 import yaml
 import inflect
 
 from   collections import OrderedDict
 
 
-class config:
+class Configuration:
+    name = 'Configuration' # class attributes
+
     def __init__(self, fpath):
         self.fpath = fpath
 
@@ -13,13 +16,16 @@ class config:
             config = yaml.safe_load(f)
 
         self.config_types = config.keys() 
+        self.config_types_attributes = OrderedDict()
         
         for key in self.config_types:
             sub_config = config[key]
             keys       = sub_config.keys()
 
+            self.config_types_attributes[key] = keys
+
             if key == 'comments':
-                self.comments = OrderedDict()
+                self.comments = OrderedDict() # instance attributes
 
                 ckeys  = sub_config.keys() 
                 
@@ -37,20 +43,43 @@ class config:
 
         for p, comment in zip(ps, comments):        
             self.comments[p] = comment
+        
+    def get_attributes(self):
+        for key in self.config_types:
+            if key == 'comments':
+                continue
+
+            keys = self.config_types_attributes[key]
+
+            for kk in keys:
+                print('{}\t\t{}\t\t{}'.format(key.ljust(20), kk.ljust(20),  getattr(self, kk)))
+
+            
 
     def write(self, opath):
-        '''
-        with open(opath, 'w') as file:
-            documents = yaml.dump(, file)
-        '''
+        keep       = sys.stdout
+
+        sys.stdout = open(opath, 'w')
+
+        keys = config.comments.keys()
+
+        print('Comments:\n')
+        
+        for kk in keys:
+            print(kk, config.comments[kk])
+
+        print('\n\n')
+
+        config.get_attributes()
+
+        sys.stdout.close()
+        
+        sys.stdout = keep
 
 if __name__ == '__main__':
-    configuration = config('configs/config.yaml')
-    configuration.update_comments(['New comment'])
-
-    keys = configuration.comments.keys()
-
-    for kk in keys:
-        print(kk, configuration.comments[kk])
+    config = Configuration('configs/config.yaml')
+    config.update_comments(['New comment'])
+    
+    config.write('/cosma/home/durham/dc-wils7/DESI/configs/config.txt')
 
     print('\n\nDone.\n\n')

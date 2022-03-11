@@ -14,3 +14,7 @@ randoms:
 lumfn:
   vmax_fillfactor: True  
   selfcount_volfrac: True
+
+comments:
+  1st: 'Hello World'
+  2nd: 'A config. for standard gama run.'

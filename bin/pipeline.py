@@ -9,6 +9,7 @@ from    pathlib    import Path
 from    subprocess import check_output
 from    findfile   import fetch_fields
 from    submit     import customise_script
+from    config     import Configuration
 
 def run_command(cmd, noid=False):
     print('Command: {}'.format(cmd))
@@ -44,6 +45,7 @@ parser.add_argument('--survey',       help='Survey', default='gama')
 parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
 parser.add_argument('--log',          help='Log stdout.', action='store_true')
 parser.add_argument('--custom',       help='Customised submission scripts.', default=True)
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=None)
 parser.add_argument('--comments',     help='Add comments to README.')
 
 # Customise submission scripts.
@@ -64,6 +66,17 @@ survey      = args.survey
 freshclone  = args.freshclone
 custom      = args.custom
 comments    = args.comments
+config      = args.config
+
+if config != None:
+    config   = Configuration(config)
+
+if comments != None:
+    comments = comments.split(';')
+    
+    print('Appending comments: {}'.format(comments))
+
+    config.update_comments(comments)
 
 if custom:
     customise_script(args)

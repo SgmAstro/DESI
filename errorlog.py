@@ -91,11 +91,7 @@ Path(errorlog_dir).mkdir(parents=True, exist_ok=True)
 errorlog      = get_logger(level='DEBUG', path=errorlog_path, timestamps=True)
 
 def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-
-    errorlog.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    errorlog.error('', exc_info=(exc_type, exc_value, exc_traceback))
 
 sys.excepthook = handle_exception
 

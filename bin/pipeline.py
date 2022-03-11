@@ -10,7 +10,7 @@ from    subprocess import check_output
 from    findfile   import fetch_fields
 from    submit     import customise_script
 
-def run_command(cmd):
+def run_command(cmd, noid=False):
     print('Command: {}'.format(cmd))
 
     cmd = cmd.split()
@@ -26,8 +26,11 @@ def run_command(cmd):
     
     # print(out)
 
+    if noid:
+        out=0
+    
     out = int(out)
-
+    
     return out
 
 # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
@@ -41,6 +44,7 @@ parser.add_argument('--survey',       help='Survey', default='gama')
 parser.add_argument('--freshclone',   help='Fresh clone', action='store_true')
 parser.add_argument('--log',          help='Log stdout.', action='store_true')
 parser.add_argument('--custom',       help='Customised submission scripts.', default=True)
+parser.add_argument('--comments',     help='Add comments to README.')
 
 # Customise submission scripts.
 parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
@@ -59,6 +63,7 @@ dryrun      = args.dryrun
 survey      = args.survey
 freshclone  = args.freshclone
 custom      = args.custom
+comments    = args.comments
 
 if custom:
     customise_script(args)
@@ -127,18 +132,14 @@ os.chdir(f'{home}')
 if freshclone:
    cmds = []
 
-   cmds.append('rm -rf ~/tmp; mkdir -p ~/tmp')
-   cmds.append('cd ~/tmp/')
-   cmds.append('git clone https://github.com/SgmAstro/DESI.git')
-   cmds.append('cd ~/tmp/DESI/')
-   cmds.append('git checkout main')
+   cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
+   cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
+   cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
    
-   # echo 'git branch assumed:  '$(git rev-parse --abbrev-ref HEAD)
-
    for cmd in cmds:    
-       out = run_command(cmd)
+       out = run_command(cmd, noid=True)
 
-   code_root = os.environ['CODE_ROOT'] = '~/tmp/DESI/'
+   code_root = os.environ['CODE_ROOT'] = '{}/tmp/DESI/'.format(os.environ['HOME'])
 
    os.environ['PATH'] = f':{code_root}/bin/{custom}:' + os.environ['PATH']
    os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']

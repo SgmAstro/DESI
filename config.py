@@ -1,4 +1,8 @@
 import yaml
+import inflect
+
+from   collections import OrderedDict
+
 
 class config:
     def __init__(self, fpath):
@@ -12,11 +16,27 @@ class config:
         
         for key in self.config_types:
             sub_config = config[key]
+            keys       = sub_config.keys()
 
-            keys = sub_config.keys()
+            if key == 'comments':
+                self.comments = OrderedDict()
 
-            for key in keys:
-                setattr(self, key, sub_config[key])
+                ckeys  = sub_config.keys() 
+                
+                for key in ckeys:
+                    self.comments[key] = sub_config[key]
+
+            else:
+                for key in keys:
+                    setattr(self, key, sub_config[key])
+
+    def update_comments(self, comments):
+        p  = inflect.engine()
+        ps = [p.ordinal(i) for i in range(1, 50, 1)] 
+        ps = [str(p) for p in ps if p not in self.comments.keys()]
+
+        for p, comment in zip(ps, comments):        
+            self.comments[p] = comment
 
     def write(self, opath):
         '''
@@ -24,4 +44,13 @@ class config:
             documents = yaml.dump(, file)
         '''
 
-configuration = config('config.yaml')
+if __name__ == '__main__':
+    configuration = config('configs/config.yaml')
+    configuration.update_comments(['New comment'])
+
+    keys = configuration.comments.keys()
+
+    for kk in keys:
+        print(kk, configuration.comments[kk])
+
+    print('\n\nDone.\n\n')

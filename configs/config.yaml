@@ -1,0 +1,16 @@
+runtime:
+  version: v10
+  dryrun: True
+  nooverwrite: True
+
+survey:
+  name: gama
+  fields: G9,G12,G15
+
+randoms:
+  realz: 0
+  prefix: 'randoms_ddp1'
+  
+lumfn:
+  vmax_fillfactor: True  
+  selfcount_volfrac: True

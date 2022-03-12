@@ -101,6 +101,7 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
     print(f'Error logged at {errorlog_path}')
 
+
 sys.excepthook = handle_exception
 
 

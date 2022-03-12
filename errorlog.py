@@ -39,11 +39,6 @@ def get_logger(level=None, path=None, timestamps=False):
     else:
         raise ValueError('Unknown log level {}; should be DEBUG/INFO/WARNING/ERROR/CRITICAL'.format(level))
 
-    if os.path.isfile(path):
-        print('Warning:  removing {}'.format(path))
-
-        os.remove(path)
-
     if level not in _loggers:
         logger = logging.getLogger('lumfn.'+level)
         logger.setLevel(loglevel)
@@ -66,7 +61,8 @@ def get_logger(level=None, path=None, timestamps=False):
         kwargs = {'fmt': '%(levelname)s:%(filename)s:%(lineno)s:%(funcName)s:%(message)s'}
         if timestamps:
             kwargs['fmt'] = '%(asctime)s:' + kwargs['fmt']
-            kwargs['datefmt'] = '%Y%m%dT%H%M%S%z'
+            kwargs['datefmt'] = '%Y %m %d %H:%M:%S:%z'
+
         formatter = logging.Formatter(**kwargs)
 
         # add formatter to ch
@@ -95,11 +91,18 @@ def handle_exception(exc_type, exc_value, exc_traceback):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    errorlog.error("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+    with open(errorlog_path, 'a') as fh:
+        fh.write('\n\n**********************************************************************************\n')
+
+    errorlog.error('New Exception', exc_info=(exc_type, exc_value, exc_traceback))
+
+    with open(errorlog_path, 'a') as fh:
+        fh.write('\n\n**********************************************************************************\n')
+
+    print(f'Error logged at {errorlog_path}')
 
 sys.excepthook = handle_exception
 
-if __name__ == '__main__':
-    errorlog.info('Comment')
 
+if __name__ == '__main__':
     raise  RuntimeError('Failed to findfile')

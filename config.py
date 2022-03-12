@@ -25,6 +25,7 @@ def smart_open(filename=None):
 
     try:
         yield fh
+
     finally:
         if fh is not sys.stdout:
             fh.close()

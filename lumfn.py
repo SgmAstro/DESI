@@ -100,7 +100,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
     
-    result.meta['MS']         = str(Ms.tolist())
+    result.meta['MS']         = str(['{:.4f}'.format(x) for x in Ms.tolist()])
     result.meta['VOLUME']     = vol
     result.meta['ABSMAG_DEF'] = Mcol
 

@@ -160,7 +160,7 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
         return  result
 
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=None):        
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1):        
 
     if survey == None:
         survey = 'gama'
@@ -184,14 +184,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     else:
         dryrun = ''
-
-    if oversample == None:
-        print('WARNING: OVERSAMPLE DEFAULTING TO NONE')
         
     if realz >= 50:
-        raise ValueError("ValueError: realz >= 50")
-        
-    realz      = str(realz)
+        raise ValueError('Randoms realizations limisted to max. of 50')
 
     if version == None:        
         if 'GOLD_DIR' in os.environ:
@@ -244,11 +239,13 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                      }
         
         parts      = file_types[ftype]
-        
-        if oversample:
-            fpath      = f'' + parts['dir'] + '/{}_{}_x{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
+
+        if oversample > 1:
+            oversample = f'_x{oversample}'
         else:
-            fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
+            oversample = ''
+            
+        fpath      = f'' + parts['dir'] + '/{}_{}{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
 
             
     if prefix != None:

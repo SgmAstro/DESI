@@ -13,7 +13,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
 
 
-def randoms(field, survey, density, zmin, zmax, dryrun, prefix, seed, oversample):
+def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=1, realz=0):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -24,6 +24,8 @@ def randoms(field, survey, density, zmin, zmax, dryrun, prefix, seed, oversample
 
     if args.nooverwrite:
         overwrite_check(opath)
+
+    seed    = (seed + realz) * oversample
 
     np.random.seed(seed)
 
@@ -132,12 +134,14 @@ def randoms(field, survey, density, zmin, zmax, dryrun, prefix, seed, oversample
     print(len(ras), len(decs), len(zs))
 
     xyz      = cartesian(ras, decs, zs)
-
+    
+    '''
     ras      = ras.astype(np.float32)
     decs     = decs.astype(np.float32)
     zs       = zs.astype(np.float32)
     Vdraws   = Vdraws.astype(np.float32)
     xyz      = xyz.astype(np.float32)
+    '''
 
     randoms['Z'] = zs
     randoms['V'] = Vdraws
@@ -189,7 +193,7 @@ def randoms(field, survey, density, zmin, zmax, dryrun, prefix, seed, oversample
 
 if __name__ == '__main__':
     parser  = argparse.ArgumentParser(description='Select GAMA field.')
-    parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
+    parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', default='G9')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
     parser.add_argument('--realz',        help='Realization', default=0, type=int)
@@ -218,9 +222,7 @@ if __name__ == '__main__':
 
     assert oversample in np.arange(1, 11, 1)
     
-    for xx in [1, oversample]:
-        seed  = (seed + realz) * xx
-        
-        randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx)
+    for xx in [1, oversample]:        
+        randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz)
 
 

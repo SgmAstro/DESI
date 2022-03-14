@@ -15,7 +15,7 @@ from   lumfn            import lumfn
 from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
-from   config           import configuration
+from   config           import Configuration
 
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
@@ -87,6 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    parser.add_argument('--selfcount_volfracs', help='Self count DDPs for volfrac calc.', type=bool, action='store_true')
     
     args   = parser.parse_args()
 
@@ -95,7 +96,8 @@ if __name__ == '__main__':
     survey = args.survey
     density_split = args.density_split
     prefix = args.prefix
-
+    self_count = args.selfcount_volfracs
+    
     if density_split:
         assert  field != None
         assert  'ddp1' in prefix
@@ -164,7 +166,8 @@ if __name__ == '__main__':
  
             # Calculated for DDP1 redshift limits. 
     
-            if configuration.selfcount_volfrac:
+            #if configuration.selfcount_volfrac:
+            if self_count:
                 fdelta = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
                 d8     = np.array([float(x.meta['DDP1_d{}__ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
 

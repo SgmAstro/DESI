@@ -12,7 +12,7 @@ from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
 
-def randoms(field, survey, rand_density, opath):
+def randoms(field, survey, rand_density, dryrun, opath):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -216,13 +216,13 @@ if __name__ == '__main__':
     for oversampling in range(oversample):
 
       # no oversampling arg. to randoms function
-        opath = findfile(ftype='randoms', survey=survey, field=field, oversample=oversampling) # findfile sampling
+        opath = findfile(ftype='randoms', survey=survey, field=field, oversample=oversampling, dryrun=dryrun) # findfile sampling
                             
         # allow for 50 different realisations.
         seed = args.seed * oversampling + 50
         np.random.seed(seed) 
         print('SEED IS SET AT', seed)
 
-        randoms(field=field, survey=survey, rand_density=rand_density * oversample, opath=opath)
+        randoms(field=field, survey=survey, rand_density=rand_density * oversample, dryrun=dryrun, opath=opath)
 
 

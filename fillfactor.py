@@ -17,97 +17,6 @@ from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check
 
 
-parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
-parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
-parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
-parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
-parser.add_argument('--prefix', help='filename prefix', default='randoms')
-parser.add_argument('--nproc', help='nproc', default=8, type=int)
-parser.add_argument('--subsample', help='nproc', default=1, type=int)
-parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
-parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=2, type=int)
-
-args       = parser.parse_args()
-
-field      = args.field.upper()
-dryrun     = args.dryrun
-prefix     = args.prefix
-survey     = args.survey.lower()
-subsample  = args.subsample
-fields     = fetch_fields(survey)
-
-assert field in fields, 'Error: Field not in fields'
-
-# https://www.dur.ac.uk/icc/cosma/cosma5/
-nproc  = args.nproc
-realz  = args.realz
-
-fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
-
-start  = time.time()
-
-opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-
-if args.nooverwrite:
-    overwrite_check(opath)
-    
-# Read randoms file, split by field (DDP1, or not).
-rand      = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-rand      = rand[::subsample]
-    
-runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
-
-idx       = np.argsort(rand['CARTESIAN_X'])
-
-rand      = rand[idx]
-
-runtime   = calc_runtime(start, 'Sorted randoms by X')
-
-points    = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
-points    = points.astype(np.float32)
-
-runtime   = calc_runtime(start, 'Creating big tree.')
-
-# Chunked in x.
-split_idx = np.arange(len(points))
-split_idx = np.array_split(split_idx, 4 * nproc)
-
-nchunk    = len(split_idx)
-
-runs      = []
-
-for i, idx in enumerate(split_idx):
-    split      = points[idx]
-
-    xmin       = split[:,0].min()
-    xmax       = split[:,0].max()
-    
-    buff       = .1  # [Mpc/h] 
-
-    # TODO HARDCODE
-    complement = (points[:,0] > (xmin - 8. - buff)) & (points[:,0] < (xmax + 8. + buff))
-    complement = points[complement]
-
-    cmin       = complement[:,0].min()
-    cmax       = complement[:,0].max() 
-
-    print('{:d}\t{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\t{:d}\t{:d}'.format(i, xmin, xmax, cmin, cmax, len(split), len(complement)))
-
-    # leafsize=5
-    split_tree = KDTree(split)
-
-    runs.append([split_tree, complement])
-
-runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(nchunk))
-
-del rand
-del points
-del split
-del split_idx
-
-runtime = calc_runtime(start, 'Deleted rand.')
-
 def process_one(run, pid=0):
     try:
         pid  = os.getpid()
@@ -139,63 +48,157 @@ def process_one(run, pid=0):
 
     return  flat
 
-runtime     = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees.')
 
-pool_start  = time.time()
+parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
+parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
+parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
+parser.add_argument('--prefix', help='filename prefix', default='randoms')
+parser.add_argument('--nproc', help='nproc', default=8, type=int)
+parser.add_argument('--subsample', help='nproc', default=1, type=int)
+parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
+parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=2, type=int)
 
-results     = [process_one(runs[0], pid=0)]
+args       = parser.parse_args()
+field      = args.field.upper()
+dryrun     = args.dryrun
+prefix     = args.prefix
+survey     = args.survey.lower()
+subsample  = args.subsample
+oversample = args.oversample
+fields     = fetch_fields(survey)
 
-split_time  = time.time() - pool_start
-split_time /= 60.
+assert field in fields, 'Error: Field not in fields'
 
-runtime     = calc_runtime(start, 'POOL:  Expected runtime of {:.6f} minutes with {:d} proc. and split time {:.6f} mins'.format(nchunk * split_time / nproc, nproc, split_time))
+# https://www.dur.ac.uk/icc/cosma/cosma5/
+nproc  = args.nproc
+realz  = args.realz
 
-done_nsplit = 1
+for sample in range(oversample):
+    fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=sample)
 
-# maxtasksperchild:  restart process after max tasks to contain resource leaks;
-with Pool(nproc, maxtasksperchild=1) as pool:
-    for result in tqdm.tqdm(pool.imap(process_one, iterable=runs[1:], chunksize=4), total=(nchunk-1)):
-        results.append(result)
+    start  = time.time()
 
-        done_nsplit  += 1
-        
-        if (done_nsplit % nproc) == 0:
-            pool_time = (time.time() - pool_start)  / 60.
-            runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
+    opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=sample)
 
-    pool.close()
-    pool.join()
+    if args.nooverwrite:
+        overwrite_check(opath)
 
-runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
+    # Read randoms file, split by field (DDP1, or not).
+    rand      = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+    rand      = rand[::subsample]
 
-flat_result = []
-    
-for rr in results:
-    flat_result += rr
+    runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
 
-rand                 = Table.read(fpath)
-rand                 = rand[::subsample]
+    idx       = np.argsort(rand['CARTESIAN_X'])
 
-rand.sort('CARTESIAN_X')
+    rand      = rand[idx]
 
-# print(len(rand), len(flat_result))
+    runtime   = calc_runtime(start, 'Sorted randoms by X')
 
-rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
+    points    = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
+    points    = points.astype(np.float32)
 
-rand.meta['RSPHERE'] = 8.
+    runtime   = calc_runtime(start, 'Creating big tree.')
 
-boundary = Table.read(fpath, 'BOUNDARY')
+    # Chunked in x.
+    split_idx = np.arange(len(points))
+    split_idx = np.array_split(split_idx, 4 * nproc)
 
-header   = fits.Header()
+    nchunk    = len(split_idx)
 
-hx       = fits.HDUList()
-hx.append(fits.PrimaryHDU(header=header))
-hx.append(fits.convenience.table_to_hdu(rand))
-hx.append(fits.convenience.table_to_hdu(boundary))
+    runs      = []
 
-runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
+    for i, idx in enumerate(split_idx):
+        split      = points[idx]
 
-hx.writeto(opath, overwrite=True)
+        xmin       = split[:,0].min()
+        xmax       = split[:,0].max()
 
-runtime = calc_runtime(start, 'Finished')
+        buff       = .1  # [Mpc/h] 
+
+        # TODO HARDCODE
+        complement = (points[:,0] > (xmin - 8. - buff)) & (points[:,0] < (xmax + 8. + buff))
+        complement = points[complement]
+
+        cmin       = complement[:,0].min()
+        cmax       = complement[:,0].max() 
+
+        print('{:d}\t{:.4f}\t{:.4f}\t{:.4f}\t{:.4f}\t{:d}\t{:d}'.format(i, xmin, xmax, cmin, cmax, len(split), len(complement)))
+
+        # leafsize=5
+        split_tree = KDTree(split)
+
+        runs.append([split_tree, complement])
+
+    runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(nchunk))
+
+    del rand
+    del points
+    del split
+    del split_idx
+
+    runtime = calc_runtime(start, 'Deleted rand.')
+
+
+    runtime     = calc_runtime(start, 'POOL:  Counting < 8 Mpc/h pairs for small trees.')
+
+    pool_start  = time.time()
+
+    results     = [process_one(runs[0], pid=0)]
+
+    split_time  = time.time() - pool_start
+    split_time /= 60.
+
+    runtime     = calc_runtime(start, 'POOL:  Expected runtime of {:.6f} minutes with {:d} proc. and split time {:.6f} mins'.format(nchunk * split_time / nproc, nproc, split_time))
+
+    done_nsplit = 1
+
+    # maxtasksperchild:  restart process after max tasks to contain resource leaks;
+    with Pool(nproc, maxtasksperchild=1) as pool:
+        for result in tqdm.tqdm(pool.imap(process_one, iterable=runs[1:], chunksize=4), total=(nchunk-1)):
+            results.append(result)
+
+            done_nsplit  += 1
+
+            if (done_nsplit % nproc) == 0:
+                pool_time = (time.time() - pool_start)  / 60.
+                runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
+
+        pool.close()
+        pool.join()
+
+    runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
+
+    flat_result = []
+
+    for rr in results:
+        flat_result += rr
+
+    rand                 = Table.read(fpath)
+    rand                 = rand[::subsample]
+
+    rand.sort('CARTESIAN_X')
+
+    # print(len(rand), len(flat_result))
+
+    rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
+    rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
+
+    rand.meta['RSPHERE'] = 8.
+
+    boundary = Table.read(fpath, 'BOUNDARY')
+
+    header   = fits.Header()
+
+    hx       = fits.HDUList()
+    hx.append(fits.PrimaryHDU(header=header))
+    hx.append(fits.convenience.table_to_hdu(rand))
+    hx.append(fits.convenience.table_to_hdu(boundary))
+
+    runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
+
+    hx.writeto(opath, overwrite=True)
+
+    runtime = calc_runtime(start, 'Finished')

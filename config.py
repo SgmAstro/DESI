@@ -24,4 +24,4 @@ class config:
             documents = yaml.dump(, file)
         '''
 
-configuration = config('config.yaml')
+configuration = config('configs/config.yaml')

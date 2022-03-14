@@ -25,7 +25,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     if args.nooverwrite:
         overwrite_check(opath)
 
-    seed    = (seed + realz) * oversample
+    seed    = seed + realz + 50 * oversample
 
     np.random.seed(seed)
 

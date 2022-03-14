@@ -108,6 +108,9 @@ def desi_gold():
     desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
     desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
     
+    offset = 0.12
+    desi_zs['LEGACYPET']  = desi_zs['RMAG_DRED'] + offset
+    
     desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
     clustering, full      = fetch_lss(pprint=False, sort=False) 

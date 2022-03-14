@@ -12,17 +12,20 @@ from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   gama_limits       import gama_limits, gama_field
 
-def randoms(field, survey, rand_density, zmin, zmax, dryrun, prefix, opath):
+
+def randoms(field, survey, density, zmin, zmax, dryrun, prefix, seed, oversample):
     start   = time.time()
 
     fields  = fetch_fields(survey)
 
     assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
-    #opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+    opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz, oversample=oversample)
 
     if args.nooverwrite:
         overwrite_check(opath)
+
+    np.random.seed(seed)
 
     ##  ras and decs.                                                                                                                                                              
     if survey == 'gama':    
@@ -46,8 +49,9 @@ def randoms(field, survey, rand_density, zmin, zmax, dryrun, prefix, opath):
 
         if dryrun == True:
             nrand = 500
+
         else:
-            nrand     = int(np.ceil(vol * rand_density))
+            nrand     = int(np.ceil(vol * density * oversample))
 
         cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
         theta     = np.arccos(cos_theta)
@@ -95,7 +99,7 @@ def randoms(field, survey, rand_density, zmin, zmax, dryrun, prefix, opath):
 
     vol     = Vmax - Vmin
 
-    rand_density = nrand / vol
+    density = nrand / vol
 
     if dryrun:
         nrand = 500
@@ -105,7 +109,7 @@ def randoms(field, survey, rand_density, zmin, zmax, dryrun, prefix, opath):
 
         os.makedirs(os.environ['RANDOMS_DIR'])
 
-    print('Volume [1e6]: {:.2f}; rand_density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, rand_density, nrand / 1.e6))
+    print('Volume [1e6]: {:.2f}; oversample: {:.2f};  density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, oversample, density, nrand / 1.e6))
 
     zs      = np.arange(0.0, zmax+dz, dz)
     Vs      = volcom(zs, Area) 
@@ -167,7 +171,7 @@ def randoms(field, survey, rand_density, zmin, zmax, dryrun, prefix, opath):
                     'FIELD': field,\
                     'Area':   Area,\
                     'VOL':     vol,\
-                    'RAND_DENS': rand_density,\
+                    'RAND_DENS': density,\
                     'VOL8': (4./3.)*np.pi*(8.**3.)}
 
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
@@ -191,15 +195,13 @@ if __name__ == '__main__':
     parser.add_argument('--realz',        help='Realization', default=0, type=int)
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--rand_density', help='Random density per Mpc^3', default=1.0)
-    parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=2, type=int)
-    parser.add_argument('--seed', help='Set seed (varies for oversample)', default=314)
+    parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1.0, type=float)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=2, type=int)
+    parser.add_argument('--seed',         help='Random seed.', default=314, type=int)
 
     # Defaults to GAMA Gold limits. 
     parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
     parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
-
-    args = parser.parse_args
 
     args    = parser.parse_args()
     field   = args.field.upper()
@@ -209,20 +211,16 @@ if __name__ == '__main__':
     zmax    = args.zmax
     prefix  = args.prefix 
     realz   = args.realz
+    seed    = args.seed
 
-    rand_density = args.rand_density
+    density = args.density
     oversample = args.oversample
+
+    assert oversample in np.arange(1, 11, 1)
     
-    for oversampling in range(oversample):
-
-      # no oversampling arg. to randoms function
-        opath = findfile(ftype='randoms', survey=survey, field=field, oversample=oversampling, dryrun=dryrun, prefix=prefix) # findfile sampling
-                            
-        # allow for 50 different realisations.
-        seed = args.seed * oversampling + 50
-        np.random.seed(seed) 
-        print('SEED IS SET AT', seed)
-
-        randoms(field=field, survey=survey, rand_density=rand_density * oversample, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, opath=opath)
+    for xx in [1, oversample]:
+        seed  = (seed + realz) * xx
+        
+        randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx)
 
 

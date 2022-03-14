@@ -2,15 +2,23 @@ import os
 import time
 import glob
 import datetime
+import fitsio
 import subprocess
 import numpy as np
 import astropy.io.fits as   fits
 
-from   astropy.table import Table, vstack
-from   delta8_limits import d8_limits
+from   collections     import OrderedDict
+from   astropy.table   import Table, vstack
+from   delta8_limits   import d8_limits
+from   gama_fields     import gama_fields
+from   desi_fields     import desi_fields
+from   astropy.io.fits import getval, getheader
 
+<<<<<<< HEAD
 from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
+=======
+>>>>>>> fcb31b82fe084df27667f123f4e9797f89da9fb4
 
 supported = ['gold',\
              'kE',\
@@ -72,8 +80,6 @@ def fetch_fields(survey):
     return fields
 
 def release_dir(user=os.environ['USER'], survey='gama', version=None):
-    #assert survey == 'gama', 'TODO: Support DESI.'
-
     # E.g.  /cosma/home/durham/dc-wils7/data/GAMA4/                                                                                                                                                
     if version == 'latest':
         ff = glob.glob('/cosma/home/durham/{}/data/v*'.format(user))
@@ -116,11 +122,53 @@ def overwrite_check(opath, ext=None):
         if exist:
             exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=None):    
-    
+
+def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):
+    if allsupported:
+        result  = OrderedDict()
+
+        defined = []
+
+        for ss in supported:
+            additions  = fetch_header(ftype=ss, name=name, ext=ext, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
+
+            for xx in defined:
+                additions.pop(xx, None)
+
+            if additions:
+                defined += list(additions.keys())
+
+                result[ss] = additions
+
+        return  result
+
+    ## 
+    fpath = findfile(ftype=ftype, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
+ 
+    if name:
+        return  getval(fpath, name, ext)
+
+    else:
+        hdr   = getheader(fpath, ext)
+        cards = [card for card in hdr.cards if np.all(~np.isin(card[0][:5], ["TUNIT", "TNULL", "TTYPE", "TFORM", "XTENS", "NAXIS", "BITPI", "PCOUN", "GCOUN"]))]
+        
+        result = {}
+
+        for card in cards:
+            try:
+                result[card[0]] = card[1]
+
+            except Exception as E:
+                print(f'WARNING: {E}')
+
+        return  result
+
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=None):        
+
     if survey == None:
         survey = 'gama'
-        print('WARNING: DEFAULTING TO SURVEY = GAMA')
+
+        print('WARNING: defaulting to survey=gama')
     
     survey = survey.lower()
     
@@ -170,7 +218,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
 
     if ftype == 'summary_log':
-        return gold_dir + 'summary.log'
+        return  gold_dir + 'summary.log'
         
     if field == None:
         file_types = {'gold':       {'dir': gold_dir, 'id': f'{survey}',      'ftype': 'gold'},\

@@ -2,10 +2,8 @@ runtime:
   version: v10
   dryrun: True
   nooverwrite: True
-
-survey:
-  name: gama
-  fields: G9,G12,G15
+  replay: False
+  survey: gama
 
 randoms:
   realz: 0
@@ -14,3 +12,6 @@ randoms:
 lumfn:
   vmax_fillfactor: True  
   selfcount_volfrac: True
+
+comments:
+  1st: 'A config. for standard gama run.'

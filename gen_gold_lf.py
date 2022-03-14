@@ -15,6 +15,7 @@ from   lumfn            import lumfn
 from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
+from   config           import configuration
 
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
@@ -162,9 +163,15 @@ if __name__ == '__main__':
                 all_rands = [Table.read(xx) for xx in all_rpaths]
  
             # Calculated for DDP1 redshift limits. 
-            fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
+    
+            if configuration.selfcount_volfrac:
+                fdelta = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
+                d8     = np.array([float(x.meta['DDP1_d{}__ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
 
+            else:
+                fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
+                d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
+            
             print('Field vol renormalization: {}'.format(fdelta))
             print('Field d8  renormalization: {}'.format(d8))
 

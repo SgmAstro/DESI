@@ -26,6 +26,7 @@ parser.add_argument('--nproc', help='nproc', default=8, type=int)
 parser.add_argument('--subsample', help='nproc', default=1, type=int)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=2, type=int)
 
 args       = parser.parse_args()
 
@@ -42,7 +43,7 @@ assert field in fields, 'Error: Field not in fields'
 nproc  = args.nproc
 realz  = args.realz
 
-fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
 
 start  = time.time()
 

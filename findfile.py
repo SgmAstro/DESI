@@ -9,7 +9,6 @@ import astropy.io.fits as   fits
 from   astropy.table import Table, vstack
 from   delta8_limits import d8_limits
 
-#from   gama_limits   import gama_fields
 from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
 
@@ -117,7 +116,7 @@ def overwrite_check(opath, ext=None):
         if exist:
             exit(0)
         
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):    
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=None):    
     
     if survey == None:
         survey = 'gama'
@@ -141,6 +140,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     else:
         dryrun = ''
 
+    if realz >= 50:
+        raise ValueError("ValueError: realz >= 50")
+        
     realz      = str(realz)
 
     if version == None:        
@@ -194,7 +196,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                      }
         
         parts      = file_types[ftype]
-        fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
+        fpath      = f'' + parts['dir'] + '/{}_{}_r{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
 
     if prefix != None:
         assert 'randoms' in prefix;

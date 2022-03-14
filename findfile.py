@@ -14,11 +14,8 @@ from   gama_fields     import gama_fields
 from   desi_fields     import desi_fields
 from   astropy.io.fits import getval, getheader
 
-<<<<<<< HEAD
 from   gama_fields   import gama_fields
 from   desi_fields   import desi_fields
-=======
->>>>>>> fcb31b82fe084df27667f123f4e9797f89da9fb4
 
 supported = ['gold',\
              'kE',\

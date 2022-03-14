@@ -185,6 +185,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     else:
         dryrun = ''
 
+    if oversample == None:
+        print('WARNING: OVERSAMPLE DEFAULTING TO NONE')
+        
     if realz >= 50:
         raise ValueError("ValueError: realz >= 50")
         
@@ -241,8 +244,13 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                      }
         
         parts      = file_types[ftype]
-        fpath      = f'' + parts['dir'] + '/{}_{}_r{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
+        
+        if oversample:
+            fpath      = f'' + parts['dir'] + '/{}_{}_x{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
+        else:
+            fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
+            
     if prefix != None:
         assert 'randoms' in prefix;
         

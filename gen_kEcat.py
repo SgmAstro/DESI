@@ -30,7 +30,7 @@ zsurv   = f'z{survey}'.upper()
 
 root    = os.environ['GOLD_DIR']
 
-fpath   = findfile(ftype='gold', dryrun=dryrun, survey=survey)
+fpath   = findfile(ftype='gold', dryrun=False, survey=survey)
 opath   = findfile(ftype='kE',   dryrun=dryrun, survey=survey)
 
 if args.nooverwrite:

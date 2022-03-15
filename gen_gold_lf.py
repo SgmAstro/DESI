@@ -15,6 +15,7 @@ from   lumfn            import lumfn
 from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
+from   config           import Configuration
 
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
@@ -86,6 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
     
     args   = parser.parse_args()
 
@@ -94,7 +96,8 @@ if __name__ == '__main__':
     survey = args.survey
     density_split = args.density_split
     prefix = args.prefix
-
+    self_count = args.selfcount_volfracs
+    
     if density_split:
         assert  field != None
         assert  'ddp1' in prefix
@@ -162,21 +165,26 @@ if __name__ == '__main__':
                 all_rands = [Table.read(xx) for xx in all_rpaths]
  
             # Calculated for DDP1 redshift limits. 
-            fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
-
+    
+                fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
+                d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
+            
+                fdelta_zeropoint = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
+                d8_zeropoint     = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
+            
             print('Field vol renormalization: {}'.format(fdelta))
             print('Field d8  renormalization: {}'.format(d8))
 
             fdelta = fdelta.mean()
             d8     = d8.mean()
 
+            fdelta_zeropoint = fdelta_zeropoint.mean()
+            d8_zeropoint     = d8_zeropoint.mean()
+            
             print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
 
-            ##  TODO 
-            ##  fdelta_ddp
-            result = renormalise_d8LF(result, fdelta)
+            result = renormalise_d8LF(result, fdelta, fdelta_zeropoint, self_count)
             
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
@@ -195,7 +203,9 @@ if __name__ == '__main__':
             ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
             ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
-
+            ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zeropoint)
+            ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zeropoint)
+            
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 
             primary_hdu    = fits.PrimaryHDU()

@@ -14,6 +14,8 @@ from   gama_fields     import gama_fields
 from   desi_fields     import desi_fields
 from   astropy.io.fits import getval, getheader
 
+from   gama_fields   import gama_fields
+from   desi_fields   import desi_fields
 
 supported = ['gold',\
              'kE',\
@@ -23,6 +25,10 @@ supported = ['gold',\
              'lumfn_step',\
              'ddp',\
              'ddp_n8']
+
+def call_signature(dryrun, argv):
+    if dryrun:
+        print('\n\nCall signature:  python3 ' + ' '.join(argv) + '\n\n')
 
 def gather_cat(fpaths):
     if len(fpaths) == 0:
@@ -117,6 +123,7 @@ def overwrite_check(opath, ext=None):
         if exist:
             exit(0)
         
+
 def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):
     if allsupported:
         result  = OrderedDict()
@@ -157,7 +164,8 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
         return  result
 
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):        
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1):        
+
     if survey == None:
         survey = 'gama'
 
@@ -180,8 +188,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     else:
         dryrun = ''
-
-    realz      = str(realz)
+        
+    if realz >= 50:
+        raise ValueError('Randoms realizations limisted to max. of 50')
 
     if version == None:        
         if 'GOLD_DIR' in os.environ:
@@ -234,8 +243,15 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                      }
         
         parts      = file_types[ftype]
-        fpath      = f'' + parts['dir'] + '/{}_{}_{}{}.fits'.format(parts['id'], field, parts['ftype'], dryrun)
 
+        if oversample > 1:
+            oversample = f'_x{oversample}'
+        else:
+            oversample = ''
+            
+        fpath      = f'' + parts['dir'] + '/{}_{}{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
+
+            
     if prefix != None:
         assert 'randoms' in prefix;
         

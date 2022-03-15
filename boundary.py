@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import argparse
@@ -11,7 +12,7 @@ from   astropy.table     import Table, vstack
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile, overwrite_check
+from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
 from   ros_tools         import roscen
@@ -34,7 +35,7 @@ parser  = argparse.ArgumentParser(description='Calculate a set of boundary point
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
-parser.add_argument('--sampling',     help='Sampling rate', default=90000)
+parser.add_argument('--sampling',     help='Sampling rate', default=90000, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -63,6 +64,11 @@ opath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, 
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
+    
+if args.dryrun:
+    sampling   = 1000
+
+call_signature(dryrun, sys.argv)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
@@ -123,6 +129,7 @@ elif survey == 'desi':
     area  = np.pi * (outer**2. - inner**2.)
         
     ras   = np.arange(0., 360., 1.e-3)
+    
     idecs = (90. - inner) * np.ones_like(ras)
     odecs = (90. - outer) * np.ones_like(ras)
         

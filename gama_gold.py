@@ -16,7 +16,7 @@ def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
 
-    opath  = findfile(ftype='gold', dryrun=False, survey='gama')
+    opath  = findfile(ftype='gold', dryrun=dryrun, survey='gama')
 
     if args.nooverwrite:
         overwrite_check(opath)

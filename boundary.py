@@ -63,6 +63,9 @@ opath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, 
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
+    
+if args.dryrun:
+    sampling = 9000
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    
@@ -123,6 +126,7 @@ elif survey == 'desi':
     area  = np.pi * (outer**2. - inner**2.)
         
     ras   = np.arange(0., 360., 1.e-3)
+    
     idecs = (90. - inner) * np.ones_like(ras)
     odecs = (90. - outer) * np.ones_like(ras)
         

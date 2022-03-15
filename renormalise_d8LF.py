@@ -1,37 +1,24 @@
 from astropy.table import Table
+from ddp import tmr_DDP1
 
-def renormalise_d8LF(cat, fdelta, fdelta_zeropoint, mags=[-21.8, -20.1], self_count=False):
+def renormalise_d8LF(cat, fdelta, fdelta_zeropoint, self_count=False):
     '''
     fscale equal to Equation 7 in McNaught-Roberts (2014).
     See: https://arxiv.org/pdf/1409.4681.pdf
     '''
     
     cat = Table(cat, copy=True)
-
-    assert mags[0] < mags[1]
     
-    mag_mask = (cat['MEDIAN_M'] > mags[0]) & (result['MEDIAN_M'] < mags[1])
+    cat['PHI_N']                      /= fdelta
+    cat['PHI_N_ERROR']                /= fdelta
+    cat['PHI_IVMAX']                  /= fdelta
+    cat['PHI_IVMAX_ERROR']            /= fdelta
     
-    if self_count = True:
-        cat[~mag_mask]['PHI_N']           /= fdelta
-        cat[~mag_mask]['PHI_N_ERROR']     /= fdelta
-        cat[~mag_mask]['PHI_IVMAX']       /= fdelta
-        cat[~mag_mask]['PHI_IVMAX_ERROR'] /= fdelta
+    if self_count:
+        # tmr_DDP1: [-21.8, -20.1] 
+        is_ddp1 = (cat['MEDIAN_M'] > tmr_DDP1[0]) & (cat['MEDIAN_M'] < tmr_DDP1[1])
 
-        cat[mag_mask]['PHI_N']           /= fdelta_zeropoint
-        cat[mag_mask]['PHI_N_ERROR']     /= fdelta_zeropoint
-        cat[mag_mask]['PHI_IVMAX']       /= fdelta_zeropoint
-        cat[mag_mask]['PHI_IVMAX_ERROR'] /= fdelta_zeropoint
-        
-        
-    else:
-        cat['PHI_N']           /= fdelta
-        cat['PHI_N_ERROR']     /= fdelta
-        cat['PHI_IVMAX']       /= fdelta
-        cat['PHI_IVMAX_ERROR'] /= fdelta
-        
-    ## TODO
-    ## DDP1 < M < DDP1
-    ## cat['PHI_IVMAX_ERROR'] *= fdelta/fdelta_ddp 
+        for col in ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']:
+            cat[col][is_ddp1] *= (fdelta / fdelta_zeropoint)
 
-    return cat
+    return  cat

@@ -186,6 +186,7 @@ if __name__ == '__main__':
 
             ##  TODO 
             ##  fdelta_ddp
+            ## DEFAULTING ON MAGNITUDE LIMITS
             result = renormalise_d8LF(result, fdelta, fdelta_zeropoint, self_count)
             
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')

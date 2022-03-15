@@ -13,16 +13,15 @@ def renormalise_d8LF(cat, fdelta, fdelta_zeropoint, mags=[-21.8, -20.1], self_co
     mag_mask = (cat['MEDIAN_M'] > mags[0]) & (result['MEDIAN_M'] < mags[1])
     
     if self_count = True:
-        cat[~mag_mask]['PHI_N']           /= fdelta
-        cat[~mag_mask]['PHI_N_ERROR']     /= fdelta
-        cat[~mag_mask]['PHI_IVMAX']       /= fdelta
-        cat[~mag_mask]['PHI_IVMAX_ERROR'] /= fdelta
+        cat['PHI_N'][~mag_mask]          /= fdelta
+        cat['PHI_N_ERROR'][~mag_mask]     /= fdelta
+        cat['PHI_IVMAX'][~mag_mask]       /= fdelta
+        cat['PHI_IVMAX_ERROR'][~mag_mask] /= fdelta
 
-        cat[mag_mask]['PHI_N']           /= fdelta_zeropoint
-        cat[mag_mask]['PHI_N_ERROR']     /= fdelta_zeropoint
-        cat[mag_mask]['PHI_IVMAX']       /= fdelta_zeropoint
-        cat[mag_mask]['PHI_IVMAX_ERROR'] /= fdelta_zeropoint
-        
+        cat['PHI_N'][mag_mask]           /= fdelta_zeropoint
+        cat['PHI_N_ERROR'][mag_mask]     /= fdelta_zeropoint
+        cat['PHI_IVMAX'][mag_mask]       /= fdelta_zeropoint
+        cat['PHI_IVMAX_ERROR'][mag_mask] /= fdelta_zeropoint
         
     else:
         cat['PHI_N']           /= fdelta

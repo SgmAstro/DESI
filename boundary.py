@@ -65,7 +65,7 @@ if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
     
 if args.dryrun:
-    sampling = 9000
+    sampling  /= 100
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    

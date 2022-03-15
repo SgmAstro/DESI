@@ -16,7 +16,7 @@ def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
 
-    opath  = findfile(ftype='gold', dryrun=dryrun, survey='gama')
+    opath  = findfile(ftype='gold', dryrun=args.dryrun, survey='gama')
 
     if args.nooverwrite:
         overwrite_check(opath)
@@ -107,8 +107,6 @@ def gama_gold(args):
     dat.pprint()
 
     write_desitable(opath, dat)
-
-    dat   = dat[:1000]
     
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}

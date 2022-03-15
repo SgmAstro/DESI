@@ -87,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--selfcount_volfracs', help='Self count DDPs for volfrac calc.', type=bool, action='store_true')
+    parser.add_argument('--selfcount_volfracs', help='Self count DDPs for volfrac calc.', action='store_true')
     
     args   = parser.parse_args()
 

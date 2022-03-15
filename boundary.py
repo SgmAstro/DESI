@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import argparse
@@ -11,7 +12,7 @@ from   astropy.table     import Table, vstack
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile, overwrite_check
+from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
 from   ros_tools         import roscen
@@ -66,6 +67,8 @@ if args.nooverwrite:
     
 if args.dryrun:
     sampling   = 1000
+
+call_signature(dryrun, sys.argv)
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    

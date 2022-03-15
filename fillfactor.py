@@ -14,7 +14,7 @@ from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
-from   findfile            import findfile, fetch_fields, overwrite_check
+from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
 
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
@@ -48,6 +48,8 @@ if args.nooverwrite:
     overwrite_check(opath)
 
 start  = time.time()
+
+call_signature(dryrun, sys.argv)
     
 # Read randoms file, split by field (DDP1, or not).
 fpath     = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)

@@ -25,7 +25,7 @@ def gama_gold(args):
     dat     = Table(dat, masked=False)
 
     if args.dryrun:
-        dat = dat[:5000]
+        dat = dat[:1000]
 
     keys    = list(dat.meta.keys())
 
@@ -108,7 +108,7 @@ def gama_gold(args):
 
     write_desitable(opath, dat)
 
-    dat   = dat[:5000]
+    dat   = dat[:1000]
     
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}

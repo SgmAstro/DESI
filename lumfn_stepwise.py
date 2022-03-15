@@ -150,15 +150,15 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
-    start  = time.time() 
+    start       = time.time() 
 
     args        = parser.parse_args()
     survey      = args.survey
     dryrun      = args.dryrun
     nooverwrite = args.nooverwrite
 
-    fpath       = findfile('ddp', dryrun=dryrun)
-    opath       = findfile('lumfn_step', dryrun=dryrun)
+    fpath       = findfile('ddp', dryrun=dryrun, survey=survey)
+    opath       = findfile('lumfn_step', dryrun=dryrun, survey=survey)
 
     if nooverwrite:
         overwrite_check(opath)

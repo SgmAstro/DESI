@@ -166,14 +166,11 @@ if __name__ == '__main__':
  
             # Calculated for DDP1 redshift limits. 
     
-            #if configuration.selfcount_volfrac:
-            if self_count:
-                fdelta = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
-                d8     = np.array([float(x.meta['DDP1_d{}__ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
-
-            else:
                 fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
                 d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
+            
+                fdelta_zeropoint = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
+                d8_zeropoint     = np.array([float(x.meta['DDP1_d{}__ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
             
             print('Field vol renormalization: {}'.format(fdelta))
             print('Field d8  renormalization: {}'.format(d8))
@@ -181,12 +178,15 @@ if __name__ == '__main__':
             fdelta = fdelta.mean()
             d8     = d8.mean()
 
+            fdelta_zeropoint = fdelta_zeropoint.mean()
+            d8_zeropoint     = d8_zeropoint.mean()
+            
             print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
 
             ##  TODO 
             ##  fdelta_ddp
-            result = renormalise_d8LF(result, fdelta)
+            result = renormalise_d8LF(result, fdelta, fdelta_zeropoint, self_count)
             
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)

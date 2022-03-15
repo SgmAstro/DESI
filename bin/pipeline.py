@@ -1,3 +1,4 @@
+
 import  os
 import  sys
 import  glob
@@ -112,18 +113,12 @@ if reset:
 
     for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
         cmds.append('rm -f {}/logs/*.log'.format(root))
-        cmds.append('rm -f {}/configs/*'.format(root))
-        cmds.append('rm -f {}/errors/*'.format(root))
-        cmds.append('rm -f {}/ddrp_limits/*'.format(root))
-        cmds.append('rm -f {}/*_dryrun.fits'.format(root))
-        # cmds.append('rm -f {}/*.fits'.format(root))
+        # cmds.append('rm -f {}/*_dryrun.fits'.format(root))
 
     for cmd in cmds:
         print(cmd)
 
         os.system(cmd)
-
-    exit(0)
 
 if reset:
     os.environ['RESET']   = str(1)
@@ -153,6 +148,7 @@ if freshclone:
 
    cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
    cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
+
    cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
    
    for cmd in cmds:    

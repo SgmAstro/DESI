@@ -223,6 +223,6 @@ if __name__ == '__main__':
     assert oversample in np.arange(1, 11, 1)
     
     for xx in [1, oversample]:        
-        randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz)
+        randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)
 
 

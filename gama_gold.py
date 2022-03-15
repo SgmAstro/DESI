@@ -113,7 +113,9 @@ def gama_gold(args):
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}
     
-    dat.write(os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits', format='fits', overwrite=True)
+    # TODO: Check fix.
+    dat.write(opath, format='fits', overwrite=True)
+    #dat.write(os.environ['CODE_ROOT'] + '/data/gama_gold_dryrun.fits', format='fits', overwrite=True)
 
 
 if __name__ == '__main__':

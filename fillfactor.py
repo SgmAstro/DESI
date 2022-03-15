@@ -23,7 +23,6 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nproc', help='nproc', default=8, type=int)
-parser.add_argument('--subsample', help='nproc', default=1, type=int)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=2, type=int)
@@ -34,7 +33,6 @@ field      = args.field.upper()
 dryrun     = args.dryrun
 prefix     = args.prefix
 survey     = args.survey.lower()
-subsample  = args.subsample
 oversample = args.oversample
 fields     = fetch_fields(survey)
 
@@ -44,54 +42,34 @@ assert field in fields, 'Error: Field not in fields'
 nproc  = args.nproc
 realz  = args.realz
 
-
-fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=0)
-
-rand_all    = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-print('rand_all', len(rand_all))
-
-for sample in range(1, oversample):
-    fpath  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=sample)
-    rand    = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-    rand_all    = np.vstack((rand_all, rand))
-
-rand_all = rand_all[0]
-
-print('rand', len(rand))
-
-start  = time.time()
-
 opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
 if args.nooverwrite:
     overwrite_check(opath)
-    
 
+start  = time.time()
+    
 # Read randoms file, split by field (DDP1, or not).
-rand      = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-rand      = rand[::subsample]
-    
-runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
+fpath     = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+_points   = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+points    = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
-idx       = np.argsort(rand['CARTESIAN_X'])
-rand      = rand[idx]
+fpath      = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+_overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+overpoints    = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
-idx_all   = np.argsort(rand_all['CARTESIAN_X'])
-rand_all  = rand_all[idx_all]
+runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
+
+idx       = np.argsort(points[:,0])
+points    = points[idx]
+
+idx       = np.argsort(overpoints[:,0])
+overpoints = overpoints[idx]
 
 runtime   = calc_runtime(start, 'Sorted randoms by X')
 
-points    = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
-points    = points.astype(np.float32)
-
-points_all = np.c_[rand_all['CARTESIAN_X'], rand_all['CARTESIAN_Y'], rand_all['CARTESIAN_Z']]
-points_all = points_all.astype(np.float32)
-
-runtime   = calc_runtime(start, 'Creating big tree.')
-
-
-# Chunked in x; this should be the original data (rand_all)
-split_idx = np.arange(len(points_all))
+# Chunked in x.
+split_idx = np.arange(len(points))
 split_idx = np.array_split(split_idx, 4 * nproc)
 
 nchunk    = len(split_idx)
@@ -105,12 +83,10 @@ for i, idx in enumerate(split_idx):
     xmax       = split[:,0].max()
     
     buff       = .1  # [Mpc/h] 
-
-    # TODO HARDCODE
     
     # Complement uses the oversampled version
-    complement = (points[:,0] > (xmin - 8. - buff)) & (points[:,0] < (xmax + 8. + buff))
-    complement = points[complement]
+    complement = (overpoints[:,0] > (xmin - 8. - buff)) & (overpoints[:,0] < (xmax + 8. + buff))
+    complement = overpoints[complement]
 
     cmin       = complement[:,0].min()
     cmax       = complement[:,0].max() 
@@ -124,8 +100,8 @@ for i, idx in enumerate(split_idx):
 
 runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(nchunk))
 
-del rand
 del points
+del overpoints
 del split
 del split_idx
 
@@ -196,8 +172,8 @@ flat_result = []
 for rr in results:
     flat_result += rr
 
+fpath                = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 rand                 = Table.read(fpath)
-rand                 = rand[::subsample]
 
 rand.sort('CARTESIAN_X')
 

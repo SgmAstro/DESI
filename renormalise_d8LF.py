@@ -9,10 +9,10 @@ def renormalise_d8LF(cat, fdelta, fdelta_zeropoint, self_count=False):
     
     cat = Table(cat, copy=True)
     
-    cat['PHI_N']                      /= fdelta
-    cat['PHI_N_ERROR']                /= fdelta
-    cat['PHI_IVMAX']                  /= fdelta
-    cat['PHI_IVMAX_ERROR']            /= fdelta
+    cat['PHI_N']           /= fdelta
+    cat['PHI_N_ERROR']     /= fdelta
+    cat['PHI_IVMAX']       /= fdelta
+    cat['PHI_IVMAX_ERROR'] /= fdelta
     
     if self_count:
         # tmr_DDP1: [-21.8, -20.1] 

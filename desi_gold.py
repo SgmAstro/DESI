@@ -108,8 +108,7 @@ def desi_gold():
     desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
     desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
     
-    offset = survey_specifics('desi')['pet_offset']
-    desi_zs['LEGACYPET']  = desi_zs['RMAG_DRED'] + offset
+    desi_zs['LEGACYPET']  = desi_zs['RMAG_DRED'] + survey_specifics('desi')['pet_offset']
     
     desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 

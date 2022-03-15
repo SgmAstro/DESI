@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import numpy as np
 import argparse
@@ -9,7 +10,7 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile, overwrite_check
+from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
 
 
@@ -28,6 +29,10 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     seed    = seed + realz + 50 * oversample
 
     np.random.seed(seed)
+
+    call_signature(dryrun, sys.argv)
+
+    exit(0)
 
     ##  ras and decs.                                                                                                                                                              
     if survey == 'gama':    

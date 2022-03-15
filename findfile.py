@@ -26,6 +26,10 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
+def call_signature(dryrun, argv):
+    if dryrun:
+        print('\n\nCall signature:  python3 ' + ' '.join(argv) + '\n\n')
+
 def gather_cat(fpaths):
     if len(fpaths) == 0:
         return  None

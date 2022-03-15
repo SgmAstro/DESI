@@ -34,7 +34,7 @@ parser  = argparse.ArgumentParser(description='Calculate a set of boundary point
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
-parser.add_argument('--sampling',     help='Sampling rate', default=90000)
+parser.add_argument('--sampling',     help='Sampling rate', default=90000, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
@@ -65,7 +65,7 @@ if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
     
 if args.dryrun:
-    sampling  /= 100
+    sampling   = 1000
 
 ##  ras and decs.                                                                                                                                                              
 if survey == 'gama':    

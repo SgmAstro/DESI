@@ -13,7 +13,7 @@ from   cartesian         import cartesian
 from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
-from   config            import configuration
+from   config            import Configuration
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)

@@ -21,10 +21,13 @@ def gama_gold(args):
     if args.nooverwrite:
         overwrite_check(opath)
 
-    dat    = Table.read(fpath)
-    dat    = Table(dat, masked=False)
+    dat     = Table.read(fpath)
+    dat     = Table(dat, masked=False)
 
-    keys   = list(dat.meta.keys())
+    if args.dryrun:
+        dat = dat[:5000]
+
+    keys    = list(dat.meta.keys())
 
     for x in keys:
         if x not in ['VERSION', 'DATE']:
@@ -105,8 +108,7 @@ def gama_gold(args):
 
     write_desitable(opath, dat)
 
-    idx   = np.random.choice(np.arange(len(dat)), 5000, replace=False)
-    dat   = dat[idx]
+    dat   = dat[:5000]
     
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}
@@ -116,6 +118,7 @@ def gama_gold(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
     args   = parser.parse_args()

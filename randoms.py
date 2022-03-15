@@ -32,8 +32,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
     call_signature(dryrun, sys.argv)
 
-    exit(0)
-
     ##  ras and decs.                                                                                                                                                              
     if survey == 'gama':    
         from gama_limits import gama_field

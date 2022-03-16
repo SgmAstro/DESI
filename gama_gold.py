@@ -89,8 +89,9 @@ def gama_gold(args):
     dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
-    offset = survey_specifics('desi')['pet_offset']
-    dat['INDESI'] = (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INDESI
+    if args.in_desi:
+        offset = survey_specifics('desi')['pet_offset']
+        dat['INDESI'] = (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INDESI
     
     # Randomise rows.
     idx = np.arange(len(dat))
@@ -120,7 +121,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-
+    parser.add_argument('--in_desi',  help='Add flag for IN_DESI', action='store_true')
+    
     args   = parser.parse_args()
 
     gama_gold(args)

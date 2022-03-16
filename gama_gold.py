@@ -91,7 +91,7 @@ def gama_gold(args):
 
     if args.in_desi:
         offset = survey_specifics('desi')['pet_offset']
-        dat['IND8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
+        dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
     
     # Randomise rows.
     idx = np.arange(len(dat))

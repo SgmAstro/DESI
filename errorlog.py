@@ -94,12 +94,12 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     with open(errorlog_path, 'a') as fh:
         fh.write('\n\n**********************************************************************************\n')
 
-    errorlog.error('New Exception', exc_info=(exc_type, exc_value, exc_traceback))
+    errorlog.error('ERROR', exc_info=(exc_type, exc_value, exc_traceback))
 
     with open(errorlog_path, 'a') as fh:
         fh.write('\n\n**********************************************************************************\n')
 
-    print(f'Error logged at {errorlog_path}')
+    print(f'ERROR:  logged at {errorlog_path}')
 
 
 sys.excepthook = handle_exception

@@ -149,7 +149,8 @@ if freshclone:
    cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
    cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
 
-   cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
+# HACK!!!!!
+   cmds.append('git clone --branch oversampling_testrun https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
    
    for cmd in cmds:    
        out = run_command(cmd, noid=True)

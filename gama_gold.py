@@ -121,7 +121,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--in_desi',  help='Add flag for IN_DESI', action='store_true')
+    parser.add_argument('--in_desi',  help='Add flag for IN_DESI', action='store_true', default=True)
     
     args   = parser.parse_args()
 

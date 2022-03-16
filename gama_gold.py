@@ -89,6 +89,9 @@ def gama_gold(args):
     dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
+    offset = survey_specifics('desi')['pet_offset']
+    dat['INDESI'] = (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INDESI
+    
     # Randomise rows.
     idx = np.arange(len(dat))
     idx = np.random.choice(idx, size=len(idx), replace=False)

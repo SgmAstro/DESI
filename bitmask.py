@@ -210,6 +210,7 @@ _bitdefs = yaml.safe_load('''
     lumfn_mask:
      - [DDP1ZLIM, 0, "Galaxy not in DDP limits"]
      - [FILLFACTOR,  1, "Fillfactor < 0.8"]
+     - [INDESI, 2, "Galaxy is NOT in DESI survey"]
 ''')
 
 lumfn_mask = BitMask('lumfn_mask', _bitdefs)

@@ -112,7 +112,7 @@ def overwrite_check(opath, ext=None):
                     if hdr['EXTNAME'] == 'BOUNDARY':
                         exist = True
 
-                        print(f'Found existing BOUNDARY extension to {opath} and overwrite forbidden (--nooverwrite).')
+                        print(f'WARNING:  Found existing BOUNDARY extension to {opath} and overwrite forbidden (--nooverwrite).')
                         
                 except KeyError as E:
                     pass

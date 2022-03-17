@@ -14,7 +14,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check, call_si
 from   gama_limits       import gama_limits, gama_field
 
 
-def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
+def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=16, realz=0):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -203,7 +203,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1.0, type=float)
-    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=16, type=int)
     parser.add_argument('--seed',         help='Random seed.', default=314, type=int)
 
     # Defaults to GAMA Gold limits. 

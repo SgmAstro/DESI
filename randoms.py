@@ -223,7 +223,7 @@ if __name__ == '__main__':
     density = args.density
     oversample = args.oversample
 
-    assert oversample in np.arange(1, 11, 1)
+    assert oversample in np.arange(1, 21, 1)
     
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)

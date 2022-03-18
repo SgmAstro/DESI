@@ -185,6 +185,7 @@ rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
 rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
 
 rand.meta['RSPHERE'] = 8.
+rand.meta['IMMUTABLE'] = 'FALSE'
 
 boundary = Table.read(fpath, 'BOUNDARY')
 

@@ -24,7 +24,6 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
-
 def reset(supported=True, printonly=False):
     if supported:
         fpaths  = supported_files(dryrun=True)

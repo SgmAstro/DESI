@@ -26,6 +26,22 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
+
+def reset():
+    sys.path.append('{}/DESI/bin'.format(os.environ['HOME']))
+    from pipeline import run_command
+
+    home = os.environ['HOME']
+    os.chdir(f'{home}')
+
+    cmds = []
+    cmds.append('rm -rf {}/*'.format(os.environ['RANDOMS_DIR']))
+    cmds.append('rm -rf {}/gama*'.format(os.environ['GOLD_DIR']))
+    cmds.append('rm -rf {}/desi_*'.format(os.environ['GOLD_DIR']))
+
+    for cmd in cmds:    
+        out = run_command(cmd, noid=True)
+
 def call_signature(dryrun, argv):
     if dryrun:
         print('\n\nCall signature:  python3 ' + ' '.join(argv) + '\n\n')

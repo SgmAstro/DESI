@@ -11,29 +11,7 @@ from    subprocess import check_output
 from    findfile   import fetch_fields
 from    submit     import customise_script
 from    config     import Configuration
-
-def run_command(cmd, noid=False):
-    print('Command: {}'.format(cmd))
-
-    cmd = cmd.split()
-
-    env = {}
-    # env.update(os.environ)
-
-    # print('Calling ...')
-
-    out = check_output(cmd)
-    out = out.decode('utf-8') 
-    out = out.replace('\n', '')
-    
-    # print(out)
-
-    if noid:
-        out=0
-    
-    out = int(out)
-    
-    return out
+from    utils      import run_command
 
 # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log
 # Head:   python3 pipeline.py --survey desi 
@@ -148,7 +126,6 @@ if freshclone:
 
    cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
    cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
-
    cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
    
    for cmd in cmds:    

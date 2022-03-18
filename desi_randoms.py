@@ -33,5 +33,7 @@ def desi_randoms(ros):
     
     rand.rename_column('RA',  'RANDOM_RA')
     rand.rename_column('DEC', 'RANDOM_DEC')
+
+    rand.meta['IMMUTABLE'] = 'TRUE'
     
     return  rand

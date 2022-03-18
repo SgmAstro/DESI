@@ -211,6 +211,7 @@ _bitdefs = yaml.safe_load('''
      - [DDP1ZLIM, 0, "Galaxy not in DDP limits"]
      - [FILLFACTOR,  1, "Fillfactor < 0.8"]
      - [INBGSBRIGHT, 2, "Galaxy not in BGS Bright"]
+     - [BOUNDDIST, 3, "Boundary distance > 8"]
 ''')
 
 lumfn_mask = BitMask('lumfn_mask', _bitdefs)

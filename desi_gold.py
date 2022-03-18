@@ -145,8 +145,11 @@ def desi_gold():
     desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
     desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
 
-    desi_zs.meta['IMMUTABLE'] = 'TRUE'
+    desi_zs['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
+    desi_zs['CONSERVATIVE'] = np.zeros_like(dat['FIELD'], dtype=int)
 
+    desi_zs.meta['IMMUTABLE'] = 'TRUE'
+    
     desi_zs.pprint()
 
     # TODO: FIND_FILE

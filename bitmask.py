@@ -205,7 +205,6 @@ class BitMask(object):
     
     
 # TODO: Wrap in main?
-
 _bitdefs = yaml.safe_load('''
     lumfn_mask:
      - [DDP1ZLIM,     0, "Galaxy not in DDP limits"]
@@ -215,9 +214,10 @@ _bitdefs = yaml.safe_load('''
 ''')
 
 _cbitdefs = yaml.safe_load('''
-    conservative_mask:
-     - [BOUNDDIST,    0, "Boundary distance < 8"]
+    consv_mask:
+     - [DDP1ZLIM,     0, "Galaxy not in conservative DDP limits"]   
+     - [BOUNDDIST,    1, "Boundary distance < 8"]
 ''')
 
 lumfn_mask = BitMask('lumfn_mask', _bitdefs)
-consv_masl = BitMask('conservative_mask', _cbitdefs)
+consv_mask = BitMask('consv_mask', _cbitdefs)

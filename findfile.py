@@ -334,7 +334,7 @@ def file_check(dryrun=None, return_success=True, immutable=False):
 
     else:
         gama_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/gama*.fits'))
-        desi_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/desi_*.fits'))
+        desi_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/desi_gold_*.fits'))
         rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/gama*.fits'))
         all_paths   = gama_gold_paths + desi_gold_paths + rand_paths
         

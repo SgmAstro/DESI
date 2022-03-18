@@ -145,6 +145,8 @@ def desi_gold():
     desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
     desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
 
+    desi_zs.meta['IMMUTABLE'] = 'TRUE'
+
     desi_zs.pprint()
 
     # TODO: FIND_FILE
@@ -200,6 +202,8 @@ def desi_gold():
     desi_zs['GAMA_SEP']   = d2d.to(u.arcsec)
     desi_zs['GOOD_MATCH'] = desi_zs['GAMA_SEP'] < 0.3
     
+    desi_zs.meta['IMMUTABLE']  = 'TRUE'
+
     max_sep      = 0.5 * u.arcsec
 
     print('Fraction desi matched to gold at 0.5 arcseconds: {:.6f}'.format(np.mean(desi_zs['GAMA_SEP'] < max_sep)))
@@ -233,6 +237,8 @@ def desi_gold():
 
     print('Fraction gold matched to desi at 0.5 arcseconds: {:.6f}'.format(np.mean(gold['DESI_SEP'] < max_sep)))
 
+    gold.meta['IMMUTABLE'] = 'TRUE'
+
     opath = fpath.replace('gama_gold', 'gama_desi')
     
     print('Writing {}'.format(opath))
@@ -249,6 +255,7 @@ def desi_gold():
     print('Writing {}'.format(opath))
 
     desi_zs.meta['AREA'] = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
+    desi_zs.meta['IMMUTABLE'] = 'TRUE'
     
     desi_zs.write(opath, format='fits', overwrite=True)
 

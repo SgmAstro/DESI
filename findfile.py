@@ -124,7 +124,7 @@ def overwrite_check(opath, ext=None):
             exit(0)
         
 
-def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None):
+def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, fpath=None):
     if allsupported:
         result  = OrderedDict()
 
@@ -143,8 +143,8 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
         return  result
 
-    ## 
-    fpath = findfile(ftype=ftype, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
+    if fpath is None:
+        fpath = findfile(ftype=ftype, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
  
     if name:
         return  getval(fpath, name, ext)
@@ -165,7 +165,6 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
         return  result
 
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1):        
-
     if survey == None:
         survey = 'gama'
 
@@ -271,7 +270,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
     return  fpath
 
-def file_check(dryrun=None):        
+def supported_files(dryrun=None):        
     try:
         dryrun = os.environ['DRYRUN']
 
@@ -282,12 +281,11 @@ def file_check(dryrun=None):
 
     fpaths = []
 
-    # HACK: Removed 'desi'
     for survey in ['desi', 'gama']:
         for xx in supported:
             fpaths.append(findfile(xx, dryrun=False, survey=survey))
 
-        fields  = fetch_fields(survey)
+        fields = fetch_fields(survey)
 
         for field in fields:
             for prefix in [None, 'randoms_ddp1']:
@@ -300,40 +298,63 @@ def file_check(dryrun=None):
                 fpaths.append(findfile('ddp_n8_d0',       dryrun=False, field=field, utier=ii, survey=survey))
                 fpaths.append(findfile('ddp_n8_d0_vmax',  dryrun=False, field=field, utier=ii, survey=survey))
                 fpaths.append(findfile('ddp_n8_d0_lumfn', dryrun=False, field=field, utier=ii, survey=survey))
-        
+
+    return fpaths
+
+def unsupported_files(dryrun=None):
+    fpaths = supported_files(dryrun=dryrun)
+
+    gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
+    rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
+
+    all_paths   = gold_paths + rand_paths
+
+    unsupported = [x for x in all_paths if x not in fpaths]
+    unsupported = [x for x in unsupported if 'dryrun' not in x]
+
+    return unsupported
+
+def file_check(dryrun=None):
+    fpaths = supported_files(dryrun=dryrun)
+    unsupported = unsupported_files(dryrun=dryrun)
+
     print('\n\n----  SUPPORTED FPATHS    ----\n')
 
     for fp in fpaths:
         if os.path.isfile(fp):
             mtime = os.path.getmtime(fp)
             mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+
+            try:
+                immutable = fetch_header(fpath=fp, name='IMMUTABLE')
             
+            except:
+                immutable = 'UNDEFINED'
+
         else:
             mtime = ''
 
-        print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
-
-    gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
-    rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
-    all_paths   = gold_paths + rand_paths
+        print('{}\t\t{}\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime, immutable))
     
-    unsupported = [x for x in all_paths if x not in fpaths]
-    unsupported = [x for x in unsupported if 'dryrun' not in x]
-
     print('\n\n----  UNSUPPORTED FPATHS    ----\n')
     
     for fp in unsupported:
         if os.path.isfile(fp):
             mtime = os.path.getmtime(fp)
             mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+            
+            try:
+                immutable =fetch_header(fpath=fp, name='IMMUTABLE')
+                
+            except:
+                immutable = 'UNDEFINED'
+
         else:
             mtime = ''
 
-        print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
+        print('{}\t\t{}\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime, immutable))
 
-    # print('\n\n----  Multiple fields    ----\n')
-
-    return  ~np.all([os.path.isfile(fp) for fp in all_paths])
+    return  ~np.all([os.path.isfile(fp) for fp in fpaths])
 
 
 if __name__ == '__main__':

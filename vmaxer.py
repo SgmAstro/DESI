@@ -9,7 +9,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
 
     extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
 
-    if rand != None:
+    if rand is not None:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
@@ -30,7 +30,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     result      = result[result[zcol] >= zmin]
     result      = result[result[zcol] <= zmax]
 
-    if rand != None:
+    if rand is not None:
         vmax_rand                        = rand[(zmin < rand['Z']) & (rand['Z'] < zmax)]
 
         fillfactor_vmax_min              = result['FILLFACTOR_VMAX'][result['ZMAX'] >= zmin].min()

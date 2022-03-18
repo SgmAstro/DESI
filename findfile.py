@@ -26,6 +26,18 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
+
+def reset():
+    from pipeline import run_command
+
+    
+    fpaths= file_check(return_success=False, immutable=True)
+    
+    for fpath in fpaths:
+        cmd = f'rm -rf {fpath}'
+        out = run_command(cmd, noid=True)
+
+
 def call_signature(dryrun, argv):
     if dryrun:
         print('\n\nCall signature:  python3 ' + ' '.join(argv) + '\n\n')
@@ -353,6 +365,52 @@ def file_check(dryrun=None):
             mtime = ''
 
         print('{}\t\t{}\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime, immutable))
+=======
+
+    if return_success == True:
+        print('\n\n----  SUPPORTED FPATHS    ----\n')
+
+        for fp in fpaths:
+            if os.path.isfile(fp):
+                mtime = os.path.getmtime(fp)
+                mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+
+            else:
+                mtime = ''
+
+            print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
+
+        
+    if not immutable:
+        gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
+        rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
+        all_paths   = gold_paths + rand_paths
+
+    else:
+        gama_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/gama*.fits'))
+        desi_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/desi_gold_*.fits'))
+        rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/gama*.fits'))
+        all_paths   = gama_gold_paths + desi_gold_paths + rand_paths
+        
+    if return_success == False:
+        return all_paths
+
+    unsupported = [x for x in all_paths if x not in fpaths]
+    unsupported = [x for x in unsupported if 'dryrun' not in x]
+
+    
+    if return_success == True:
+        print('\n\n----  UNSUPPORTED FPATHS    ----\n')
+
+        for fp in unsupported:
+            if os.path.isfile(fp):
+                mtime = os.path.getmtime(fp)
+                mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                mtime = ''
+
+            print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
+>>>>>>> 3055d01ba7082f79cf470ed1441a7611a80ea520
 
     return  ~np.all([os.path.isfile(fp) for fp in fpaths])
 

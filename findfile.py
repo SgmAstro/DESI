@@ -13,9 +13,7 @@ from   delta8_limits   import d8_limits
 from   gama_fields     import gama_fields
 from   desi_fields     import desi_fields
 from   astropy.io.fits import getval, getheader
-
-from   gama_fields   import gama_fields
-from   desi_fields   import desi_fields
+from   utils           import run_command
 
 supported = ['gold',\
              'kE',\
@@ -27,16 +25,30 @@ supported = ['gold',\
              'ddp_n8']
 
 
-def reset():
-    from pipeline import run_command
+def reset(supported=True, printonly=False):
+    if supported:
+        fpaths  = supported_files(dryrun=True)
+        fpaths += supported_files(dryrun=False) 
 
-    
-    fpaths= file_check(return_success=False, immutable=True)
+    else:
+        fpaths += unsupported_files(dryrun=True)
+        fpaths += unsupported_files(dryrun=False)
     
     for fpath in fpaths:
-        cmd = f'rm -rf {fpath}'
-        out = run_command(cmd, noid=True)
+        try:
+            immutable = fetch_header(fpath=fp, name='IMMUTABLE')
+                        
+        except:
+            immutable = 'UNDEFINED'
 
+        print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
+
+        if (immutable == 'TRUE'):
+            pass
+
+        if not printonly:
+            cmd = f'rm -rf {fpath}'
+            out = run_command(cmd, noid=True)
 
 def call_signature(dryrun, argv):
     if dryrun:
@@ -287,8 +299,6 @@ def supported_files(dryrun=None):
         dryrun = os.environ['DRYRUN']
 
     except Exception as E:
-        print(E)
-
         dryrun = ''
 
     fpaths = []
@@ -324,7 +334,7 @@ def unsupported_files(dryrun=None):
     unsupported = [x for x in all_paths if x not in fpaths]
     unsupported = [x for x in unsupported if 'dryrun' not in x]
 
-    return unsupported
+    return  unsupported
 
 def file_check(dryrun=None):
     fpaths = supported_files(dryrun=dryrun)
@@ -345,6 +355,7 @@ def file_check(dryrun=None):
 
         else:
             mtime = ''
+            immutable = 'UNDEFINED'
 
         print('{}\t\t{}\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime, immutable))
     
@@ -363,59 +374,15 @@ def file_check(dryrun=None):
 
         else:
             mtime = ''
+            immutable = 'UNDEFINED'
 
         print('{}\t\t{}\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime, immutable))
-=======
-
-    if return_success == True:
-        print('\n\n----  SUPPORTED FPATHS    ----\n')
-
-        for fp in fpaths:
-            if os.path.isfile(fp):
-                mtime = os.path.getmtime(fp)
-                mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
-
-            else:
-                mtime = ''
-
-            print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
-
-        
-    if not immutable:
-        gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
-        rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
-        all_paths   = gold_paths + rand_paths
-
-    else:
-        gama_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/gama*.fits'))
-        desi_gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/desi_gold_*.fits'))
-        rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/gama*.fits'))
-        all_paths   = gama_gold_paths + desi_gold_paths + rand_paths
-        
-    if return_success == False:
-        return all_paths
-
-    unsupported = [x for x in all_paths if x not in fpaths]
-    unsupported = [x for x in unsupported if 'dryrun' not in x]
-
-    
-    if return_success == True:
-        print('\n\n----  UNSUPPORTED FPATHS    ----\n')
-
-        for fp in unsupported:
-            if os.path.isfile(fp):
-                mtime = os.path.getmtime(fp)
-                mtime = datetime.datetime.utcfromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
-            else:
-                mtime = ''
-
-            print('{}\t\t{}\t{}'.format(fp.ljust(100), os.path.isfile(fp), mtime))
->>>>>>> 3055d01ba7082f79cf470ed1441a7611a80ea520
 
     return  ~np.all([os.path.isfile(fp) for fp in fpaths])
-
 
 if __name__ == '__main__':
     failure = file_check()
     
     print('\n\nSuccess: {}\n\n'.format(~failure))
+
+    reset(printonly=True)

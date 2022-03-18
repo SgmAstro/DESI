@@ -31,7 +31,6 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
-parser.add_argument('--conservative',  help='Use conservative values', action='store_true', default=False)
 
 args   = parser.parse_args()
 
@@ -41,7 +40,6 @@ prefix = args.prefix
 survey = args.survey.lower()
 nproc  = args.nproc
 realz  = args.realz
-conservative = args.conservative
 
 start  = time.time()
 
@@ -164,10 +162,9 @@ if prefix = 'randoms_ddp1':
     isin = (rand['Z'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['Z'] > 1.1 * rand.meta['DDP1_ZMIN'])
 else:
     isin = (rand['Z'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['Z'] > 1.1 * rand.meta['DDP1_ZMIN'])
-'''
 
 rand['CONSERVATIVE'][~isin] += isin * consv_mask.DDP1ZLIM
-
+'''
 
 runtime = calc_runtime(start, 'Shuffling')
 

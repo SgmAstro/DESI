@@ -3,7 +3,7 @@ import numpy         as     np
 from   astropy.table import Table
 from   cosmo         import volcom
 
-def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
+def vmaxer(dat, zmin, zmax, extra_cols=[], rand=None, conservative=False):
     assert  dat[zcol].min() <= zmin
     assert  dat[zcol].max() >= zmax
 
@@ -12,31 +12,41 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
     if rand is not None:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
-    cols        = [zcol, 'ZMIN', 'ZMAX'] + extra_cols
+    cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))
+
+    result      = Table(dat[cols], copy=True)
+    result.meta = dat.meta
+
+    result      = result[result['ZSURV'] >= zmin]
+    result      = result[result['ZSURV'] <= zmax]
+    
+    if conservative:
+        result  = result[result['CONSERVATIVE'] == 0] 
+
+    zmin        = result['ZSURV'].min()
+    zmax        = result['ZSURV'].max()
 
     area        = dat.meta['AREA']
     VV          = volcom(zmax, area) - volcom(zmin, area)
 
     print('Retrieved area {:.4f} [sq. deg.]'.format(area))
     
-    result      = Table(dat[cols], copy=True)
-
-    result.meta = dat.meta
     result.meta.update({'FORCE_ZMIN': zmin,\
                         'FORCE_ZMAX': zmax,\
                         'VOLUME':       VV})
 
-    result      = result[result[zcol] >= zmin]
-    result      = result[result[zcol] <= zmax]
-
     if rand is not None:
-        vmax_rand                        = rand[(zmin < rand['Z']) & (rand['Z'] < zmax)]
+        vmax_rand                 = rand[(zmin < rand['Z']) & (rand['Z'] < zmax)]
 
-        fillfactor_vmax_min              = result['FILLFACTOR_VMAX'][result['ZMAX'] >= zmin].min()
-        fillfactor_vmax_max              = result['FILLFACTOR_VMAX'][result['ZMAX'] <= zmax].max()
+        if conservative:
+            vmax_rand             = vmax_rand[vmax_rand['CONSERVATIVE'] == 0]
+
+        # TODO:  Check if we need rand_zmin.
+        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['ZMAX'] >= zmin].min()
+        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['ZMAX'] <= zmax].max()
         
-        result['FILLFACTOR_VMAX']        = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
+        result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
 
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
@@ -46,5 +56,7 @@ def vmaxer(dat, zmin, zmax, zcol='ZGAMA', extra_cols=[], rand=None):
 
     result['VZ']    = volcom(result[zcol], area)
     result['VZ']   -= volcom(result['ZMIN'], area)
+
+    result.meta['CONSERVATIVE'] = conservative
 
     return  result

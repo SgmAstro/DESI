@@ -28,8 +28,7 @@ supported = ['gold',\
 
 
 def reset():
-    sys.path.append('{}/DESI/bin'.format(os.environ['HOME']))
-    from pipeline import run_command
+    from bin.pipeline import run_command
 
     fpaths= file_check(return_success=False, immutable=True)
     

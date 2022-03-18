@@ -92,7 +92,7 @@ dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 dat['CONSERVATIVE'] += (dat['BOUNDDIST'].data < 8.) * consv_mask.BOUNDDIST
 
 isin                        = (dat['ZSURV'] < 0.9 * dat.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * dat.meta['DDP1_ZMIN'])
-dat['CONSERVATIVE'][~isin] += (dat['ZSURV'] < dat.meta['DDP1_ZMAX']*0.9) * lumfn_mask.DDP1ZLIM
+dat['CONSERVATIVE'][~isin] += isin * lumfn_mask.DDP1ZLIM
 
 _idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 

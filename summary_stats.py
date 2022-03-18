@@ -16,11 +16,13 @@ from   findfile      import findfile
 
 parser = argparse.ArgumentParser(description='Generate Summary Stats')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+parser.add_argument('-v', '--version', help='Select version', default='GAMA4')
 
 args   = parser.parse_args()
 survey = args.survey
+version = args.version
 
-fpath            = findfile(ftype='ddp', survey=survey)
+fpath            = findfile(ftype='ddp', survey=survey, version=version)
 dat              = Table.read(fpath)
 names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
 
@@ -77,7 +79,10 @@ ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex
 
 rows = []
 
-rand = Table.read('{}/randoms_bd_ddp_n8_G9_0.fits'.format(os.environ['RANDOMS_DIR']))
+# add findfile
+rpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, version=version, field='G9')
+rand = Table.read(rpath)
+#rand = Table.read('{}/randoms_bd_ddp_n8_G9_0.fits'.format(os.environ['RANDOMS_DIR']))
 #fpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, field=fetch_fields(survey)[0])
 #rand = Table.read(fpath)
 
@@ -87,7 +92,11 @@ for idx in np.arange(9):
     nd8 = 0 
     
     for field in ['G9', 'G12', 'G15']:
-        dat  = Table.read('{}/data/GAMA4/gama_gold_{}_ddp_n8_d0_{}.fits'.format(os.environ['HOME'], field, idx))
+        
+        fpath = findfile(ftype='ddp_n8_d0', survey=survey, version=version, field=field, utier=idx)
+        dat   = Table.read(fpath)
+        
+        #dat  = Table.read('{}/data/GAMA4/gama_gold_{}_ddp_n8_d0_{}.fits'.format(os.environ['HOME'], field, idx))
         #fpath = findfile(ftype='ddp_n8_d0', survey=survey, field=field, utier=idx)
         #dat   = Table.read(fpath)
         
@@ -100,9 +109,10 @@ print('\n\n')
 # Generate Table 3 of McNaught-Roberts (2014).
 result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]', 'fd8']) #, 'N_{d8}/N_{max}'])
 
+# TODO: CHECK THE MATHS BY HAND
 result['N_{d8} / N_{max}'] = result['N_{d8} [1e3]'] / max(result['N_{d8} [1e3]'])
 
-result['TMR N/N_{max}'] = tmr_Nd8 / max(tmr_Nd8)
+result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[5]
 
 for col in result.itercols():
     if col.info.dtype.kind == 'f':        

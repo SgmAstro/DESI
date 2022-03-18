@@ -73,7 +73,8 @@ def gama_gold(args):
     dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
     dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
     dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
-
+    dat['CONSERVATIVE'] = np.zeros_like(dat['FIELD'], dtype=int)
+    
     xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
     
     dat['CARTESIAN_X'] = xyz[:,0]

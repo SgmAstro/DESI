@@ -205,13 +205,19 @@ class BitMask(object):
     
     
 # TODO: Wrap in main?
-
 _bitdefs = yaml.safe_load('''
     lumfn_mask:
-     - [DDP1ZLIM, 0, "Galaxy not in DDP limits"]
-     - [FILLFACTOR,  1, "Fillfactor < 0.8"]
-     - [INBGSBRIGHT, 2, "Galaxy not in BGS Bright"]
-     - [BOUNDDIST, 3, "Boundary distance > 8"]
+     - [DDP1ZLIM,     0, "Galaxy not in DDP limits"]
+     - [FILLFACTOR,   1, "Fillfactor < 0.8"]
+     - [INBGSBRIGHT,  2, "Galaxy not in BGS Bright"]
+     - [CONSERVATIVE, 3, "Galaxy not conserved; see CONSERVATIVE mask"]
+''')
+
+_cbitdefs = yaml.safe_load('''
+    consv_mask:
+     - [DDP1ZLIM,     0, "Galaxy not in conservative DDP limits"]   
+     - [BOUNDDIST,    1, "Boundary distance < 8"]
 ''')
 
 lumfn_mask = BitMask('lumfn_mask', _bitdefs)
+consv_mask = BitMask('consv_mask', _cbitdefs)

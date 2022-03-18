@@ -53,6 +53,8 @@ cd $CODE_ROOT
 
 echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
 
+python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_stepwise.log
+
 # References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
 python gen_gold_lf.py $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
 

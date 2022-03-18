@@ -6,7 +6,8 @@ import fitsio
 from   astropy.table import Table
 from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   findfile      import findfile, overwrite_check
-from   bitmask       import BitMask, lumfn_mask
+from   bitmask       import BitMask, lumfn_mask, consv_mask
+
 
 parser = argparse.ArgumentParser(description='Gen ddp cat.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
@@ -37,6 +38,9 @@ print('Judging DDP.')
 dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv], survey)
 
 dat['IN_D8LUMFN'] += (dat['DDPZLIMS'][:,0] == 0) * lumfn_mask.DDP1ZLIM
+
+isin                        = (dat['ZSURV'] < 0.9 * dat.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * dat.meta['DDP1_ZMIN'])
+dat['CONSERVATIVE'][~isin] += isin * consv_mask.DDP1ZLIM
 
 dat.meta.update(zlims)
 dat.meta.update({'TMR_DDP1': str(tmr_DDP1),\

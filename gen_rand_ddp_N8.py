@@ -22,11 +22,12 @@ parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
-args    = parser.parse_args()
-field   = args.field.upper()
-dryrun  = args.dryrun
-prefix  = args.prefix
-survey  = args.survey.lower()
+args        = parser.parse_args()
+field       = args.field.upper()
+dryrun      = args.dryrun
+prefix      = args.prefix
+survey      = args.survey.lower()
+nooverwrite = args.nooverwrite
 
 fields  = fetch_fields(survey)
 
@@ -45,7 +46,8 @@ runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6)
 fpath   = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 opath   = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
-overwrite_check(opath)
+if nooverwrite:
+    overwrite_check(opath)
     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)

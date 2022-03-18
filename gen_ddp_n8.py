@@ -20,6 +20,7 @@ parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
 parser.add_argument('--prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--conservative',  help='Use conservative values', action='store_true', default=False)
 
 args   = parser.parse_args()
 realz  = args.realz
@@ -87,6 +88,12 @@ dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 dat['FILLFACTOR_VMAX'] = -99.
 dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+
+if args.conservative:
+    dat['IN_CSVD8LUMFN'] = (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+    dat['IN_CSVD8LUMFN'] = (dat['BOUNDDIST'].data < 8) * lumfn_mask.BOUNDDIST
+    dat['IN_CSVD8LUMFN'] = (dat['DDPZLIMS'][:,0] == 0) * lumfn_mask.DDP1ZLIM
+    dat['IN_CSVD8LUMFN'] = (dat['ZSURV'] < dat.meta['DDP1_ZMAX']*0.9) * lumfn_mask.DDP1ZLIM
 
 _idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 

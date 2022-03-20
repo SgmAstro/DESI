@@ -154,7 +154,7 @@ sphere_radius      = rand.meta['RSPHERE']
 rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
-rand['CONSERVATIVE'] += (rand['BOUNDDIST'].data < 8.) * consv_mask.BOUNDDIST
+rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
 
 '''
 if prefix = 'randoms_ddp1':
@@ -162,7 +162,7 @@ if prefix = 'randoms_ddp1':
 else:
     isin = (rand['Z'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['Z'] > 1.1 * rand.meta['DDP1_ZMIN'])
 
-rand['CONSERVATIVE'][~isin] += isin * consv_mask.DDP1ZLIM
+rand['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
 '''
 
 runtime = calc_runtime(start, 'Shuffling')

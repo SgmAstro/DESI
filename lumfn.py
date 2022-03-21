@@ -43,11 +43,15 @@ def multifield_lumfn(lumfn_list):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=False):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=False, conservative=False):
     dat = Table(dat, copy=True)
 
     if fillfactor:
-        dat      = dat[dat['IN_D8LUMFN'] == 0]
+        if conservative:
+            dat      = dat[dat['CONSERVATIVE'] == 0]
+        else:
+            dat      = dat[dat['IN_D8LUMFN'] == 0]
+            
         dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
 
     else:

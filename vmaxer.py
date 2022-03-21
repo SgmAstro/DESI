@@ -3,10 +3,17 @@ import numpy         as     np
 from   astropy.table import Table
 from   cosmo         import volcom
 
-def vmaxer(dat, zmin, zmax, extra_cols=[], rand=None, conservative=False):
-    assert  dat[zcol].min() <= zmin
-    assert  dat[zcol].max() >= zmax
+def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], rand=None, conservative=False):
+    
+    # if acceptable, can remove zcol as an argument
+    #assert  dat[zcol].min() <= zmin
+    #assert  dat[zcol].max() >= zmax
 
+    assert  dat['ZSURV'].min() <= zmin
+    assert  dat['ZSURV'].max() >= zmax
+    
+    zcol = 'ZSURV'
+    
     extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
 
     if rand is not None:

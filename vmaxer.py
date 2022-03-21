@@ -3,7 +3,7 @@ import numpy         as     np
 from   astropy.table import Table
 from   cosmo         import volcom
 
-def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], rand=None, fillfactor=True, conservative=False):
+def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
         
@@ -38,22 +38,11 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], rand=None, fillfactor=True, con
                         'FORCE_ZMAX': zmax,\
                         'VOLUME':       VV})
 
-    # TODO: shouldn't introduce a rand dependence here.
-    # I don't think the rand is even used?
-    # if rand is not None:
-    if True:
-        '''
-        vmax_rand                 = rand[(zmin < rand['Z']) & (rand['Z'] < zmax)]
-
-        if conservative:
-            vmax_rand             = vmax_rand[vmax_rand['CONSERVATIVE'] == 0]
-        '''
+    # TODO:  assumes monotonic.
+    fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['Z'] >= zmin].min()
+    fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['Z'] <= zmax].max()
         
-        # TODO:  Check if we need rand_zmin.
-        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['ZMAX'] >= zmin].min()
-        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['ZMAX'] <= zmax].max()
-        
-        result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
+    result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
 
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
@@ -65,10 +54,10 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], rand=None, fillfactor=True, con
     result['VZ']   -= volcom(result['ZMIN'], area)
 
     result.meta['CONSERVATIVE'] = conservative
+    result.meta['FILLFACTOR'] = fillfactor
 
     if fillfactor:
-        result.meta['FILLFACTOR'] = True
+        result          = result[result['IN_D8LUMFN'] == 0]
         result['VMAX'] *= result['FILLFACTOR_VMAX']
-        result = result[result['IN_D8LUMFN'] == 0]
     
     return  result

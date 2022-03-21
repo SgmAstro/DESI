@@ -5,6 +5,20 @@ from   cosmo           import volcom
 from   bitmask         import BitMask, lumfn_mask, consv_mask
 from   gen_rand_ddp_n8 import volfracs()
 
+def vmaxer_rand(rand, conservative=False):
+    rand = rand[rand['ZSURV'] >= zmin]
+    rand = rand[rand['ZSURV'] <= zmax]
+
+    if conservative:
+        rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
+
+        isin                  = (rand['ZSURV'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['ZSURV'] > 1.1 * rand.meta['DDP1_ZMIN'])
+        rand['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
+
+    # TODO: volfracs currently assumes fillfactor > 0.8 rather than more general bit cut.                                                                                                                 
+    rand = volfracs(rand)
+
+    raise NotImplementedError()
 
 def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
@@ -68,7 +82,4 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=F
         isin                    = (result['ZSURV'] < 0.9 * result.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * result.meta['DDP1_ZMIN'])                                                                    
         result['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM 
 
-    # TODO: volfracs currently assumes fillfactor > 0.8 rather than more general bit cut. 
-    result = volfracs(result)
-        
     return  result

@@ -90,10 +90,12 @@ def gama_gold(args):
     dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
+    '''
     if args.in_bgsbright:
         offset = survey_specifics('desi')['pet_offset']
         dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
-        
+    '''
+    
     # Randomise rows.
     idx = np.arange(len(dat))
     idx = np.random.choice(idx, size=len(idx), replace=False)

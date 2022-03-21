@@ -3,8 +3,8 @@ import numpy           as     np
 from   astropy.table   import Table
 from   cosmo           import volcom
 from   bitmask         import lumfn_mask, consv_mask
-from   gen_rand_ddp_n8 import volfracs()
-from   findfile        import get_fields
+from   gen_rand_ddp_N8 import volfracs
+from   findfile        import fetch_fields
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False):
     fields = fetch_fields(survey=survey)
@@ -61,8 +61,8 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     # Columns to be propagated
     extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN', 'CONSERVATIVE']
 
-    if rand is not None:
-        extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
+    #if rand is not None:
+    #extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))

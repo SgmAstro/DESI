@@ -25,7 +25,6 @@ realz  = args.realz
 dryrun = args.dryrun
 prefix = args.prefix
 survey = args.survey.lower()
-consv  = args.conservative
 
 fields = fetch_fields(survey)
 

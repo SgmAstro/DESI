@@ -43,16 +43,13 @@ def multifield_lumfn(lumfn_list):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=False):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask=None):
     dat = Table(dat, copy=True)
 
-    if fillfactor:
-        dat      = dat[dat['IN_D8LUMFN'] == 0]
-        dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
+    if bitmask is not None:
+        dat = dat[dat[bitmask] == 0]
 
-    else:
-        dvmax    = dat['VMAX'].data
-
+    dvmax  = dat['VMAX'].data
     vol    = dat.meta['VOLUME']
 
     # assert  dat[Mcol].min() >= Ms.min()
@@ -84,9 +81,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
         ivmax2  = 1. / vmax**2.
 
         # TODO: remove NaNs from dataset by setting M to mid bin.
-        
         # nsample == 0; set M to mid bin.
-
         result.append([median,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\

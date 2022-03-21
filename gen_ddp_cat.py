@@ -39,10 +39,6 @@ dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat[z
 
 dat['IN_D8LUMFN'] += (dat['DDPZLIMS'][:,0] == 0) * lumfn_mask.DDP1ZLIM
 
-# TODO: move to vmaxer
-# isin = (dat['ZSURV'] < 0.9 * zlims['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * zlims['DDP1_ZMIN'])
-# dat['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
-
 dat.meta.update(zlims)
 dat.meta.update({'TMR_DDP1': str(tmr_DDP1),\
                  'TMR_DDP2': str(tmr_DDP2),\

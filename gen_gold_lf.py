@@ -19,7 +19,7 @@ from   config           import Configuration
 
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], fillfactor=False):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], fillfactor=False, conservative=False):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -56,9 +56,6 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     rand  = gather_cat(rand_paths)
 
-    #HACK
-    conservative = False
-    
     vmax  = vmaxer(zmax, minz, maxz, extra_cols=extra_cols, rand=rand, zcol='Z{}'.format(survey.upper()), conservative=conservative)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))

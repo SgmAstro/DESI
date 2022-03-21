@@ -15,7 +15,7 @@ from   astropy.table   import Table
 from   multiprocessing import Pool
 from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
-from   bitmask         import BitMask, lumfn_mask, consv_mask
+from   bitmask         import lumfn_mask, consv_mask
 
 '''
 Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
@@ -155,7 +155,8 @@ sphere_radius      = rand.meta['RSPHERE']
 rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
-rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
+# TODO: move to vmax_rand
+# rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
 
 
 

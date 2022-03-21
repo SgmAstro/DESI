@@ -4,7 +4,6 @@ from   astropy.table import Table
 from   cosmo         import volcom
 
 def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], rand=None, fillfactor=True, conservative=False):
-
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
         

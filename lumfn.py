@@ -43,11 +43,11 @@ def multifield_lumfn(lumfn_list):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmasks=[]):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask=None):
     dat = Table(dat, copy=True)
 
-    for bm in bitmasks:
-        dat = dat[dat[bm] == 0]
+    if bitmask is not None:
+        dat = dat[dat[bitmask] == 0]
 
     dvmax  = dat['VMAX'].data
     vol    = dat.meta['VOLUME']

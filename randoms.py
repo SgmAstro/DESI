@@ -170,7 +170,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         randoms['IS_BOUNDARY'][randoms['ROS_DIST']   > np.percentile(randoms['ROS_DIST'],   100. - boundary_percent)] = 1
         randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
     '''
-    
+
+    randoms['ZSURV']        = randoms['Z']
     randoms['IN_D8LUMFN']   = np.zeros_like(randoms['FIELD'], dtype=int)
     randoms['CONSERVATIVE'] = np.zeros_like(randoms['FIELD'], dtype=int)
 

@@ -89,7 +89,6 @@ dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
 dat['FILLFACTOR_VMAX'] = -99.
 dat['IN_D8LUMFN']   += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
-# TODO: move to gen_ran_n8
 _idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 
 for i, _idx in enumerate(np.unique(_idxs)):

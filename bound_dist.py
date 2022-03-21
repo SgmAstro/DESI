@@ -155,7 +155,8 @@ sphere_radius      = rand.meta['RSPHERE']
 rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
-rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
+# TODO: move to vmax_rand
+# rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
 
 '''
 if prefix = 'randoms_ddp1':

@@ -15,7 +15,7 @@ from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
 
-def volfracs(rand):
+def volfracs(rand, bitmasks=[]):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
@@ -58,7 +58,7 @@ prefix      = args.prefix
 survey      = args.survey.lower()
 nooverwrite = args.nooverwrite
 
-fields  = fetch_fields(survey)
+fields      = fetch_fields(survey)
 
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 

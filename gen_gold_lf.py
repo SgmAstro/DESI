@@ -19,7 +19,7 @@ from   config           import Configuration
 
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], fillfactor=False, conservative=False):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False):
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -29,34 +29,20 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         return  1
 
     zmax = Table.read(fpath)
- 
-    # print(fpath)
-    
-    if 'FIELD' not in zmax.dtype.names:
-        # HACK
-        if 'ROS' in zmax.dtype.names:
-            zmax['FIELD'] = zmax['ROS']
-
-        else:
-            raise  RuntimeError('FIELD MISSING FROM DTYPES.')
-        
+     
     found_fields = np.unique(zmax['FIELD'].data)
         
     print('Found fields: {}'.format(found_fields))
-
-    zsurv = f'Z{survey}'.upper()
     
-    minz = zmax[zsurv].min()
-    maxz = zmax[zsurv].max()
+    minz = zmax['ZSURV'].min()
+    maxz = zmax['ZSURV'].max()
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(minz, maxz))
 
     if field != None:
-        assert  len(found_fields) == 1, 'ERROR: EXPECTED SINGLE FIELD RESTRICTED INPUT, e.g. G9.'
+        assert  len(found_fields) == 1, 'ERROR: expected single-field restricted input, e.g. G9.'
 
-    rand  = gather_cat(rand_paths)
-
-    vmax  = vmaxer(zmax, minz, maxz, extra_cols=extra_cols, rand=rand, zcol='Z{}'.format(survey.upper()), conservative=conservative)
+    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, conservative=conservative, extra_cols=extra_cols)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
     
@@ -69,7 +55,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
-    result = lumfn(vmax, fillfactor=fillfactor)
+    result = lumfn(vmax, bitmasks=bitmasks)
 
     print('Writing {}.'.format(opath))
     
@@ -90,17 +76,13 @@ if __name__ == '__main__':
     
     args   = parser.parse_args()
 
-    field  = args.field
+    field  = args.field.upper()
     dryrun = args.dryrun
     survey = args.survey
     density_split = args.density_split
     prefix = args.prefix
     self_count = args.selfcount_volfracs
     
-    if density_split:
-        assert  field != None
-        assert  'ddp1' in prefix
-
     if not density_split:
         print('Generating Gold reference LF.')
 
@@ -122,7 +104,8 @@ if __name__ == '__main__':
     else:
         print('Generating Gold density-split LF.')
 
-        field = field.upper()
+        assert  field != None
+        assert  'ddp1' in prefix
 
         rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
         
@@ -163,8 +146,7 @@ if __name__ == '__main__':
                 all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
                 all_rands = [Table.read(xx) for xx in all_rpaths]
  
-            # Calculated for DDP1 redshift limits. 
-    
+            # Calculated for DDP1 redshift limits.     
             fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
             d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
             
@@ -207,8 +189,8 @@ if __name__ == '__main__':
             
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 
-            primary_hdu    = fits.PrimaryHDU()
 
+            ##  
             keys           = sorted(result.meta.keys())
             
             header         = {}
@@ -216,6 +198,7 @@ if __name__ == '__main__':
             for key in keys:
                 header[key] = str(result.meta[key])
 
+            primary_hdu    = fits.PrimaryHDU()
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')

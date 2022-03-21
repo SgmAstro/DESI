@@ -2,7 +2,7 @@ import numpy           as     np
 
 from   astropy.table   import Table
 from   cosmo           import volcom
-from   bitmask         import BitMask, lumfn_mask, consv_mask
+from   bitmask         import lumfn_mask, consv_mask
 from   gen_rand_ddp_n8 import volfracs()
 
 def vmaxer_rand(rand, conservative=False):
@@ -20,7 +20,7 @@ def vmaxer_rand(rand, conservative=False):
 
     raise NotImplementedError()
 
-def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=False):
+def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 

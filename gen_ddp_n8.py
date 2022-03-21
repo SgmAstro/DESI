@@ -19,7 +19,6 @@ parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
 parser.add_argument('--prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-parser.add_argument('--conservative',  help='Use conservative values', action='store_true', default=False)
 
 args   = parser.parse_args()
 realz  = args.realz

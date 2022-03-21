@@ -35,6 +35,7 @@ parser.add_argument('-m', '--memory',  help='Node memory usage [GB].', type=str,
 parser.add_argument('-t', '--time',    help='Job time to request.',    type=str, default=None)
 parser.add_argument('-a', '--account', help='Account for submission.', type=str, default=None)
 parser.add_argument('-n', '--nodes',   help='Nodes to request.',       type=int, default=None)
+parser.add_argument('-branch', '--branch',  help='Github branch',           type=str, default='main')
 
 args        = parser.parse_args()
 use_sbatch  = int(args.use_sbatch)
@@ -46,6 +47,7 @@ freshclone  = args.freshclone
 custom      = args.custom
 comments    = args.comments
 config      = args.config
+branch      = args.branch
 
 if config != None:
     config   = Configuration(config)
@@ -126,7 +128,7 @@ if freshclone:
 
    cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
    cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
-   cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
+   cmds.append('git clone --branch {} https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(branch, os.environ['HOME']))
    
    for cmd in cmds:    
        out = run_command(cmd, noid=True)

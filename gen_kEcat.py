@@ -82,6 +82,8 @@ dat['DDPKCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat[zsurv], dat['REST_GMR_0
 
 dat['DDPMALL_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['DDPKCORR_R0P0'], dat['EQ_ALL_0P0'])
 
+dat.meta['IMMUTABLE'] = 'False'
+
 dat.pprint()
 
 print('Writing {}.'.format(opath))

@@ -2,12 +2,15 @@ import numpy         as     np
 
 from   astropy.table import Table
 from   cosmo         import volcom
+from   bitmask       import BitMask, lumfn_mask, consv_mask
+
 
 def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
-        
-    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
+
+    # Columns to be propagated
+    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN', 'CONSERVATIVE']
 
     if rand is not None:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
@@ -18,14 +21,14 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=F
     result      = Table(dat[cols], copy=True)
     result.meta = dat.meta
 
+    # Apply redshift limits.
     result      = result[result['ZSURV'] >= zmin]
     result      = result[result['ZSURV'] <= zmax]
     
-    # I think this is better incorporated in lumfn
-    # ddp.fits does not have CONSERVATIVE
-    #if conservative:
-    #    result  = result[result['CONSERVATIVE'] == 0] 
+    result.meta.update({'FORCE_ZMIN': zmin,\
+                        'FORCE_ZMAX': zmax})
 
+    # New limits of subset. 
     zmin        = result['ZSURV'].min()
     zmax        = result['ZSURV'].max()
 
@@ -34,10 +37,9 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=F
 
     print('Retrieved area {:.4f} [sq. deg.]'.format(area))
     
-    result.meta.update({'FORCE_ZMIN': zmin,\
-                        'FORCE_ZMAX': zmax,\
-                        'VOLUME':       VV})
+    result.meta.update({'VOLUME': VV})
 
+    # Wrap volavg fillfactor(< z) required for vmax.   
     # TODO:  assumes monotonic.
     fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['Z'] >= zmin].min()
     fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['Z'] <= zmax].max()
@@ -54,10 +56,15 @@ def vmaxer(dat, zmin, zmax, zcol, extra_cols=[], fillfactor=True, conservative=F
     result['VZ']   -= volcom(result['ZMIN'], area)
 
     result.meta['CONSERVATIVE'] = conservative
-    result.meta['FILLFACTOR'] = fillfactor
+    result.meta['FILLFACTOR']   = fillfactor
 
     if fillfactor:
-        result          = result[result['IN_D8LUMFN'] == 0]
         result['VMAX'] *= result['FILLFACTOR_VMAX']
     
+    if conservative:
+        result['CONSERVATIVE'] += (result['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
+
+        isin                    = (result['ZSURV'] < 0.9 * result.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * result.meta['DDP1_ZMIN'])                                                                    
+        result['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM 
+        
     return  result

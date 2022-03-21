@@ -15,6 +15,35 @@ from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
 
+def volfracs(rand):
+    utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
+    utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
+
+    print('Unique tiers: {}'.format(utiers))
+
+    for ut in utiers:
+        ddp1_rand = rand[rand['IN_DDP1']]
+
+        # TODO: here, use a bitmask instead of assuming the cut if fillfactor > 0.8 only;
+        in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
+
+        rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
+        rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
+
+        print('DDP1_d{}_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
+        print('DDP1_d{}_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
+
+        # Zero point.                                                                                                                                                                                    
+        in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
+
+        rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
+        rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
+        
+        print('DDP1_d{}_ZEROPOINT_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
+        print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
+
+    return rand
+
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
@@ -89,6 +118,9 @@ ddp2_zmax           = dat.meta['DDP2_ZMAX']
 ddp3_zmin           = dat.meta['DDP3_ZMIN']
 ddp3_zmax           = dat.meta['DDP3_ZMAX']
 
+print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
+
+# TODO: IN_DDP column akin to galaxies.
 rand['IN_DDP1']     = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
 rand['IN_DDP2']     = (rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax)
 rand['IN_DDP3']     = (rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax)
@@ -108,33 +140,8 @@ rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
 for ii, xx in enumerate(d8_limits):
     rand.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
-utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
-
-# HACK (is this accounting for --dryrun?)
-#assert  np.all(utiers == utiers_zp), 'ERROR: zero point mismatch to d8 tiers for randoms.'
- 
-print('Unique tiers: {}'.format(utiers))
-print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
-
-for ut in utiers:    
-    ddp1_rand = rand[rand['IN_DDP1']]
-    in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
-        
-    rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
-    rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
-
-    print('DDP1_d{}_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
-    print('DDP1_d{}_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
-
-    # Zero point. 
-    in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
-    
-    rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
-    rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
-
-    print('DDP1_d{}_ZEROPOINT_VOLFRAC OF {:.4f} added.'.format(ut, np.mean(in_tier)))
-    print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
+# TODO:  Handle bitmasks such that cut is not assumed to be fillfactor > 0.8 only.
+rand = volfracs(rand)
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

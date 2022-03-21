@@ -18,8 +18,6 @@ args   = parser.parse_args()
 dryrun = args.dryrun
 survey = args.survey
 
-zsurv  = f'Z{survey}'.upper()
-
 fpath  = findfile(ftype='zmax', dryrun=dryrun, survey=survey)
 opath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)
 
@@ -34,8 +32,7 @@ Area   = dat.meta['AREA']
 print('Retrieved Area: {}'.format(Area))
 print('Judging DDP.')
 
-#  dat['DDP'], dat['DDPZLIMS'], zlims, dat['DDPMALL_0P0_VISZ'] = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv], survey)
-dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat[zsurv], survey)
+dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat['ZSURV'], survey)
 
 dat['IN_D8LUMFN'] += (dat['DDPZLIMS'][:,0] == 0) * lumfn_mask.DDP1ZLIM
 

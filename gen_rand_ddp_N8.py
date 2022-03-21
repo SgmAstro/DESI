@@ -21,11 +21,14 @@ def volfracs(rand, bitmasks=[]):
 
     print('Unique tiers: {}'.format(utiers))
 
-    for ut in utiers:
-        ddp1_rand = rand[rand['IN_DDP1']]
+    ddp1_rand = rand[rand['DDPZLIMS'][:,0]]
 
-        # TODO: here, use a bitmask instead of assuming the cut if fillfactor > 0.8 only;
-        in_tier   = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
+    for ut in utiers:
+        in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
+
+        for bm in bitmasks:
+            # Deprecated: (ddp1_rand['FILLFACTOR'].data >= 0.8)   
+            in_tier &= (ddp1_rand[bm].data == 0)
 
         rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6e}'.format(np.mean(in_tier))
         rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
@@ -93,6 +96,7 @@ del points
 
 gc.collect()
 
+# Calculate DDP1/2/3 for each random. 
 for idx in range(3):
     ddp_idx      = idx + 1
 
@@ -107,8 +111,6 @@ for idx in range(3):
 
     rand['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
                                       
-rand.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
-
 ddp1_zmin           = dat.meta['DDP1_ZMIN']
 ddp1_zmax           = dat.meta['DDP1_ZMAX']
 
@@ -121,9 +123,11 @@ ddp3_zmax           = dat.meta['DDP3_ZMAX']
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 # TODO: IN_DDP column akin to galaxies.
-rand['IN_DDP1']     = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
-rand['IN_DDP2']     = (rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax)
-rand['IN_DDP3']     = (rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax)
+rand['DDPZLIMS']      = np.zeros(len(rand) * 3, dtype=int).reshape(len(rand), 3)
+
+rand['DDPZLIMS'][:,0] = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
+rand['DDPZLIMS'][:,1] = (rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax)
+rand['DDPZLIMS'][:,2] = (rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax)
 
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.

@@ -5,18 +5,14 @@ import argparse
 import pylab as pl
 import numpy as np
 import astropy.io.fits as fits
-import matplotlib.pyplot as plt
 
 from   astropy.table    import Table, vstack
-from   vmaxer           import vmaxer
-from   smith_kcorr      import test_plots, test_nonnative_plots
-from   cosmo            import distmod, volcom
+from   vmaxer           import vmaxer, vmaxer_rand
 from   lumfn            import lumfn
 from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False):
@@ -25,6 +21,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath = vmax_opath
 
     if not os.path.isfile(fpath):
+        # Do not crash and burn, but proceed on gracefully. 
         print('WARNING:  Failed to find {}'.format(fpath))
         return  1
 
@@ -55,6 +52,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
+
+    ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmasks=bitmasks)
 
     print('Writing {}.'.format(opath))
@@ -99,7 +98,7 @@ if __name__ == '__main__':
         print(f'Reading: {fpath}')
         print(f'Writing: {opath}')
 
-        process_cat(fpath, opath, rand_paths=[], survey=survey, fillfactor=False)
+        process_cat(fpath, opath, survey=survey, fillfactor=False)
 
     else:
         print('Generating Gold density-split LF.')
@@ -116,8 +115,6 @@ if __name__ == '__main__':
         else:
             utiers = np.arange(len(d8_limits))
                     
-        all_rands = None 
-
         for idx in utiers:
             ddp_idx   = idx + 1
 
@@ -128,23 +125,25 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
+            failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
 
             if failure:
-                print('FAILED on d0 tier {:d}; skipping.'.format(idx))
+                print('ERROR: Failed on d0 tier {:d}; skipping.'.format(idx))
                 continue
         
             print('LF process cat. complete.')
                     
-            result = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
-
+            result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
             # result.pprint()
 
+            '''
+            # Deprecated:
+            
             if all_rands == None:                                
-                _fields = fetch_fields(survey=survey)
+                _fields    = fetch_fields(survey=survey)
                 
                 all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
-                all_rands = [Table.read(xx) for xx in all_rpaths]
+                all_rands  = [Table.read(xx) for xx in all_rpaths]
  
             # Calculated for DDP1 redshift limits.     
             fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
@@ -164,9 +163,13 @@ if __name__ == '__main__':
             
             print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
+            '''
+
+            # TODO: perhaps write to disk only for testing?
+            # rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+            # fdelta = rand_vmax.meta['...']
 
             result = renormalise_d8LF(result, fdelta, fdelta_zeropoint, self_count)
-            
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -174,7 +177,7 @@ if __name__ == '__main__':
             
             result.pprint()
 
-            # 
+            # Reference Schechter - finer binning
             sch_Ms = np.arange(-23., -15., 1.e-3)
 
             sch    = named_schechter(sch_Ms, named_type='TMR')
@@ -189,7 +192,6 @@ if __name__ == '__main__':
             
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 
-
             ##  
             keys           = sorted(result.meta.keys())
             
@@ -198,6 +200,7 @@ if __name__ == '__main__':
             for key in keys:
                 header[key] = str(result.meta[key])
 
+            # TODO: 
             primary_hdu    = fits.PrimaryHDU()
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)

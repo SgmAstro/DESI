@@ -157,14 +157,23 @@ rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
 rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
 
+
+
+
+
 '''
-if prefix = 'randoms_ddp1':
+# TODO: Fix problem of DDP1_ZMIN, etc not in header
+
+if prefix == 'randoms_ddp1':
     isin = (rand['Z'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['Z'] > 1.1 * rand.meta['DDP1_ZMIN'])
 else:
     isin = (rand['Z'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['Z'] > 1.1 * rand.meta['DDP1_ZMIN'])
 
 rand['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
 '''
+
+
+
 
 runtime = calc_runtime(start, 'Shuffling')
 

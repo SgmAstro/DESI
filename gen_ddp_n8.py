@@ -91,6 +91,9 @@ dat['FILLFACTOR_VMAX'] = -99.
 dat['IN_D8LUMFN']   += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 dat['CONSERVATIVE'] += (dat['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
 
+
+# TODO: This calculation should be based on the randoms
+# note that rand does not have ZMAX.
 _idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
 
 for i, _idx in enumerate(np.unique(_idxs)):

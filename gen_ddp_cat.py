@@ -6,7 +6,7 @@ import fitsio
 from   astropy.table import Table
 from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   findfile      import findfile, overwrite_check
-from   bitmask       import BitMask, lumfn_mask, consv_mask
+from   bitmask       import lumfn_mask, consv_mask
 
 
 parser = argparse.ArgumentParser(description='Gen ddp cat.')

@@ -14,7 +14,9 @@ from   delta8_limits     import d8_limits, delta8_tier
 from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
+from   volfracs          import volfracs
 
+'''
 def volfracs(rand, bitmasks=[]):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
@@ -46,7 +48,7 @@ def volfracs(rand, bitmasks=[]):
         print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
 
     return rand
-
+'''
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')

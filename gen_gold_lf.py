@@ -65,9 +65,9 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
-    parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=False, default=None)
-    parser.add_argument('-s', '--survey', help='Select survey', default='gama')
-    parser.add_argument('-d', '--density_split', help='Trigger density split luminosity function.', action='store_true')
+    parser.add_argument('--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
+    parser.add_argument('--survey', help='Select survey', default='gama')
+    parser.add_argument('--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')

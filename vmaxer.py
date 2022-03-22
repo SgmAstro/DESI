@@ -3,7 +3,7 @@ import numpy           as     np
 from   astropy.table   import Table
 from   cosmo           import volcom
 from   bitmask         import lumfn_mask, consv_mask
-from   gen_rand_ddp_N8 import volfracs
+from   volfracs        import volfracs
 from   findfile        import fetch_fields
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False):

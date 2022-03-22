@@ -12,6 +12,7 @@ from   gama_limits   import gama_field, gama_fields
 from   desi_fields   import desi_fields
 from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
 from   config        import Configuration
+from   bitmask       import lumfn_mask, consv_mask
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')

@@ -54,7 +54,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
 
     ## TODO: remove bitmasks dependence. 
-    result = lumfn(vmax, bitmasks=bitmasks)
+    bitmask ='IN_D8LUMFN'
+    result = lumfn(vmax, bitmask=bitmask)
 
     print('Writing {}.'.format(opath))
     
@@ -166,10 +167,20 @@ if __name__ == '__main__':
             '''
 
             # TODO: perhaps write to disk only for testing?
-            # rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
-            # fdelta = rand_vmax.meta['...']
-
-            result = renormalise_d8LF(result, fdelta, fdelta_zeropoint, self_count)
+            conservative = False
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+            # fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            # fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]
+            # d8        = rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]
+            # d8_zp     = rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
+            
+            # HACK FOR TESTING
+            fdelta = 1
+            fdelta_zp = 1
+            d8 = 1
+            d8_zp = 1
+            
+            result = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -187,8 +198,8 @@ if __name__ == '__main__':
             ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
             ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
-            ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zeropoint)
-            ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zeropoint)
+            ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+            ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
             
             print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
 

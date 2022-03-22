@@ -7,7 +7,7 @@ def volfracs(rand, bitmasks=[]):
     print('Unique tiers: {}'.format(utiers))
 
     ddp1_rand = rand[rand['DDPZLIMS'][:,0]]
-
+    
     for ut in utiers:
         in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 

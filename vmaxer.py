@@ -1,19 +1,24 @@
 import numpy           as     np
 
-from   astropy.table   import Table
+from   astropy.table   import Table, vstack
 from   cosmo           import volcom
 from   bitmask         import lumfn_mask, consv_mask
 from   volfracs        import volfracs
-from   findfile        import fetch_fields
+from   findfile        import findfile, fetch_fields
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False):
     fields = fetch_fields(survey=survey)
 
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
-    rand   = [Table.read(xx) for xx in rpaths]
+    #rand   = [Table.read(xx) for xx in rpaths]
 
-    rand   = rand[rand['ZSURV'] >= zmin]
-    rand   = rand[rand['ZSURV'] <= zmax]
+    rand = Table.read(rpaths[0])
+    for xx in range(1, len(rpaths)):
+        rand_stack = Table.read(rpaths[xx])
+        rand = vstack([rand, rand_stack])
+
+    #rand   = rand[rand['ZSURV'] >= zmin]
+    #rand   = rand[rand['ZSURV'] <= zmax]
 
     if conservative:
         rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
@@ -26,6 +31,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
 
     # TODO: define fdelta and d8 based on this all-field rand. 
 
+    
     '''
     # Deprecated: 
     # 
@@ -50,7 +56,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
     '''
 
-    raise  NotImplementedError()
+    # raise  NotImplementedError()
 
     return  rand
 
@@ -61,8 +67,8 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     # Columns to be propagated
     extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN', 'CONSERVATIVE']
 
-    #if rand is not None:
-    #extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
+    if fillfactor == True:
+        extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))
@@ -103,8 +109,8 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     if fillfactor:
         # Wrap volavg fillfactor(< z) required for vmax.   
         # TODO:  assumes monotonic.
-        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['Z'] >= zmin].min()
-        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['Z'] <= zmax].max()
+        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['ZSURV'] >= zmin].min()
+        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['ZSURV'] <= zmax].max()
 
         result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
 

@@ -88,13 +88,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     
     result.meta.update({'VOLUME': VV})
 
-    # Wrap volavg fillfactor(< z) required for vmax.   
-    # TODO:  assumes monotonic.
-    fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['Z'] >= zmin].min()
-    fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['Z'] <= zmax].max()
-        
-    result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
-
     result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
     result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
     
@@ -108,6 +101,13 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     result.meta['FILLFACTOR']   = fillfactor
 
     if fillfactor:
+        # Wrap volavg fillfactor(< z) required for vmax.   
+        # TODO:  assumes monotonic.
+        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['Z'] >= zmin].min()
+        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['Z'] <= zmax].max()
+
+        result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
+
         result['VMAX'] *= result['FILLFACTOR_VMAX']
     
     if conservative:

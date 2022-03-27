@@ -6,10 +6,11 @@ from   bitmask         import lumfn_mask, consv_mask
 from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields
 
-def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False):
+def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False, version='GAMA4'):
+    
     fields = fetch_fields(survey=survey)
 
-    rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
+    rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix, version=version) for ff in fields]
     #rand   = [Table.read(xx) for xx in rpaths]
 
     rand = Table.read(rpaths[0])
@@ -65,10 +66,14 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].max() >= zmax
 
     # Columns to be propagated
-    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN', 'CONSERVATIVE']
+    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
 
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
+        
+    if conservative == True:
+        extra_cols += ['CONSERVATIVE']
+
 
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))

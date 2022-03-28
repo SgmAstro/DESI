@@ -56,7 +56,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             nrand = 500
 
         else:
-            nrand     = int(np.ceil(vol * density * oversample))
+            nrand     = int(np.ceil(vol * density * oversample) / 2.0)
+            print('NRAND IS:', nrand)
 
         cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
         theta     = np.arccos(cos_theta)

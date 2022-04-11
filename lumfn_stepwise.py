@@ -70,9 +70,14 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
     zmin      = 0.0 # bright_curve(phi_M) 
     zmax      = faint_curve(phi_M)
 
-    zcol      = 'Z{}'.format(survey.upper())
-    vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
+    try:
+        zcol      = 'Z{}'.format(survey.upper())
+        vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
+    except:
+        zcol      = 'ZSURV'
+        vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
 
+        
     Mmins     = bright_curve_r(vol_lim[zcol].data)
     Mmaxs     =  faint_curve_r(vol_lim[zcol].data)
 
@@ -149,16 +154,18 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-
+    parser.add_argument('--version',      help='Add version', default='GAMA4')
+    
     start       = time.time() 
 
     args        = parser.parse_args()
     survey      = args.survey
     dryrun      = args.dryrun
     nooverwrite = args.nooverwrite
+    version     = args.version
 
-    fpath       = findfile('ddp', dryrun=dryrun, survey=survey)
-    opath       = findfile('lumfn_step', dryrun=dryrun, survey=survey)
+    fpath       = findfile('ddp', dryrun=dryrun, survey=survey, version=version)
+    opath       = findfile('lumfn_step', dryrun=dryrun, survey=survey, version=version)
 
     if nooverwrite:
         overwrite_check(opath)

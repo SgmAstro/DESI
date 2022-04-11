@@ -27,3 +27,47 @@ def jk_field(ras, decs):
         result[in_strip] = strip
 
     return result
+
+
+
+def jk_zones(dat, rand, jk_ra, jk_dec, plot=False):
+    '''
+    Splits up single GAMA field into jackknife areas based on randoms.
+    '''
+    
+    assert jk_ra > 1, 'jk_ra must be greater than 1'
+    assert jk_dec > 1, 'jk_dec must be greater than 1'
+    
+    rand.sort(['RANDOM_RA', 'RANDOM_DEC'])
+    x = rand['RANDOM_RA']
+
+    rand.sort(['RANDOM_DEC', 'RANDOM_RA'])
+    y = rand['RANDOM_DEC']
+
+    bin_x = []
+    for idx in range(1, jk_ra):
+        bin_x.append(np.percentile(rand['RANDOM_RA'], idx/jk_ra*100))
+
+    bin_y = []
+    for idx in range(1, jk_dec):
+        bin_y.append(np.percentile(rand['RANDOM_DEC'], idx/jk_dec*100))
+
+    bins = [bin_x, bin_y]
+    
+    dat['JK_RA'] = np.digitize(dat['RA'],bin_x,right=True)
+    dat['JK_DEC'] = np.digitize(dat['DEC'],bin_y,right=True)
+    dat['JK'] = dat['JK_RA'] * jk_ra + dat['JK_DEC']
+    
+    del dat['JK_RA']
+    del dat['JK_DEC']
+    
+    if plot:
+        for idx in np.unique(dat['JK']):
+            plt.scatter(dat[dat['JK'] == idx]['RA'], dat[dat['JK'] == idx]['DEC'], s=0.25)
+
+        plt.xlabel('RA')
+        plt.ylabel('DEC')
+        plt.gca().set_aspect("equal")
+        plt.show()
+
+    return dat

@@ -49,6 +49,7 @@ def volfracs(rand, bitmasks=[]):
 
     return rand
 '''
+
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')

@@ -9,13 +9,15 @@ import astropy.io.fits as fits
 from   astropy.table    import Table, vstack
 from   vmaxer           import vmaxer, vmaxer_rand
 from   lumfn            import lumfn
+from   lumfn_stepwise   import lumfn_stepwise
 from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False):
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):
+        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -27,6 +29,9 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     zmax = Table.read(fpath)
      
+    # HACK
+    #zmax = zmax[zmax['FIELD'] == 'G12']
+    
     found_fields = np.unique(zmax['FIELD'].data)
         
     print('Found fields: {}'.format(found_fields))
@@ -46,6 +51,9 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
     
+    # HACK
+    #vmax = vmax[vmax['FIELD'] == 'G9']
+    
     print('Writing {}.'.format(opath))
 
     vmax.write(opath, format='fits', overwrite=True)
@@ -56,10 +64,18 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     ## TODO: remove bitmasks dependence. 
     bitmask ='IN_D8LUMFN'
     result = lumfn(vmax, bitmask=bitmask)
-
+    
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
+    
+    # HACK:
+    if stepwise:
+        opath = 'stepwise' + opath
+        result_stepwise = lumfn_stepwise(vmax)
+        # TODO: issue here (no write for tuple)
+        result_stepwise.write(opath, format='fits', overwrite=True)
+
 
     return  0
 
@@ -74,6 +90,10 @@ if __name__ == '__main__':
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
     
+    # HACK/TODO: temp until cordelia run
+    #parser.add_argument('--version', help='Version', action='store_true', default='GAMA4')
+    version = 'GAMA4'
+    
     args   = parser.parse_args()
 
     field  = args.field.upper()
@@ -82,6 +102,7 @@ if __name__ == '__main__':
     density_split = args.density_split
     prefix = args.prefix
     self_count = args.selfcount_volfracs
+    #version = args.version
     
     if not density_split:
         print('Generating Gold reference LF.')
@@ -90,8 +111,8 @@ if __name__ == '__main__':
         # 0.039 < z < 0.263.
         # Note: not split by field. 
         
-        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix)
-        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix)
+        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -107,7 +128,7 @@ if __name__ == '__main__':
         assert  field != None
         assert  'ddp1' in prefix
 
-        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
         
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
@@ -120,13 +141,13 @@ if __name__ == '__main__':
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
-            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
-            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
+            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
+            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
             
-            failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
+            failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
 
             if failure:
                 print('ERROR: Failed on d0 tier {:d}; skipping.'.format(idx))
@@ -168,17 +189,13 @@ if __name__ == '__main__':
 
             # TODO: perhaps write to disk only for testing?
             conservative = False
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
-            # fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            # fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]
-            # d8        = rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]
-            # d8_zp     = rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
             
-            # HACK FOR TESTING
-            fdelta = 1
-            fdelta_zp = 1
-            d8 = 1
-            d8_zp = 1
+            
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
+            fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
+            fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]
+            d8        = rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]
+            d8_zp     = rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
             
             result = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')

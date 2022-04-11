@@ -50,7 +50,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask='IN_D
 
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']
-
+    
     # assert  dat[Mcol].min() >= Ms.min()
     # assert  dat[Mcol].max() <= Ms.max()
 

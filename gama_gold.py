@@ -35,7 +35,7 @@ def gama_gold(args):
 
     specifics        = survey_specifics('gama')
     dat.meta['AREA'] = specifics['area']
-
+    
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
 

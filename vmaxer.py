@@ -66,7 +66,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].max() >= zmax
 
     # Columns to be propagated
-    extra_cols += ['MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
+    extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'WEIGHT_STEPWISE', 'IN_D8LUMFN']
 
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
@@ -93,6 +93,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     zmax        = result['ZSURV'].max()
 
     area        = dat.meta['AREA']
+    
     VV          = volcom(zmax, area) - volcom(zmin, area)
 
     print('Retrieved area {:.4f} [sq. deg.]'.format(area))

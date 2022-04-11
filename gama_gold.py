@@ -4,13 +4,14 @@ import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
-from   findfile        import findfile, overwrite_check, write_desitable
-from   astropy.table   import Table
-from   cosmo           import cosmo, distmod
-from   gama_limits     import gama_field
-from   cartesian       import cartesian, rotate
-from   survey          import survey_specifics
-from   bitmask         import BitMask, lumfn_mask
+from   findfile         import findfile, overwrite_check, write_desitable
+from   astropy.table    import Table
+from   cosmo            import cosmo, distmod
+from   gama_limits      import gama_field
+from   cartesian        import cartesian, rotate
+from   survey           import survey_specifics
+from   bitmask          import BitMask, lumfn_mask
+from   jackknife_limits import jk_field
 
 def gama_gold(args):
     root   = os.environ['TILING_CATDIR']
@@ -90,6 +91,8 @@ def gama_gold(args):
     dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
+    dat['JK'] = jk_field(dat['RA'], dat['DEC'])
+    
     '''
     if args.in_bgsbright:
         offset = survey_specifics('desi')['pet_offset']

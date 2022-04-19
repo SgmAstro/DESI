@@ -9,11 +9,14 @@ from   findfile  import fetch_fields
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
     if os.environ['CI']:
+        os.environ['GOLD_DIR']    = 'GAMA4/'
+        os.environ['RANDOMS_DIR'] = 'GAMA4/'
+
         pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 
-        print('Running all tests.')
-
         exit(0)
+
+    print('Running all tests.')
         
     if (survey != 'gama') and (survey != 'desi'):
         raise  NotImplementedError(f'No implementation for survey: {survey}')

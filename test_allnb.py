@@ -2,15 +2,18 @@ import os
 import argparse
 import papermill as pm
 
-from   tidyup   import tidyup
-from   findfile import fetch_fields
+from   bin.pipeline  import pipeline
+from   tidyup    import tidyup
+from   findfile  import fetch_fields
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
-    if os.environ['CI']:    
-        
+    if os.environ['CI']:
+        pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 
         print('Running all tests.')
+
+        exit(0)
         
     if (survey != 'gama') and (survey != 'desi'):
         raise  NotImplementedError(f'No implementation for survey: {survey}')

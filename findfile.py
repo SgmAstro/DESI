@@ -218,6 +218,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         if 'GOLD_DIR' in os.environ:
             gold_dir = os.environ['GOLD_DIR']
 
+        elif 'CI' in os.environ:
+            gold_dir = 'GAMA4/'
+
         else:
             gold_dir = os.environ['HOME'] + '/data/GAMA4/'
 

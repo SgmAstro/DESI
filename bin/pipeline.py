@@ -13,7 +13,7 @@ from    config     import Configuration
 from    utils      import run_command
 
 
-def pipeline(use_sbatch, reset, nooverwrite, dryrun, survey, freshclone, custom, comments, config):
+def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=None, comments=None, config=None):
     if config != None:
         config   = Configuration(config)
 
@@ -49,7 +49,7 @@ def pipeline(use_sbatch, reset, nooverwrite, dryrun, survey, freshclone, custom,
     else:
         nooverwrite = ''
 
-    if args.log:
+    if log:
         sys.stdout  = open('pipeline.log', 'w')
 
     if reset:
@@ -186,27 +186,27 @@ def pipeline(use_sbatch, reset, nooverwrite, dryrun, survey, freshclone, custom,
         cmd = cmd.format(int(use_sbatch), field, dryrun, nooverwrite, survey, gold_jobid, rand_ddp_jobid, code_root)
         rand_ddp_d8_jobids[field] = run_command(cmd)
 
-        print('\n\n>>>>> RANDOM D8 JOB IDS <<<<<')
-        print(rand_d8_jobids)
-        print(rand_ddp_d8_jobids)
-        print('\n\n')
+    print('\n\n>>>>> RANDOM D8 JOB IDS <<<<<')
+    print(rand_d8_jobids)
+    print(rand_ddp_d8_jobids)
+    print('\n\n')
 
-        # Requires ddp cat. & random fill factor.                                                                                                                                                         
-        # Note: runs all fields simultaneously.  
-        dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
-
-        # possibly missing RESET=$RESET
-        # cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
-        cmd = 'serialorparallel -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
-        cmd = cmd.format(int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
-        gold_d8_jobid = run_command(cmd)
+    # Requires ddp cat. & random fill factor.                                                                                                                                                         
+    # Note: runs all fields simultaneously.  
+    dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
+    
+    # possibly missing RESET=$RESET
+    # cmd = 'serialorparallel -p $USESBATCH -e DRYRUN=$DRYRUN,NOOVERWRITE=$NOOVERWRITE,SURVEY=$SURVEY -d {dependencies} -s gold_d8_pipeline -c $CODE_ROOT'
+    cmd = 'serialorparallel -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
+    cmd = cmd.format(int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
+    gold_d8_jobid = run_command(cmd)
         
-        print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')
-        print(gold_d8_jobid)
-        print('\n\n>>>>>  DONE.  <<<<<\n\n')
-
-        if args.log:
-            sys.stdout.close()
+    print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')
+    print(gold_d8_jobid)
+    print('\n\n>>>>>  DONE.  <<<<<\n\n')
+    
+    if log:
+        sys.stdout.close()
 
 
 if __name__ == '__main__':
@@ -243,5 +243,6 @@ if __name__ == '__main__':
     custom      = args.custom
     comments    = args.comments
     config      = args.config
+    log         = args.log
     
-    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, custom=custom, comments=comments, config=config)
+    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, config=config)

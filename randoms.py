@@ -53,7 +53,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         vol          = volcom(zmax, Area) - volcom(zmin, Area)
 
         if dryrun == True:
-            nrand = 500
+            nrand = 5000
 
         else:
             nrand     = int(np.ceil(vol * density * oversample))

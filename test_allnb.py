@@ -1,3 +1,4 @@
+import os
 import argparse
 import papermill as pm
 
@@ -6,7 +7,10 @@ from   findfile import fetch_fields
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
-    print('Running all tests.')
+    if os.environ['CI']:    
+        
+
+        print('Running all tests.')
         
     if (survey != 'gama') and (survey != 'desi'):
         raise  NotImplementedError(f'No implementation for survey: {survey}')

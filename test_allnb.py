@@ -11,11 +11,12 @@ from   pathlib       import Path
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
     if os.environ['GITHUB_ACTIONS']:
-        os.environ['USER']        = 'Hal' 
-        os.environ['CODE_ROOT']   = os.environ['GITHUB_WORKSPACE']
-        os.environ['GOLD_LOGS']   = 'GAMA4/logs/'
-        os.environ['GOLD_DIR']    = 'GAMA4/'
-        os.environ['RANDOMS_DIR'] = 'GAMA4/randoms/'
+        os.environ['USER']         = 'Hal' 
+        os.environ['CODE_ROOT']    = os.environ['GITHUB_WORKSPACE']
+        os.environ['GOLD_DIR']     = 'GAMA4/'
+        os.environ['GOLD_LOGS']    = 'GAMA4/logs/'
+        os.environ['RANDOMS_DIR']  = 'GAMA4/randoms/'
+        os.environ['RANDOMS_LOGS'] = 'GAMA4/randoms/logs/'
 
         os.environ['PATH']        = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
         os.environ['PYTHONPATH']  = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']

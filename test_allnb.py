@@ -9,8 +9,12 @@ from   findfile  import fetch_fields
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
     if os.environ['CI']:
+        os.environ['USER']        = 'Hal' 
+        os.environ['HOME']        = ''  
+        os.environ['CODE_ROOT']   = ''
         os.environ['GOLD_DIR']    = 'GAMA4/'
         os.environ['RANDOMS_DIR'] = 'GAMA4/'
+        os.environ['PYTHONPATH']  = ''
 
         pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 

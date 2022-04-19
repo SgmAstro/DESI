@@ -8,12 +8,14 @@ from   findfile  import fetch_fields
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
-    if os.environ['CI']:
+    if os.environ['GITHUB_ACTIONS']:
         os.environ['USER']        = 'Hal' 
         os.environ['CODE_ROOT']   = os.environ['GITHUB_WORKSPACE']
         os.environ['GOLD_DIR']    = 'GAMA4/'
         os.environ['RANDOMS_DIR'] = 'GAMA4/'
-        os.environ['PYTHONPATH']  = ''
+
+        os.environ['PATH']        = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
+        os.environ['PYTHONPATH']  = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
 
         pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 

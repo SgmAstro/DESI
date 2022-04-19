@@ -10,8 +10,7 @@ from   findfile  import fetch_fields
 def test_allnbs(survey='gama'):
     if os.environ['CI']:
         os.environ['USER']        = 'Hal' 
-        os.environ['HOME']        = ''  
-        os.environ['CODE_ROOT']   = ''
+        os.environ['CODE_ROOT']   = os.environ['GITHUB_WORKSPACE']
         os.environ['GOLD_DIR']    = 'GAMA4/'
         os.environ['RANDOMS_DIR'] = 'GAMA4/'
         os.environ['PYTHONPATH']  = ''

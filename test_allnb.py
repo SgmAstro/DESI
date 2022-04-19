@@ -1,21 +1,27 @@
 import os
 import argparse
-import papermill as pm
+import papermill     as pm
 
 from   bin.pipeline  import pipeline
-from   tidyup    import tidyup
-from   findfile  import fetch_fields
+from   tidyup        import tidyup
+from   findfile      import fetch_fields
+from   pathlib       import Path
+
 
 # https://docs.pytest.org/en/6.2.x/
 def test_allnbs(survey='gama'):
     if os.environ['GITHUB_ACTIONS']:
         os.environ['USER']        = 'Hal' 
         os.environ['CODE_ROOT']   = os.environ['GITHUB_WORKSPACE']
+        os.environ['GOLD_LOGS']   = 'GAMA4/logs/'
         os.environ['GOLD_DIR']    = 'GAMA4/'
-        os.environ['RANDOMS_DIR'] = 'GAMA4/'
+        os.environ['RANDOMS_DIR'] = 'GAMA4/randoms/'
 
         os.environ['PATH']        = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
         os.environ['PYTHONPATH']  = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
+
+        Path(os.environ['RANDOMS_DIR']).mkdir(parents=True, exist_ok=True)
+
 
         pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 

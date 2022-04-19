@@ -20,8 +20,8 @@ def test_allnbs(survey='gama'):
         os.environ['PATH']        = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
         os.environ['PYTHONPATH']  = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
 
+        Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_DIR']).mkdir(parents=True, exist_ok=True)
-
 
         pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 

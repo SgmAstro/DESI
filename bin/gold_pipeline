@@ -61,7 +61,7 @@ cd $CODE_ROOT
 if (( $RESET > 0 )); then
     echo '>>>>>  TRASHING GOLD_DIR  <<<<<.'
 
-    rm $GOLD_DIR/*.fits
+    rm -f $GOLD_DIR/*.fits
 fi
 
 echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'gold.log'

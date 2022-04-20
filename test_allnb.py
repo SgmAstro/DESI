@@ -24,7 +24,7 @@ def test_allnbs(survey='gama'):
         Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
 
-        pipeline(use_sbatch=False, reset=True, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
+        pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 
         exit(0)
 

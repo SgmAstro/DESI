@@ -13,13 +13,13 @@ from   survey          import survey_specifics
 from   bitmask         import BitMask, lumfn_mask
 
 def gama_gold(argset):
+    if argset.dryrun:
+        return 0
+
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
 
     opath  = findfile(ftype='gold', dryrun=False, survey='gama')
-
-    if argset.dryrun:
-        return 0
 
     if argset.nooverwrite:
         overwrite_check(opath)

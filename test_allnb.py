@@ -9,7 +9,10 @@ from   pathlib       import Path
 
 
 # https://docs.pytest.org/en/6.2.x/
-def test_allnbs(survey='gama'):
+def test_allnbs(survey='gama', force_actions=False):
+    if force_actions:
+        os.environ['GITHUB_ACTIONS'] = True
+
     if os.environ['GITHUB_ACTIONS']:
         os.environ['USER']         = 'Hal' 
         os.environ['CODE_ROOT']    = os.environ['GITHUB_WORKSPACE']
@@ -18,8 +21,8 @@ def test_allnbs(survey='gama'):
         os.environ['RANDOMS_DIR']  = 'GAMA4/randoms/'
         os.environ['RANDOMS_LOGS'] = 'GAMA4/randoms/logs/'
 
-        os.environ['PATH']        = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
-        os.environ['PYTHONPATH']  = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
+        os.environ['PATH']         = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
+        os.environ['PYTHONPATH']   = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
 
         Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
@@ -112,4 +115,5 @@ def run_delta8qa(survey):
                     )
 
 if __name__ == '__main__':
-    test_allnbs()
+    # python3 -m pytest test_allnb.py 
+    test_allnbs(force_actions=False)

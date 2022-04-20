@@ -34,4 +34,6 @@ jobs:
         mkdir -p $RANDOMS_LOGS
 
         conda install pytest
-        pytest -rP
+        
+        # pytest -rP
+        pytest --disable-warnings

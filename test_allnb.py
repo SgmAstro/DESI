@@ -9,11 +9,8 @@ from   pathlib       import Path
 
 
 # https://docs.pytest.org/en/6.2.x/
-def test_allnbs(survey='gama', force_actions=False):
-    if force_actions:
-        os.environ['GITHUB_ACTIONS'] = True
-
-    if os.environ['GITHUB_ACTIONS']:
+def test_allnbs(survey='gama', no_qa=False):
+    if 'GITHUB_ACTIONS' in os.environ:
         os.environ['USER']         = 'Hal' 
         os.environ['CODE_ROOT']    = os.environ['GITHUB_WORKSPACE']
         os.environ['GOLD_DIR']     = 'GAMA4/'
@@ -27,9 +24,10 @@ def test_allnbs(survey='gama', force_actions=False):
         Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
 
-        pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
+    pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
 
-        exit(0)
+    if no_qa | ('GITHUB_ACTIONS' in os.environ):
+        return 0
 
     print('Running all tests.')
         
@@ -45,6 +43,8 @@ def test_allnbs(survey='gama', force_actions=False):
     run_delta8qa(survey)
     
     print('Done.')
+
+    return 0
     
 def run_randomqa(survey):
     fields = fetch_fields(survey)
@@ -116,4 +116,4 @@ def run_delta8qa(survey):
 
 if __name__ == '__main__':
     # python3 -m pytest test_allnb.py 
-    test_allnbs(force_actions=False)
+    test_allnbs(no_qa=True)

@@ -9,7 +9,7 @@ from   pathlib       import Path
 
 
 # https://docs.pytest.org/en/6.2.x/
-def test_allnbs(survey='gama', no_qa=False):
+def test_allnbs(survey='gama', no_qa=True):
     if 'GITHUB_ACTIONS' in os.environ:
         os.environ['USER']         = 'Hal' 
         os.environ['CODE_ROOT']    = os.environ['GITHUB_WORKSPACE']

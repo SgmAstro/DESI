@@ -35,5 +35,5 @@ jobs:
 
         conda install pytest
         
-        # pytest -rP
-        pytest -x --disable-warnings
+        pytest -rP
+        # pytest -x --disable-warnings

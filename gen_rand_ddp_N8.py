@@ -29,7 +29,7 @@ prefix      = args.prefix
 survey      = args.survey.lower()
 nooverwrite = args.nooverwrite
 
-fields  = fetch_fields(survey)
+fields      = fetch_fields(survey)
 
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 

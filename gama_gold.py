@@ -12,20 +12,20 @@ from   cartesian       import cartesian, rotate
 from   survey          import survey_specifics
 from   bitmask         import BitMask, lumfn_mask
 
-def gama_gold(args):
+def gama_gold(argset):
+    if argset.dryrun:
+        return 0
+
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
 
-    opath  = findfile(ftype='gold', dryrun=args.dryrun, survey='gama')
+    opath  = findfile(ftype='gold', dryrun=False, survey='gama')
 
-    if args.nooverwrite:
+    if argset.nooverwrite:
         overwrite_check(opath)
 
     dat     = Table.read(fpath)
     dat     = Table(dat, masked=False)
-
-    if args.dryrun:
-        dat = dat[:1000]
 
     keys    = list(dat.meta.keys())
 
@@ -89,8 +89,8 @@ def gama_gold(args):
     dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
-    if args.in_bgsbright:
-        offset = survey_specifics('desi')['pet_offset']
+    if argset.in_bgsbright:
+        offset             = survey_specifics('desi')['pet_offset']
         dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
         
     # Randomise rows.
@@ -99,7 +99,7 @@ def gama_gold(args):
 
     dat = dat[idx]
 
-    print('Writing {}.'.format(os.environ['GOLD_DIR'] + '/gama_gold.fits'))
+    print('Writing {}.'.format(opath))
 
     if not os.path.isdir(os.environ['GOLD_DIR']):
         print('Creating {}'.format(os.environ['GOLD_DIR']))
@@ -109,20 +109,26 @@ def gama_gold(args):
     # 113687 vs TMR 80922.
     dat.meta['GOLD_NGAL'] = len(dat)
     dat.pprint()
-
-    write_desitable(opath, dat)
     
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}
+
+    write_desitable(opath, dat)
     
-    dat.write(opath, format='fits', overwrite=True)
+    dat    = dat[:1000]
+    opath  = findfile(ftype='gold', dryrun=True, survey='gama')
+
+    write_desitable(opath, dat)
+
+    print('Writing {}.'.format(opath))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--in_bgsbright',  help='Add flag for IN_BGSBRIGHT', action='store_true', default=True)
+    parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
-    args   = parser.parse_args()
+    args = parser.parse_args()
 
     gama_gold(args)

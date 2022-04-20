@@ -11,6 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('--survey',       help='Survey', default='gama')
     parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+    parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
     args   = parser.parse_args()
 

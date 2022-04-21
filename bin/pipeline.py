@@ -59,15 +59,16 @@ def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, surv
 
         for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
             cmds.append('rm -f {}/logs/*.log'.format(root))
-            # cmds.append('rm -f {}/*_dryrun.fits'.format(root))
+            cmds.append('rm -f {}/*_dryrun.fits'.format(root))
 
         for cmd in cmds:
             print(cmd)
 
             os.system(cmd)
-
+        
     if reset:
         os.environ['RESET']   = str(1)
+
     else:
         os.environ['RESET']   = str(0)
 

@@ -92,15 +92,10 @@ def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, surv
     if freshclone:
         cmds = []
 
-<<<<<<< HEAD
-   cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
-   cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
-   cmds.append('git clone --branch {} https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(branch, os.environ['HOME']))
-=======
         cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
         cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
         cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
->>>>>>> main
+
    
         for cmd in cmds:    
             out = run_command(cmd, noid=True)

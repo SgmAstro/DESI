@@ -71,23 +71,23 @@ fi
 
 echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'_gold.log'
 
-python3 gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
+python3 -u gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log 2>&1
 
 echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
 
-python3 gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
+python3 -u gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log 2>&1
 
 echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
 
-python3 gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
+python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log 2>&1
 
 echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 
-python3 ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
+python3 -u ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log 2>&1
 
 echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
 
-python3 gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
+python3 -u gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log 2>&1
 
 echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
 echo

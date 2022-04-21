@@ -16,6 +16,15 @@ def negz_proof(func):
     '''
   
     def wrap(zs):
+        if type(zs) is np.ndarray:
+            pass
+
+        else:
+            zs = np.atleast_1d(zs)
+            scalar = True
+
+        zs = np.atleast_1d(zs)
+
         negz     = zs <= 0.0
         
         zs[negz] = 1.e-99
@@ -23,6 +32,9 @@ def negz_proof(func):
         result   = func(zs)
         result[negz] = np.nan
  
+        if scalar:
+            result = result[0]
+
         return result
 
     return wrap

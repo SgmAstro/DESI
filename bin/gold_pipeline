@@ -36,8 +36,8 @@ else
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='desi'
-  export SURVEYARG='--survey desi'
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
 else
   export SURVEYARG='--survey '$SURVEY
 
@@ -69,25 +69,25 @@ if (( $RESET > 0 )); then
 fi
 
 
-echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'gold.log'
+echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'_gold.log'
 
-python gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
+python3 gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
 
 echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
 
-python gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
+python3 gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
 
 echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
 
-python gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
+python3 gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
 
 echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 
-python ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
+python3 ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
 
 echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
 
-python gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
+python3 gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
 
 echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
 echo

@@ -6,8 +6,7 @@ from   bitmask         import lumfn_mask, consv_mask
 from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields
 
-def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False, version='GAMA4'):
-    
+def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='', conservative=False, version='GAMA4'):    
     fields = fetch_fields(survey=survey)
 
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix, version=version) for ff in fields]

@@ -1,12 +1,13 @@
 import numpy as np
 
+
 def volfracs(rand, bitmasks=[]):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
     print('Unique tiers: {}'.format(utiers))
 
-    # TODO: Possible issue here
+    # TODO/HACK?: Possible issue here
     ddp1_rand = rand[rand['DDPZLIMS'][:,0]]
     
     for ut in utiers:
@@ -23,7 +24,7 @@ def volfracs(rand, bitmasks=[]):
         print('DDP1_d{}_VOLFRAC OF {:.10f} added.'.format(ut, np.mean(in_tier)))
         print('DDP1_d{}_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
 
-        # Zero point.                                                                                                                                                                                       
+        # Zero point.                                                                                                                                                                                      
         in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
 
         rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.10e}'.format(np.mean(in_tier))

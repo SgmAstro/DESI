@@ -28,10 +28,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         return  1
 
     zmax = Table.read(fpath)
-     
-    # HACK
-    #zmax = zmax[zmax['FIELD'] == 'G12']
-    
+         
     found_fields = np.unique(zmax['FIELD'].data)
         
     print('Found fields: {}'.format(found_fields))
@@ -50,10 +47,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
-    
-    # HACK
-    #vmax = vmax[vmax['FIELD'] == 'G9']
-    
+        
     print('Writing {}.'.format(opath))
 
     vmax.write(opath, format='fits', overwrite=True)
@@ -62,20 +56,19 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
 
     ## TODO: remove bitmasks dependence. 
-    bitmask ='IN_D8LUMFN'
-    result = lumfn(vmax, bitmask=bitmask)
+    result = lumfn(vmax, bitmask='IN_D8LUMFN')
     
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
     
-    # HACK:
+    # MJW:  Unclear what's happened here?  HACK.
     if stepwise:
         opath = 'stepwise' + opath
         result_stepwise = lumfn_stepwise(vmax)
+
         # TODO: issue here (no write for tuple)
         result_stepwise.write(opath, format='fits', overwrite=True)
-
 
     return  0
 
@@ -89,20 +82,19 @@ if __name__ == '__main__':
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
-    
-    # HACK/TODO: temp until cordelia run
-    #parser.add_argument('--version', help='Version', action='store_true', default='GAMA4')
-    version = 'GAMA4'
+    parser.add_argument('--version', help='Version', default='GAMA4')
+    parser.add_argument('--conservative', help='Conservative analysis choices', action='store_true')
     
     args   = parser.parse_args()
 
-    field  = args.field.upper()
-    dryrun = args.dryrun
-    survey = args.survey
+    field         = args.field.upper()
+    dryrun        = args.dryrun
+    survey        = args.survey
     density_split = args.density_split
-    prefix = args.prefix
-    self_count = args.selfcount_volfracs
-    #version = args.version
+    prefix        = args.prefix
+    self_count    = args.selfcount_volfracs
+    version       = args.version
+    conservative  = args.conservative
     
     if not density_split:
         print('Generating Gold reference LF.')
@@ -111,6 +103,7 @@ if __name__ == '__main__':
         # 0.039 < z < 0.263.
         # Note: not split by field. 
         
+        # MJW/HACK:  repeated calls in this script to specify version == GAMA4? 
         fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
         opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
@@ -186,11 +179,9 @@ if __name__ == '__main__':
             print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
             print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
             '''
-
-            # TODO: perhaps write to disk only for testing?
-            conservative = False
             
-            
+            # MJW:  Load three-field randoms/meta directly. 
+            # MJW:  Potential source or ref. schechter bugs; debug. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
             fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
             fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]

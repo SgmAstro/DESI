@@ -17,7 +17,7 @@ def negz_proof(func):
   
     def wrap(zs):
         if type(zs) is np.ndarray:
-            pass
+            scalar = False
 
         else:
             zs = np.atleast_1d(zs)

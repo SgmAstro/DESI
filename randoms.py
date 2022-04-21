@@ -53,7 +53,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         vol          = volcom(zmax, Area) - volcom(zmin, Area)
 
         if dryrun == True:
-            nrand = 1000
+            ndryrun = 2000
+            nrand   = ndryrun
 
         else:
             nrand     = int(np.ceil(vol * density * oversample) / 2.0)
@@ -109,7 +110,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
     if dryrun:
         # TODO: Hard coded above, don't hard code twice. 
-        nrand = 1000
+        nrand = ndryrun
 
     if not os.path.isdir(os.environ['RANDOMS_DIR']):
         print('Creating {}'.format(os.environ['RANDOMS_DIR']))

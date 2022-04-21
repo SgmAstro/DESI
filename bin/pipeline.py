@@ -24,7 +24,7 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
         
         config.update_comments(comments)
 
-    if custom:
+    if custom & (args != None):
         customise_script(args)
 
         custom = '/custom/'

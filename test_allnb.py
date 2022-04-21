@@ -24,7 +24,7 @@ def test_allnbs(survey='gama', no_qa=True):
         Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
 
-    pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
+    pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, args=None)
 
     if no_qa | ('GITHUB_ACTIONS' in os.environ):
         return 0

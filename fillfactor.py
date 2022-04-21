@@ -165,7 +165,8 @@ with Pool(nproc, maxtasksperchild=1) as pool:
             runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
 
     pool.close()
-    pool.join()
+
+    # pool.join()
 
 runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
 

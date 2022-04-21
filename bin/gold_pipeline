@@ -54,6 +54,10 @@ echo 'Code: '$CODE_ROOT
 echo 'Gold output dir.: '$GOLD_DIR
 echo 'Randoms output dir: '$RANDOMS_DIR
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+echo 'Running gold pipeline (with bin:'$SCRIPT_DIR')'
+
 cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
@@ -63,6 +67,7 @@ if (( $RESET > 0 )); then
 
     rm -f $GOLD_DIR/*.fits
 fi
+
 
 echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'gold.log'
 

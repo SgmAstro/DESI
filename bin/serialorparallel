@@ -71,7 +71,7 @@ if [ $parallel -eq '0' ]; then
        export $var=$val
    done
 
-   $script > $script'.log'
+   $script > $GOLD_DIR/logs/$script'.log'
    
    echo "0"
    exit;

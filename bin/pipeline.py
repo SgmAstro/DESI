@@ -13,7 +13,7 @@ from    config     import Configuration
 from    utils      import run_command
 
 
-def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=None, comments=None, config=None):
+def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=True, comments=None, config=None):
     if config != None:
         config   = Configuration(config)
 

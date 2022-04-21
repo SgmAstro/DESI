@@ -227,6 +227,8 @@ if __name__ == '__main__':
     parser.add_argument('--comments',     help='Add comments to README.')
 
     # Customise submission scripts.                                                                                                                                                                      
+    parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
+    parser.add_argument('--script_log',    help='Job log path.',           type=str, default=None)
     parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default=None)
     parser.add_argument('-m', '--memory',  help='Node memory usage [GB].', type=str, default=None)
     parser.add_argument('-t', '--time',    help='Job time to request.',    type=str, default=None)

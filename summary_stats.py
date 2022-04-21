@@ -104,6 +104,7 @@ result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]'
 # TODO: CHECK THE MATHS BY HAND
 result['N_{d8} / N_{max}'] = result['N_{d8} [1e3]'] / max(result['N_{d8} [1e3]'])
 
+# BUG: result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[5]
 result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[4]
 
 for col in result.itercols():

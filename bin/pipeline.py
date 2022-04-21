@@ -13,7 +13,7 @@ from    config     import Configuration
 from    utils      import run_command
 
 
-def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=None, comments=None, config=None):
+def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=None, comments=None, config=None):
     if config != None:
         config   = Configuration(config)
 
@@ -227,8 +227,6 @@ if __name__ == '__main__':
     parser.add_argument('--comments',     help='Add comments to README.')
 
     # Customise submission scripts.                                                                                                                                                                      
-    parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
-    parser.add_argument('--script_log',    help='Job log path.',           type=str, default=None)
     parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default=None)
     parser.add_argument('-m', '--memory',  help='Node memory usage [GB].', type=str, default=None)
     parser.add_argument('-t', '--time',    help='Job time to request.',    type=str, default=None)
@@ -247,4 +245,4 @@ if __name__ == '__main__':
     config      = args.config
     log         = args.log
     
-    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, config=config)
+    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, config=config, args=args)

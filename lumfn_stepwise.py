@@ -70,6 +70,7 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
     zmin      = 0.0 # bright_curve(phi_M) 
     zmax      = faint_curve(phi_M)
 
+    # TODO: switch to ZSURV.
     try:
         zcol      = 'Z{}'.format(survey.upper())
         vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]

@@ -10,12 +10,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     fields = fetch_fields(survey=survey)
 
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix, version=version) for ff in fields]
-    #rand   = [Table.read(xx) for xx in rpaths]
-
-    rand = Table.read(rpaths[0])
-    for xx in range(1, len(rpaths)):
-        rand_stack = Table.read(rpaths[xx])
-        rand = vstack([rand, rand_stack])
+    rand   = vstack([Table.read(xx) for xx in rpaths])
 
     #rand   = rand[rand['ZSURV'] >= zmin]
     #rand   = rand[rand['ZSURV'] <= zmax]
@@ -30,7 +25,6 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     rand = volfracs(rand)
 
     # TODO: define fdelta and d8 based on this all-field rand. 
-
     
     '''
     # Deprecated: 

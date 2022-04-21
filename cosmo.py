@@ -35,7 +35,6 @@ def distmod(zs):
 def distcom(zs):
     return cosmo.comoving_distance(zs).value
 
-@negz_proof
 def volcom(zs, area):
     return (4./3.) * np.pi * fsky(area) * distcom(zs)**3.
 

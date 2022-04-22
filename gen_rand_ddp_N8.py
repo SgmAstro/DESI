@@ -1,5 +1,6 @@
 import os
 import gc
+import sys
 import time
 import tqdm
 import fitsio
@@ -18,6 +19,7 @@ from   volfracs          import volfracs
 
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
@@ -32,6 +34,13 @@ survey      = args.survey.lower()
 nooverwrite = args.nooverwrite
 
 fields      = fetch_fields(survey)
+
+if log:
+    logfile = findfile(ftype='randoms_bd_ddp_n8', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+        
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
 
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
@@ -123,3 +132,6 @@ runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 rand.write(opath, format='fits', overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')
+
+if log:
+    sys.stdout.close()

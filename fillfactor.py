@@ -18,6 +18,7 @@ from   findfile            import findfile, fetch_fields, overwrite_check, call_
 
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
@@ -28,13 +29,20 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)
 
 args       = parser.parse_args()
-
+log        = args.log 
 field      = args.field.upper()
 dryrun     = args.dryrun
 prefix     = args.prefix
 survey     = args.survey.lower()
 oversample = args.oversample
 fields     = fetch_fields(survey)
+
+if log:
+    logfile = findfile(ftype='randoms_n8', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
 
 assert field in fields, 'Error: Field not in fields'
 
@@ -202,3 +210,6 @@ runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 hx.writeto(opath, overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')
+
+if log:
+    sys.stdout.close()

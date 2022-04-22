@@ -132,10 +132,25 @@ def gama_gold(argset):
     write_desitable(opath, dat)
     
     # Dryrun:  2x2 sq. patch of sky.
-    isin   = (dat['RA'] > 179.) & (dat['RA'] < 181.)
+    # G12
+    isin   = (dat['RA']  > 179.) & (dat['RA']  < 181.)
     isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
     
-    dat    = dat[isin]
+    allin  = isin 
+
+    # G9
+    isin   = (dat['RA']  > 134.) & (dat['RA']  < 136.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+
+    allin |= isin
+
+    # G15
+    isin   = (dat['RA']  > 216.) & (dat['RA']  < 218.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+
+    allin |= isin
+
+    dat    = dat[allin]
 
     opath  = findfile(ftype='gold', dryrun=True, survey='gama')
 

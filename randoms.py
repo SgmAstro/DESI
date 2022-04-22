@@ -65,13 +65,26 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
 
         if dryrun:
+            # Dryrun:  2x2 sq. patch of sky.  
+            # G12 
             isin    = (randoms['RANDOM_RA'] > 179.) & (randoms['RANDOM_RA'] < 181.)
             isin   &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
 
-            # Note: Force one random in other gama fields.
-            isin[0] = True
+            allin  = isin
 
-            randoms = randoms[isin]
+            # G9                                                                                                                                                                                       
+            isin   = (randoms['RANDOM_RA']  > 134.) & (randoms['RANDOM_RA']  < 136.)
+            isin  &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+
+            allin |= isin
+
+            # G15                                                                                                                                                                                         
+            isin   = (randoms['RANDOM_RA']  > 216.) & (randoms['RANDOM_RA']  < 218.)
+            isin  &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+            
+            allin |= isin
+
+            randoms = randoms[allin]
 
             ndryrun = len(randoms)
             nrand   = ndryrun

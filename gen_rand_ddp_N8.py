@@ -27,6 +27,7 @@ parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk'
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args        = parser.parse_args()
+log         = args.log
 field       = args.field.upper()
 dryrun      = args.dryrun
 prefix      = args.prefix

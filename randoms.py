@@ -14,6 +14,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check, call_si
 from   gama_limits       import gama_limits, gama_field
 from   bitmask           import lumfn_mask, consv_mask
 
+
 def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
     start   = time.time()
 

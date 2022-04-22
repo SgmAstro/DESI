@@ -1,3 +1,4 @@
+import re
 import os
 import time
 import glob
@@ -305,7 +306,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     if log:
         fpath = os.path.dirname(fpath) + '/logs/' + os.path.basename(fpath).split('.')[0] + '.log'
-        
+
     return  fpath
 
 def supported_files(dryrun=None):        

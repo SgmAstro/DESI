@@ -75,37 +75,46 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
     parser.add_argument('--survey', help='Select survey', default='gama')
     parser.add_argument('--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
-    parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
     parser.add_argument('--version', help='Version', default='GAMA4')
     parser.add_argument('--conservative', help='Conservative analysis choices', action='store_true')
     
-    args   = parser.parse_args()
+    args          = parser.parse_args()
 
+    log           = args.log
     field         = args.field.upper()
     dryrun        = args.dryrun
     survey        = args.survey
     density_split = args.density_split
-    prefix        = args.prefix
     self_count    = args.selfcount_volfracs
     version       = args.version
     conservative  = args.conservative
     
     if not density_split:
+        if log:
+            logfile = findfile(ftype='lumfn', dryrun=False, survey=survey, log=True)
+            
+            print(f'Logging to {logfile}')
+                
+            sys.stdout = open(logfile, 'w')
+
         print('Generating Gold reference LF.')
 
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
+
+        prefix = 'randoms'
         
         # MJW/HACK:  repeated calls in this script to specify version == GAMA4? 
-        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        fpath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        opath  = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -115,11 +124,25 @@ if __name__ == '__main__':
 
         process_cat(fpath, opath, survey=survey, fillfactor=False)
 
+        print('Done.')
+
+        if log:
+            sys.stdout.close()
+
     else:
+        if log:
+            # TODO NOTE: Do not support version.
+            logfile = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, survey=survey, log=True).replace('vmax', 'lumfn').replace('_{utier}', '')
+                        
+            print(f'Logging to {logfile}')
+        
+            sys.stdout = open(logfile, 'w')
+
         print('Generating Gold density-split LF.')
 
         assert  field != None
-        assert  'ddp1' in prefix
+
+        prefix = 'randoms_ddp1'
 
         rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
         
@@ -228,4 +251,7 @@ if __name__ == '__main__':
 
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
 
-    print('Done.')
+        print('Done.')
+
+        if log:
+            sys.stdout.close()

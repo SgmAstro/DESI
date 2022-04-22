@@ -73,7 +73,7 @@ for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD
     
-    python gen_gold_lf.py --density_split --field $FIELD --prefix randoms_ddp1 $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn_d8_G9.log'
+    python gen_gold_lf.py --density_split --field $FIELD $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn_d8_G9.log'
 done
 
 echo

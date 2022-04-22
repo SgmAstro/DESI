@@ -155,6 +155,9 @@ sphere_radius      = rand.meta['RSPHERE']
 rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
+# CHANGE:  Protect against exactly zero fillfactor (causes division errors). 
+np.clip(rand['FILLFACTOR'], 1.e-99, None)
+
 runtime = calc_runtime(start, 'Shuffling')
 
 # randomise rows.                                                                                                                                                

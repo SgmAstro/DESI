@@ -274,7 +274,8 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                       'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
                       'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
                       'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz}
+                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
+                      'boundary':           {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
                      }
         
         parts      = file_types[ftype]
@@ -303,6 +304,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         print(f'DEBUG: findfile returns {fpath}')
 
     fpath = fpath.replace('//', '/')
+
+    if ftype == 'boundary':
+        assert log == True
 
     if log:
         fpath = os.path.dirname(fpath) + '/logs/' + os.path.basename(fpath).split('.')[0] + '.log'

@@ -32,6 +32,7 @@ def rotate2rosette(ros_ra, ros_dec, pos):
     return  resres
 
 parser  = argparse.ArgumentParser(description='Calculate a set of boundary points')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
@@ -45,6 +46,7 @@ parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', de
 
 
 args     = parser.parse_args()
+log      = args.log
 field    = args.field.upper()
 dryrun   = args.dryrun
 survey   = args.survey.lower()
@@ -61,6 +63,13 @@ fields   = fetch_fields(survey)
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 opath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+
+if log:
+    logfile = findfile(ftype='boundary', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
@@ -226,3 +235,6 @@ hx.append(fits.convenience.table_to_hdu(boundary))
 hx.writeto(opath, overwrite=True) 
 
 runtime = calc_runtime(start, 'Finished'.format(opath))
+
+if log:
+    sys.stdout.close()

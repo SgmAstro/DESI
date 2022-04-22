@@ -10,6 +10,7 @@ from   bitmask       import lumfn_mask, consv_mask
 
 
 parser = argparse.ArgumentParser(description='Gen ddp cat.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')

@@ -71,15 +71,15 @@ fi
 
 echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'_gold.log'
 
-python3 -u gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log 2>&1
+python3 -u gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
 
-python3 -u gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log 2>&1
+python3 -u gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
 
-python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log 2>&1
+python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 

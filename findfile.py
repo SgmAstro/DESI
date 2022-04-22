@@ -187,7 +187,7 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
         return  result
 
-def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1):        
+def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1, log=False, ddp_count=-1):        
     if survey == None:
         survey = 'gama'
 
@@ -237,7 +237,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     else:
         gold_dir = release_dir(version=version)
         rand_dir = release_dir(version=version) + '/randoms/'
-        
+
+    # Special case:
+    if ftype == 'ddp_limit':
+        if log:
+            return gold_dir + '/logs/' + '{}_ddrp_limit.log'.format(survey)
+
+        else:
+            assert ddp_count >= 0
+            return gold_dir + '/ddrp_limits/' + '{}_ddrp_limit_{:d}.fits'.format(survey, ddp_count)
+                
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
 
@@ -293,6 +302,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         print(f'DEBUG: findfile returns {fpath}')
 
     fpath = fpath.replace('//', '/')
+
+    if log:
+        fpath = os.path.dirname(fpath) + '/logs/' + os.path.basename(fpath).split('.')[0] + '.log'
         
     return  fpath
 

@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import argparse
 import runtime
@@ -82,6 +83,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen zmax cat.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')  
     parser.add_argument('-a', '--aall',   help='All Q, no red/blue split.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
@@ -89,6 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     
     args      = parser.parse_args()
+    log       = args.log
     aall      = args.aall
     dryrun    = args.dryrun
     survey    = args.survey.lower()
@@ -100,6 +103,13 @@ if __name__ == '__main__':
     rmax      = specifics['rmax']
 
     start     = time.time()
+
+    if log:
+        logfile = findfile(ftype='zmax', dryrun=False, survey=survey, log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
 
     print('Assuming {:.4f} < r < {:.4f}'.format(rmax, rlim))
     print('Assuming Q ALL = {}'.format(aall))
@@ -154,3 +164,6 @@ if __name__ == '__main__':
     runtime = (time.time() - start) / 60.
 
     print('\n\nDone in {} mins.\n\n'.format(runtime))
+
+    if log:
+        sys.stdout.close()

@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import runtime
 import numpy           as np
@@ -16,6 +17,13 @@ from   jackknife_limits import _set_jackknife
 def gama_gold(argset):
     if argset.dryrun:
         return 0
+
+    if argset.log:
+        logfile = findfile(ftype='gold', dryrun=False, survey='gama', log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
 
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
@@ -128,9 +136,15 @@ def gama_gold(argset):
 
     print('Writing {}.'.format(opath))
 
+    if argset.log:
+        sys.stdout.close()
+
+    return 0
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')

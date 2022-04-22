@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import runtime
 import numpy as np
@@ -58,11 +59,18 @@ def sub_kE(dat, kcorr_r, kcorr_g):
 
     return dat
 
-def gen_kE(dryrun, survey, nooverwrite, nproc=12):
+def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
     root      = os.environ['GOLD_DIR']
 
     fpath     = findfile(ftype='gold', dryrun=dryrun, survey=survey)
     opath     = findfile(ftype='kE',   dryrun=dryrun, survey=survey)
+
+    if log:
+        logfile = findfile(ftype='kE', dryrun=False, survey=survey, log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
 
     if args.nooverwrite:
         overwrite_check(opath)
@@ -96,16 +104,21 @@ def gen_kE(dryrun, survey, nooverwrite, nproc=12):
 
     dat.write(opath, format='fits', overwrite=True)
 
+    if log:
+        sys.stdout.close()
+
 
 if __name__ == '__main__':
     parser  = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
   
     args        = parser.parse_args()
+    log         = args.log
     dryrun      = args.dryrun
     survey      = args.survey.lower()
     nooverwrite = args.nooverwrite
 
-    gen_kE(dryrun, survey, nooverwrite)
+    gen_kE(log, dryrun, survey, nooverwrite)

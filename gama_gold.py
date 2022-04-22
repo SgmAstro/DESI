@@ -16,6 +16,8 @@ from   jackknife_limits import _set_jackknife
 
 def gama_gold(argset):
     if argset.dryrun:
+        print('Dryrun gama_gold created on full run; Exiting.')
+
         return 0
 
     if argset.log:
@@ -129,7 +131,12 @@ def gama_gold(argset):
 
     write_desitable(opath, dat)
     
-    dat    = dat[:1000]
+    # Dryrun:  2x2 sq. patch of sky.
+    isin   = (dat['RA'] > 179.) & (dat['RA'] < 181.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+    
+    dat    = dat[isin]
+
     opath  = findfile(ftype='gold', dryrun=True, survey='gama')
 
     write_desitable(opath, dat)

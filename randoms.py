@@ -51,16 +51,10 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         ctheta_min = np.cos(np.pi/2. - np.radians(dec_min))
         ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
-        vol          = volcom(zmax, Area) - volcom(zmin, Area)
+        vol        = volcom(zmax, Area) - volcom(zmin, Area)
 
-        if dryrun == True:
-            ndryrun = 2000
-            nrand   = ndryrun
-
-        else:
-            nrand     = int(np.ceil(vol * density * oversample) / 2.0)
-            print('NRAND IS:', nrand)
-
+        nrand     = int(np.ceil(vol * density * oversample) / 2.0)
+        
         cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
         theta     = np.arccos(cos_theta)
         decs      = np.pi/2. - theta
@@ -70,6 +64,20 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
         randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
 
+        if dryrun:
+            isin    = (randoms['RANDOM_RA'] > 179.) & (randoms['RANDOM_RA'] < 181.)
+            isin   &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+
+            # Note: Force one random in other gama fields.
+            isin[0] = True
+
+            randoms = randoms[isin]
+
+            ndryrun = len(randoms)
+            nrand   = ndryrun
+
+        print('{} randoms for dryrun = {}'.format(nrand, dryrun))
+            
     elif survey == 'desi':
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.

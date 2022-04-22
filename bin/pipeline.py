@@ -212,8 +212,8 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
 
 if __name__ == '__main__':
-    # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log                                                                                                                                       
-    # Head:   python3 pipeline.py --survey desi                                                                                                                                                                 
+    # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log --queue cosma --reset                                                                                                               
+    # Head:   python3 pipeline.py --survey desi                                                                                                                                                            
     parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
     parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
     parser.add_argument('--reset',        help='Reset', action='store_true')

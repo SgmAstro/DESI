@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import runtime
 import fitsio
@@ -16,11 +17,19 @@ parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
+log    = args.log
 dryrun = args.dryrun
 survey = args.survey
 
 fpath  = findfile(ftype='zmax', dryrun=dryrun, survey=survey)
 opath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)
+
+if log:
+    logfile = findfile(ftype='ddp', dryrun=False, survey=survey, log=True)
+
+    print(f'Logging to {logfile}')
+    
+    sys.stdout = open(logfile, 'w')
 
 if args.nooverwrite:
     overwrite_check(opath)
@@ -47,3 +56,6 @@ print(zlims)
 print('Writing: {}'.format(opath))
 
 dat.write(opath, format='fits', overwrite=True)
+
+if log:
+    sys.stdout.close()

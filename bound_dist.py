@@ -24,6 +24,7 @@ Script to calculate the maximum distance [Mpc/h] of each random from the boundar
 np.random.seed(314)
 
 parser = argparse.ArgumentParser(description='Find boundary distance for all randoms in a specified field..')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
@@ -33,7 +34,7 @@ parser.add_argument('--nproc', type=int, help='Number of processors', default=12
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
-
+log    = args.log
 field  = args.field.upper()
 dryrun = args.dryrun
 prefix = args.prefix
@@ -46,6 +47,13 @@ start  = time.time()
 # https://www.dur.ac.uk/icc/cosma/cosma5/
 fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 opath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+
+if log:
+    logfile = findfile(ftype='randoms_bd', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
     
 if args.nooverwrite:
     overwrite_check(opath)
@@ -175,4 +183,5 @@ rand.write(opath, format='fits', overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')
 
-
+if log:
+    sys.stdout.close()

@@ -8,15 +8,16 @@ from   findfile  import findfile
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--log',          help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--survey',       help='Survey', default='gama')
     parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
-    args   = parser.parse_args()
-
-    survey = args.survey
-    dryrun = args.dryrun
+    args        = parser.parse_args()
+    log         = args.log
+    survey      = args.survey
+    dryrun      = args.dryrun
     nooverwrite = args.nooverwrite
     
     if survey == 'gama':

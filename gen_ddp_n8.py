@@ -1,4 +1,5 @@
 import os
+import sys
 import fitsio
 import argparse
 import runtime
@@ -15,6 +16,7 @@ from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
@@ -22,6 +24,7 @@ parser.add_argument('--prefix', help='randoms filename prefix', default='randoms
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
+log    = args.log
 realz  = args.realz
 dryrun = args.dryrun
 prefix = args.prefix
@@ -31,6 +34,13 @@ fields = fetch_fields(survey)
 
 fpath  = findfile(ftype='ddp',    dryrun=dryrun, survey=survey)
 opath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
+
+if log:
+    logfile = findfile(ftype='ddp_n8', dryrun=False, survey=survey, log=True)
+
+    print(f'Logging to {logfile}')
+        
+    sys.stdout = open(logfile, 'w')
 
 if args.nooverwrite:
     overwrite_check(opath)
@@ -194,3 +204,6 @@ for tier in utiers:
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')
+
+if log:
+    sys.stdout.close()

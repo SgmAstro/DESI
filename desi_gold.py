@@ -264,6 +264,7 @@ def desi_gold():
 
 
 if __name__ == '__main__':
+    # TODO Support logging.
     desi_gold()
 
     print('Done.')

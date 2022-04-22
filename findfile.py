@@ -239,7 +239,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         gold_dir = release_dir(version=version)
         rand_dir = release_dir(version=version) + '/randoms/'
 
-    # Special case:
+    # Special cases:
+    if ftype == 'config':
+        return gold_dir + 'configs/config.yaml'
+
     if ftype == 'ddp_limit':
         if log:
             return gold_dir + '/logs/' + '{}_ddrp_limit.log'.format(survey)

@@ -13,7 +13,7 @@ from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
 from   bitmask           import lumfn_mask, consv_mask
-
+from   config            import Configuration
 
 def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
     start   = time.time()
@@ -231,6 +231,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
     parser.add_argument('--realz',        help='Realization', default=0, type=int)
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1.0, type=float)
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
@@ -262,6 +263,10 @@ if __name__ == '__main__':
         print(f'Logging to {logfile}')
 
         sys.stdout = open(logfile, 'w')
+
+    config = Configuration(args.config)
+    config.update_attributes('randoms', args)
+    config.write()
     
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)

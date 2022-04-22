@@ -8,18 +8,24 @@ from   astropy.table import Table
 from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   findfile      import findfile, overwrite_check
 from   bitmask       import lumfn_mask, consv_mask
+from   config        import Configuration
 
 
 parser = argparse.ArgumentParser(description='Gen ddp cat.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
 log    = args.log
 dryrun = args.dryrun
 survey = args.survey
+
+config = Configuration(args.config)
+config.update_attributes('ddp', args)
+config.write()
 
 fpath  = findfile(ftype='zmax', dryrun=dryrun, survey=survey)
 opath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey)

@@ -16,6 +16,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check, call_si
 from   gama_limits       import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
 from   ros_tools         import roscen
+from   config            import Configuration
 
 np.random.seed(314)
 
@@ -39,7 +40,7 @@ parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type
 parser.add_argument('--sampling',     help='Sampling rate', default=90000, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 # Defaults to GAMA Gold limits. 
 parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
 parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
@@ -70,6 +71,10 @@ if log:
     print(f'Logging to {logfile}')
 
     sys.stdout = open(logfile, 'w')
+
+config = Configuration(args.config)
+config.update_attributes('boundary', args)
+config.write()
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')

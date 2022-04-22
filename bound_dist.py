@@ -16,6 +16,7 @@ from   multiprocessing import Pool
 from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
 from   bitmask         import lumfn_mask, consv_mask
+from   config          import Configuration
 
 '''
 Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
@@ -30,6 +31,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
@@ -41,6 +43,10 @@ prefix = args.prefix
 survey = args.survey.lower()
 nproc  = args.nproc
 realz  = args.realz
+
+config = Configuration(args.config)
+config.update_attributes('fillfactor', args)
+config.write()
 
 start  = time.time()
 

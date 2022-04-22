@@ -5,6 +5,7 @@ import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
+from   config           import Configuration
 from   findfile         import findfile, overwrite_check, write_desitable
 from   astropy.table    import Table
 from   cosmo            import cosmo, distmod
@@ -13,6 +14,7 @@ from   cartesian        import cartesian, rotate
 from   survey           import survey_specifics
 from   bitmask          import BitMask, lumfn_mask
 from   jackknife_limits import _set_jackknife
+from   config           import Configuration
 
 def gama_gold(argset):
     if argset.dryrun:
@@ -167,10 +169,15 @@ def gama_gold(argset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
     parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
     args = parser.parse_args()
 
-    gama_gold(args)
+    config = Configuration(args.config)
+    config.update_attributes('gold', args)
+    config.write()
+
+    # gama_gold(args)

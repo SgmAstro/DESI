@@ -14,7 +14,7 @@ from   functools import partial
 from   multiprocessing import Pool
 from   findfile import findfile, overwrite_check
 from   survey import survey_specifics
-
+from   config import Configuration
 
 kcorr_r = GAMA_KCorrection(band='R')
 
@@ -88,6 +88,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('--theta_def',    help='Specifier for definition of theta', default='Z_THETA_QCOLOR')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     
     args      = parser.parse_args()
@@ -96,6 +97,10 @@ if __name__ == '__main__':
     dryrun    = args.dryrun
     survey    = args.survey.lower()
     theta_def = args.theta_def
+
+    config = Configuration(args.config)
+    config.update_attributes('zmax', args)
+    config.write()
 
     specifics = survey_specifics(survey)
 

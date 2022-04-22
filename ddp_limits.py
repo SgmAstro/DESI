@@ -14,16 +14,22 @@ from   abs_mag           import abs_mag
 from   data.ke_params    import *
 from   survey            import survey_specifics
 from   findfile          import findfile
+from   config            import Configuration
 
 parser   = argparse.ArgumentParser(description='Gen kE DDP limit curves')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args     = parser.parse_args()
 log      = args.log
 survey   = args.survey.lower()
 
+config = Configuration(args.config)
+config.update_attributes('ddp_limits', args)
+config.write()
+    
 if log:
     logfile = findfile(ftype='ddp_limit', dryrun=False, survey=survey, log=True)
 

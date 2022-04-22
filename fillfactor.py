@@ -15,7 +15,7 @@ from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
-
+from   config              import Configuration
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
@@ -27,6 +27,7 @@ parser.add_argument('--nproc', help='nproc', default=8, type=int)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
 args       = parser.parse_args()
 log        = args.log 
@@ -43,6 +44,10 @@ if log:
     print(f'Logging to {logfile}')
 
     sys.stdout = open(logfile, 'w')
+
+config = Configuration(args.config)
+config.update_attributes('fillfactor', args)
+config.write()
 
 assert field in fields, 'Error: Field not in fields'
 

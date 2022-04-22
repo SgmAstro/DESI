@@ -13,17 +13,7 @@ from    config     import Configuration
 from    utils      import run_command
 
 
-def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=True, comments=None, config=None):
-    if config != None:
-        config   = Configuration(config)
-
-    if comments != None:
-        comments = comments.split(';')
-    
-        print('Appending comments: {}'.format(comments))
-        
-        config.update_comments(comments)
-
+def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=True, comments=None):
     if custom & (args != None):
         customise_script(args)
 
@@ -249,5 +239,17 @@ if __name__ == '__main__':
     comments    = args.comments
     config      = args.config
     log         = args.log
+
+    config      = Configuration(config)
+    config.update_attributes('pipeline', args)
+
+    if comments != None:
+        comments = comments.split(';')
+
+        print('Appending comments: {}'.format(comments))
+
+        config.update_comments(comments)
+        
+    config.write()
     
-    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, config=config, args=args)
+    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, args=args)

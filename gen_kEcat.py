@@ -14,7 +14,7 @@ from   desi_fields     import desi_fields
 from   findfile        import findfile, fetch_fields, overwrite_check
 from   multiprocessing import Pool
 from   functools       import partial
-
+from   config          import Configuration
 
 np.random.seed(314)
 
@@ -113,6 +113,7 @@ if __name__ == '__main__':
     parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
   
     args        = parser.parse_args()
@@ -120,5 +121,9 @@ if __name__ == '__main__':
     dryrun      = args.dryrun
     survey      = args.survey.lower()
     nooverwrite = args.nooverwrite
+
+    config = Configuration(args.config)
+    config.update_attributes('kE', args)
+    config.write()
 
     gen_kE(log, dryrun, survey, nooverwrite)

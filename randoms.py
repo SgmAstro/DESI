@@ -204,6 +204,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
 if __name__ == '__main__':
     parser  = argparse.ArgumentParser(description='Select GAMA field.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', default='G9')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
@@ -219,6 +220,7 @@ if __name__ == '__main__':
     parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
 
     args    = parser.parse_args()
+    log     = args.log
     field   = args.field.upper()
     dryrun  = args.dryrun
     survey  = args.survey.lower()
@@ -232,8 +234,17 @@ if __name__ == '__main__':
     oversample = args.oversample
 
     assert oversample in np.arange(1, 21, 1)
+
+    if log:
+        logfile = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
     
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)
 
+    if log:
+        sys.stdout.close()
 

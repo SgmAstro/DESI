@@ -35,8 +35,11 @@ def customise_script(args, debug=False):
     if script_log == None:
         #  TODO:  findfile                                                                                                                                                                               
         ss   = os.path.basename(script).split('.')[0]
-        log  = os.environ['HOME'] + f'/data/GAMA4/logs/{ss}.log'
 
+        if 'rand' in script:
+            log  = os.environ['HOME'] + f'/data/GAMA4/randoms/logs/{ss}.log'
+        else:
+            log  = os.environ['HOME'] + f'/data/GAMA4/logs/{ss}.log'
     else:
         log  = script_log
 

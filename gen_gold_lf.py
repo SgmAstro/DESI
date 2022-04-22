@@ -14,10 +14,10 @@ from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):
-        
+
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -28,6 +28,10 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         return  1
 
     zmax = Table.read(fpath)
+
+    if len(zmax) == 0:
+        print('Zero length catalogue, nothing to be done; Exiting.') 
+        return 0
          
     found_fields = np.unique(zmax['FIELD'].data)
         
@@ -57,7 +61,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
-    
+    '''
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
@@ -69,7 +73,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
         # TODO: issue here (no write for tuple)
         result_stepwise.write(opath, format='fits', overwrite=True)
-
+    '''
     return  0
 
 
@@ -106,6 +110,8 @@ if __name__ == '__main__':
 
         print('Generating Gold reference LF.')
 
+        call_signature(dryrun, sys.argv)
+
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
@@ -139,6 +145,8 @@ if __name__ == '__main__':
             sys.stdout = open(logfile, 'w')
 
         print('Generating Gold density-split LF.')
+
+        call_signature(dryrun, sys.argv)
 
         assert  field != None
 
@@ -206,12 +214,12 @@ if __name__ == '__main__':
             # MJW:  Load three-field randoms/meta directly. 
             # MJW:  Potential source or ref. schechter bugs; debug. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
-            fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]
-            d8        = rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]
-            d8_zp     = rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
+            fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+            d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
+            d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
             
-            result = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
+            result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -255,3 +263,4 @@ if __name__ == '__main__':
 
         if log:
             sys.stdout.close()
+

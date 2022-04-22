@@ -6,6 +6,8 @@ def renormalise_d8LF(cat, fdelta, fdelta_zeropoint, self_count=False):
     fscale equal to Equation 7 in McNaught-Roberts (2014).
     See: https://arxiv.org/pdf/1409.4681.pdf
     '''
+
+    print('Renormalising LF with fdelta: {:.6e} and fdelta_zeropoint:  {:.6e}'.format(fdelta, fdelta_zeropoint))
     
     cat = Table(cat, copy=True)
     

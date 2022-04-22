@@ -14,6 +14,8 @@ from   desi_fields   import desi_fields
 from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
 from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask
+from   delta8_limits import d8_limits
+
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
@@ -95,12 +97,22 @@ _idxs                  = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
-
+    
     isin            = rand['Z'] <= zmax
-    volavg_fillfrac = np.mean(rand['FILLFACTOR'][isin] > 0.8)
- 
-    dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
 
+    if np.count_nonzero(isin):
+        isin            = rand['FILLFACTOR'][isin] > 0.8
+        volavg_fillfrac = np.mean(isin)
+    
+    else:
+        assert dryrun == True
+
+        print('WARNING:  vol. avg. fillfactor assumed to be 50% for dryrun.')
+
+        volavg_fillfrac = 0.50
+
+    dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
+    
     # print(zmax, volavg_fillfrac)
 
 if not dryrun:
@@ -169,7 +181,7 @@ if -99 in utiers:
 for ii, xx in enumerate(d8_limits):
     dat.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-if not np.all(utiers == np.arange(9)):
+if not np.all(np.isin(np.arange(9), utiers)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
     
 else:
@@ -177,7 +189,7 @@ else:
 
 print('Delta8 spans {:.4f} to {:.4f} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
-for tier in utiers:
+for tier in np.arange(len(d8_limits)):
     print()
     print('---- d{} ----'.format(tier))
 

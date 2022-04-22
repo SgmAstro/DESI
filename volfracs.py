@@ -1,36 +1,52 @@
 import numpy as np
 
+from   delta8_limits import d8_limits
 
 def volfracs(rand, bitmasks=[]):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
+    utiers    = utiers[utiers >= 0]
+
     print('Unique tiers: {}'.format(utiers))
 
-    # TODO/HACK?: Possible issue here
     ddp1_rand = rand[rand['DDPZLIMS'][:,0]]
     
-    for ut in utiers:
-        in_tier = (rand['DDP1_DELTA8_TIER'].data == ut)
-        #in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
+    for ut in range(len(d8_limits)):
+        print()
+
+        # TODO/HACK/BUG/MJW  Shouldn't this be ddp1_rand?  Rather than rand.
+        in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 
         for bm in bitmasks:
-            # Deprecated: (ddp1_rand['FILLFACTOR'].data >= 0.8)                                                                                                                                             
             in_tier &= (ddp1_rand[bm].data == 0)
 
-        rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.10e}'.format(np.mean(in_tier))
-        rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
+        if np.count_nonzero(in_tier) > 0: 
+            rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.10e}'.format(np.mean(in_tier))
+            rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
 
-        print('DDP1_d{}_VOLFRAC OF {:.10f} added.'.format(ut, np.mean(in_tier)))
+        else:
+            rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.10e}'.format(0.0)
+            rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.mean(d8_limits[ut]))
+            
+        print('DDP1_d{}_VOLFRAC OF {} added.'.format(ut, rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]))
         print('DDP1_d{}_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)]))
 
         # Zero point.                                                                                                                                                                                      
-        in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) & (ddp1_rand['FILLFACTOR'].data >= 0.8)
+        in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) 
 
-        rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.10e}'.format(np.mean(in_tier))
-        rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
+        for bm in bitmasks:
+            in_tier &= (ddp1_rand[bm].data == 0)
+
+        if np.count_nonzero(in_tier) > 0:
+            rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.10e}'.format(np.mean(in_tier))
+            rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
+        
+        else:
+            rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.10e}'.format(0.0)
+            rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.10e}'.format(np.mean(d8_limits[ut]))
 
         print('DDP1_d{}_ZEROPOINT_VOLFRAC OF {:.10f} added.'.format(ut, np.mean(in_tier)))
         print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
 
-    return rand
+    return  rand

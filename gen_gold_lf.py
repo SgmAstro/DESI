@@ -185,14 +185,18 @@ if __name__ == '__main__':
             # MJW:  Load three-field randoms/meta directly. 
             # DEBUG/MJW:  Potential source or ref. schechter bugs. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
+
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+
             d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
             
             result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
+
+            result['REF_RATIO']      = result['PHI_IVMAX'] / result['REF_SCHECHTER']
 
             print('LF renormalization and ref. schechter complete.')
             

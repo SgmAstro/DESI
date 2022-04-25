@@ -65,15 +65,15 @@ start  = time.time()
 call_signature(dryrun, sys.argv)
     
 # Read randoms file, split by field (DDP1, or not).
-fpath     = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-_points   = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-points    = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
+fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+_points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
-fpath      = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
 _overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-overpoints    = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
+overpoints  = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
-runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
+runtime     = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
 
 idx       = np.argsort(points[:,0])
 points    = points[idx]
@@ -196,7 +196,7 @@ rand.sort('CARTESIAN_X')
 # print(len(rand), len(flat_result))
 
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
+rand['FILLFACTOR']   = rand['RAND_N8'] / oversample.meta['NRAND8']
 
 rand.meta['RSPHERE'] = 8.
 rand.meta['IMMUTABLE'] = 'FALSE'

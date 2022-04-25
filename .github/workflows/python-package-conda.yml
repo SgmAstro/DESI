@@ -33,6 +33,10 @@ jobs:
         mkdir -p $GOLD_LOGS
         mkdir -p $RANDOMS_LOGS
 
+        echo $GITHUB_WORKSPACE
+
+        cp $GITHUB_WORKSPACE/configs/config.yaml $GOLD_DIR/configs/
+
         conda install pytest
         
         pytest -rP

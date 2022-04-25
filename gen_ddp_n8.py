@@ -93,23 +93,19 @@ dat['FILLFACTOR']  = rand['FILLFACTOR'][ii]
 dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
 dat['FILLFACTOR_VMAX'] = -99.
-_idxs                  = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
+
+_idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-2))
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
     
-    isin            = rand['Z'] <= zmax
+    isin            = (rand['Z'] <= zmax) & (rand['FILLFACTOR'] > 0.8)
 
     if np.count_nonzero(isin):
-        isin            = rand['FILLFACTOR'][isin] > 0.8
         volavg_fillfrac = np.mean(isin)
     
     else:
-        assert dryrun == True
-
-        print('WARNING:  vol. avg. fillfactor assumed to be 50% for dryrun.')
-
-        volavg_fillfrac = 0.50
+        raise RuntimeError('Revisit vol. avg. fillfactor binning.')
 
     dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
     

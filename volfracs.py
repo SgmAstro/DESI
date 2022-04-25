@@ -11,7 +11,9 @@ def volfracs(rand, bitmasks=[]):
 
     print('Unique tiers: {}'.format(utiers))
 
-    ddp1_rand = rand[rand['DDPZLIMS'][:,0]]
+    ddp1_rand = rand[rand['DDPZLIMS'][:,0] == 1]
+
+    print('DDP1 randoms: {:.6f} < z < {:.6f}'.format(ddp1_rand['Z'].min(), ddp1_rand['Z'].max()))
     
     for ut in range(len(d8_limits)):
         print()

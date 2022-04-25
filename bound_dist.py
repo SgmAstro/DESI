@@ -43,11 +43,11 @@ prefix = args.prefix
 survey = args.survey.lower()
 nproc  = args.nproc
 realz  = args.realz
-
+'''
 config = Configuration(args.config)
 config.update_attributes('bound_dist', args)
 config.write()
-
+'''
 start  = time.time()
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/

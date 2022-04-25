@@ -2,6 +2,7 @@ import numpy as np
 
 from   delta8_limits import d8_limits
 
+
 def volfracs(rand, bitmasks=[]):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)

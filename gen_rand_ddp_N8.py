@@ -106,15 +106,15 @@ print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 # MJW: Deprecated?
 rand['DDPZLIMS']      = np.zeros(len(rand) * 3, dtype=int).reshape(len(rand), 3)
 
-rand['DDPZLIMS'][:,0] = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
-rand['DDPZLIMS'][:,1] = (rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax)
-rand['DDPZLIMS'][:,2] = (rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax)
+rand['DDPZLIMS'][:,0] = int((rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax))
+rand['DDPZLIMS'][:,1] = int((rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax))
+rand['DDPZLIMS'][:,2] = int((rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax))
 
 rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
-rand['DDP1_DELTA8_TIER'] = delta8_tier(rand['DDP1_DELTA8'])
+rand['DDP1_DELTA8_TIER']        = delta8_tier(rand['DDP1_DELTA8'].data)
 
 rand['DDP1_DELTA8_ZEROPOINT'] = ((1 + rand['DDP1_N8']) / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8_ZEROPOINT'] = ((1 + rand['DDP2_N8']) / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.

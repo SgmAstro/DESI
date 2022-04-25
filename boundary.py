@@ -189,7 +189,7 @@ print('Solved {:d} for field {}'.format(nrand, field))
 
 randoms.pprint()
 
-randoms['V']          = volcom(randoms['Z'], area=area) - volcom(zmin, area=area)
+randoms['V']          = volcom(randoms['Z'].data, area=area) - volcom(zmin, area=area)
 randoms['BOUNDID']    = np.arange(len(randoms))
 
 randoms['FIELD']      = field

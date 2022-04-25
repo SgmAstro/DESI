@@ -20,8 +20,15 @@ def negz_proof(func):
             scalar = False
 
         else:
-            zs = np.atleast_1d(zs)
-            scalar = True
+            try:
+                scalar = len(zs) > 1
+                scalar = ~scalar
+
+            except:
+                print('Assuming scalar type for neg. z wrapping of type {}'.format(type(zs)))
+
+                zs = np.atleast_1d(zs)
+                scalar = True
 
         zs = np.atleast_1d(zs)
 

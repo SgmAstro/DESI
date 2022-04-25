@@ -182,37 +182,8 @@ if __name__ == '__main__':
             result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
             # result.pprint()
 
-            '''
-            # Deprecated:
-            
-            if all_rands == None:                                
-                _fields    = fetch_fields(survey=survey)
-                
-                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
-                all_rands  = [Table.read(xx) for xx in all_rpaths]
- 
-            # Calculated for DDP1 redshift limits.     
-            fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
-            
-            fdelta_zeropoint = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8_zeropoint     = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
-            
-            print('Field vol renormalization: {}'.format(fdelta))
-            print('Field d8  renormalization: {}'.format(d8))
-
-            fdelta = fdelta.mean()
-            d8     = d8.mean()
-
-            fdelta_zeropoint = fdelta_zeropoint.mean()
-            d8_zeropoint     = d8_zeropoint.mean()
-            
-            print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
-            print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
-            '''
-            
             # MJW:  Load three-field randoms/meta directly. 
-            # MJW:  Potential source or ref. schechter bugs; debug. 
+            # DEBUG/MJW:  Potential source or ref. schechter bugs. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

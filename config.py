@@ -125,7 +125,7 @@ class Configuration:
         
         with open(opath, 'w', encoding = 'utf-8') as ofile:
             # TODO: remove dict to retain order. 
-            yaml.dump(dict(self.attributes), ofile, default_flow_style=False, Dumper=CustomDumper)
+            yaml.dump(dict(self.attributes), ofile, default_flow_style=False, Dumper=CustomDumper, sort_keys=False)
 
 
 if __name__ == '__main__':

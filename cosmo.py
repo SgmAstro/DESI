@@ -1,3 +1,4 @@
+import astropy
 import numpy as np
 import astropy.units as u
 
@@ -16,7 +17,7 @@ def negz_proof(func):
     '''
   
     def wrap(zs):
-        if type(zs) is np.ndarray:
+        if type(zs) in [np.ndarray, astropy.table.column.Column]:
             scalar = False
 
         else:
@@ -25,7 +26,7 @@ def negz_proof(func):
                 scalar = ~scalar
 
             except:
-                print('Assuming scalar type for neg. z wrapping of type {}'.format(type(zs)))
+                # print('Assuming scalar type for neg. z wrapping of type {}'.format(type(zs)))
 
                 zs = np.atleast_1d(zs)
                 scalar = True

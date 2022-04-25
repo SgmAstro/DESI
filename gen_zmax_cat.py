@@ -5,7 +5,7 @@ import argparse
 import runtime
 import numpy as np
 
-from   cosmo import distmod
+from   cosmo import distmod, volcom
 from   smith_kcorr import GAMA_KCorrection
 from   tmr_ecorr import tmr_ecorr
 from   scipy.optimize import brentq, minimize
@@ -159,6 +159,9 @@ if __name__ == '__main__':
     dat['ZMIN_WARN'] = warn
 
     dat.meta['THETA_DEF'] = theta_def
+
+    dat['VMAX']  = volcom(dat['ZMAX'], dat.meta['AREA'])
+    dat['VMAX'] -= volcom(dat['ZMIN'], dat.meta['AREA'])
 
     print('Writing {}.'.format(opath))
 

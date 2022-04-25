@@ -70,6 +70,8 @@ _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', '
 points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
 fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+overpoints_hdr = fitsio.read_header(fpath, ext=1)
+
 _overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
 overpoints  = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
@@ -196,7 +198,7 @@ rand.sort('CARTESIAN_X')
 # print(len(rand), len(flat_result))
 
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-rand['FILLFACTOR']   = rand['RAND_N8'] / oversample.meta['NRAND8']
+rand['FILLFACTOR']   = rand['RAND_N8'] / overpoints_hdr['NRAND8']
 
 rand.meta['RSPHERE'] = 8.
 rand.meta['IMMUTABLE'] = 'FALSE'

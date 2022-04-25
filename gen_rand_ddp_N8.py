@@ -23,6 +23,7 @@ parser.add_argument('--log', help='Create a log file of stdout.', action='store_
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
+parser.add_argument('--realz', help='randoms realization number', default=0)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
@@ -31,6 +32,7 @@ log         = args.log
 field       = args.field.upper()
 dryrun      = args.dryrun
 prefix      = args.prefix
+realz       = args.realz
 survey      = args.survey.lower()
 nooverwrite = args.nooverwrite
 
@@ -46,8 +48,6 @@ if log:
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 start   = time.time()
-
-realz   = 0
 
 fpath   = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 
@@ -103,16 +103,15 @@ ddp3_zmax           = dat.meta['DDP3_ZMAX']
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
 # TODO: IN_DDP column akin to galaxies.
-# MJW: Deprecated?
 rand['DDPZLIMS']      = np.zeros(len(rand) * 3, dtype=int).reshape(len(rand), 3)
 
-rand['DDPZLIMS'][:,0] = int((rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax))
-rand['DDPZLIMS'][:,1] = int((rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax))
-rand['DDPZLIMS'][:,2] = int((rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax))
+rand['DDPZLIMS'][:,0] = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
+rand['DDPZLIMS'][:,1] = (rand['Z'].data > ddp2_zmin) & (rand['Z'].data < ddp2_zmax)
+rand['DDPZLIMS'][:,2] = (rand['Z'].data > ddp3_zmin) & (rand['Z'].data < ddp3_zmax)
 
-rand['DDP1_DELTA8'] = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
-rand['DDP2_DELTA8'] = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
-rand['DDP3_DELTA8'] = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
+rand['DDP1_DELTA8']   = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
+rand['DDP2_DELTA8']   = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
+rand['DDP3_DELTA8']   = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
 rand['DDP1_DELTA8_TIER']        = delta8_tier(rand['DDP1_DELTA8'].data)
 

@@ -208,11 +208,11 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'Area':   Area,\
                     'VOL':     vol,\
                     'RAND_DENS': density,\
-                    'VOL8': (4./3.)*np.pi*(8.**3.),
-                    'OVERSAMPLE': oversample,
-                    'SEED': seed},
-                    'PREFIX': prefix},
-                    'REALZ': realz}}
+                    'VOL8': (4./3.)*np.pi*(8.**3.),\
+                    'OVERSAMPLE': oversample,\
+                    'SEED': seed,\
+                    'PREFIX': prefix,\
+                    'REALZ': realz}
 
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
     randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])

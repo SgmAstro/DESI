@@ -45,7 +45,7 @@ nproc  = args.nproc
 realz  = args.realz
 
 config = Configuration(args.config)
-config.update_attributes('fillfactor', args)
+config.update_attributes('bound_dist', args)
 config.write()
 
 start  = time.time()

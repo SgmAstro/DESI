@@ -61,11 +61,11 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
-    '''
+    
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
-    
+    '''
     # MJW:  Unclear what's happened here?  HACK.
     if stepwise:
         opath = 'stepwise' + opath

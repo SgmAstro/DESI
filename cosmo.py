@@ -31,6 +31,7 @@ def negz_proof(func):
                 zs = np.atleast_1d(zs)
                 scalar = True
 
+        zs = np.copy(zs)
         zs = np.atleast_1d(zs)
 
         negz     = zs <= 0.0

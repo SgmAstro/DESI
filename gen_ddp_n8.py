@@ -96,6 +96,8 @@ dat['FILLFACTOR_VMAX'] = -99.
 
 _idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-2))
 
+volavg_fillfrac = 0.0
+
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
     
@@ -105,8 +107,8 @@ for i, _idx in enumerate(np.unique(_idxs)):
         volavg_fillfrac = np.mean(isin)
     
     else:
-        raise RuntimeError('Revisit vol. avg. fillfactor binning.')
-
+        print('Warning:  assuming previous vol. avg. fillfactor of {:.6f} for {:.6f}'.format(volavg_fillfrac, zmax))
+ 
     dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
     
     # print(zmax, volavg_fillfrac)

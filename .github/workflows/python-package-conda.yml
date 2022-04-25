@@ -32,6 +32,7 @@ jobs:
       run: |
         mkdir -p $GOLD_LOGS
         mkdir -p $RANDOMS_LOGS
+        mkdir -p $GOLD_DIR/configs/  
 
         echo $GITHUB_WORKSPACE
 

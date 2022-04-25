@@ -53,17 +53,17 @@ cd $CODE_ROOT
 
 echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
 
-python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_stepwise.log
+python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 # References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
-python gen_gold_lf.py $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
+python gen_gold_lf.py $DRYRUN $SURVEYARG --log
 
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/'$SURVEY'_ddp_n8.log'
 
 # Defaults to randoms_ddp1.
-python gen_ddp_n8.py $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_ddp_n8.log'
+python gen_ddp_n8.py $DRYRUN $SURVEYARG --log
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 
@@ -73,7 +73,7 @@ for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD
     
-    python gen_gold_lf.py --density_split --field $FIELD --prefix randoms_ddp1 $DRYRUN $SURVEYARG > $GOLD_DIR'/logs/'$SURVEY'_lumfn_d8_G9.log'
+    python gen_gold_lf.py --density_split --field $FIELD $DRYRUN $SURVEYARG --log
 done
 
 echo

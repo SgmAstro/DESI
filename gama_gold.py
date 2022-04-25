@@ -1,9 +1,11 @@
 import os
+import sys
 import argparse
 import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
+from   config           import Configuration
 from   findfile         import findfile, overwrite_check, write_desitable
 from   astropy.table    import Table
 from   cosmo            import cosmo, distmod
@@ -11,22 +13,32 @@ from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
 from   survey           import survey_specifics
 from   bitmask          import BitMask, lumfn_mask
-from   jackknife_limits import jk_field
+from   jackknife_limits import _set_jackknife
+from   config           import Configuration
 
-def gama_gold(args):
+def gama_gold(argset):
+    if argset.dryrun:
+        print('Dryrun gama_gold created on full run; Exiting.')
+
+        return 0
+
+    if argset.log:
+        logfile = findfile(ftype='gold', dryrun=False, survey='gama', log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
+
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
 
-    opath  = findfile(ftype='gold', dryrun=args.dryrun, survey='gama')
+    opath  = findfile(ftype='gold', dryrun=False, survey='gama')
 
-    if args.nooverwrite:
+    if argset.nooverwrite:
         overwrite_check(opath)
 
     dat     = Table.read(fpath)
     dat     = Table(dat, masked=False)
-
-    if args.dryrun:
-        dat = dat[:1000]
 
     keys    = list(dat.meta.keys())
 
@@ -88,14 +100,14 @@ def gama_gold(args):
     dat['ROTCARTESIAN_Y'] = xyz[:,1]
     dat['ROTCARTESIAN_Z'] = xyz[:,2]
     
-    dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
+    dat['GMR']    = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
-    dat['JK'] = jk_field(dat['RA'], dat['DEC'])
+    dat['JK']     = _set_jackknife(dat['RA'], dat['DEC'])
     
     '''
-    if args.in_bgsbright:
-        offset = survey_specifics('desi')['pet_offset']
+    if argset.in_bgsbright:
+        offset             = survey_specifics('desi')['pet_offset']
         dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
     '''
     
@@ -105,7 +117,7 @@ def gama_gold(args):
 
     dat = dat[idx]
 
-    print('Writing {}.'.format(os.environ['GOLD_DIR'] + '/gama_gold.fits'))
+    print('Writing {}.'.format(opath))
 
     if not os.path.isdir(os.environ['GOLD_DIR']):
         print('Creating {}'.format(os.environ['GOLD_DIR']))
@@ -115,20 +127,57 @@ def gama_gold(args):
     # 113687 vs TMR 80922.
     dat.meta['GOLD_NGAL'] = len(dat)
     dat.pprint()
-
-    write_desitable(opath, dat)
     
     dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
                            'GOLD_NGAL': dat.meta['GOLD_NGAL']}
+
+    write_desitable(opath, dat)
     
-    dat.write(opath, format='fits', overwrite=True)
+    # Dryrun:  2x2 sq. patch of sky.
+    # G12
+    isin   = (dat['RA']  > 179.) & (dat['RA']  < 181.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+    
+    allin  = isin 
+
+    # G9
+    isin   = (dat['RA']  > 134.) & (dat['RA']  < 136.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+
+    allin |= isin
+
+    # G15
+    isin   = (dat['RA']  > 216.) & (dat['RA']  < 218.)
+    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+
+    allin |= isin
+
+    dat    = dat[allin]
+
+    opath  = findfile(ftype='gold', dryrun=True, survey='gama')
+
+    write_desitable(opath, dat)
+
+    print('Writing {}.'.format(opath))
+
+    if argset.log:
+        sys.stdout.close()
+
+    return 0
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--in_bgsbright',  help='Add flag for IN_BGSBRIGHT', default=False)
+    parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
-    args   = parser.parse_args()
+    args = parser.parse_args()
 
-    gama_gold(args)
+    config = Configuration(args.config)
+    config.update_attributes('gold', args)
+    config.write()
+
+    # gama_gold(args)

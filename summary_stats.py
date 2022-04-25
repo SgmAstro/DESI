@@ -18,8 +18,8 @@ parser = argparse.ArgumentParser(description='Generate Summary Stats')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('-v', '--version', help='Select version', default='GAMA4')
 
-args   = parser.parse_args()
-survey = args.survey
+args    = parser.parse_args()
+survey  = args.survey
 version = args.version
 
 fpath            = findfile(ftype='ddp', survey=survey, version=version)
@@ -29,8 +29,7 @@ names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
 tmr_DDPs         = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
 tmr_ngold_ratios = np.array([1.002, 0.591, 0.097])
 tmr_ddp_ratios   = np.array([1., 0.589, 0.097])
-tmr_Nd8 = np.array([2.18, 2.31, 2.72, 9.48, 16.1, 17.3, 16.2, 7.21, 7.57])
-
+tmr_Nd8          = np.array([2.18, 2.31, 2.72, 9.48, 16.1, 17.3, 16.2, 7.21, 7.57])
 
 result   = Table()
 rows     = []
@@ -78,16 +77,10 @@ result.pprint()
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
 
-#exit(0)
-
 rows = []
 
-# add findfile
 rpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, version=version, field='G9')
-rand = Table.read(rpath)
-#rand = Table.read('{}/randoms_bd_ddp_n8_G9_0.fits'.format(os.environ['RANDOMS_DIR']))
-#fpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, field=fetch_fields(survey)[0])
-#rand = Table.read(fpath)
+rand  = Table.read(rpath)
 
 print('\n\n')
 
@@ -98,12 +91,8 @@ for idx in np.arange(9):
         
         fpath = findfile(ftype='ddp_n8_d0', survey=survey, version=version, field=field, utier=idx)
         dat   = Table.read(fpath)
-        
-        #dat  = Table.read('{}/data/GAMA4/gama_gold_{}_ddp_n8_d0_{}.fits'.format(os.environ['HOME'], field, idx))
-        #fpath = findfile(ftype='ddp_n8_d0', survey=survey, field=field, utier=idx)
-        #dat   = Table.read(fpath)
-        
-        nd8 += len(dat) / 1.e3
+                
+        nd8  += len(dat) / 1.e3
         
     rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], nd8, rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
     
@@ -115,6 +104,7 @@ result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]'
 # TODO: CHECK THE MATHS BY HAND
 result['N_{d8} / N_{max}'] = result['N_{d8} [1e3]'] / max(result['N_{d8} [1e3]'])
 
+# BUG: result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[5]
 result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[4]
 
 for col in result.itercols():

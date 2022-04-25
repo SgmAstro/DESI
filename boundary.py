@@ -16,6 +16,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check, call_si
 from   gama_limits       import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
 from   ros_tools         import roscen
+from   config            import Configuration
 
 np.random.seed(314)
 
@@ -32,19 +33,21 @@ def rotate2rosette(ros_ra, ros_dec, pos):
     return  resres
 
 parser  = argparse.ArgumentParser(description='Calculate a set of boundary points')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
 parser.add_argument('--sampling',     help='Sampling rate', default=90000, type=int)
 parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 # Defaults to GAMA Gold limits. 
-parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
-parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
+parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=0.039)
+parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=0.263)
 
 
 args     = parser.parse_args()
+log      = args.log
 field    = args.field.upper()
 dryrun   = args.dryrun
 survey   = args.survey.lower()
@@ -61,6 +64,17 @@ fields   = fetch_fields(survey)
 assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
 
 opath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
+
+if log:
+    logfile = findfile(ftype='boundary', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
+
+config = Configuration(args.config)
+config.update_attributes('boundary', args)
+config.write()
 
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
@@ -175,7 +189,7 @@ print('Solved {:d} for field {}'.format(nrand, field))
 
 randoms.pprint()
 
-randoms['V']          = volcom(randoms['Z'], area=area) - volcom(zmin, area=area)
+randoms['V']          = volcom(randoms['Z'].data, area=area) - volcom(zmin, area=area)
 randoms['BOUNDID']    = np.arange(len(randoms))
 
 randoms['FIELD']      = field
@@ -226,3 +240,6 @@ hx.append(fits.convenience.table_to_hdu(boundary))
 hx.writeto(opath, overwrite=True) 
 
 runtime = calc_runtime(start, 'Finished'.format(opath))
+
+if log:
+    sys.stdout.close()

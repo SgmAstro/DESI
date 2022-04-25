@@ -7,15 +7,12 @@ def run_command(cmd, noid=False):
     cmd = cmd.split()
 
     env = {}
-    # env.update(os.environ)                                                                                                                                                                                
 
+    # env.update(os.environ)                                                                                                                                                                               
     # print('Calling ...')                                                                                                                                                                                  
-
     out = check_output(cmd)
     out = out.decode('utf-8')
     out = out.replace('\n', '')
-
-    # print(out)                                                                                                                                                                                            
 
     if noid:
         out=0

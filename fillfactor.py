@@ -15,9 +15,10 @@ from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
-
+from   config              import Configuration
 
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
@@ -26,15 +27,27 @@ parser.add_argument('--nproc', help='nproc', default=8, type=int)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
 args       = parser.parse_args()
-
+log        = args.log 
 field      = args.field.upper()
 dryrun     = args.dryrun
 prefix     = args.prefix
 survey     = args.survey.lower()
 oversample = args.oversample
 fields     = fetch_fields(survey)
+
+if log:
+    logfile = findfile(ftype='randoms_n8', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
+
+config = Configuration(args.config)
+config.update_attributes('fillfactor', args)
+config.write()
 
 assert field in fields, 'Error: Field not in fields'
 
@@ -52,15 +65,17 @@ start  = time.time()
 call_signature(dryrun, sys.argv)
     
 # Read randoms file, split by field (DDP1, or not).
-fpath     = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-_points   = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-points    = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
+fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+_points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
-fpath      = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+overpoints_hdr = fitsio.read_header(fpath, ext=1)
+
 _overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-overpoints    = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
+overpoints  = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
-runtime   = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
+runtime     = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
 
 idx       = np.argsort(points[:,0])
 points    = points[idx]
@@ -165,7 +180,8 @@ with Pool(nproc, maxtasksperchild=1) as pool:
             runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
 
     pool.close()
-    pool.join()
+
+    # pool.join()
 
 runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
 
@@ -182,7 +198,7 @@ rand.sort('CARTESIAN_X')
 # print(len(rand), len(flat_result))
 
 rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-rand['FILLFACTOR']   = rand['RAND_N8'] / rand.meta['NRAND8']
+rand['FILLFACTOR']   = rand['RAND_N8'] / overpoints_hdr['NRAND8']
 
 rand.meta['RSPHERE'] = 8.
 rand.meta['IMMUTABLE'] = 'FALSE'
@@ -201,3 +217,6 @@ runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 hx.writeto(opath, overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')
+
+if log:
+    sys.stdout.close()

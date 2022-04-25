@@ -1,4 +1,5 @@
 import  os
+import  sys
 import  time
 import  tqdm
 import  argparse
@@ -70,6 +71,7 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
     zmin      = 0.0 # bright_curve(phi_M) 
     zmax      = faint_curve(phi_M)
 
+    # TODO: switch to ZSURV.
     try:
         zcol      = 'Z{}'.format(survey.upper())
         vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
@@ -151,6 +153,7 @@ def lumfn_stepwise(vmax, Mcol='MALL_0P0', Mmin_col='DDPMALL_0P0_VISZ', survey='g
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold stepwise luminosity function.')
+    parser.add_argument('--log',          help='Create a log file of stdout.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('--dryrun',       help='Dryrun', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
@@ -159,10 +162,18 @@ if __name__ == '__main__':
     start       = time.time() 
 
     args        = parser.parse_args()
+    log         = args.log
     survey      = args.survey
     dryrun      = args.dryrun
     nooverwrite = args.nooverwrite
     version     = args.version
+
+    if log:
+        logfile = findfile(ftype='lumfn_step', dryrun=False, survey=survey, log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
 
     fpath       = findfile('ddp', dryrun=dryrun, survey=survey, version=version)
     opath       = findfile('lumfn_step', dryrun=dryrun, survey=survey, version=version)
@@ -187,3 +198,6 @@ if __name__ == '__main__':
     ddp.write(fpath, format='fits', overwrite=True)
 
     runtime = calc_runtime(start, 'Finished')
+
+    if log:
+        sys.stdout.close()

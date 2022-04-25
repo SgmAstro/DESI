@@ -1,17 +1,5 @@
 runtime:
-  version: v10
-  dryrun: True
-  nooverwrite: True
-  replay: False
-  survey: gama
-
-randoms:
-  realz: 0
-  prefix: 'randoms_ddp1'
-  
-lumfn:
-  vmax_fillfactor: True  
-  selfcount_volfrac: True
+  replay: false
 
 comments:
-  1st: 'A config. for standard gama run.'
+  1st: 'A config. for standard run.'

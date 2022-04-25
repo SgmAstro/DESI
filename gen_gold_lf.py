@@ -14,10 +14,10 @@ from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):
-        
+
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -28,10 +28,11 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         return  1
 
     zmax = Table.read(fpath)
-     
-    # HACK
-    #zmax = zmax[zmax['FIELD'] == 'G12']
-    
+
+    if len(zmax) == 0:
+        print('Zero length catalogue, nothing to be done; Exiting.') 
+        return 0
+         
     found_fields = np.unique(zmax['FIELD'].data)
         
     print('Found fields: {}'.format(found_fields))
@@ -50,10 +51,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
-    
-    # HACK
-    #vmax = vmax[vmax['FIELD'] == 'G9']
-    
+        
     print('Writing {}.'.format(opath))
 
     vmax.write(opath, format='fits', overwrite=True)
@@ -62,57 +60,67 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
 
     ## TODO: remove bitmasks dependence. 
-    bitmask ='IN_D8LUMFN'
-    result = lumfn(vmax, bitmask=bitmask)
+    result = lumfn(vmax, bitmask='IN_D8LUMFN')
     
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
-    
-    # HACK:
+    '''
+    # MJW:  Unclear what's happened here?  HACK.
     if stepwise:
         opath = 'stepwise' + opath
         result_stepwise = lumfn_stepwise(vmax)
+
         # TODO: issue here (no write for tuple)
         result_stepwise.write(opath, format='fits', overwrite=True)
-
-
+    '''
     return  0
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate Gold luminosity function.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
     parser.add_argument('--survey', help='Select survey', default='gama')
     parser.add_argument('--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
-    parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
+    parser.add_argument('--version', help='Version', default='GAMA4')
+    parser.add_argument('--conservative', help='Conservative analysis choices', action='store_true')
     
-    # HACK/TODO: temp until cordelia run
-    #parser.add_argument('--version', help='Version', action='store_true', default='GAMA4')
-    version = 'GAMA4'
-    
-    args   = parser.parse_args()
+    args          = parser.parse_args()
 
-    field  = args.field.upper()
-    dryrun = args.dryrun
-    survey = args.survey
+    log           = args.log
+    field         = args.field.upper()
+    dryrun        = args.dryrun
+    survey        = args.survey
     density_split = args.density_split
-    prefix = args.prefix
-    self_count = args.selfcount_volfracs
-    #version = args.version
+    self_count    = args.selfcount_volfracs
+    version       = args.version
+    conservative  = args.conservative
     
     if not density_split:
+        if log:
+            logfile = findfile(ftype='lumfn', dryrun=False, survey=survey, log=True)
+            
+            print(f'Logging to {logfile}')
+                
+            sys.stdout = open(logfile, 'w')
+
         print('Generating Gold reference LF.')
+
+        call_signature(dryrun, sys.argv)
 
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
+
+        prefix = 'randoms'
         
-        fpath = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-        opath = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        # MJW/HACK:  repeated calls in this script to specify version == GAMA4? 
+        fpath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        opath  = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -122,11 +130,27 @@ if __name__ == '__main__':
 
         process_cat(fpath, opath, survey=survey, fillfactor=False)
 
+        print('Done.')
+
+        if log:
+            sys.stdout.close()
+
     else:
+        if log:
+            # TODO NOTE: Do not support version.
+            logfile = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, survey=survey, log=True).replace('vmax', 'lumfn').replace('_{utier}', '')
+                        
+            print(f'Logging to {logfile}')
+        
+            sys.stdout = open(logfile, 'w')
+
         print('Generating Gold density-split LF.')
 
+        call_signature(dryrun, sys.argv)
+
         assert  field != None
-        assert  'ddp1' in prefix
+
+        prefix = 'randoms_ddp1'
 
         rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
         
@@ -158,46 +182,15 @@ if __name__ == '__main__':
             result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
             # result.pprint()
 
-            '''
-            # Deprecated:
-            
-            if all_rands == None:                                
-                _fields    = fetch_fields(survey=survey)
-                
-                all_rpaths = [findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in _fields]
-                all_rands  = [Table.read(xx) for xx in all_rpaths]
- 
-            # Calculated for DDP1 redshift limits.     
-            fdelta = np.array([float(x.meta['DDP1_d{}_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8     = np.array([float(x.meta['DDP1_d{}_TIERMEDd8'.format(idx)]) for x in all_rands])
-            
-            fdelta_zeropoint = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]) for x in all_rands])
-            d8_zeropoint     = np.array([float(x.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]) for x in all_rands])
-            
-            print('Field vol renormalization: {}'.format(fdelta))
-            print('Field d8  renormalization: {}'.format(d8))
-
-            fdelta = fdelta.mean()
-            d8     = d8.mean()
-
-            fdelta_zeropoint = fdelta_zeropoint.mean()
-            d8_zeropoint     = d8_zeropoint.mean()
-            
-            print('Found mean vol. renormalisation scale of {:.3f}'.format(fdelta))
-            print('Found mean  d8  renormalisation scale of {:.3f}'.format(d8))
-            '''
-
-            # TODO: perhaps write to disk only for testing?
-            conservative = False
-            
-            
+            # MJW:  Load three-field randoms/meta directly. 
+            # DEBUG/MJW:  Potential source or ref. schechter bugs. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
-            fdelta    = rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)]
-            fdelta_zp = rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]
-            d8        = rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)]
-            d8_zp     = rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
+            fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+            d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
+            d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
             
-            result = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
+            result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -237,4 +230,8 @@ if __name__ == '__main__':
 
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
 
-    print('Done.')
+        print('Done.')
+
+        if log:
+            sys.stdout.close()
+

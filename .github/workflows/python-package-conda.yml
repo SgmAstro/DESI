@@ -4,7 +4,14 @@ on: [push]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04 # ubuntu-latest
+    env: 
+      USER: HAL
+      GOLD_DIR: GAMA4/
+      GOLD_LOGS: GAMA4/logs/
+      RANDOMS_DIR: GAMA4/randoms/
+      RANDOMS_LOGS: GAMA4/randoms/logs/
+
     strategy:
       max-parallel: 5
 
@@ -23,5 +30,15 @@ jobs:
         conda env update --file environment.yml --name base
     - name: Test with pytest
       run: |
+        mkdir -p $GOLD_LOGS
+        mkdir -p $RANDOMS_LOGS
+        mkdir -p $GOLD_DIR/configs/  
+
+        echo $GITHUB_WORKSPACE
+
+        cp $GITHUB_WORKSPACE/configs/config.yaml $GOLD_DIR/configs/
+
         conda install pytest
+        
         pytest -rP
+        # pytest -x --disable-warnings

@@ -66,21 +66,23 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
         if dryrun:
             # Dryrun:  2x2 sq. patch of sky.  
-            # G12 
-            isin    = (randoms['RANDOM_RA'] > 179.) & (randoms['RANDOM_RA'] < 181.)
-            isin   &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+            # G12
+            delta_deg = 0.5
+ 
+            isin    = (randoms['RANDOM_RA'] > 180. - delta_deg) & (randoms['RANDOM_RA'] < 180. + delta_deg)
+            isin   &= (randoms['RANDOM_DEC'] > 0. - delta_deg) & (randoms['RANDOM_DEC'] < 0. + delta_deg)
 
             allin  = isin
 
             # G9                                                                                                                                                                                       
-            isin   = (randoms['RANDOM_RA']  > 134.) & (randoms['RANDOM_RA']  < 136.)
-            isin  &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+            isin   = (randoms['RANDOM_RA']  > 135. - delta_deg) & (randoms['RANDOM_RA']  < 135. + delta_deg)
+            isin  &= (randoms['RANDOM_DEC'] > 0. - delta_deg) & (randoms['RANDOM_DEC'] < 0. + delta_deg)
 
             allin |= isin
 
             # G15                                                                                                                                                                                         
-            isin   = (randoms['RANDOM_RA']  > 216.) & (randoms['RANDOM_RA']  < 218.)
-            isin  &= (randoms['RANDOM_DEC'] > -1.0) & (randoms['RANDOM_DEC'] < 1.)
+            isin   = (randoms['RANDOM_RA']  > 217. - delta_deg) & (randoms['RANDOM_RA']  < 217. + delta_deg)
+            isin  &= (randoms['RANDOM_DEC'] > 0.0 - delta_deg) & (randoms['RANDOM_DEC'] < 0.0 + delta_deg)
             
             allin |= isin
 

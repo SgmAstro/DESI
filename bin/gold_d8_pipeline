@@ -73,7 +73,7 @@ for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD
     
-    python gen_gold_lf.py --density_split --field $FIELD $DRYRUN $SURVEYARG --log
+    python gen_gold_lf.py --density_split --selfcount_volfracs --field $FIELD $DRYRUN $SURVEYARG --log
 done
 
 echo

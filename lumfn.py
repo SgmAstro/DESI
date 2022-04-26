@@ -29,12 +29,19 @@ def multifield_lumfn(lumfn_list, ext=None):
         return  np.sqrt(np.sum(data**2., axis=1))
 
     
-    result   = Table()
-    
-    sum_cols  = ['N']
-    mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
-    qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
+    result    = Table()
+
+    if ext in [None, 'LUMFN']:
+        sum_cols  = ['N']
+        mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
+        qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
+    elif ext == 'REFERENCE':
+        mean_cols  = ['MS', 'd8_REFSCHECHTER']
+
+    else:
+        raise RuntimeError(f'MultifieldLumfn:  Extension {ext} is not supported.')
+
     for m in mean_cols:
         result[m] = mean_rule(tables, m)
 
@@ -46,7 +53,7 @@ def multifield_lumfn(lumfn_list, ext=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
     dat   = Table(dat, copy=True)
 
     dat   = dat[dat[bitmask] == 0]

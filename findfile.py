@@ -241,7 +241,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     # Special cases:
     if ftype == 'config':
-        return gold_dir + 'configs/config.yaml'
+        return gold_dir + '/configs/config.yaml'
 
     if ftype == 'ddp_limit':
         if log:

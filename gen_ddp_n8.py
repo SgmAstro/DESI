@@ -100,8 +100,10 @@ volavg_fillfrac = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
+
+    sub_rand        = rand[rand['Z'] <= zmax]
     
-    isin            = (rand['Z'] <= zmax) & (rand['FILLFACTOR'] > 0.8)
+    isin            = (sub_rand['FILLFACTOR'] > 0.8)
 
     if np.count_nonzero(isin):
         volavg_fillfrac = np.mean(isin)

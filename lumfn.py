@@ -4,9 +4,12 @@ from   astropy.table import Table
 from   cosmo         import volcom
 
 
-def multifield_lumfn(lumfn_list):
-    tables = [Table.read(x) for x in lumfn_list]
-    
+def multifield_lumfn(lumfn_list, ext=None):
+    if ext is None:
+        tables = [Table.read(x) for x in lumfn_list]
+    else:
+        tables = [Table.read(x, ext) for x in lumfn_list]
+
     def sum_rule(tables, col):
         data = [table[col].data for table in tables]
         data = np.c_[data].T

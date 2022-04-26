@@ -135,20 +135,22 @@ def gama_gold(argset):
     
     # Dryrun:  2x2 sq. patch of sky.
     # G12
-    isin   = (dat['RA']  > 179.) & (dat['RA']  < 181.)
-    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+    delta_deg = 0.5
+
+    isin   = (dat['RA']  > 180. - delta_deg) & (dat['RA']  < 180. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
     
     allin  = isin 
 
     # G9
-    isin   = (dat['RA']  > 134.) & (dat['RA']  < 136.)
-    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+    isin   = (dat['RA']  > 135. - delta_deg) & (dat['RA']  < 135. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
 
     allin |= isin
 
     # G15
-    isin   = (dat['RA']  > 216.) & (dat['RA']  < 218.)
-    isin  &= (dat['DEC'] > -1.0) & (dat['DEC'] < 1.)
+    isin   = (dat['RA']  > 217. - delta_deg) & (dat['RA']  < 217. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
 
     allin |= isin
 

@@ -32,7 +32,7 @@ def multifield_lumfn(lumfn_list, ext=None):
     result   = Table()
     
     sum_cols  = ['N']
-    mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER']
+    mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
     qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
     for m in mean_cols:

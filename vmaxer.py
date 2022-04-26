@@ -62,7 +62,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN']
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
-        extra_cols += 'WEIGHT_STEPWISE'
+        extra_cols += ['WEIGHT_STEPWISE']
 
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']

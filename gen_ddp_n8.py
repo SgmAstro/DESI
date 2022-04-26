@@ -94,9 +94,8 @@ dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
 dat['FILLFACTOR_VMAX'] = -99.
 
-_idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-2))
-
-volavg_fillfrac = 0.0
+_idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
+volavg_fillfrac        = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
@@ -113,8 +112,6 @@ for i, _idx in enumerate(np.unique(_idxs)):
  
     dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
     
-    # print(zmax, volavg_fillfrac)
-
 if not dryrun:
     match_sep = 6.5
 

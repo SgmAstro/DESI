@@ -108,14 +108,13 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     result.meta['FILLFACTOR']   = fillfactor
 
     if fillfactor:
-        # Wrap volavg fillfactor(< z) required for vmax.   
-        # TODO:  assumes monotonic.
-        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'][result['ZSURV'] >= zmin].min()
-        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'][result['ZSURV'] <= zmax].max()
+        # Wrap volavg fillfactor(< z) required for vmax.
+        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'].min()
+        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'].max()
 
         result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
 
-        result['VMAX'] *= result['FILLFACTOR_VMAX']
+        result['VMAX']           *= result['FILLFACTOR_VMAX']
     
     if conservative:
         result['CONSERVATIVE'] += (result['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST

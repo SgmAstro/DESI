@@ -209,7 +209,6 @@ for tier in np.arange(len(d8_limits)):
         print('Writing {} galaxies from field {} to {}.'.format(len(to_write_field), np.unique(to_write_field['FIELD'].data), opath_field))
 
         to_write_field.meta['AREA'] = to_write.meta['AREA'] / len(fields)
-
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')

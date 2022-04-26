@@ -28,7 +28,7 @@ def volfracs(rand, bitmasks=[]):
 
         if np.count_nonzero(in_tier) > 0: 
             rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6f}'.format(np.mean(in_tier))
-            rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6f}'.format(np.median(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
+            rand.meta['DDP1_d{}_TIERMEDd8'.format(ut)] = '{:.6f}'.format(np.mean(ddp1_rand['DDP1_DELTA8'].data[in_tier]))
 
         else:
             rand.meta['DDP1_d{}_VOLFRAC'.format(ut)]   = '{:.6f}'.format(0.0)
@@ -45,7 +45,7 @@ def volfracs(rand, bitmasks=[]):
 
         if np.count_nonzero(in_tier) > 0:
             rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6f}'.format(np.mean(in_tier))
-            rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.6}'.format(np.median(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
+            rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)] = '{:.6}'.format(np.mean(ddp1_rand['DDP1_DELTA8_ZEROPOINT'].data[in_tier]))
         
         else:
             rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6f}'.format(0.0)

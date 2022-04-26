@@ -25,6 +25,7 @@ Note: Major changes
 * suppress merge conflict warnings (PR `#155`_).
 * fix bug in submit.py for logs (PR `#155`_).
 * fix bug in volfracs calc.: ddp1_rand = rand[rand['DDPZLIMS'][:,0] == 1] (PR `#155`_).
-* 
+* fix bug where fillfactor_vmax was incorrectly wrapped by vmaxer.
+* make selfcount_volfracs a default.
 
 .. _`#155`: https://github.com/desihub/redrock/pull/155

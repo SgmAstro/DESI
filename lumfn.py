@@ -37,7 +37,9 @@ def multifield_lumfn(lumfn_list, ext=None):
         qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
     elif ext == 'REFERENCE':
-        mean_cols  = ['MS', 'd8_REFSCHECHTER']
+        sum_cols   = []
+        mean_cols  = ['MS', 'REFSCHECHTER']
+        qsum_cols  = [] 
 
     else:
         raise RuntimeError(f'MultifieldLumfn:  Extension {ext} is not supported.')

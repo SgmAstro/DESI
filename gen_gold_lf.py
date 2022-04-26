@@ -192,7 +192,7 @@ if __name__ == '__main__':
             d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
             
-            result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
+            result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -209,7 +209,7 @@ if __name__ == '__main__':
             sch   *= (1. + d8) / (1. + 0.007)
 
             ##
-            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
+            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'REFSCHECHTER'])            
             ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
@@ -225,7 +225,6 @@ if __name__ == '__main__':
             for key in keys:
                 header[key] = str(result.meta[key])
 
-            # TODO: 
             primary_hdu    = fits.PrimaryHDU()
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)

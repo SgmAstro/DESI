@@ -1,4 +1,5 @@
 import os
+import sys
 import fitsio
 import argparse
 import runtime
@@ -11,10 +12,13 @@ from   delta8_limits import delta8_tier, d8_limits
 from   gama_limits   import gama_field, gama_fields
 from   desi_fields   import desi_fields
 from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
-from   bitmask       import BitMask, lumfn_mask
 from   config        import Configuration
+from   bitmask       import lumfn_mask, consv_mask
+from   delta8_limits import d8_limits
+from   runtime       import calc_runtime
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
@@ -22,17 +26,23 @@ parser.add_argument('--prefix', help='randoms filename prefix', default='randoms
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
+log    = args.log
 realz  = args.realz
 dryrun = args.dryrun
 prefix = args.prefix
 survey = args.survey.lower()
 
-zsurv  = f'z{survey}'.upper()
-
 fields = fetch_fields(survey)
 
 fpath  = findfile(ftype='ddp',    dryrun=dryrun, survey=survey)
 opath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
+
+if log:
+    logfile = findfile(ftype='ddp_n8', dryrun=False, survey=survey, log=True)
+
+    print(f'Logging to {logfile}')
+        
+    sys.stdout = open(logfile, 'w')
 
 if args.nooverwrite:
     overwrite_check(opath)
@@ -57,13 +67,9 @@ print('Reading: {}'.format(rpaths))
 
 rand         = gather_cat(rpaths)
 
-# HACK
-if 'FIELD' not in dat.dtype.names:
-    dat['FIELD'] = [f'R{ros}' for ros in dat['ROS'].data]
-'''
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
-'''
+
 for i, rpath in enumerate(rpaths):
     dat.meta['RPATH_{}'.format(i)] = rpath
 
@@ -80,33 +86,32 @@ dd, ii   = big_tree.query([x for x in points], k=1)
 
 # Find closest random for bound_dist and fill factor. 
 # These randoms are split by field.
-dat['RANDSEP']    = dd
-dat['RANDMATCH']  = rand['RANDID'][ii]
-dat['BOUND_DIST'] = rand['BOUND_DIST'][ii]
-dat['FILLFACTOR'] = rand['FILLFACTOR'][ii]
-
-dat['FILLFACTOR_VMAX'] = -99.
+dat['RANDSEP']     = dd
+dat['RANDMATCH']   = rand['RANDID'][ii]
+dat['BOUND_DIST']  = rand['BOUND_DIST'][ii]
+dat['FILLFACTOR']  = rand['FILLFACTOR'][ii]
 dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
-_idxs               = np.digitize(dat['ZMAX'], bins=np.arange(0.0, 5.0, 1.e-3))
+dat['FILLFACTOR_VMAX'] = -99.
+
+_idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
+volavg_fillfrac        = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
 
-    isin            = rand['Z'] <= zmax
-    volavg_fillfrac = np.mean(rand['FILLFACTOR'][isin] > 0.8)
+    sub_rand        = rand[rand['Z'] <= zmax]
+    
+    isin            = (sub_rand['FILLFACTOR'] > 0.8)
+
+    if np.count_nonzero(isin):
+        volavg_fillfrac = np.mean(isin)
+    
+    else:
+        print('Warning:  assuming previous vol. avg. fillfactor of {:.6f} for {:.6f}'.format(volavg_fillfrac, zmax))
  
     dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
-
-    # print(zmax, volavg_fillfrac)
-'''
-for field in fields:
-    dat_in_field  =  dat[(dat['FIELD']  == field)]
-    rand_in_field = rand[(rand['FIELD'] == field)]
     
-    for x in ['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z']:
-        print(field, np.sort(dat_in_field[x].data), np.sort(rand_in_field[x].data))
-'''
 if not dryrun:
     match_sep = 6.5
 
@@ -160,7 +165,7 @@ print('Writing {}'.format(opath))
 dat.write(opath, overwrite=True, format='fits')
 
 #  ----  Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range)  ----
-dat = dat[(dat[zsurv] > dat.meta['DDP1_ZMIN']) & (dat[zsurv] < dat.meta['DDP1_ZMAX'])]
+dat = dat[(dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
 utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
@@ -173,7 +178,7 @@ if -99 in utiers:
 for ii, xx in enumerate(d8_limits):
     dat.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-if not np.all(utiers == np.arange(9)):
+if not np.all(np.isin(np.arange(9), utiers)):
     print('WARNING: MISSING d8 TIERS ({})'.format(utiers))
     
 else:
@@ -181,7 +186,7 @@ else:
 
 print('Delta8 spans {:.4f} to {:.4f} over {} tiers.'.format(dat['DDP1_DELTA8'].min(), dat['DDP1_DELTA8'].max(), utiers))
 
-for tier in utiers:
+for tier in np.arange(len(d8_limits)):
     print()
     print('---- d{} ----'.format(tier))
 
@@ -204,7 +209,9 @@ for tier in utiers:
         print('Writing {} galaxies from field {} to {}.'.format(len(to_write_field), np.unique(to_write_field['FIELD'].data), opath_field))
 
         to_write_field.meta['AREA'] = to_write.meta['AREA'] / len(fields)
-
         to_write_field.write(opath_field, format='fits', overwrite=True)
 
 print('\n\nDone.\n\n')
+
+if log:
+    sys.stdout.close()

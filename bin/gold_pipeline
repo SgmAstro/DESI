@@ -36,8 +36,8 @@ else
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='desi'
-  export SURVEYARG='--survey desi'
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
 else
   export SURVEYARG='--survey '$SURVEY
 
@@ -54,6 +54,10 @@ echo 'Code: '$CODE_ROOT
 echo 'Gold output dir.: '$GOLD_DIR
 echo 'Randoms output dir: '$RANDOMS_DIR
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+echo 'Running gold pipeline (with bin:'$SCRIPT_DIR')'
+
 cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
@@ -64,28 +68,26 @@ if (( $RESET > 0 )); then
     rm -f $GOLD_DIR/*.fits
 fi
 
-echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'gold.log'
 
-python gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_gold.log
+echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'_gold.log'
+
+python3 -u gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
 
-python gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_kE.log
+python3 -u gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
 
-# Max. runtime 60 minutes.
-python gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_zmax.log
+python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 
-python ddp_limits.py $NOOVERWRITE > $GOLD_DIR/logs/ddp_limits.log
+python3 -u ddp_limits.py $NOOVERWRITE --log
 
 echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
 
-python gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_ddp.log  
-
-python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG > $GOLD_DIR/logs/$SURVEY_stepwise.log
+python3 -u gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
 echo

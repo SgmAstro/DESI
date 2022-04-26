@@ -4,10 +4,11 @@ import time
 import warnings
 
 from   astropy.io.fits.verify import VerifyWarning
-
+from   astropy.utils.metadata import MergeConflictWarning
 
 # Suppress verify warnings, e.g. HIERARCH card length. 
 warnings.simplefilter('ignore', category=VerifyWarning)
+warnings.simplefilter('ignore', category=MergeConflictWarning)
 
 def sizeofMB(xx):
     return  sys.getsizeof(xx)

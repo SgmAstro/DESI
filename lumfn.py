@@ -43,18 +43,14 @@ def multifield_lumfn(lumfn_list):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=False):
-    dat = Table(dat, copy=True)
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
+    dat   = Table(dat, copy=True)
 
-    if fillfactor:
-        dat      = dat[dat['IN_D8LUMFN'] == 0]
-        dvmax    = dat['VMAX'].data * dat['FILLFACTOR_VMAX'] 
+    dat   = dat[dat[bitmask] == 0]
 
-    else:
-        dvmax    = dat['VMAX'].data
-
-    vol    = dat.meta['VOLUME']
-
+    dvmax = dat['VMAX'].data
+    vol   = dat.meta['VOLUME']
+    
     # assert  dat[Mcol].min() >= Ms.min()
     # assert  dat[Mcol].max() <= Ms.max()
 
@@ -74,8 +70,8 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
 
         if nsample > 0:
             median = np.median(sample[Mcol])
+
         else:
-            # TODO:
             median = 0.5 * (Ms[idx] + Ms[idx+1])
 
         vmax    = dvmax[idxs == idx]
@@ -83,9 +79,10 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
         ivmax   = 1. / vmax
         ivmax2  = 1. / vmax**2.
 
-        # TODO: remove NaNs from dataset by setting M to mid bin.
-        
-        # nsample == 0; set M to mid bin.
+        if len(vmax) == 0:
+            median_vmax = 0
+        else:
+            median_vmax = np.median(vmax) / vol
 
         result.append([median,\
                        nsample / dM / vol,\
@@ -93,7 +90,9 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', fillfactor=Fa
                        np.sum(ivmax) / dM,\
                        np.sqrt(np.sum(ivmax2)) / dM,\
                        nsample,
-                       np.median(vmax) / vol])
+                       median_vmax])
+
+        print(result[-1])
 
     names = ['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 

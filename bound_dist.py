@@ -15,6 +15,8 @@ from   astropy.table   import Table
 from   multiprocessing import Pool
 from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
+from   bitmask         import lumfn_mask, consv_mask
+from   config          import Configuration
 
 '''
 Script to calculate the maximum distance [Mpc/h] of each random from the boundary. 
@@ -23,28 +25,41 @@ Script to calculate the maximum distance [Mpc/h] of each random from the boundar
 np.random.seed(314)
 
 parser = argparse.ArgumentParser(description='Find boundary distance for all randoms in a specified field..')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', required=True)
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
 parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
 args   = parser.parse_args()
-
+log    = args.log
 field  = args.field.upper()
 dryrun = args.dryrun
 prefix = args.prefix
 survey = args.survey.lower()
 nproc  = args.nproc
 realz  = args.realz
-
+'''
+config = Configuration(args.config)
+config.update_attributes('bound_dist', args)
+config.write()
+'''
 start  = time.time()
 
 # https://www.dur.ac.uk/icc/cosma/cosma5/
 fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 opath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+
+if log:
+    logfile = findfile(ftype='randoms_bd', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
     
 if args.nooverwrite:
     overwrite_check(opath)
@@ -154,6 +169,9 @@ sphere_radius      = rand.meta['RSPHERE']
 rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
 rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.
 
+# CHANGE:  Protect against exactly zero fillfactor (causes division errors). 
+rand['FILLFACTOR'] = np.clip(rand['FILLFACTOR'], 1.e-99, None)
+
 runtime = calc_runtime(start, 'Shuffling')
 
 # randomise rows.                                                                                                                                                
@@ -171,4 +189,5 @@ rand.write(opath, format='fits', overwrite=True)
 
 runtime = calc_runtime(start, 'Finished')
 
-
+if log:
+    sys.stdout.close()

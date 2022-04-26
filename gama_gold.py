@@ -1,20 +1,33 @@
 import os
+import sys
 import argparse
 import runtime
 import numpy           as np
 import astropy.io.fits as fits
 
-from   findfile        import findfile, overwrite_check, write_desitable
-from   astropy.table   import Table
-from   cosmo           import cosmo, distmod
-from   gama_limits     import gama_field
-from   cartesian       import cartesian, rotate
-from   survey          import survey_specifics
-from   bitmask         import BitMask, lumfn_mask
+from   config           import Configuration
+from   findfile         import findfile, overwrite_check, write_desitable
+from   astropy.table    import Table
+from   cosmo            import cosmo, distmod
+from   gama_limits      import gama_field
+from   cartesian        import cartesian, rotate
+from   survey           import survey_specifics
+from   bitmask          import BitMask, lumfn_mask
+from   jackknife_limits import _set_jackknife
+from   config           import Configuration
 
 def gama_gold(argset):
     if argset.dryrun:
+        print('Dryrun gama_gold created on full run; Exiting.')
+
         return 0
+
+    if argset.log:
+        logfile = findfile(ftype='gold', dryrun=False, survey='gama', log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
 
     root   = os.environ['TILING_CATDIR']
     fpath  = root + '/TilingCatv46.fits'
@@ -35,7 +48,7 @@ def gama_gold(argset):
 
     specifics        = survey_specifics('gama')
     dat.meta['AREA'] = specifics['area']
-
+    
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
 
@@ -73,7 +86,8 @@ def gama_gold(argset):
     dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
     dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
     dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
-
+    dat['CONSERVATIVE'] = np.zeros_like(dat['FIELD'], dtype=int)
+    
     xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
     
     dat['CARTESIAN_X'] = xyz[:,0]
@@ -86,13 +100,17 @@ def gama_gold(argset):
     dat['ROTCARTESIAN_Y'] = xyz[:,1]
     dat['ROTCARTESIAN_Z'] = xyz[:,2]
     
-    dat['GMR'] = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
+    dat['GMR']    = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
+    dat['JK']     = _set_jackknife(dat['RA'], dat['DEC'])
+    
+    '''
     if argset.in_bgsbright:
         offset             = survey_specifics('desi')['pet_offset']
         dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
-        
+    '''
+    
     # Randomise rows.
     idx = np.arange(len(dat))
     idx = np.random.choice(idx, size=len(idx), replace=False)
@@ -115,20 +133,53 @@ def gama_gold(argset):
 
     write_desitable(opath, dat)
     
-    dat    = dat[:1000]
+    # Dryrun:  2x2 sq. patch of sky.
+    # G12
+    delta_deg = 0.5
+
+    isin   = (dat['RA']  > 180. - delta_deg) & (dat['RA']  < 180. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
+    
+    allin  = isin 
+
+    # G9
+    isin   = (dat['RA']  > 135. - delta_deg) & (dat['RA']  < 135. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
+
+    allin |= isin
+
+    # G15
+    isin   = (dat['RA']  > 217. - delta_deg) & (dat['RA']  < 217. + delta_deg)
+    isin  &= (dat['DEC'] > 0.0 - delta_deg) & (dat['DEC'] < 0.0 + delta_deg)
+
+    allin |= isin
+
+    dat    = dat[allin]
+
     opath  = findfile(ftype='gold', dryrun=True, survey='gama')
 
     write_desitable(opath, dat)
 
     print('Writing {}.'.format(opath))
 
+    if argset.log:
+        sys.stdout.close()
+
+    return 0
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--in_bgsbright', help='Add flag for IN_BGSBRIGHT', action='store_true')
 
     args = parser.parse_args()
 
-    gama_gold(args)
+    config = Configuration(args.config)
+    config.update_attributes('gold', args)
+    config.write()
+
+    # gama_gold(args)

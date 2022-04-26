@@ -9,7 +9,7 @@ from   pathlib       import Path
 
 
 # https://docs.pytest.org/en/6.2.x/
-def test_allnbs(survey='gama', no_qa=True):
+def test_allnbs(survey='gama', no_qa=False):
     if 'GITHUB_ACTIONS' in os.environ:
         os.environ['USER']         = 'Hal' 
         os.environ['CODE_ROOT']    = os.environ['GITHUB_WORKSPACE']
@@ -24,9 +24,9 @@ def test_allnbs(survey='gama', no_qa=True):
         Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
         Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
 
-    pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False)
-
     if no_qa | ('GITHUB_ACTIONS' in os.environ):
+        pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, args=None)
+        
         return 0
 
     print('Running all tests.')
@@ -116,4 +116,4 @@ def run_delta8qa(survey):
 
 if __name__ == '__main__':
     # python3 -m pytest test_allnb.py 
-    test_allnbs(no_qa=True)
+    test_allnbs(no_qa=False)

@@ -13,18 +13,8 @@ from    config     import Configuration
 from    utils      import run_command
 
 
-def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=None, comments=None, config=None):
-    if config != None:
-        config   = Configuration(config)
-
-    if comments != None:
-        comments = comments.split(';')
-    
-        print('Appending comments: {}'.format(comments))
-        
-        config.update_comments(comments)
-
-    if custom:
+def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=True, comments=None):
+    if custom & (args != None):
         customise_script(args)
 
         custom = '/custom/'
@@ -59,15 +49,16 @@ def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, surv
 
         for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
             cmds.append('rm -f {}/logs/*.log'.format(root))
-            # cmds.append('rm -f {}/*_dryrun.fits'.format(root))
+            cmds.append('rm -f {}/*_dryrun.fits'.format(root))
 
         for cmd in cmds:
             print(cmd)
 
             os.system(cmd)
-
+        
     if reset:
         os.environ['RESET']   = str(1)
+
     else:
         os.environ['RESET']   = str(0)
 
@@ -95,6 +86,7 @@ def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, surv
         cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
         cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
         cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
+
    
         for cmd in cmds:    
             out = run_command(cmd, noid=True)
@@ -210,8 +202,11 @@ def pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, surv
 
 
 if __name__ == '__main__':
-    # Sbatch: python3 pipeline.py --survey desi --use_sbatch --log                                                                                                                                       
-    # Head:   python3 pipeline.py --survey desi                                                                                                                                                                 
+    # Sbatch: python3 pipeline.py --survey gama --use_sbatch --log --queue cosma --reset                                                                                                               
+    # Head:   python3 pipeline.py --survey desi                                                                                                                                                            
+    # 
+    # Note:   use sinfo to see available nodes to each queue.
+    # 
     parser  = argparse.ArgumentParser(description='Run Lumfn pipeline')
     parser.add_argument('--use_sbatch',   help='Submit via Sbatch', action='store_true')
     parser.add_argument('--reset',        help='Reset', action='store_true')
@@ -227,7 +222,7 @@ if __name__ == '__main__':
     # Customise submission scripts.                                                                                                                                                                      
     parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
     parser.add_argument('--script_log',    help='Job log path.',           type=str, default=None)
-    parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default=None)
+    parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default='cosma')
     parser.add_argument('-m', '--memory',  help='Node memory usage [GB].', type=str, default=None)
     parser.add_argument('-t', '--time',    help='Job time to request.',    type=str, default=None)
     parser.add_argument('-a', '--account', help='Account for submission.', type=str, default=None)
@@ -244,5 +239,17 @@ if __name__ == '__main__':
     comments    = args.comments
     config      = args.config
     log         = args.log
+
+    config      = Configuration(config)
+    config.update_attributes('pipeline', args)
+
+    if comments != None:
+        comments = comments.split(';')
+
+        print('Appending comments: {}'.format(comments))
+
+        config.update_comments(comments)
+        
+    config.write()
     
-    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, config=config)
+    pipeline(use_sbatch=use_sbatch, reset=reset, nooverwrite=nooverwrite, dryrun=dryrun, survey=survey, freshclone=freshclone, log=log, custom=custom, comments=comments, args=args)

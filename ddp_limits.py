@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import numpy             as np
 import matplotlib.pyplot as plt
@@ -12,14 +13,29 @@ from   tmr_ecorr         import tmr_ecorr, tmr_q
 from   abs_mag           import abs_mag
 from   data.ke_params    import *
 from   survey            import survey_specifics
-
+from   findfile          import findfile
+from   config            import Configuration
 
 parser   = argparse.ArgumentParser(description='Gen kE DDP limit curves')
+parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 
 args     = parser.parse_args()
+log      = args.log
 survey   = args.survey.lower()
+
+config = Configuration(args.config)
+config.update_attributes('ddp_limits', args)
+config.write()
+    
+if log:
+    logfile = findfile(ftype='ddp_limit', dryrun=False, survey=survey, log=True)
+
+    print(f'Logging to {logfile}')
+
+    sys.stdout = open(logfile, 'w')
 
 kcorr_r  = GAMA_KCorrection(band='R')
 kcorr_RG = GAMA_KCorrection_color()
@@ -50,7 +66,7 @@ for rlim in rlims:
 
     for aall, all_type in zip([True, False], ['QALL', 'QCOLOR']):
         for gmr_0P1 in gmrs_0p1:
-            opath    = root + '{}_ddrp_limit_{:d}.fits'.format(survey, count)
+            opath    = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=count)
 
             if args.nooverwrite & os.path.isfile(opath):
                 hdul = fits.open(opath)
@@ -87,3 +103,6 @@ for rlim in rlims:
             print('Solved for {} {} {}: {}'.format(rlim, all_type, gmr_0P1[0], opath))
 
 print('Done.')
+
+if log:
+    sys.stdout.close()

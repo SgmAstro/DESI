@@ -11,6 +11,8 @@ d8_limits = [[-1.0, -0.75],\
              [2.90, 4.00],\
              [4.0, 1.e4]]
 
+d8_limits = np.array(d8_limits)
+
 def delta8_tier(delta8):
     result = -99 * np.ones(len(delta8), dtype=np.int)
 

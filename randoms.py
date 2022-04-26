@@ -12,7 +12,8 @@ from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
-
+from   bitmask           import lumfn_mask, consv_mask
+from   config            import Configuration
 
 def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
     start   = time.time()
@@ -50,14 +51,10 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         ctheta_min = np.cos(np.pi/2. - np.radians(dec_min))
         ctheta_max = np.cos(np.pi/2  - np.radians(dec_max))
 
-        vol          = volcom(zmax, Area) - volcom(zmin, Area)
+        vol        = volcom(zmax, Area) - volcom(zmin, Area)
 
-        if dryrun == True:
-            nrand = 1000
-
-        else:
-            nrand     = int(np.ceil(vol * density * oversample))
-
+        nrand     = int(np.ceil(vol * density * oversample) / 2.0)
+        
         cos_theta = np.random.uniform(ctheta_min, ctheta_max, nrand)
         theta     = np.arccos(cos_theta)
         decs      = np.pi/2. - theta
@@ -67,6 +64,35 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
         randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
 
+        if dryrun:
+            # Dryrun:  2x2 sq. patch of sky.  
+            # G12
+            delta_deg = 0.5
+ 
+            isin    = (randoms['RANDOM_RA'] > 180. - delta_deg) & (randoms['RANDOM_RA'] < 180. + delta_deg)
+            isin   &= (randoms['RANDOM_DEC'] > 0. - delta_deg) & (randoms['RANDOM_DEC'] < 0. + delta_deg)
+
+            allin  = isin
+
+            # G9                                                                                                                                                                                       
+            isin   = (randoms['RANDOM_RA']  > 135. - delta_deg) & (randoms['RANDOM_RA']  < 135. + delta_deg)
+            isin  &= (randoms['RANDOM_DEC'] > 0. - delta_deg) & (randoms['RANDOM_DEC'] < 0. + delta_deg)
+
+            allin |= isin
+
+            # G15                                                                                                                                                                                         
+            isin   = (randoms['RANDOM_RA']  > 217. - delta_deg) & (randoms['RANDOM_RA']  < 217. + delta_deg)
+            isin  &= (randoms['RANDOM_DEC'] > 0.0 - delta_deg) & (randoms['RANDOM_DEC'] < 0.0 + delta_deg)
+            
+            allin |= isin
+
+            randoms = randoms[allin]
+
+            ndryrun = len(randoms)
+            nrand   = ndryrun
+
+        print('{} randoms for dryrun = {}'.format(nrand, dryrun))
+            
     elif survey == 'desi':
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.
@@ -108,7 +134,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
     if dryrun:
         # TODO: Hard coded above, don't hard code twice. 
-        nrand = 1000
+        nrand = ndryrun
 
     if not os.path.isdir(os.environ['RANDOMS_DIR']):
         print('Creating {}'.format(os.environ['RANDOMS_DIR']))
@@ -172,6 +198,10 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
     '''
 
+    randoms['ZSURV']        = randoms['Z']
+    randoms['IN_D8LUMFN']   = np.zeros_like(randoms['FIELD'], dtype=int)
+    randoms['CONSERVATIVE'] = np.zeros_like(randoms['FIELD'], dtype=int)
+
     randoms.meta = {'ZMIN':   zmin,\
                     'ZMAX':   zmax,\
                     'DZ':       dz,\
@@ -180,7 +210,11 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'Area':   Area,\
                     'VOL':     vol,\
                     'RAND_DENS': density,\
-                    'VOL8': (4./3.)*np.pi*(8.**3.)}
+                    'VOL8': (4./3.)*np.pi*(8.**3.),\
+                    'OVERSAMPLE': oversample,\
+                    'SEED': seed,\
+                    'PREFIX': prefix,\
+                    'REALZ': realz}
 
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
     randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])
@@ -197,21 +231,24 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
 if __name__ == '__main__':
     parser  = argparse.ArgumentParser(description='Select GAMA field.')
+    parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('-f', '--field',  type=str, help='select GAMA field [G9, G12, G15] or DESI rosette [R1...]', default='G9')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Survey, e.g. GAMA, DESI, etc.', type=str, default='gama')
     parser.add_argument('--realz',        help='Realization', default=0, type=int)
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1.0, type=float)
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
     parser.add_argument('--seed',         help='Random seed.', default=314, type=int)
-
+    
     # Defaults to GAMA Gold limits. 
-    parser.add_argument('--zmin', type=np.float32, help='Minimum redshift limit', default=0.039)
-    parser.add_argument('--zmax', type=np.float32, help='Maximum redshift limit', default=0.263)
+    parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=0.039)
+    parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=0.263)
 
     args    = parser.parse_args()
+    log     = args.log
     field   = args.field.upper()
     dryrun  = args.dryrun
     survey  = args.survey.lower()
@@ -225,8 +262,21 @@ if __name__ == '__main__':
     oversample = args.oversample
 
     assert oversample in np.arange(1, 21, 1)
+
+    if log:
+        logfile = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
+
+        print(f'Logging to {logfile}')
+
+        sys.stdout = open(logfile, 'w')
+
+    config = Configuration(args.config)
+    config.update_attributes('randoms', args)
+    config.write()
     
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)
 
+    if log:
+        sys.stdout.close()
 

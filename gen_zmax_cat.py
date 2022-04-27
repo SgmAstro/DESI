@@ -37,13 +37,13 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      warn = 0
 
      try:
-        result = brentq(diff, 1.e-3, 0.6)
+        result = brentq(diff, 1.e-3, 1.0)
 
      except ValueError as VE:
         warn = 1
 
         # Brent method fails, requires sign change across boundaries.                                                                                          
-        result = minimize(absdiff, 0.3)
+        result = minimize(absdiff, 1.)
 
         if result.success:
             result = result.x[0]
@@ -170,6 +170,7 @@ if __name__ == '__main__':
     dat.write(opath, format='fits', overwrite=True)
 
     nwarn   = (dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)
+    nwarn   = np.count_nonzero(nwarn)
 
     print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
 

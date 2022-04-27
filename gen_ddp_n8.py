@@ -17,6 +17,7 @@ from   bitmask       import lumfn_mask, consv_mask
 from   delta8_limits import d8_limits
 from   runtime       import calc_runtime
 
+
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')

@@ -51,6 +51,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
+    vmax.meta['INPUT_CAT'] = fpath
         
     print('Writing {}.'.format(opath))
 
@@ -61,6 +62,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
+    result.meta['INPUT_CAT'] = fpath
     
     print('Writing {}.'.format(opath))
     

@@ -169,6 +169,10 @@ if __name__ == '__main__':
 
     dat.write(opath, format='fits', overwrite=True)
 
+    nwarn   = (dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)
+
+    print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
+
     runtime = (time.time() - start) / 60.
 
     print('\n\nDone in {} mins.\n\n'.format(runtime))

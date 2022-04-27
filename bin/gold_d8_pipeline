@@ -15,15 +15,15 @@
 #
 
 if [ -z ${DRYRUN+x} ]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='gama'
-  export SURVEYARG='--survey gama'
+  export SURVEY='desi'
+  export SURVEYARG='--survey desi'
 else
   export SURVEYARG='--survey '$SURVEY
 

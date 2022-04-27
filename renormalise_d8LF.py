@@ -21,7 +21,7 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
     
     if self_count:
         print('Applying log10|self-count correction| of {:.6f}'.format(np.log10(fdelta / fdelta_zeropoint)))
-
+            
         # tmr_DDP1: [-21.8, -20.1] 
         is_ddp1 = (cat['MEDIAN_M'] > tmr_DDP1[0]) & (cat['MEDIAN_M'] < tmr_DDP1[1])
 

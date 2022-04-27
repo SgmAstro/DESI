@@ -164,12 +164,16 @@ if __name__ == '__main__':
     
             print()
             print('Reading: {}'.format(ddp_fpath))
-            
-            failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
 
-            if failure:
-                print('ERROR: Failed on d0 tier {:d}; skipping.'.format(idx))
-                continue
+            try:
+                failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
+
+            except Exception as E:
+                print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
+                print(E)
+                print('skipping.')
+                
+                continue 
         
             print('LF process cat. complete.')
                     
@@ -193,8 +197,13 @@ if __name__ == '__main__':
 
             d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+
+            if (fdelta > 0.0) & (fdelta_zp > 0.0):
+                result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             
-            result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
+            else:
+                assert dryrun, 'ERROR:  lf renormalisation has failed.'
+
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 

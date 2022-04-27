@@ -32,6 +32,14 @@ if __name__ == '__main__':
             opath = findfile(ftype='gold', dryrun=False, survey='desi')
 
             print(f'As you are not running at nersc, the output of this script is assumed to be present at {opath}.')
+
+            if not os.path.exists(findfile(ftype='gold', dryrun=True, survey='desi')):
+                print('WARNING: as desi dryrun file is not present, copying to {}.'.format(findfile(ftype='gold', dryrun=True, survey='desi')))
+
+                dat = Table.read(opath)
+                dat = dat[:5000]
+                
+                dat.write(findfile(ftype='gold', dryrun=True, survey='desi'), format='fits', overwrite=True)
     
     else:
-        raise ValueError(f'Survey: {survey} is not supported.')
+        raise  ValueError(f'Survey: {survey} is not supported.')

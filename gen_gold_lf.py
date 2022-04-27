@@ -67,15 +67,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
-    '''
-    # MJW:  Unclear what's happened here?  HACK.
-    if stepwise:
-        opath = 'stepwise' + opath
-        result_stepwise = lumfn_stepwise(vmax)
 
-        # TODO: issue here (no write for tuple)
-        result_stepwise.write(opath, format='fits', overwrite=True)
-    '''
     return  0
 
 

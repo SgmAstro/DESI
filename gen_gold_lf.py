@@ -51,7 +51,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
-    vmax.meta['INPUT_CAT'] = fpath
+    # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
 
@@ -62,7 +62,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
-    result.meta['INPUT_CAT'] = fpath
+    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
     print('Writing {}.'.format(opath))
     
@@ -186,7 +186,7 @@ if __name__ == '__main__':
 
             # MJW:  Load three-field randoms/meta directly. 
             # DEBUG/MJW:  Potential source or ref. schechter bugs. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

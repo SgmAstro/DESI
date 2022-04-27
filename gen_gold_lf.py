@@ -35,15 +35,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
          
     found_fields = np.unique(zmax['FIELD'].data)
         
-    print('Found fields: {}'.format(found_fields))
-    
-    
-    
-    # add jackknife - could also put in vmaxer?
-    # TODO: incorporate rand_paths here in if
-    #zmax['JK'] = _set_jackknife(zmax['RA'], zmax['DEC'])
-    jk_array = np.unique(zmax['JK'])
-    
+    print('Found fields: {}'.format(found_fields))    
     
     minz = zmax['ZSURV'].min()
     maxz = zmax['ZSURV'].max()
@@ -72,12 +64,12 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     print('Writing {}.'.format(opath))
     
-    jk_array = np.unique(vmax['JK'])
-    
+    jk_array = np.unique(vmax['JK'])    
+        
     for idx in jk_array:
-        opath  = opath.replace('lumfn.fits', 'lumfn_{}.fits'.format(idx))
-        result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=idx, writeto=opath)
-        print('Writing {}.'.format(opath))
+        opath_jk  = opath.replace('lumfn.fits', 'lumfn_{}.fits'.format(idx))
+        result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=idx, writeto=opath_jk)
+        print('Writing {}.'.format(opath_jk))
 
 
     # SM: Should now be done in lumfn.

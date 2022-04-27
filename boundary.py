@@ -71,11 +71,11 @@ if log:
     print(f'Logging to {logfile}')
 
     sys.stdout = open(logfile, 'w')
-
+'''
 config = Configuration(args.config)
 config.update_attributes('boundary', args)
 config.write()
-
+'''
 if args.nooverwrite:
     overwrite_check(opath, ext='BOUNDARY')
     

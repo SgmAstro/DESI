@@ -1,4 +1,5 @@
-import numpy         as     np
+import numpy           as     np
+import astropy.io.fits as fits
 
 from   astropy.table import Table
 from   cosmo         import volcom
@@ -116,7 +117,26 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['ABSMAG_DEF'] = Mcol
     
     if writeto != None:
+        
+        jk_array = np.unique(dat['JK'])    
         opath = writeto
-        result.write(opath, format='fits', overwrite=True)
+
+        for idx in jk_array:
+        
+            ##  
+            keys           = sorted(result.meta.keys())
+            header         = {}
+            
+            for key in keys:
+                header[key] = str(result.meta[key])
+
+            primary_hdu    = fits.PrimaryHDU()
+            hdr            = fits.Header(header)
+            result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
+            hdul           = fits.HDUList([primary_hdu, result_hdu])
+
+            hdul.writeto(opath, overwrite=True, checksum=True)
+        
+        print('Writing {}.'.format(opath))
 
     return  result 

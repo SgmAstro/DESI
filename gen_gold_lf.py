@@ -64,13 +64,14 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     print('Writing {}.'.format(opath))
     
+    '''    
     jk_array = np.unique(vmax['JK'])    
         
     for idx in jk_array:
         opath_jk  = opath.replace('lumfn.fits', 'lumfn_{}.fits'.format(idx))
         result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=idx, writeto=opath_jk)
         print('Writing {}.'.format(opath_jk))
-
+    '''
 
     # SM: Should now be done in lumfn.
     # result.write(opath, format='fits', overwrite=True)

@@ -5,11 +5,14 @@ DESI Change Log
 5.0.1 (2022-April-27)
 -------------------
 
-* restict to fillfactor > 0.8 for volfracs.
+* restrict to fillfactor > 0.8 for volfracs.
   (PR `#165`_).
 
 .. _`#165`: https://github.com/desihub/redrock/pull/165
 
+
+* implement jackknife lumfn calculations (PR #168)
+* write lumfn files in lumfn function (PR #168)
 
 5.0.0 (2022-April-25)
 -------------------

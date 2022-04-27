@@ -7,7 +7,7 @@ from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields
 
 
-def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=[''], conservative=False):    
+def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False):    
     fields = fetch_fields(survey=survey)
 
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
@@ -21,10 +21,10 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
         rand['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
     '''
 
-    # TODO: replace with general bitmasks.
-    rand = rand[rand['FILLFACTOR'] > 0.8]
+    rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
-    rand = volfracs(rand)    
+    # TODO: replace with general bitmasks.
+    rand = volfracs(rand, bitmasks=bitmasks)    
 
     return  rand
 

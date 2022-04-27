@@ -3,7 +3,7 @@ import numpy as np
 from   delta8_limits import d8_limits
 
 
-def volfracs(rand, bitmasks=[]):
+def volfracs(rand, bitmasks=['IN_D8LUMFN']):
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
@@ -23,6 +23,8 @@ def volfracs(rand, bitmasks=[]):
 
         for bm in bitmasks:
             in_tier &= (ddp1_rand[bm].data == 0)
+
+            print(bm, np.mean(in_tier))
 
         # print(ut, d8_limits[ut], np.mean(d8_limits[ut]))
 

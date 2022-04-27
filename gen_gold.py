@@ -1,9 +1,11 @@
 import os
 import argparse
+import numpy as np
 
-from   gama_gold import gama_gold
-from   desi_gold import desi_gold
-from   findfile  import findfile
+from   gama_gold     import gama_gold
+from   desi_gold     import desi_gold
+from   findfile      import findfile
+from   astropy.table import Table
 
 
 if __name__ == '__main__':
@@ -33,13 +35,24 @@ if __name__ == '__main__':
 
             print(f'As you are not running at nersc, the output of this script is assumed to be present at {opath}.')
 
-            if not os.path.exists(findfile(ftype='gold', dryrun=True, survey='desi')):
-                print('WARNING: as desi dryrun file is not present, copying to {}.'.format(findfile(ftype='gold', dryrun=True, survey='desi')))
+            # DEBUG/PATCH
+            print('WARNING: patching desi gold @ {}'.format(opath))
 
-                dat = Table.read(opath)
-                dat = dat[:5000]
+            dat = Table.read(opath)
+            dat['ZSURV'] = dat['ZDESI']
+            dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
+            dat.write(opath, format='fits', overwrite=True)
+
+            # if not os.path.exists(findfile(ftype='gold', dryrun=True, survey='desi')):
+            print('PATCH/WARNING: as desi dryrun file is not present, copying to {}.'.format(findfile(ftype='gold', dryrun=True, survey='desi')))
+
+            idx = np.arange(len(dat))
+            idx = np.random.choice(idx, size=len(idx), replace=False)
+
+            dat = dat[idx]
+            dat = dat[:5000]
                 
-                dat.write(findfile(ftype='gold', dryrun=True, survey='desi'), format='fits', overwrite=True)
+            dat.write(findfile(ftype='gold', dryrun=True, survey='desi'), format='fits', overwrite=True)
     
     else:
         raise  ValueError(f'Survey: {survey} is not supported.')

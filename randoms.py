@@ -105,19 +105,50 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             Area    = nrand / 2500. 
 
         elif 'ddp1' in prefix:
+            # DEBUG/PATCH
             # Assume you are on cosma, rewriting ddp1-like redshift limits to ddp1 randoms based on the assumed present randoms. 
             randoms = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz)
+            opath   = findfile(ftype='randoms', dryrun=True, field=field, survey=survey, prefix='randoms_ddp1', realz=realz, oversample=oversample)
 
             print(f'As you are not running on nersc, an input of this script is assumed to be present at {randoms} for dryrun: {dryrun}.')
 
+            print('PATCH/WARNING: as desi dryrun file is not present, writing to {}.'.format(opath))
+
             randoms = Table.read(randoms)
+
+            isin    = (randoms['Z'] > zmin) & (randoms['Z'] < zmax)
+
+            randoms = randoms[isin]
             nrand   = len(randoms)
 
             Area    = nrand / 2500.
+            
+            randoms.write(opath, format='fits', overwrite=True)
+
+            return 0
 
         else:
             print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
-            exit(0)
+
+            # DEBUG/PATCH
+            rpath = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=None, realz=realz)
+            opath = findfile(ftype='randoms', dryrun=True, field=field, survey=survey, prefix=None, realz=realz, oversample=oversample)
+
+            print('PATCH/WARNING: as desi randoms file is does not contain IN_D8LUMFN, writing to {}.'.format(rpath))
+
+            # if not os.path.exists(opath):
+            randoms = Table.read(rpath)
+            randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
+
+            randoms.write(rpath, format='fits', overwrite=True)
+
+            randoms = randoms[:3000]
+
+            print('PATCH/WARNING: as desi dryrun file is not present, writing to {}.'.format(opath))
+
+            randoms.write(opath, format='fits', overwrite=True)
+
+            return 0
 
     else:
         raise  NotImplementedError(f'No implementation for survey: {survey}')

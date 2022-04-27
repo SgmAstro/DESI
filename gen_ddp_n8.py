@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   gama_limits   import gama_field, gama_fields
-from   desi_fields   import desi_fields
 from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
 from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask
@@ -48,10 +46,10 @@ if log:
 if args.nooverwrite:
     overwrite_check(opath)
     
-print('Reading: {}'.format(fpath))
-
 # Read ddp cat.    
 dat    = Table.read(fpath)
+
+print('Reading: {} with length {}'.format(fpath, len(dat)))
 
 assert 'DDP1_DENS' in dat.meta
 
@@ -64,7 +62,8 @@ kd_tree_all  = KDTree(points)
 # Read randoms bound_dist.
 rpaths       = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
 
-print('Reading: {}'.format(rpaths))
+for rpath in rpaths:
+    print('Reading: {}'.format(rpath))
 
 rand         = gather_cat(rpaths)
 
@@ -94,6 +93,8 @@ dat['FILLFACTOR']  = rand['FILLFACTOR'][ii]
 dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
 
 dat['FILLFACTOR_VMAX'] = -99.
+
+print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].data.min(), dat['ZMAX'].data.max()))
 
 _idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
 volavg_fillfrac        = 0.0
@@ -146,8 +147,6 @@ for idx in range(3):
 
     dat['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
 
-dat.pprint()
-
 ##  Derived.
 dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
@@ -156,10 +155,15 @@ dat['DDP1_DELTA8'] = ((dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS'
 ##  
 outwith = (dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])
 outwith = ~outwith
-outwith = outwith | (dat['FILLFACTOR']  < 0.8)
+
+if not dryrun:
+    # Insufficient randoms in a dryrun.
+    outwith = outwith | (dat['FILLFACTOR']  < 0.8)
 
 dat['DDP1_DELTA8'][outwith] = -99.
 dat['DDP1_DELTA8_TIER']     = delta8_tier(dat['DDP1_DELTA8'])
+
+dat.pprint()
 
 # TODO: Check
 if 'ddp1' not in prefix:

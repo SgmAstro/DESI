@@ -300,11 +300,11 @@ if __name__ == '__main__':
         print(f'Logging to {logfile}')
 
         sys.stdout = open(logfile, 'w')
-
+    
     config = Configuration(args.config)
     config.update_attributes('randoms', args)
     config.write()
-    
+
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)
 

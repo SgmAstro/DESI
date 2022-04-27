@@ -176,8 +176,16 @@ if __name__ == '__main__':
             result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
             # result.pprint()
 
+            # Single-field values.
+            rand      = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
+
+            fdelta    = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+
+            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
+            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+
             # MJW:  Load three-field randoms/meta directly. 
-            # DEBUG/MJW:  Potential source or ref. schechter bugs. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])

@@ -156,6 +156,7 @@ dat['DDP1_DELTA8'] = ((dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS'
 ##  
 outwith = (dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])
 outwith = ~outwith
+outwith = outwith | (dat['FILLFACTOR']  < 0.8)
 
 dat['DDP1_DELTA8'][outwith] = -99.
 dat['DDP1_DELTA8_TIER']     = delta8_tier(dat['DDP1_DELTA8'])

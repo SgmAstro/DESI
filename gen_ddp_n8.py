@@ -153,6 +153,13 @@ dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)
 
 dat['DDP1_DELTA8'] = ((dat['DDP1_N8'] / (dat.meta['VOL8'] * dat.meta['DDP1_DENS']) / dat['FILLFACTOR'])) - 1. 
 
+##  
+outwith = (dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])
+outwith = ~outwith
+
+dat['DDP1_DELTA8'][outwith] = -99.
+dat['DDP1_DELTA8_TIER']     = delta8_tier(dat['DDP1_DELTA8'])
+
 # TODO: Check
 if 'ddp1' not in prefix:
     dat['DDP2_DELTA8'] = ((dat['DDP2_N8'] / (dat.meta['VOL8'] * dat.meta['DDP2_DENS']) / dat['FILLFACTOR'])) - 1. 

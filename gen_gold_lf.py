@@ -15,7 +15,7 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
-from   jackknife_limits import _set_jackknife, set_jackknife
+from   jackknife_limits import _set_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -41,7 +41,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # add jackknife - could also put in vmaxer?
     # TODO: incorporate rand_paths here in if
-    zmax['JK'] = _set_jackknife(zmax['RA'], zmax['DEC'])
+    #zmax['JK'] = _set_jackknife(zmax['RA'], zmax['DEC'])
     jk_array = np.unique(zmax['JK'])
     
     
@@ -71,6 +71,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     result = lumfn(vmax, bitmask='IN_D8LUMFN', writeto=opath)
     
     print('Writing {}.'.format(opath))
+    
+    jk_array = np.unique(vmax['JK'])
     
     for idx in jk_array:
         opath  = opath.replace('lumfn.fits', 'lumfn_{}.fits'.format(idx))

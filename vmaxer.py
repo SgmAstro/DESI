@@ -1,10 +1,11 @@
-import numpy           as     np
+import numpy            as     np
 
-from   astropy.table   import Table, vstack
-from   cosmo           import volcom
-from   bitmask         import lumfn_mask, consv_mask
-from   volfracs        import volfracs
-from   findfile        import findfile, fetch_fields
+from   astropy.table    import Table, vstack
+from   cosmo            import volcom
+from   bitmask          import lumfn_mask, consv_mask
+from   volfracs         import volfracs
+from   findfile         import findfile, fetch_fields
+from   jackknife_limits import _set_jackknife
 
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False):    
@@ -26,6 +27,8 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     # TODO: replace with general bitmasks.
     rand = volfracs(rand, bitmasks=bitmasks)    
 
+    rand['JK'] = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'])
+    
     return  rand
 
 def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
@@ -99,4 +102,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
         isin                    = (result['ZSURV'] < 0.9 * result.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * result.meta['DDP1_ZMIN'])                                                                    
         result['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM 
 
+    result['JK'] = _set_jackknife(result['RA'], result['DEC'])
+
+        
     return  result

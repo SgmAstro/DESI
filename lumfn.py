@@ -4,12 +4,9 @@ from   astropy.table import Table
 from   cosmo         import volcom
 
 
-def multifield_lumfn(lumfn_list, ext=None):
-    if ext is None:
-        tables = [Table.read(x) for x in lumfn_list]
-    else:
-        tables = [Table.read(x, ext) for x in lumfn_list]
-
+def multifield_lumfn(lumfn_list):
+    tables = [Table.read(x) for x in lumfn_list]
+    
     def sum_rule(tables, col):
         data = [table[col].data for table in tables]
         data = np.c_[data].T
@@ -29,21 +26,12 @@ def multifield_lumfn(lumfn_list, ext=None):
         return  np.sqrt(np.sum(data**2., axis=1))
 
     
-    result    = Table()
-
-    if ext in [None, 'LUMFN']:
-        sum_cols  = ['N']
-        mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
-        qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
+    result   = Table()
+    
+    sum_cols  = ['N']
+    mean_cols = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER']
+    qsum_cols = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
-    elif ext == 'REFERENCE':
-        sum_cols   = []
-        mean_cols  = ['MS', 'REFSCHECHTER']
-        qsum_cols  = [] 
-
-    else:
-        raise RuntimeError(f'MultifieldLumfn:  Extension {ext} is not supported.')
-
     for m in mean_cols:
         result[m] = mean_rule(tables, m)
 
@@ -55,13 +43,25 @@ def multifield_lumfn(lumfn_list, ext=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jk=None, writeto=None):
     dat   = Table(dat, copy=True)
 
     dat   = dat[dat[bitmask] == 0]
-
+    
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']
+    
+    if jk != None:
+        n_jk = len(np.unique(dat['JK']))
+
+        dat = dat[dat['JK'] != jk]
+        dvmax = dat['VMAX'].data
+
+        vol = vol * (n_jk -1) / n_jk
+
+        # TESTING
+        print(n_jk)
+        print(vol)
     
     # assert  dat[Mcol].min() >= Ms.min()
     # assert  dat[Mcol].max() <= Ms.max()
@@ -114,5 +114,9 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['MS']         = str(['{:.4f}'.format(x) for x in Ms.tolist()])
     result.meta['VOLUME']     = vol
     result.meta['ABSMAG_DEF'] = Mcol
+    
+    if writeto != None:
+        opath = writeto
+        result.write(opath, format='fits', overwrite=True)
 
     return  result 

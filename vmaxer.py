@@ -37,6 +37,9 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']
+        
+    if 'JK' in dat.dtype.names:
+        extra_cols += ['JK']
 
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
@@ -80,7 +83,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
 
     result.meta['CONSERVATIVE'] = conservative
     result.meta['FILLFACTOR']   = fillfactor
-
+    
     if fillfactor:
         # Wrap volavg fillfactor(< z) required for vmax.
         fillfactor_vmax_min       = result['FILLFACTOR_VMAX'].min()

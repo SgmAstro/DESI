@@ -15,7 +15,7 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
-
+from   jackknife_limits import _set_jackknife, set_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -37,6 +37,14 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         
     print('Found fields: {}'.format(found_fields))
     
+    
+    
+    # add jackknife - could also put in vmaxer?
+    # TODO: incorporate rand_paths here in if
+    zmax['JK'] = _set_jackknife(zmax['RA'], zmax['DEC'])
+    jk_array = np.unique(zmax['JK'])
+    
+    
     minz = zmax['ZSURV'].min()
     maxz = zmax['ZSURV'].max()
     
@@ -51,7 +59,6 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
-    # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
 
@@ -61,13 +68,29 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
 
     ## TODO: remove bitmasks dependence. 
-    result = lumfn(vmax, bitmask='IN_D8LUMFN')
-    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
+    result = lumfn(vmax, bitmask='IN_D8LUMFN', writeto=opath)
     
     print('Writing {}.'.format(opath))
     
-    result.write(opath, format='fits', overwrite=True)
+    for idx in jk_array:
+        opath  = opath.replace('lumfn.fits', 'lumfn_{}.fits'.format(idx))
+        result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=idx, writeto=opath)
+        print('Writing {}.'.format(opath))
 
+
+    # SM: Should now be done in lumfn.
+    # result.write(opath, format='fits', overwrite=True)
+    
+    '''
+    # MJW:  Unclear what's happened here?  HACK.
+    # SM: TODO: uncomment this once sure Jackknife is working
+
+    opath = 'stepwise' + opath
+    result_stepwise = lumfn_stepwise(vmax)
+    
+    # TODO: issue here (no write for tuple)
+    result_stepwise.write(opath, format='fits', overwrite=True)
+    '''
     return  0
 
 
@@ -178,7 +201,7 @@ if __name__ == '__main__':
 
             # MJW:  Load three-field randoms/meta directly. 
             # DEBUG/MJW:  Potential source or ref. schechter bugs. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
 
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
@@ -186,7 +209,7 @@ if __name__ == '__main__':
             d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
             
-            result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
+            result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -203,7 +226,7 @@ if __name__ == '__main__':
             sch   *= (1. + d8) / (1. + 0.007)
 
             ##
-            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'REFSCHECHTER'])            
+            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
             ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
@@ -219,6 +242,7 @@ if __name__ == '__main__':
             for key in keys:
                 header[key] = str(result.meta[key])
 
+            # TODO: 
             primary_hdu    = fits.PrimaryHDU()
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)

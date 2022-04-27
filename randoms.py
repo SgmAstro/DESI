@@ -108,7 +108,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             # DEBUG/PATCH
             # Assume you are on cosma, rewriting ddp1-like redshift limits to ddp1 randoms based on the assumed present randoms. 
             randoms = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz)
-            opath   = findfile(ftype='randoms', dryrun=True, field=field, survey=survey, prefix='randoms_ddp1', realz=realz, oversample=oversample)
+            opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix='randoms_ddp1', realz=realz, oversample=oversample)
 
             print(f'As you are not running on nersc, an input of this script is assumed to be present at {randoms} for dryrun: {dryrun}.')
 

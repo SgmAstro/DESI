@@ -2,6 +2,15 @@
 DESI Change Log
 ==================
 
+5.0.1 (2022-April-27)
+-------------------
+
+* restict to fillfactor > 0.8 for volfracs.
+  (PR `#165`_).
+
+.. _`#165`: https://github.com/desihub/redrock/pull/165
+
+
 5.0.0 (2022-April-25)
 -------------------
 

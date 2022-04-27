@@ -37,7 +37,7 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      warn = 0
 
      try:
-        result = brentq(diff, 1.e-3, 1.0)
+        result = brentq(diff, 1.e-3, 1.6)
 
      except ValueError as VE:
         warn = 1

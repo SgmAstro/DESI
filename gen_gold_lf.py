@@ -61,27 +61,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN', writeto=opath)
-    
-    print('Writing {}.'.format(opath))
-    
-    jk_array = np.unique(vmax['JK'])    
         
-    for idx in jk_array:
-        result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=idx, writeto=opath)
-
-    # SM: Should now be done in lumfn.
-    # result.write(opath, format='fits', overwrite=True)
-    
-    '''
-    # MJW:  Unclear what's happened here?  HACK.
-    # SM: TODO: uncomment this once sure Jackknife is working
-
-    opath = 'stepwise' + opath
-    result_stepwise = lumfn_stepwise(vmax)
-    
-    # TODO: issue here (no write for tuple)
-    result_stepwise.write(opath, format='fits', overwrite=True)
-    '''
     return  0
 
 

@@ -219,7 +219,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         if 'GOLD_DIR' in os.environ:
             gold_dir = os.environ['GOLD_DIR']
 
-        elif os.environ['GITHUB_ACTIONS']:
+        elif 'GITHUB_ACTIONS' in os.environ:
             gold_dir = 'GAMA4/'
 
         else:

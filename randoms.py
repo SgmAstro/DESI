@@ -134,7 +134,9 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
             # if not os.path.exists(opath):
             randoms = Table.read(rpath)
-            randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
+
+            if 'IN_D8LUMFN' not in randoms.dtype.names:
+                randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
 
             randoms.write(rpath, format='fits', overwrite=True)
 

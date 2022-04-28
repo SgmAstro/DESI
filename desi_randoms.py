@@ -1,20 +1,18 @@
 import os
 import numpy         as     np
 
-from   astropy.table import Table, unique
+from   bitmask       import lumfn_mask
+from   astropy.table import Table, unique, vstack
 from   ros_tools     import tile2rosette, calc_rosr
 
 
-def desi_randoms(ros):
+def desi_randoms(ros, nrealz=15, dryrun=False):
     assert  'NERSC_HOST' in os.environ.keys()
 
-    # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.  
-    
-    rpaths = ['/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random{}/rancomb_brightwdup_Alltiles.fits'.format(idx) for idx in range(16)]
-
-    rand = vstack([Table.read(xx) for xx in rpaths])
+    # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.      
+    rpaths = ['/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random{}/rancomb_brightwdup_Alltiles.fits'.format(idx) for idx in range(1 + nrealz)]
+    rand   = vstack([Table.read(xx) for xx in rpaths])
                       
-
     # TODO:  Check TARGETID is a unique identifier, or bug.  If not, use RA. 
     rand             = unique(rand, keys='TARGETID')
     rand['ROS']      = tile2rosette(rand['TILEID'])
@@ -33,11 +31,22 @@ def desi_randoms(ros):
     # rand.pprint()
 
     # TODO:  check.
-    rand = rand[(rand['ROS_DIST'].data > 0.5) & (rand['ROS_DIST'].data < 1.5)]
+    if dryrun:
+        limits = [0.9, 1.1]
+    else:
+        limits = [0.5, 1.5]
+
+    hi_comp             = (rand['ROS_DIST'].data > limits[0]) & (rand['ROS_DIST'].data < limits[1])
+    rand['IN_D8LUMFN']  = ~hi_comp * lumfn_mask.DESI_HICOMP
     
     rand.rename_column('RA',  'RANDOM_RA')
     rand.rename_column('DEC', 'RANDOM_DEC')
 
+    rand.meta['AREA'] = len(rand) / 2500. / nrealz
+    rand.meta['NRAND'] = len(rand)
     rand.meta['IMMUTABLE'] = 'TRUE'
+
+    if dryrun:
+        rand = rand[rand['IN_D8LUMFN'] == 0]
     
     return  rand

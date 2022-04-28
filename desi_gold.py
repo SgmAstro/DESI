@@ -274,6 +274,7 @@ def desi_gold(args):
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 
     desi_zs['IN_D8LUMFN']    += ~hi_comp * lumfn_mask.DESI_HICOMP
+
     desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
 

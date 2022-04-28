@@ -22,9 +22,6 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     else:
         custom = ''
 
-    if reset & (survey == 'desi'):
-        raise  NotImplementedError('Reset not currently supported for DESI.')
-
     if reset & nooverwrite:
         raise  ValueError('No overwrite and reset are incompatible.')
 
@@ -55,6 +52,9 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
             print(cmd)
 
             os.system(cmd)
+
+        if survey == 'desi':
+            raise  NotImplementedError('Full reset unsupported for desi')
         
     if reset:
         os.environ['RESET']   = str(1)

@@ -52,6 +52,7 @@ start   = time.time()
 fpath   = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 
 dat     = Table.read(fpath)
+dat     = dat[dat['FIELD'] == field]
 
 runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6), xx=dat)
 
@@ -63,6 +64,14 @@ if nooverwrite:
     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
+
+# Remove anything already in randoms header. 
+present = list(rand.meta.keys()) 
+
+for pp in present:
+    del dat.meta[pp]
+
+assert AREA not in dat.meta.keys()
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
 rand.meta.update(dat.meta)

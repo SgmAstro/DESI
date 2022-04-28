@@ -1,9 +1,11 @@
 import os
 import argparse
+import numpy as np
 
-from   gama_gold import gama_gold
-from   desi_gold import desi_gold
-from   findfile  import findfile
+from   gama_gold     import gama_gold
+from   desi_gold     import desi_gold
+from   findfile      import findfile
+from   astropy.table import Table
 
 
 if __name__ == '__main__':
@@ -26,7 +28,7 @@ if __name__ == '__main__':
     elif survey == 'desi':
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.                                                                                                                                                         
-            desi_gold()
+            desi_gold(args)
 
         else:
             opath = findfile(ftype='gold', dryrun=False, survey='desi')
@@ -34,4 +36,4 @@ if __name__ == '__main__':
             print(f'As you are not running at nersc, the output of this script is assumed to be present at {opath}.')
     
     else:
-        raise ValueError(f'Survey: {survey} is not supported.')
+        raise  ValueError(f'Survey: {survey} is not supported.')

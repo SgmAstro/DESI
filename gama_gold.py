@@ -128,8 +128,8 @@ def gama_gold(argset):
     dat.meta['GOLD_NGAL'] = len(dat)
     dat.pprint()
     
-    dat.meta = dat.meta = {'AREA': dat.meta['AREA'],\
-                           'GOLD_NGAL': dat.meta['GOLD_NGAL']}
+    dat.meta = {'AREA': dat.meta['AREA'],\
+                'GOLD_NGAL': dat.meta['GOLD_NGAL']}
 
     write_desitable(opath, dat)
     
@@ -182,4 +182,4 @@ if __name__ == '__main__':
     config.update_attributes('gold', args)
     config.write()
 
-    # gama_gold(args)
+    gama_gold(args)

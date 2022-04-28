@@ -39,9 +39,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
         Area    = 60.
 
-        # TODO:
-        # field   = fields[args.field]
-
         ra_min  = gama_limits[field]['ra_min']
         ra_max  = gama_limits[field]['ra_max']
 
@@ -94,30 +91,25 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         print('{} randoms for dryrun = {}'.format(nrand, dryrun))
             
     elif survey == 'desi':
+        _nrealisations = 2
+        
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.
-            randoms = desi_randoms(ros=int(field[1:]))
-            nrand   = len(randoms)
+            randoms = desi_randoms(int(field[1:]), _nrealisations * oversample, dryrun=dryrun)
 
-            # TODO: add dryrun nrand fix (as above in GAMA)
+            nrand   = randoms.meta['NRAND']
+            Area    = randoms.meta['AREA']
 
-            # Original density of 2500 per sq. deg. 
-            Area    = nrand / 2500. 
-
+            ndryrun = nrand
+            
         elif 'ddp1' in prefix:
-            # Assume you are on cosma, rewriting ddp1-like redshift limits to ddp1 randoms based on the assumed present randoms. 
-            randoms = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz)
-
-            print(f'As you are not running on nersc, an input of this script is assumed to be present at {randoms} for dryrun: {dryrun}.')
-
-            randoms = Table.read(randoms)
-            nrand   = len(randoms)
-
-            Area    = nrand / 2500.
+            rpath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz, oversample=oversample)
+            randoms = Table.read(rpath)
 
         else:
             print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
-            exit(0)
+
+            return 0
 
     else:
         raise  NotImplementedError(f'No implementation for survey: {survey}')
@@ -136,10 +128,12 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         # TODO: Hard coded above, don't hard code twice. 
         nrand = ndryrun
 
-    if not os.path.isdir(os.environ['RANDOMS_DIR']):
-        print('Creating {}'.format(os.environ['RANDOMS_DIR']))
+    rand_dir = os.path.dirname(opath)
+        
+    if not os.path.isdir(rand_dir):
+        print('Creating {}'.format(rand_dir))
 
-        os.makedirs(os.environ['RANDOMS_DIR'])
+        os.makedirs(rand_dir)
 
     print('Volume [1e6]: {:.2f}; oversample: {:.2f};  density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, oversample, density, nrand / 1.e6))
 
@@ -214,7 +208,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'OVERSAMPLE': oversample,\
                     'SEED': seed,\
                     'PREFIX': prefix,\
-                    'REALZ': realz}
+                    'REALZ': realz,\
+                    'FPATH': opath}
 
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
     randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])
@@ -269,11 +264,11 @@ if __name__ == '__main__':
         print(f'Logging to {logfile}')
 
         sys.stdout = open(logfile, 'w')
-
+    
     config = Configuration(args.config)
     config.update_attributes('randoms', args)
     config.write()
-    
+
     for xx in [1, oversample]:        
         randoms(field=field, survey=survey, density=density, zmin=zmin, zmax=zmax, dryrun=dryrun, prefix=prefix, seed=seed, oversample=xx, realz=realz)
 

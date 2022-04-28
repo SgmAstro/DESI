@@ -51,6 +51,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     # TODO: Why do we need this?                                                                                                   
     vmax = vmax[vmax['ZMAX'] >= 0.0]
+    # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
 
@@ -61,19 +62,12 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
+    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
     print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
-    '''
-    # MJW:  Unclear what's happened here?  HACK.
-    if stepwise:
-        opath = 'stepwise' + opath
-        result_stepwise = lumfn_stepwise(vmax)
 
-        # TODO: issue here (no write for tuple)
-        result_stepwise.write(opath, format='fits', overwrite=True)
-    '''
     return  0
 
 
@@ -170,29 +164,46 @@ if __name__ == '__main__':
     
             print()
             print('Reading: {}'.format(ddp_fpath))
-            
-            failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
 
-            if failure:
-                print('ERROR: Failed on d0 tier {:d}; skipping.'.format(idx))
-                continue
+            try:
+                failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
+
+            except Exception as E:
+                print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
+                print(E)
+                print('skipping.')
+                
+                continue 
         
             print('LF process cat. complete.')
                     
             result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
             # result.pprint()
 
+            # Single-field values.
+            rand      = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
+
+            fdelta    = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+
+            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
+            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+
             # MJW:  Load three-field randoms/meta directly. 
-            # DEBUG/MJW:  Potential source or ref. schechter bugs. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, version=version)
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
             d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+
+            if (fdelta > 0.0) & (fdelta_zp > 0.0):
+                result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             
-            result    = renormalise_d8LF(result, fdelta, fdelta_zp, self_count)
+            else:
+                assert dryrun, 'ERROR:  lf renormalisation has failed.'
+
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
 
@@ -209,7 +220,7 @@ if __name__ == '__main__':
             sch   *= (1. + d8) / (1. + 0.007)
 
             ##
-            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'd{}_REFSCHECHTER'.format(idx)])            
+            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'REFSCHECHTER'])            
             ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
@@ -225,7 +236,6 @@ if __name__ == '__main__':
             for key in keys:
                 header[key] = str(result.meta[key])
 
-            # TODO: 
             primary_hdu    = fits.PrimaryHDU()
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)

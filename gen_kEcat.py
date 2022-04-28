@@ -76,6 +76,9 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
         overwrite_check(opath)
 
     fields    = fetch_fields(survey)
+
+    print(f'Reading {fpath}')
+    print(f'Writing {opath}')
   
     dat       = Table.read(fpath)
     dat.pprint()

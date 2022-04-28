@@ -211,6 +211,7 @@ _bitdefs = yaml.safe_load('''
      - [FILLFACTOR,   1, "Fillfactor < 0.8"]
      - [INBGSBRIGHT,  2, "Galaxy not in BGS Bright"]
      - [CONSERVATIVE, 3, "Galaxy not conserved; see CONSERVATIVE mask"]
+     - [DESI_HICOMP,  4, "High completeness region of DESI, e.g. 0.5 - 1.5 deg. of rosette."]
 ''')
 
 _cbitdefs = yaml.safe_load('''

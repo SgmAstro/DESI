@@ -15,15 +15,15 @@
 #
 
 if [ -z ${DRYRUN+x} ]; then
-  export DRYRUN=''                                                                                                                                                                               
-  # export DRYRUN='--dryrun'
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='gama'
-  export SURVEYARG='--survey gama'
+  export SURVEY='desi'
+  export SURVEYARG='--survey desi'
 else
   export SURVEYARG='--survey '$SURVEY
 
@@ -73,7 +73,7 @@ for FIELD in ${FIELDS[@]}
 do
     echo 'Running: '$FIELD
     
-    python gen_gold_lf.py --density_split --field $FIELD $DRYRUN $SURVEYARG --log
+    python gen_gold_lf.py --density_split --selfcount_volfracs --field $FIELD $DRYRUN $SURVEYARG --log
 done
 
 echo

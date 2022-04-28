@@ -189,6 +189,30 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
         return  result
 
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1, log=False, ddp_count=-1):        
+    if version == None:
+        if 'NERSC_HOST' in os.environ:
+            gold_dir = os.environ['CSCRATCH'] + '/norberg/GAMA4/'
+
+        elif 'GOLD_DIR' in os.environ:
+            gold_dir = os.environ['GOLD_DIR']
+
+        elif 'GITHUB_ACTIONS' in os.environ:
+            gold_dir = 'GAMA4/'
+
+        else:
+            gold_dir = os.environ['HOME'] + '/data/GAMA4/'
+
+            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
+
+    else:
+        gold_dir = release_dir(version=version)
+
+    rand_dir = gold_dir + '/randoms/'
+
+    # Special cases:                                                                                                                                                                                      
+    if ftype == 'config':
+        return gold_dir + '/configs/config.yaml'
+
     if survey == None:
         survey = 'gama'
 
@@ -214,34 +238,6 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         
     if realz >= 50:
         raise ValueError('Randoms realizations limisted to max. of 50')
-
-    if version == None:        
-        if 'GOLD_DIR' in os.environ:
-            gold_dir = os.environ['GOLD_DIR']
-
-        elif os.environ['GITHUB_ACTIONS']:
-            gold_dir = 'GAMA4/'
-
-        else:
-            gold_dir = os.environ['HOME'] + '/data/GAMA4/'
-
-            print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
-            
-        if 'RANDOMS_DIR' in os.environ:
-            rand_dir = os.environ['RANDOMS_DIR']
-
-        else:
-            rand_dir = os.environ['HOME'] + '/data/GAMA4/randoms/'
-
-            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
-        
-    else:
-        gold_dir = release_dir(version=version)
-        rand_dir = release_dir(version=version) + '/randoms/'
-
-    # Special cases:
-    if ftype == 'config':
-        return gold_dir + '/configs/config.yaml'
 
     if ftype == 'ddp_limit':
         if log:
@@ -349,7 +345,7 @@ def unsupported_files(dryrun=None):
     fpaths = supported_files(dryrun=dryrun)
 
     gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
-    rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
+    rand_paths  = sorted(glob.glob(os.environ['GOLD_DIR'] + '/randoms/*.fits'))
 
     all_paths   = gold_paths + rand_paths
 

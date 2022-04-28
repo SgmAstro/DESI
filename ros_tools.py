@@ -20,7 +20,7 @@ def tile2rosette(tile):
         if tile > 480:
             return tile//30    
 
-    return 999999
+    return -999999
 
 roscen = {0:(150.100,2.182),\
           1:(179.6,0),\

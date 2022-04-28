@@ -139,7 +139,8 @@ elif survey == 'desi':
     # No requirement on NERSC HOST for boundary.
     inner = 0.5 # deg.                                                                                                                                                                            
     outer = 1.5 # deg.                                                                                                                                                                                
-    # HACK?
+
+    # TODO/HACK?
     area  = np.pi * (outer**2. - inner**2.)
         
     ras   = np.arange(0., 360., 1.e-3)
@@ -212,7 +213,7 @@ randoms.meta = {'ZMIN': zmin,\
                 'NBOUND': nrand,\
                 'FIELD': field,\
                 'SAMPLING': sampling,\
-                'Area': area}
+                'AREA': area}
 
 print(randoms.meta)
 

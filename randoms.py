@@ -39,9 +39,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
         Area    = 60.
 
-        # TODO:
-        # field   = fields[args.field]
-
         ra_min  = gama_limits[field]['ra_min']
         ra_max  = gama_limits[field]['ra_max']
 
@@ -97,12 +94,13 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.
             randoms = desi_randoms(ros=int(field[1:]))
+
+            # nrand = randoms.meta['NRAND']
             nrand   = len(randoms)
 
-            # TODO: add dryrun nrand fix (as above in GAMA)
-
             # Original density of 2500 per sq. deg. 
-            Area    = nrand / 2500. 
+            # nrand = randoms.meta['AREA']
+            Area    = nrand / 2500.
 
         elif 'ddp1' in prefix:
             # DEBUG/PATCH

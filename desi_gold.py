@@ -22,7 +22,11 @@ def desi_gold(args):
     dryrun = args.dryrun
 
     root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
-    tpix   = Table.read(root + 'tilepix.fits')
+    fpath  = root + 'tilepix.fits'
+
+    print(f'Fetching {fpath}')
+
+    tpix   = Table.read(fpath)
 
     tiles  = np.arange(1000)
     ros    = np.array([tile2rosette(x) for x in tiles])
@@ -31,7 +35,7 @@ def desi_gold(args):
     # G12: [1,2]; G15: [8,9,10, 17]
     
     uros   = np.unique(ros)
-    uros   = uros[uros>-1]
+    uros   = uros[uros > -1]
     
     gama   = np.isin(ros, uros)
 
@@ -44,6 +48,8 @@ def desi_gold(args):
 
     fpaths = [root + '{}/{}/redrock-sv3-bright-{}.fits'.format(str(x)[:3], x, x) for x in hps]
     fpaths = [x for x in fpaths if os.path.exists(x)]
+
+    print('Fetching {}'.format(fpaths[0]))
 
     # e.g. 280/28027/redrock-sv3-bright-28027.fits
     tabs   = []
@@ -254,13 +260,15 @@ def desi_gold(args):
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
     if dryrun:
-        hi_comp               = (desi_zs['ROS_DIST'].data > 0.9) & (desi_zs['ROS_DIST'].data < 1.1)
-    
+        limits                = [0.9, 1.1]    
     else:
-        hi_comp               = (desi_zs['ROS_DIST'].data > 0.5) & (desi_zs['ROS_DIST'].data < 1.5)
+        limits                = [0.5, 1.5]
+        
+    hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
+    area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 
     desi_zs['IN_D8LUMFN']    += hi_comp * lumfn_mask.DESI_HICOMP
-    desi_zs.meta['AREA']      = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
+    desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
     
     opath                     = findfile(ftype='gold', dryrun=False, survey=survey)

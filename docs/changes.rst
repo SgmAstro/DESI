@@ -2,6 +2,12 @@
 DESI Change Log
 ==================
 
+5.0.0 (2022-April-28)
+-------------------
+
+* Multiple realisations (16) of DESI randoms (PR #174)
+* Extension to all DESI rosettes rather than GAMA (PR #174)
+
 5.0.0 (2022-April-25)
 -------------------
 

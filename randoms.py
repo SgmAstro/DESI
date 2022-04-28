@@ -15,6 +15,7 @@ from   gama_limits       import gama_limits, gama_field
 from   bitmask           import lumfn_mask, consv_mask
 from   config            import Configuration
 
+
 def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
     start   = time.time()
 
@@ -35,8 +36,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
     ##  ras and decs.                                                                                                                                                              
     if survey == 'gama':    
-        from gama_limits import gama_field
-
         Area    = 60.
 
         ra_min  = gama_limits[field]['ra_min']
@@ -60,7 +59,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         ras       = np.random.uniform(ra_min, ra_max, nrand)
 
         randoms   = Table(np.c_[ras, decs], names=['RANDOM_RA', 'RANDOM_DEC'])
-
+        nrand     = len(randoms)
+        
         if dryrun:
             # Dryrun:  2x2 sq. patch of sky.  
             # G12
@@ -84,11 +84,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             allin |= isin
 
             randoms = randoms[allin]
-
-            ndryrun = len(randoms)
-            nrand   = ndryrun
-
-        print('{} randoms for dryrun = {}'.format(nrand, dryrun))
+            nrand   = len(randoms)
             
     elif survey == 'desi':
         _nrealisations = 2
@@ -99,16 +95,16 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
             nrand   = randoms.meta['NRAND']
             Area    = randoms.meta['AREA']
-
-            ndryrun = nrand
             
         elif 'ddp1' in prefix:
             rpath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=None, realz=realz, oversample=oversample)
             randoms = Table.read(rpath)
 
+            nrand   = randoms.meta['NRAND']
+            Area    = randoms.meta['AREA']
+            
         else:
             print(f'As you are not running on nersc, the output of this script is assumed to be present at {opath} for dryrun: {dryrun}.')
-
             return 0
 
     else:
@@ -123,10 +119,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     vol     = Vmax - Vmin
 
     density = nrand / vol
-
-    if dryrun:
-        # TODO: Hard coded above, don't hard code twice. 
-        nrand = ndryrun
 
     rand_dir = os.path.dirname(opath)
         
@@ -155,26 +147,16 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     ras      = randoms['RANDOM_RA']
     decs     = randoms['RANDOM_DEC']
 
-    print(len(ras), len(decs), len(zs))
-
-    xyz      = cartesian(ras, decs, zs)
-    
-    '''
-    ras      = ras.astype(np.float32)
-    decs     = decs.astype(np.float32)
-    zs       = zs.astype(np.float32)
-    Vdraws   = Vdraws.astype(np.float32)
-    xyz      = xyz.astype(np.float32)
-    '''
-
     randoms['Z'] = zs
     randoms['V'] = Vdraws
     randoms['RANDID'] = np.arange(len(randoms))
 
     randoms['FIELD']      = field
+
+    # TODO/HACK/RESTORE
     randoms['GAMA_FIELD'] = gama_field(ras, decs)
 
-    # assert  np.all(randoms['FIELD'].data == field)
+    xyz      = cartesian(ras, decs, zs)
 
     randoms['CARTESIAN_X'] = xyz[:,0]
     randoms['CARTESIAN_Y'] = xyz[:,1]

@@ -42,11 +42,11 @@ def desi_randoms(ros, nrealz=15, dryrun=False):
     rand.rename_column('RA',  'RANDOM_RA')
     rand.rename_column('DEC', 'RANDOM_DEC')
 
+    if dryrun:
+        rand = rand[rand['IN_D8LUMFN'] == 0]
+
     rand.meta['AREA'] = len(rand) / 2500. / nrealz
     rand.meta['NRAND'] = len(rand)
     rand.meta['IMMUTABLE'] = 'TRUE'
-
-    if dryrun:
-        rand = rand[rand['IN_D8LUMFN'] == 0]
-    
+        
     return  rand

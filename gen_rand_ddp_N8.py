@@ -72,7 +72,7 @@ for pp in present:
     if pp in rand.meta.keys():
         del dat.meta[pp]
 
-assert AREA not in dat.meta.keys()
+assert 'AREA' not in dat.meta.keys()
 
 # Propagate header 'DDP1_ZMIN' etc. to randoms.
 rand.meta.update(dat.meta)

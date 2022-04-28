@@ -281,7 +281,7 @@ def desi_gold(args):
     if dryrun:
         desi_zs               = desi_zs[desi_zs['IN_D8LUMFN'] == 0]
     
-    opath                     = findfile(ftype='gold', dryrun=False, survey=survey)
+    opath                     = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 
     print('Writing {}'.format(opath))
 

@@ -248,16 +248,16 @@ def desi_gold():
     
     gold.write(opath, format='fits', overwrite=True)
 
-    ## --------------------
-    desi_zs = desi_zs[desi_zs['IN_GOLD']]
-    desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
-    desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
+    ## ---------------------------------------------------------
+    desi_zs                   = desi_zs[desi_zs['IN_GOLD']]
+    desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
+    desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    opath  = fpath.replace('gama', 'desi')
+    opath                     = fpath.replace('gama', 'desi')
 
     print('Writing {}'.format(opath))
 
-    desi_zs.meta['AREA'] = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
+    desi_zs.meta['AREA']      = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
     
     desi_zs.write(opath, format='fits', overwrite=True)

@@ -52,6 +52,7 @@ start   = time.time()
 fpath   = findfile(ftype='ddp', dryrun=dryrun, survey=survey, prefix=prefix)
 
 dat     = Table.read(fpath)
+dat     = dat[dat['FIELD'] == field]
 
 runtime = calc_runtime(start, 'Reading {:.2f}M Gold DDP'.format(len(dat) / 1.e6), xx=dat)
 

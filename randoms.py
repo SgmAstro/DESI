@@ -142,6 +142,9 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
             randoms.write(rpath, format='fits', overwrite=True)
 
+            rpath = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=None, realz=realz, oversample=oversample)
+            randoms.write(rpath, format='fits', overwrite=True)
+
             randoms = randoms[:3000]
 
             print('PATCH/WARNING: as desi dryrun file is not present, writing to {}.'.format(opath))

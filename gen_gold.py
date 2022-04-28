@@ -41,6 +41,10 @@ if __name__ == '__main__':
             dat = Table.read(opath)
             dat['ZSURV'] = dat['ZDESI']
             dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
+
+            ##  BUG/PATCH/  High completeness part of the rosette                                                                                                                                         
+            ##  TODO        Deal with at level of IN_D8LUMFN.                                                                                                                                            
+            dat               = dat[(dat['ROS_DIST'].data > 0.5) & (dat['ROS_DIST'].data < 1.5)]
             dat.write(opath, format='fits', overwrite=True)
 
             # if not os.path.exists(findfile(ftype='gold', dryrun=True, survey='desi')):

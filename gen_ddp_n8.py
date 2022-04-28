@@ -47,7 +47,7 @@ if args.nooverwrite:
     overwrite_check(opath)
     
 # Read ddp cat.    
-dat    = Table.read(fpath)
+dat           = Table.read(fpath)
 
 print('Reading: {} with length {}'.format(fpath, len(dat)))
 
@@ -132,20 +132,28 @@ if not dryrun:
 for idx in range(3):
     # Calculate DDP1/2/3 N8 for all gold galaxies.
     ddp_idx      = idx + 1
+
+    dat['DDP{:d}_N8'.format(ddp_idx)] = -99
     
-    ddp          = dat[dat['DDP'][:,idx] == 1]
-    points_ddp   = np.c_[ddp['CARTESIAN_X'], ddp['CARTESIAN_Y'], ddp['CARTESIAN_Z']]
-    points_ddp   = np.array(points_ddp, copy=True)
+    for field in fields:
+        print('Building tree for DDP {} and field {}'.format(ddp_idx, field))
 
-    print('Building tree for DDP {}'.format(ddp_idx))
-    
-    kd_tree_ddp  = KDTree(points_ddp)
+        in_field      = dat['FIELD'] == field
+        dat_field     = dat[in_field]
 
-    print('Querying tree for DDP {}'.format(ddp_idx))
+        ddp           = dat_field[dat_field['DDP'][:,idx] == 1]
+        points_ddp    = np.c_[ddp['CARTESIAN_X'], ddp['CARTESIAN_Y'], ddp['CARTESIAN_Z']]
+        points_ddp    = np.array(points_ddp, copy=True)
+        
+        kd_tree_ddp   = KDTree(points_ddp)
 
-    indexes_ddp  = kd_tree_all.query_ball_tree(kd_tree_ddp, r=8.)
+        print('Querying tree for DDP {}'.format(ddp_idx))
 
-    dat['DDP{:d}_N8'.format(ddp_idx)] = np.array([len(idx) for idx in indexes_ddp])
+        indexes_ddp   = kd_tree_all.query_ball_tree(kd_tree_ddp, r=8.)
+
+        counts        = np.array([len(idx) for idx in indexes_ddp]) 
+
+        dat['DDP{:d}_N8'.format(ddp_idx)][in_field] = counts[in_field] 
 
 ##  Derived.
 dat.meta['VOL8']   = (4./3.)*np.pi*(8.**3.)

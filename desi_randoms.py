@@ -7,6 +7,7 @@ from   ros_tools     import tile2rosette, calc_rosr
 
 def desi_randoms(ros):
     assert  'NERSC_HOST' in os.environ.keys()
+
     # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.  
     rand = Table.read('/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random0/rancomb_brightwdup_Alltiles.fits')
     # rand.pprint()
@@ -17,7 +18,7 @@ def desi_randoms(ros):
 
     rand['ROS_DIST'] = 1.e99
 
-    rand = rand[rand['ROS'] == ros]
+    rand             = rand[rand['ROS'] == ros]
     
     for rosn in np.unique(rand['ROS']):
         isin = (rand['ROS'].data == rosn)

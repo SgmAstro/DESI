@@ -183,7 +183,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'DZ':       dz,\
                     'NRAND': nrand,\
                     'FIELD': field,\
-                    'Area':   Area,\
+                    'AREA':   Area,\
                     'VOL':     vol,\
                     'RAND_DENS': density,\
                     'VOL8': (4./3.)*np.pi*(8.**3.),\

@@ -204,17 +204,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
             print('Warning:  GOLD_DIR not defined in environment; assuming {gold_dir}')
 
-        if 'RANDOMS_DIR' in os.environ:
-            rand_dir = os.environ['RANDOMS_DIR']
-
-        else:
-            rand_dir = os.environ['HOME'] + '/data/GAMA4/randoms/'
-
-            print('Warning:  RANDOMS_DIR not defined in environment; assuming {randoms_dir}')
-
     else:
         gold_dir = release_dir(version=version)
-        rand_dir = release_dir(version=version) + '/randoms/'
+
+    rand_dir = gold_dir + '/randoms/'
 
     # Special cases:                                                                                                                                                                                      
     if ftype == 'config':
@@ -352,7 +345,7 @@ def unsupported_files(dryrun=None):
     fpaths = supported_files(dryrun=dryrun)
 
     gold_paths  = sorted(glob.glob(os.environ['GOLD_DIR']    + '/*.fits'))
-    rand_paths  = sorted(glob.glob(os.environ['RANDOMS_DIR'] + '/*.fits'))
+    rand_paths  = sorted(glob.glob(os.environ['GOLD_DIR'] + '/randoms/*.fits'))
 
     all_paths   = gold_paths + rand_paths
 

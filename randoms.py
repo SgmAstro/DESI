@@ -91,16 +91,14 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         print('{} randoms for dryrun = {}'.format(nrand, dryrun))
             
     elif survey == 'desi':
+        _nrealisations = 2
+        
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.
-            randoms = desi_randoms(ros=int(field[1:]))
+            randoms = desi_randoms(int(field[1:]), _nrealisations * oversample, dryrun=dryrun)
 
-            # nrand = randoms.meta['NRAND']
-            nrand   = len(randoms)
-
-            # Original density of 2500 per sq. deg. 
-            # nrand = randoms.meta['AREA']
-            Area    = nrand / 2500.
+            nrand   = randoms.meta['NRAND']
+            Area    = randoms.meta['AREA']
 
         elif 'ddp1' in prefix:
             # DEBUG/PATCH
@@ -136,7 +134,9 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
 
             # if not os.path.exists(opath):
             randoms = Table.read(rpath)
-            randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
+
+            if 'IN_D8LUMFN' not in randoms.dtype.names:
+                randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
 
             randoms.write(rpath, format='fits', overwrite=True)
 
@@ -168,10 +168,12 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         # TODO: Hard coded above, don't hard code twice. 
         nrand = ndryrun
 
-    if not os.path.isdir(os.environ['RANDOMS_DIR']):
-        print('Creating {}'.format(os.environ['RANDOMS_DIR']))
+    rand_dir = os.path.dirname(opath)
+        
+    if not os.path.isdir(rand_dir):
+        print('Creating {}'.format(rand_dir))
 
-        os.makedirs(os.environ['RANDOMS_DIR'])
+        os.makedirs(rand_dir)
 
     print('Volume [1e6]: {:.2f}; oversample: {:.2f};  density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, oversample, density, nrand / 1.e6))
 

@@ -4,13 +4,13 @@ DESI Change Log
 
 5.0.1 (2022-April-27)
 -------------------
-
 * restict to fillfactor > 0.8 for volfracs.
   (PR `#165`_).
 * more careful header updates in gen_ddp_n8.
-
+* Multiple realisations (16) of DESI randoms (PR #174)
+* Extension to all DESI rosettes rather than GAMA (PR #174)
+  
 .. _`#165`: https://github.com/desihub/redrock/pull/165
-
 
 5.0.0 (2022-April-25)
 -------------------

@@ -190,7 +190,10 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
 def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, oversample=1, log=False, ddp_count=-1):        
     if version == None:
-        if 'GOLD_DIR' in os.environ:
+        if 'NERSC_HOST' in os.environ:
+            gold_dir = os.environ['CSCRATCH'] + '/norberg/GAMA4/'
+
+        elif 'GOLD_DIR' in os.environ:
             gold_dir = os.environ['GOLD_DIR']
 
         elif 'GITHUB_ACTIONS' in os.environ:

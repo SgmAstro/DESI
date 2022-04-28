@@ -246,7 +246,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'OVERSAMPLE': oversample,\
                     'SEED': seed,\
                     'PREFIX': prefix,\
-                    'REALZ': realz}
+                    'REALZ': realz,\
+                    'FPATH': opath}
 
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
     randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])

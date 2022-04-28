@@ -11,11 +11,15 @@ from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   survey              import survey_specifics
+from   bitmask             import lumfn_mask
 
-def desi_gold():
+
+def desi_gold(args):
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
+
+    dryrun = args.dryrun
 
     root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
     tpix   = Table.read(root + 'tilepix.fits')
@@ -152,10 +156,8 @@ def desi_gold():
     
     desi_zs.pprint()
 
-    # TODO: FIND_FILE
-    root  = os.environ['CSCRATCH'] + '/norberg/'
-    fpath = root + '/GAMA4/gama_gold.fits'
-    opath = fpath.replace('gama_gold', 'desi_sv3_gold')
+    fpath = findfile(ftype='gold', dryrun=False, survey=survey)
+    opath = fpath.replace('desi_gold', 'desi_sv3_gold')
 
     print('Writing {}'.format(opath))
 
@@ -208,7 +210,7 @@ def desi_gold():
 
     print('Fraction desi matched to gold at 0.5 arcseconds: {:.6f}'.format(np.mean(desi_zs['GAMA_SEP'] < max_sep)))
 
-    opath = fpath.replace('gama_gold', 'desi_gama')
+    opath = fpath.replace('desi_gold', 'desi_gama')
     
     print('Writing {}'.format(opath))
     
@@ -239,7 +241,7 @@ def desi_gold():
 
     gold.meta['IMMUTABLE'] = 'TRUE'
 
-    opath = fpath.replace('gama_gold', 'gama_desi')
+    opath = fpath.replace('desi_gold', 'gama_desi')
     
     print('Writing {}'.format(opath))
     
@@ -251,19 +253,37 @@ def desi_gold():
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    opath                     = fpath.replace('gama', 'desi')
+    if dryrun:
+        hi_comp               = (desi_zs['ROS_DIST'].data > 0.9) & (desi_zs['ROS_DIST'].data < 1.1)
+    
+    else:
+        hi_comp               = (desi_zs['ROS_DIST'].data > 0.5) & (desi_zs['ROS_DIST'].data < 1.5)
 
-    print('Writing {}'.format(opath))
-
+    desi_zs['IN_D8LUMFN']    += hi_comp * lumfn_mask.DESI_HICOMP
     desi_zs.meta['AREA']      = 6.2904 * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
     
+    opath                     = findfile(ftype='gold', dryrun=False, survey=survey)
+
+    print('Writing {}'.format(opath))
+
     desi_zs.write(opath, format='fits', overwrite=True)
 
 
 if __name__ == '__main__':
-    # TODO Support logging.
-    desi_gold()
+    parser = argparse.ArgumentParser(description='Gen desi gold cat.')
+    parser.add_argument('--log',          help='Create a log file of stdout.', action='store_true')
+    parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
+    parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')
+    parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+
+    args   = parser.parse_args()
+
+    config = Configuration(args.config)
+    config.update_attributes('gold', args)
+    config.write()
+    
+    desi_gold(args)
 
     print('Done.')
 

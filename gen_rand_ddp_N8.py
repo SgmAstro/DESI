@@ -66,10 +66,11 @@ rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
 
 # Remove anything already in randoms header. 
-present = list(rand.meta.keys()) 
+present = list(dat.meta.keys()) 
 
 for pp in present:
-    del dat.meta[pp]
+    if pp in rand.meta.keys():
+        del dat.meta[pp]
 
 assert AREA not in dat.meta.keys()
 

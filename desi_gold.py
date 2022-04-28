@@ -2,7 +2,10 @@ import os
 import runtime
 import numpy as np
 import astropy.units as u
+import argparse
 
+from   config              import Configuration
+from   findfile            import findfile
 from   astropy.coordinates import SkyCoord
 from   astropy.table       import Table, vstack, hstack, unique, join
 from   ros_tools           import tile2rosette, calc_rosr
@@ -18,7 +21,8 @@ def desi_gold(args):
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
-
+    
+    survey = 'desi'
     dryrun = args.dryrun
 
     root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
@@ -152,11 +156,11 @@ def desi_gold(args):
     desi_zs['ROTCARTESIAN_Y'] = xyz[:,1]
     desi_zs['ROTCARTESIAN_Z'] = xyz[:,2]
 
-    desi_zs['LUMDIST'] = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
-    desi_zs['DISTMOD'] = distmod(desi_zs['ZDESI'].data)
+    desi_zs['LUMDIST']        = cosmo.luminosity_distance(desi_zs['ZDESI'].data)
+    desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    desi_zs['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
-    desi_zs['CONSERVATIVE'] = np.zeros_like(dat['FIELD'], dtype=int)
+    desi_zs['IN_D8LUMFN']     = np.zeros_like(desi_zs['FIELD'], dtype=int)
+    desi_zs['CONSERVATIVE']   = np.zeros_like(desi_zs['FIELD'], dtype=int)
 
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
     
@@ -168,7 +172,7 @@ def desi_gold(args):
     print('Writing {}'.format(opath))
 
     desi_zs.write(opath, format='fits', overwrite=True)
-
+    '''
     ##  ----  GAMA GOLD
     gold  = Table.read(fpath)
 
@@ -252,9 +256,11 @@ def desi_gold(args):
     print('Writing {}'.format(opath))
     
     gold.write(opath, format='fits', overwrite=True)
-
+    '''
     ## ---------------------------------------------------------
-    desi_zs                   = desi_zs[desi_zs['IN_GOLD']]
+    in_gold                   = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+
+    desi_zs                   = desi_zs[in_gold]
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
@@ -286,11 +292,11 @@ if __name__ == '__main__':
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
     args   = parser.parse_args()
-
+    '''
     config = Configuration(args.config)
     config.update_attributes('gold', args)
     config.write()
-    
+    '''
     desi_gold(args)
 
     print('Done.')

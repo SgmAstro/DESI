@@ -7,6 +7,7 @@ DESI Change Log
 
 * restict to fillfactor > 0.8 for volfracs.
   (PR `#165`_).
+* more careful header updates in gen_ddp_n8.
 
 .. _`#165`: https://github.com/desihub/redrock/pull/165
 

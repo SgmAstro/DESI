@@ -175,9 +175,6 @@ def desi_gold():
     del  gold['LUMDIST']
     del  gold['GMR']
 
-    # HACK TODO
-    # del  gold['ZSURV']
-
     gold.pprint()
 
     # DESI
@@ -250,6 +247,7 @@ def desi_gold():
 
     ## ---------------------------------------------------------
     desi_zs                   = desi_zs[desi_zs['IN_GOLD']]
+    desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 

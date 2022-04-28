@@ -8,9 +8,11 @@ from   ros_tools     import tile2rosette, calc_rosr
 def desi_randoms(ros):
     assert  'NERSC_HOST' in os.environ.keys()
     # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.  
-    rand = Table.read('/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random0/rancomb_brightwdup_Alltiles.fits')
-    # rand.pprint()
+    
+    rpaths = ['/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random{}/rancomb_brightwdup_Alltiles.fits'.format(idx) for idx in range(16)]
 
+    rand = vstack([Table.read(xx) for xx in rpaths])
+    
     # TODO:  Check TARGETID is a unique identifier, or bug.  If not, use RA. 
     rand             = unique(rand, keys='TARGETID')
     rand['ROS']      = tile2rosette(rand['TILEID'])

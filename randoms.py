@@ -87,11 +87,9 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             nrand   = len(randoms)
             
     elif survey == 'desi':
-        _nrealisations = 2
-        
         if 'NERSC_HOST' in os.environ.keys():
             # Support to run on nersc only.
-            randoms = desi_randoms(int(field[1:]), _nrealisations * oversample, dryrun=dryrun)
+            randoms = desi_randoms(int(field[1:]), oversample=oversample, dryrun=dryrun)
 
             nrand   = randoms.meta['NRAND']
             Area    = randoms.meta['AREA']

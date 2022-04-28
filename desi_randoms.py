@@ -6,13 +6,18 @@ from   astropy.table import Table, unique, vstack
 from   ros_tools     import tile2rosette, calc_rosr
 
 
-def desi_randoms(ros, nrealz=15, dryrun=False):
+def desi_randoms(ros, nrealz=16, oversample=8, dryrun=False):
     assert  'NERSC_HOST' in os.environ.keys()
 
     # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.      
-    rpaths = ['/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/random{}/rancomb_brightwdup_Alltiles.fits'.format(idx) for idx in range(1 + nrealz)]
-    rand   = vstack([Table.read(xx) for xx in rpaths])
-                      
+    root             = '/global/cfs/cdirs/desi/survey/catalogs/SV3/LSS/'
+
+    rpaths           = ['{}/random{}/rancomb_brightwdup_Alltiles.fits'.format(root, idx) for idx in range(nrealz)]
+    rpaths          *= oversample
+
+    rand             = vstack([Table.read(xx) for xx in rpaths])
+    rand.meta        = {}
+  
     # TODO:  Check TARGETID is a unique identifier, or bug.  If not, use RA. 
     rand             = unique(rand, keys='TARGETID')
     rand['ROS']      = tile2rosette(rand['TILEID'])
@@ -30,9 +35,9 @@ def desi_randoms(ros, nrealz=15, dryrun=False):
 
     # rand.pprint()
 
-    # TODO:  check.
     if dryrun:
         limits = [0.9, 1.1]
+
     else:
         limits = [0.5, 1.5]
 
@@ -48,6 +53,7 @@ def desi_randoms(ros, nrealz=15, dryrun=False):
     # Must come after dryrun.
     rand.meta['AREA'] = len(rand) / 2500. / nrealz
     rand.meta['NRAND'] = len(rand)
+    rand.meta['NREALZ'] = nrealz
     rand.meta['IMMUTABLE'] = 'TRUE'
         
     return  rand

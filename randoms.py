@@ -15,7 +15,7 @@ from   gama_limits       import gama_limits, gama_field
 from   bitmask           import lumfn_mask, consv_mask
 from   config            import Configuration
 
-def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=8, realz=0):
+def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryrun=False, prefix='', seed=314, oversample=4, realz=0):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -178,7 +178,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     randoms['RANDID'] = np.arange(len(randoms))
 
     randoms['FIELD']      = field
-    randoms['GAMA_FIELD'] = gama_field(ras, decs)
+    #randoms['GAMA_FIELD'] = gama_field(ras, decs)
 
     # assert  np.all(randoms['FIELD'].data == field)
 
@@ -240,7 +240,7 @@ if __name__ == '__main__':
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1.0, type=float)
-    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=4, type=int)
     parser.add_argument('--seed',         help='Random seed.', default=314, type=int)
     
     # Defaults to GAMA Gold limits. 

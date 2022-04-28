@@ -12,7 +12,7 @@ from   collections     import OrderedDict
 from   astropy.table   import Table, vstack
 from   delta8_limits   import d8_limits
 from   gama_fields     import gama_fields
-from   desi_fields     import desi_fields
+from   desi_fields     import desi_fields, all_fields
 from   astropy.io.fits import getval, getheader
 from   utils           import run_command
 
@@ -97,8 +97,9 @@ def fetch_fields(survey):
         fields = gama_fields   
 
     elif survey == 'desi':
-        fields = desi_fields
-
+        #fields = desi_fields
+        fields = all_fields
+        
     else:
         raise NotImplementedError
 

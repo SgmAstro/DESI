@@ -168,10 +168,12 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         # TODO: Hard coded above, don't hard code twice. 
         nrand = ndryrun
 
-    if not os.path.isdir(os.environ['RANDOMS_DIR']):
-        print('Creating {}'.format(os.environ['RANDOMS_DIR']))
+    rand_dir = os.path.dirname(opath)
+        
+    if not os.path.isdir(rand_dir):
+        print('Creating {}'.format(rand_dir))
 
-        os.makedirs(os.environ['RANDOMS_DIR'])
+        os.makedirs(rand_dir)
 
     print('Volume [1e6]: {:.2f}; oversample: {:.2f};  density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, oversample, density, nrand / 1.e6))
 

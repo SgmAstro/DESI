@@ -45,6 +45,7 @@ def desi_randoms(ros, nrealz=15, dryrun=False):
     if dryrun:
         rand = rand[rand['IN_D8LUMFN'] == 0]
 
+    # Must come after dryrun.
     rand.meta['AREA'] = len(rand) / 2500. / nrealz
     rand.meta['NRAND'] = len(rand)
     rand.meta['IMMUTABLE'] = 'TRUE'

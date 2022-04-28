@@ -98,7 +98,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             randoms = desi_randoms(int(field[1:]), _nrealisations * oversample)
 
             nrand   = randoms.meta['NRAND']
-            nrand   = randoms.meta['AREA']
+            Area    = randoms.meta['AREA']
 
         elif 'ddp1' in prefix:
             # DEBUG/PATCH

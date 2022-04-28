@@ -25,7 +25,7 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
-def reset(supported=True, printonly=False):
+def safe_reset(supported=True, printonly=False, debug=False):
     if supported:
         fpaths  = supported_files(dryrun=True)
         fpaths += supported_files(dryrun=False) 
@@ -36,10 +36,13 @@ def reset(supported=True, printonly=False):
     
     for fpath in fpaths:
         try:
-            immutable = fetch_header(fpath=fp, name='IMMUTABLE')
+            immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
-        except:
+        except Exception as E:
             immutable = 'UNDEFINED'
+
+            if debug:
+                print(E)
 
         print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
 

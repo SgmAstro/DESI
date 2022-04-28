@@ -7,7 +7,7 @@ import  numpy      as     np
 
 from    pathlib    import Path
 from    subprocess import check_output
-from    findfile   import fetch_fields
+from    findfile   import fetch_fields, safe_reset
 from    submit     import customise_script
 from    config     import Configuration
 from    utils      import run_command
@@ -54,6 +54,8 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
             os.system(cmd)
 
         if survey == 'desi':
+            safe_reset(supported=True, printonly=True)
+
             raise  NotImplementedError('Full reset unsupported for desi')
         
     if reset:
@@ -202,7 +204,8 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
 
 if __name__ == '__main__':
-    # Sbatch: python3 pipeline.py --survey gama --use_sbatch --log --queue cosma --reset                                                                                                               
+    # --log
+    # Sbatch: python3 pipeline.py --survey gama --use_sbatch --queue cosma --reset                                                                                                               
     # Head:   python3 pipeline.py --survey desi                                                                                                                                                            
     # 
     # Note:   use sinfo to see available nodes to each queue.

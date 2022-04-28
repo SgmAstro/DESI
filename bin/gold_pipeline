@@ -83,7 +83,7 @@ python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
 
-python3 -u ddp_limits.py $NOOVERWRITE --log
+python3 -u ddp_limits.py $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
 

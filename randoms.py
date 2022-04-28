@@ -100,6 +100,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
             nrand   = randoms.meta['NRAND']
             Area    = randoms.meta['AREA']
 
+            ndryrun = nrand
+            
         elif 'ddp1' in prefix:
             # DEBUG/PATCH
             # Assume you are on cosma, rewriting ddp1-like redshift limits to ddp1 randoms based on the assumed present randoms. 

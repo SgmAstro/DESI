@@ -260,7 +260,7 @@ def desi_gold(args):
     '''
 
     in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
-    in_gold                  &=  np.isin(desi_zs['ROS'].data, desi_fields)
+    in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
     
     desi_zs                   = desi_zs[in_gold]
     desi_zs['ZSURV']          = desi_zs['ZDESI']

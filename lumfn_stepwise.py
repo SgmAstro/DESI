@@ -188,6 +188,8 @@ if __name__ == '__main__':
     result                 = Table(np.c_[phi_Ms, phis], names=['Ms', 'PHI_STEP'])
 
     runtime                = calc_runtime(start, 'Writing {}'.format(opath))    
+
+    result.meta['IMMUTABLE'] = 'FALSE'
     result.write(opath, format='fits', overwrite=True)
 
     ddp                    = Table.read(fpath) 

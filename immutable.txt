@@ -1,5 +1,0 @@
-desi_gama.fits    
-gama_desi.fits
-desi_sv3_gold.fits 
-randoms_ddp1_R10_0.fits  
-randoms_R10_0.fits  

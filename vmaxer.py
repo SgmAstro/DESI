@@ -22,8 +22,6 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     '''
 
     rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
-
-    rand['JK'] = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'])
     
     # TODO: replace with general bitmasks.
     rand = volfracs(rand, bitmasks=bitmasks)    

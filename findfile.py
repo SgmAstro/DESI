@@ -35,16 +35,22 @@ def safe_reset(supported=True, printonly=False, debug=False):
         fpaths += unsupported_files(dryrun=False)
     
     for fpath in fpaths:
+        '''
+        if ~os.path.exists(fpath):
+            continue
+        '''
         try:
             immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
         except KeyError as E:
             immutable = 'NOT DEFINED'
 
-        print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
+        to_keep = (immutable == 'TRUE')
 
-        if (immutable == 'TRUE'):
-            pass
+        print('RESET: {} with IMMUTABILITY {}  KEEP {}'.format(fpath.ljust(80), immutable.ljust(20), to_keep))
+
+        if to_keep:
+            continue
 
         if not printonly:
             cmd = f'rm -rf {fpath}'
@@ -212,6 +218,14 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     # Special cases:                                                                                                                                                                                      
     if ftype == 'config':
         return gold_dir + '/configs/config.yaml'
+
+    if ftype == 'jackknife':
+        if dryrun:
+            dryrun = '_dryrun'
+        else:
+            dryrun = ''
+
+        return gold_dir + '/randoms/jackknife_{}_{}.json'.format(prefix.replace('randoms', ''), dryrun)
 
     if survey == None:
         survey = 'gama'
@@ -403,6 +417,6 @@ if __name__ == '__main__':
     
     # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    # safe_reset(printonly=True)
+    safe_reset(printonly=True)
     
-    fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')
+    # fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')

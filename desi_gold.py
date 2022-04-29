@@ -8,13 +8,14 @@ from   config              import Configuration
 from   findfile            import findfile
 from   astropy.coordinates import SkyCoord
 from   astropy.table       import Table, vstack, hstack, unique, join
-from   ros_tools           import tile2rosette, calc_rosr
+from   ros_tools           import tile2rosette, calc_rosr, ros_limits
 from   gama_limits         import gama_field
 from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
+from   desi_fields         import desi_fields
 
 
 def desi_gold(args):
@@ -257,19 +258,17 @@ def desi_gold(args):
     
     gold.write(opath, format='fits', overwrite=True)
     '''
-    ## ---------------------------------------------------------
-    in_gold                   = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
+    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
+    
     desi_zs                   = desi_zs[in_gold]
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    if dryrun:
-        limits                = [0.9, 1.1]    
-    else:
-        limits                = [0.5, 1.5]
-        
+    limits                    = ros_limits(dryrun)
+
     hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 

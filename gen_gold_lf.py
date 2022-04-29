@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import runtime
 import argparse
 import pylab as pl
@@ -15,7 +16,7 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
-from   jackknife_limits import solve_jackknife, set_jackknife
+from   jackknife_limits import solve_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -49,8 +50,6 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
     
-    # TODO: Why do we need this?                                                                                                   
-    vmax = vmax[vmax['ZMAX'] >= 0.0]
     # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
@@ -64,9 +63,6 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=True, writeto=opath)
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
-    #print('Writing {}.'.format(opath))
-    #result.write(opath, format='fits', overwrite=True)
-
     return  0
 
 
@@ -122,6 +118,24 @@ if __name__ == '__main__':
         print(f'Writing: {opath}')
 
         process_cat(fpath, opath, survey=survey, fillfactor=False)
+
+        vmax            = Table.read(opath)
+        rand_vmax       = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+
+        njack, jk_volfrac, limits, jk = solve_jackknife(rand_vmax)
+
+        rand_vmax['JK']               = jks
+        rand_vmax.meta['NJACK']       = njack
+        rand_vmax.meta['JK_VOLFRAC']  = jk_volfrac
+
+        vmax['JK']                    = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+        vmax.meta['NJACK']            = njack
+        vmax.meta['JK_VOLFRAC']       = jk_volfrac
+
+        jpath                         = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+
+        with open(jpath, 'w') as ofile:
+            json.dump(dictionary, ofile)
 
         print('Done.')
 

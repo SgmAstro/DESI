@@ -172,11 +172,13 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
         randoms['IS_BOUNDARY'][randoms['ROS_DIST']   < np.percentile(randoms['ROS_DIST'],   boundary_percent)]        = 1
     '''
 
-    randoms['ZSURV']        = randoms['Z']
-    randoms['IN_D8LUMFN']   = np.zeros_like(randoms['FIELD'], dtype=int)
-    randoms['CONSERVATIVE'] = np.zeros_like(randoms['FIELD'], dtype=int)
+    randoms['ZSURV']          = randoms['Z']
+    randoms['CONSERVATIVE']   = np.zeros_like(randoms['FIELD'], dtype=int)
 
-    randoms.meta = {'ZMIN':   zmin,\
+    if 'IN_D8LUMFN' not in randoms.dtype.names:
+        randoms['IN_D8LUMFN'] = np.zeros_like(randoms['FIELD'], dtype=int)
+
+    updates      = {'ZMIN':   zmin,\
                     'ZMAX':   zmax,\
                     'DZ':       dz,\
                     'NRAND': nrand,\
@@ -191,6 +193,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
                     'REALZ': realz,\
                     'FPATH': opath}
 
+    randoms.meta.update(updates)
+
     randoms.meta['NRAND8']      = randoms.meta['VOL8'] * randoms.meta['RAND_DENS']
     randoms.meta['NRAND8_PERR'] = np.sqrt(randoms.meta['NRAND8'])
 
@@ -201,7 +205,6 @@ def randoms(field='G9', survey='gama', density=1., zmin=0.039, zmax=0.263, dryru
     randoms.write(opath, format='fits', overwrite=True)
 
     runtime = calc_runtime(start, 'Finished'.format(opath))
-
 
 
 if __name__ == '__main__':
@@ -233,7 +236,7 @@ if __name__ == '__main__':
     realz   = args.realz
     seed    = args.seed
 
-    density = args.density
+    density    = args.density
     oversample = args.oversample
 
     assert oversample in np.arange(1, 21, 1)

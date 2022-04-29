@@ -43,12 +43,11 @@ def desi_randoms(ros, nrealz=16, oversample=8, dryrun=False):
 
     hi_comp             = (rand['ROS_DIST'].data > limits[0]) & (rand['ROS_DIST'].data < limits[1])
     rand['IN_D8LUMFN']  = ~hi_comp * lumfn_mask.DESI_HICOMP
+
+    rand                = rand[rand['IN_D8LUMFN'].data == 0]
     
     rand.rename_column('RA',  'RANDOM_RA')
     rand.rename_column('DEC', 'RANDOM_DEC')
-
-    if dryrun:
-        rand = rand[rand['IN_D8LUMFN'] == 0]
 
     # Must come after dryrun.
     rand.meta['AREA'] = len(rand) / 2500. / nrealz

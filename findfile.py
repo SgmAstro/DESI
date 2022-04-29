@@ -38,11 +38,8 @@ def safe_reset(supported=True, printonly=False, debug=False):
         try:
             immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
-        except Exception as E:
-            immutable = 'UNDEFINED'
-
-            if debug:
-                print(E)
+        except KeyError as E:
+            immutable = 'NOT DEFINED'
 
         print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
 
@@ -402,8 +399,10 @@ def file_check(dryrun=None):
     return  ~np.all([os.path.isfile(fp) for fp in fpaths])
 
 if __name__ == '__main__':
-    failure = file_check()
+    # failure = file_check()
     
-    print('\n\nSuccess: {}\n\n'.format(~failure))
+    # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    reset(printonly=True)
+    # safe_reset(printonly=True)
+    
+    fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')

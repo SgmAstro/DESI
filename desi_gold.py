@@ -275,12 +275,11 @@ def desi_gold(args):
 
     desi_zs['IN_D8LUMFN']    += ~hi_comp * lumfn_mask.DESI_HICOMP
 
+    desi_zs                   = desi_zs[desi_zs['IN_D8LUMFN'].data == 0]
+
     desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
 
-    if dryrun:
-        desi_zs               = desi_zs[desi_zs['IN_D8LUMFN'] == 0]
-    
     opath                     = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 
     print('Writing {}'.format(opath))

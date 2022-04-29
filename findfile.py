@@ -35,6 +35,9 @@ def safe_reset(supported=True, printonly=False, debug=False):
         fpaths += unsupported_files(dryrun=False)
     
     for fpath in fpaths:
+        if ~os.path.exists(fpath):
+            continue
+
         try:
             immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
@@ -44,7 +47,7 @@ def safe_reset(supported=True, printonly=False, debug=False):
         print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
 
         if (immutable == 'TRUE'):
-            pass
+            continue
 
         if not printonly:
             cmd = f'rm -rf {fpath}'

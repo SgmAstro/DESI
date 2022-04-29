@@ -102,6 +102,8 @@ def gama_gold(argset):
     
     dat['GMR']    = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
+
+    dat['JK']     = _set_jackknife(dat['RA'], dat['DEC'])
     
     '''
     if argset.in_bgsbright:

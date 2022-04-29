@@ -61,12 +61,11 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
 
     ## TODO: remove bitmasks dependence. 
-    result = lumfn(vmax, bitmask='IN_D8LUMFN')
+    result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=True, writeto=opath)
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
-    print('Writing {}.'.format(opath))
-    
-    result.write(opath, format='fits', overwrite=True)
+    #print('Writing {}.'.format(opath))
+    #result.write(opath, format='fits', overwrite=True)
 
     return  0
 

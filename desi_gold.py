@@ -8,32 +8,37 @@ from   config              import Configuration
 from   findfile            import findfile
 from   astropy.coordinates import SkyCoord
 from   astropy.table       import Table, vstack, hstack, unique, join
-from   ros_tools           import tile2rosette, calc_rosr
+from   ros_tools           import tile2rosette, calc_rosr, ros_limits
 from   gama_limits         import gama_field
 from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
+from   desi_fields         import desi_fields
 
 
-def desi_gold(args):
+def desi_gold(args, survey='sv3', release='fuji'):
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
     
-    survey = 'desi'
-    dryrun = args.dryrun
+    survey   = 'desi'
+    dryrun   = args.dryrun
 
-    root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
-    fpath  = root + 'tilepix.fits'
+    releases = {'sv3': 'fuji', 'main': 'guadalupe'}
+    release  = releases[survey] 
+    
+    root     = os.environ['DESI_ROOT'] + f'/spectro/redux/{release}/healpix/'
+    fpath    = root + 'tilepix.fits'
 
     print(f'Fetching {fpath}')
 
-    tpix   = Table.read(fpath)
+    tpix     = Table.read(fpath)
 
-    tiles  = np.arange(1000)
-    ros    = np.array([tile2rosette(x) for x in tiles])
+    # Max. Bright SV3 tileid is 595.
+    tiles    = np.arange(1000)
+    ros      = np.array([tile2rosette(x) for x in tiles])
     
     # https://desi.lbl.gov/trac/wiki/SurveyOps/OnePercent
     # G12: [1,2]; G15: [8,9,10, 17]
@@ -48,9 +53,9 @@ def desi_gold(args):
     tpix   = tpix[np.isin(tpix['TILEID'].data, tiles)]
     hps    = np.unique(tpix['HEALPIX'].data)
 
-    root  += '/sv3/bright/'
+    root  += '/{}/bright/'.format(survey)
 
-    fpaths = [root + '{}/{}/redrock-sv3-bright-{}.fits'.format(str(x)[:3], x, x) for x in hps]
+    fpaths = [root + '{}/{}/redrock-{}-bright-{}.fits'.format(str(x)[:3], x, survey, x) for x in hps]
     fpaths = [x for x in fpaths if os.path.exists(x)]
 
     print('Fetching {}'.format(fpaths[0]))
@@ -257,19 +262,17 @@ def desi_gold(args):
     
     gold.write(opath, format='fits', overwrite=True)
     '''
-    ## ---------------------------------------------------------
-    in_gold                   = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
+    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
+    
     desi_zs                   = desi_zs[in_gold]
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    if dryrun:
-        limits                = [0.9, 1.1]    
-    else:
-        limits                = [0.5, 1.5]
-        
+    limits                    = ros_limits(dryrun)
+
     hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 

@@ -54,3 +54,11 @@ def calc_rosr(rosn, ra, dec):
     ad       = np.arccos(cd)*180./np.pi
 
     return  ad
+
+def ros_limits(dryrun):
+    if dryrun:
+        limits                = [0.9, 1.10]
+    else:
+        limits                = [0.2, 1.75]
+        
+    return limits

@@ -6,7 +6,7 @@ from   astropy.table import Table, unique, vstack
 from   ros_tools     import tile2rosette, calc_rosr
 
 
-def desi_randoms(ros, nrealz=16, oversample=8, dryrun=False):
+def desi_randoms(ros, nrealz=4, oversample=8, dryrun=False):
     assert  'NERSC_HOST' in os.environ.keys()
 
     # Randoms uniform on the sphere with density 2500 per sq. deg., available to an assigned fiber.      

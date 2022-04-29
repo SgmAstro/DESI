@@ -73,12 +73,13 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     return  result
 
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jackknife=None, opath=None):
-    if jackknife is not None:
-        if type(jk) != int:
-            for jk in jackknife:
-                lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=jk, opath=opath)
-        else:
-            pass
+    if type(jackknife) == np.ndarray:
+        for jk in jackknife:
+            lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=jk, opath=opath)
+    
+    else:
+        if jackknife != None:
+            jackknife = int(jackknife)
                 
     dat   = Table(dat, copy=True)
     dat   = dat[dat[bitmask] == 0]
@@ -94,7 +95,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
         dvmax     *= jk_volfrac
         vol       *= jk_volfrac
 
-        dat        = dat[dat['JK'] != jk]
+        dat        = dat[dat['JK'] != jackknife]
 
     
     idxs   = np.digitize(dat[Mcol], bins=Ms)

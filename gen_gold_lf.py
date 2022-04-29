@@ -135,7 +135,9 @@ if __name__ == '__main__':
         jpath                         = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
 
         with open(jpath, 'w') as ofile:
-            json.dump(dictionary, ofile)
+            json.dump(limits, ofile)
+
+        print(f'Writing: {jpath}')
 
         lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 

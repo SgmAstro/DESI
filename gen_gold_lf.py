@@ -49,7 +49,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, conservative=conservative, extra_cols=extra_cols)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
-    
+
+    vmax.meta['EXTNAME'] = 'VMAX'
     # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
@@ -60,7 +61,10 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     opath  = opath.replace('vmax', 'lumfn')
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
 
+    result.meta['EXTNAME'] = 'LUMFN'
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
+
+    result.write(opath, format='fits', overwrite=True)
     
     return  0
 
@@ -141,6 +145,8 @@ if __name__ == '__main__':
         lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
         lumfn(vmax, jackknife=np.arange(njack), opath=lpath)
+
+        print(f'Written {lpath}')
 
         print('Done.')
 

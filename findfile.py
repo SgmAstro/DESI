@@ -403,6 +403,6 @@ if __name__ == '__main__':
     
     # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    # safe_reset(printonly=True)
+    safe_reset(printonly=True)
     
-    fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')
+    # fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')

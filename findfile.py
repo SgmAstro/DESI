@@ -25,7 +25,7 @@ supported = ['gold',\
              'ddp',\
              'ddp_n8']
 
-def reset(supported=True, printonly=False):
+def safe_reset(supported=True, printonly=False, debug=False):
     if supported:
         fpaths  = supported_files(dryrun=True)
         fpaths += supported_files(dryrun=False) 
@@ -36,10 +36,10 @@ def reset(supported=True, printonly=False):
     
     for fpath in fpaths:
         try:
-            immutable = fetch_header(fpath=fp, name='IMMUTABLE')
+            immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
-        except:
-            immutable = 'UNDEFINED'
+        except KeyError as E:
+            immutable = 'NOT DEFINED'
 
         print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
 
@@ -399,8 +399,10 @@ def file_check(dryrun=None):
     return  ~np.all([os.path.isfile(fp) for fp in fpaths])
 
 if __name__ == '__main__':
-    failure = file_check()
+    # failure = file_check()
     
-    print('\n\nSuccess: {}\n\n'.format(~failure))
+    # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    reset(printonly=True)
+    # safe_reset(printonly=True)
+    
+    fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')

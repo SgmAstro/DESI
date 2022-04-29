@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from   astropy.table     import Table
 from   cosmo             import volcom
 from   scipy.interpolate import interp1d
+from   findfile          import findfile
 
 
 tmr_DDP1       = [-21.8, -20.1]
@@ -18,12 +19,16 @@ root           = os.environ['GOLD_DIR'] + '/ddrp_limits/'
 def initialise_ddplimits(survey, Mcol='M0P0_QALL'):
     assert  Mcol == 'M0P0_QALL', 'Hard coded limit numbers and curves'
 
-    bpath  = root + f'/{survey}_ddrp_limit_3.fits' #  7 (12.0 QCOLOR 0.131) 
-    fpath  = root + f'/{survey}_ddrp_limit_17.fits' # 27 (19.8 QCOLOR 1.067)
+    bpath  = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count= 3) 
+    fpath  = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=17) 
+
+    print(f'Reading {bpath}')
+    print(f'Reading {fpath}')
 
     _bright_curve  = Table.read(bpath)
     _faint_curve   = Table.read(fpath)
 
+    # TODO/MJW/ why did this fail to catch ddp_limits not provided with SURVEYARG??
     assert  _bright_curve.meta['SURVEY'] == survey, f'Survey mismatch for found ddp limit files: {bfpath}'
     assert  _faint_curve.meta['SURVEY']  == survey, f'Survey mismatch for found ddp limit files: {fpath}'
 
@@ -78,9 +83,7 @@ def get_ddps(Area, M_0P0s, zs, survey):
     return  result, resultz, zlims, faint_curve_r(zs)
 
 
-if __name__ == '__main__':
-    survey = 'gama'
-    
-    initialise_ddplimits(survey, Mcol='M0P0_QALL')
+if __name__ == '__main__':    
+    initialise_ddplimits('desi', Mcol='M0P0_QALL')
 
     print('Done.')

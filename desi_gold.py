@@ -8,7 +8,7 @@ from   config              import Configuration
 from   findfile            import findfile
 from   astropy.coordinates import SkyCoord
 from   astropy.table       import Table, vstack, hstack, unique, join
-from   ros_tools           import tile2rosette, calc_rosr
+from   ros_tools           import tile2rosette, calc_rosr, ros_limits
 from   gama_limits         import gama_field
 from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
@@ -267,11 +267,8 @@ def desi_gold(args):
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
-    if dryrun:
-        limits                = [0.9, 1.10]    
-    else:
-        limits                = [0.2, 1.75]
-        
+    limits                    = ros_limits(dryrun)
+
     hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 

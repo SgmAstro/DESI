@@ -145,7 +145,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['ABSMAG_DEF'] = Mcol
 
     
-     if writeto != None:
+    if writeto != None:
         
         opath = writeto
 

@@ -266,9 +266,9 @@ def desi_gold(args):
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
 
     if dryrun:
-        limits                = [0.9, 1.1]    
+        limits                = [0.9, 1.10]    
     else:
-        limits                = [0.5, 1.5]
+        limits                = [0.2, 1.75]
         
     hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)

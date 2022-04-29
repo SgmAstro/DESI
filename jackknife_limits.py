@@ -85,7 +85,9 @@ def set_jackknife(dat, rand, ndiv=4):
     rand['JK']  = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
 
     return  dat, rand
-
+    
+    
+    
 
 if __name__ == '__main__':
     import pylab as pl

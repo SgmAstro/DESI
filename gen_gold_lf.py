@@ -15,7 +15,7 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
-
+from   jackknife_limits import solve_jackknife, set_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -190,7 +190,22 @@ if __name__ == '__main__':
 
             # MJW:  Load three-field randoms/meta directly. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+            
+            njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
 
+            rand_vmax['JK'] = jks
+            rand_vmax.meta['NJACK'] = njack
+            rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
+            
+            jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+            
+            # to do: write jk_limits to file
+            
+            with open(jpath, 'w') as ofile:
+                json.dump(dictionary, ofile)
+            
+            
+            
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 

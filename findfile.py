@@ -35,18 +35,21 @@ def safe_reset(supported=True, printonly=False, debug=False):
         fpaths += unsupported_files(dryrun=False)
     
     for fpath in fpaths:
+        '''
         if ~os.path.exists(fpath):
             continue
-
+        '''
         try:
             immutable = fetch_header(fpath=fpath, name='IMMUTABLE')
                         
         except KeyError as E:
             immutable = 'NOT DEFINED'
 
-        print('RESET: {} with IMMUTABILITY {}'.format(fpath.ljust(80), immutable))
+        to_keep = (immutable == 'TRUE')
 
-        if (immutable == 'TRUE'):
+        print('RESET: {} with IMMUTABILITY {}  KEEP {}'.format(fpath.ljust(80), immutable.ljust(20), to_keep))
+
+        if to_keep:
             continue
 
         if not printonly:

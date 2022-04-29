@@ -219,6 +219,14 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     if ftype == 'config':
         return gold_dir + '/configs/config.yaml'
 
+    if ftype == 'jackknife':
+        if dryrun:
+            dryrun = '_dryrun'
+        else:
+            dryrun = ''
+
+        return gold_dir + '/randoms/jackknife_{}_{}.json'.format(prefix.replace('randoms', ''), dryrun)
+
     if survey == None:
         survey = 'gama'
 

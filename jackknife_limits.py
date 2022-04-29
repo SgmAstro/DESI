@@ -3,22 +3,12 @@ import matplotlib.pyplot as plt
 
 from   collections       import OrderedDict
 
-jk_limits = {'JK0': {'ra_min': 129.,  'ra_max': 133.,  'dec_min': -2., 'dec_max': 3.},
-             'JK1': {'ra_min': 133.,  'ra_max': 137.,  'dec_min': -2., 'dec_max': 3.},
-             'JK2': {'ra_min': 137.,  'ra_max': 141.,  'dec_min': -2., 'dec_max': 3.},
-             'JK3': {'ra_min': 174.,  'ra_max': 178.,  'dec_min': -3., 'dec_max': 2.},
-             'JK4': {'ra_min': 178.,  'ra_max': 182.,  'dec_min': -3., 'dec_max': 2.},
-             'JK5': {'ra_min': 182.,  'ra_max': 186.,  'dec_min': -3., 'dec_max': 2.},
-             'JK6': {'ra_min': 211.5, 'ra_max': 215.5, 'dec_min': -2., 'dec_max': 3.},
-             'JK7': {'ra_min': 215.5, 'ra_max': 219.5, 'dec_min': -2., 'dec_max': 3.},
-             'JK8': {'ra_min': 219.5, 'ra_max': 223.5, 'dec_min': -2., 'dec_max': 3.}
-            }
 
-def _set_jackknife(ras, decs, limits=None, debug=True):
-    result = np.array(['None'] * len(ras), dtype=str)
+def set_jackknife(ras, decs, limits=None, debug=True):
+    result       = np.array(['None'] * len(ras), dtype=str)
 
     if limits == None:
-        limits = jk_limits
+        limits   = jk_limits
 
     for strip in limits.keys():
         ra_min   = limits[strip]['ra_min']
@@ -51,10 +41,13 @@ def plot_jackknife(dat):
 
     return fig, ax
 
-def set_jackknife(dat, rand, ndiv=4):
+def solve_jackknife(rand, ndiv=4):
     '''
     Splits up dat and rand into jackknife areas based on (ra, dec) in (ndiv x ndiv) chunks.
     '''           
+    njack         = ndiv * ndiv
+    jk_volfrac    = (njack - 1.) / njack 
+
     dpercentile   = 100. / ndiv
     percentiles   = np.arange(dpercentile, 100. + dpercentile, dpercentile)
     
@@ -81,10 +74,9 @@ def set_jackknife(dat, rand, ndiv=4):
 
             jk     += 1
 
-    dat['JK']   = _set_jackknife(dat['RA'],          dat['DEC'],        limits=limits)
-    rand['JK']  = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
+    jks         = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
 
-    return  dat, rand
+    return  njack, jk_volfrac, limits, jks
 
 
 if __name__ == '__main__':

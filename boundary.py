@@ -4,19 +4,19 @@ import time
 import numpy as np
 import argparse
 import itertools
-import astropy.io.fits   as     fits 
+import astropy.io.fits         as     fits 
 
-from   cosmo             import cosmo, volcom
-from   scipy.interpolate import interp1d
-from   astropy.table     import Table, vstack
-from   cartesian         import cartesian, rotate
-from   runtime           import calc_runtime
-from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
-from   gama_limits       import gama_limits, gama_field
+from   cosmo                   import cosmo, volcom
+from   scipy.interpolate       import interp1d
+from   astropy.table           import Table, vstack
+from   cartesian               import cartesian, rotate
+from   runtime                 import calc_runtime
+from   desi_randoms            import desi_randoms
+from   findfile                import fetch_fields, findfile, overwrite_check, call_signature
+from   gama_limits             import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
-from   ros_tools         import roscen
-from   config            import Configuration
+from   ros_tools               import roscen, ros_limits
+from   config                  import Configuration
 
 np.random.seed(314)
 
@@ -137,8 +137,8 @@ if survey == 'gama':
 
 elif survey == 'desi':
     # No requirement on NERSC HOST for boundary.
-    inner = 0.5 # deg.                                                                                                                                                                            
-    outer = 1.5 # deg.                                                                                                                                                                                
+    inner = 0.20  # deg.                                                                                                                                                                            
+    outer = 1.75  # deg.                                                                                                                                                                                
 
     # TODO/HACK?
     area  = np.pi * (outer**2. - inner**2.)

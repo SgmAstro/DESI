@@ -36,10 +36,10 @@ def desi_randoms(ros, nrealz=4, oversample=8, dryrun=False):
     # rand.pprint()
 
     if dryrun:
-        limits = [0.9, 1.1]
+        limits = [0.9, 1.10]
 
     else:
-        limits = [0.5, 1.5]
+        limits = [0.2, 1.75]
 
     hi_comp             = (rand['ROS_DIST'].data > limits[0]) & (rand['ROS_DIST'].data < limits[1])
     rand['IN_D8LUMFN']  = ~hi_comp * lumfn_mask.DESI_HICOMP

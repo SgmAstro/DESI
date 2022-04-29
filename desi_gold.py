@@ -36,6 +36,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
 
     tpix     = Table.read(fpath)
 
+    # Max. Bright SV3 tileid is 595.
     tiles    = np.arange(1000)
     ros      = np.array([tile2rosette(x) for x in tiles])
     
@@ -52,9 +53,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
     tpix   = tpix[np.isin(tpix['TILEID'].data, tiles)]
     hps    = np.unique(tpix['HEALPIX'].data)
 
-    root  += '/sv3/bright/'
+    root  += '/{}/bright/'.format(survey)
 
-    fpaths = [root + '{}/{}/redrock-sv3-bright-{}.fits'.format(str(x)[:3], x, x) for x in hps]
+    fpaths = [root + '{}/{}/redrock-{}-bright-{}.fits'.format(str(x)[:3], x, survey, x) for x in hps]
     fpaths = [x for x in fpaths if os.path.exists(x)]
 
     print('Fetching {}'.format(fpaths[0]))

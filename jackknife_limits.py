@@ -78,7 +78,6 @@ def solve_jackknife(rand, ndiv=4):
 
     return  njack, jk_volfrac, limits, jks
 
-
 if __name__ == '__main__':
     import pylab as pl
 

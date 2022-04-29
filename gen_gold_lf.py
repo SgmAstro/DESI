@@ -64,7 +64,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
-    print('Writing {}.'.format(opath))
+    #print('Writing {}.'.format(opath))
     
     result.write(opath, format='fits', overwrite=True)
 

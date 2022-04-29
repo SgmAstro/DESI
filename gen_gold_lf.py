@@ -227,9 +227,7 @@ if __name__ == '__main__':
             # to do: write jk_limits to file
             
             with open(jpath, 'w') as ofile:
-                json.dump(dictionary, ofile)
-            
-            
+                json.dump(limits, ofile)
             
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

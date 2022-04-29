@@ -15,6 +15,7 @@ from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
+from   desi_fields         import desi_fields
 
 
 def desi_gold(args):
@@ -257,9 +258,10 @@ def desi_gold(args):
     
     gold.write(opath, format='fits', overwrite=True)
     '''
-    ## ---------------------------------------------------------
-    in_gold                   = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
+    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    in_gold                  &=  np.isin(desi_zs['ROS'].data, desi_fields)
+    
     desi_zs                   = desi_zs[in_gold]
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']

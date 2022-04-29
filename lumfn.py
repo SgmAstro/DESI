@@ -92,11 +92,10 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     if jackknife is not None:
         jk_volfrac = dat.meta['JK_VOLFRAC']
 
-        dvmax     *= jk_volfrac
         vol       *= jk_volfrac
 
-        dat        = dat[dat['JK'] != jackknife]
-
+        dat        = dat[dat['JK'] != f'JK{jackknife}']
+        dvmax      = jk_volfrac * dat['VMAX'].data
     
     idxs   = np.digitize(dat[Mcol], bins=Ms)
 
@@ -149,8 +148,9 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     if jackknife is not None:
         _lumfn = fitsio.read(opath)
 
-        result.meta['RENORM'] = 'FALSE'
-        result                = fits.convenience.table_to_hdu(result)
+        result.meta['EXTNAME'] = 'LUMFN_JK{}'.format(jackknife)
+        result.meta['RENORM']  = 'FALSE'
+        result                 = fits.convenience.table_to_hdu(result)
 
         with fits.open(opath, mode='update') as hdulist:
             hdulist.append(result)

@@ -70,7 +70,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jk=False, writeto=None):
     dat   = Table(dat, copy=True)
 
     dat   = dat[dat[bitmask] == 0]
@@ -82,6 +82,20 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     # assert  dat[Mcol].max() <= Ms.max()
 
     # default:  bins[i-1] <= x < bins[i]
+    
+    if jk:
+        n_jk = len(np.unique(dat['JK']))
+
+        dat = dat[dat['JK'] != jk]
+        dvmax = dat['VMAX'].data
+
+        vol = vol * (n_jk -1) / n_jk
+
+        # TESTING
+        print(n_jk)
+        print(vol)
+    
+    
     idxs   = np.digitize(dat[Mcol], bins=Ms)
 
     result = []
@@ -130,4 +144,35 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['VOLUME']     = vol
     result.meta['ABSMAG_DEF'] = Mcol
 
+    
+     if writeto != None:
+        
+        opath = writeto
+
+        if jk:
+            jk_array = np.unique(dat['JK'])    
+            
+            for idx in jk_array:
+                ##  
+                keys           = sorted(result.meta.keys())
+                header         = {}
+
+                for key in keys:
+                    header[key] = str(result.meta[key])
+
+                primary_hdu    = fits.PrimaryHDU()
+                hdr            = fits.Header(header)
+                result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
+                hdul           = fits.HDUList([primary_hdu, result_hdu])
+
+                hdul.writeto(opath, overwrite=True, checksum=True)
+
+            print('Writing {}.'.format(opath))
+    
+        else:
+            result.writeto(opath, overwrite=True, checksum=True)
+            
+    else:
+        print('WARNING: writeto == None')
+            
     return  result 

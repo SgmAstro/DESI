@@ -16,7 +16,7 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
-from   jackknife_limits import solve_jackknife
+from   jackknife_limits import solve_jackknife, set_jackknife
 
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
@@ -59,9 +59,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
+    result = lumfn(vmax, bitmask='IN_D8LUMFN')
 
-    ## TODO: remove bitmasks dependence. 
-    result = lumfn(vmax, bitmask='IN_D8LUMFN', jk=True, writeto=opath)
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
     
     return  0
@@ -123,7 +122,7 @@ if __name__ == '__main__':
         vmax            = Table.read(opath)
         rand_vmax       = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
-        njack, jk_volfrac, limits, jk = solve_jackknife(rand_vmax)
+        njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
 
         rand_vmax['JK']               = jks
         rand_vmax.meta['NJACK']       = njack
@@ -137,6 +136,10 @@ if __name__ == '__main__':
 
         with open(jpath, 'w') as ofile:
             json.dump(dictionary, ofile)
+
+        lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+
+        lumfn(vmax, jackknife=np.arange(njack), opath=lpath)
 
         print('Done.')
 

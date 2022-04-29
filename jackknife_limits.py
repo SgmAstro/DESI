@@ -74,7 +74,7 @@ def solve_jackknife(rand, ndiv=4):
 
             jk     += 1
 
-    jks         = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
+    jks = set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
 
     return  njack, jk_volfrac, limits, jks
 

@@ -22,8 +22,6 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     '''
 
     rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
-
-    rand['JK'] = _set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'])
     
     # TODO: replace with general bitmasks.
     rand = volfracs(rand, bitmasks=bitmasks)    
@@ -39,9 +37,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']
-
-    if 'JK' in dat.dtype.names:
-        extra_cols += ['JK']
         
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']

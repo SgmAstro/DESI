@@ -1,3 +1,5 @@
+import fitsio
+import astropy.io.fits as fits
 import numpy         as     np
 
 from   astropy.table import Table
@@ -70,31 +72,30 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jk=False, writeto=None):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jackknife=None, opath=None):
+    if jackknife is not None:
+        if type(jk) != int:
+            for jk in jackknife:
+                lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=jk, opath=opath)
+        else:
+            pass
+                
     dat   = Table(dat, copy=True)
-
     dat   = dat[dat[bitmask] == 0]
 
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']
     
-    # assert  dat[Mcol].min() >= Ms.min()
-    # assert  dat[Mcol].max() <= Ms.max()
-
     # default:  bins[i-1] <= x < bins[i]
     
-    if jk:
-        n_jk = len(np.unique(dat['JK']))
+    if jackknife is not None:
+        jk_volfrac = dat.meta['JK_VOLFRAC']
 
-        dat = dat[dat['JK'] != jk]
-        dvmax = dat['VMAX'].data
+        dvmax     *= jk_volfrac
+        vol       *= jk_volfrac
 
-        vol = vol * (n_jk -1) / n_jk
+        dat        = dat[dat['JK'] != jk]
 
-        # TESTING
-        print(n_jk)
-        print(vol)
-    
     
     idxs   = np.digitize(dat[Mcol], bins=Ms)
 
@@ -143,36 +144,16 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['MS']         = str(['{:.4f}'.format(x) for x in Ms.tolist()])
     result.meta['VOLUME']     = vol
     result.meta['ABSMAG_DEF'] = Mcol
-
     
-    if writeto != None:
-        
-        opath = writeto
+    if jackknife is not None:
+        _lumfn = fitsio.read(opath)
 
-        if jk:
-            jk_array = np.unique(dat['JK'])    
-            
-            for idx in jk_array:
-                ##  
-                keys           = sorted(result.meta.keys())
-                header         = {}
+        result.meta['RENORM'] = 'FALSE'
+        result                = fits.convenience.table_to_hdu(result)
 
-                for key in keys:
-                    header[key] = str(result.meta[key])
+        with fits.open(opath, mode='update') as hdulist:
+            hdulist.append(result)
+            hdulist.flush()  
 
-                primary_hdu    = fits.PrimaryHDU()
-                hdr            = fits.Header(header)
-                result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
-                hdul           = fits.HDUList([primary_hdu, result_hdu])
-
-                hdul.writeto(opath, overwrite=True, checksum=True)
-
-            print('Writing {}.'.format(opath))
-    
-        else:
-            result.writeto(opath, overwrite=True, checksum=True)
-            
     else:
-        print('WARNING: writeto == None')
-            
-    return  result 
+        return  result 

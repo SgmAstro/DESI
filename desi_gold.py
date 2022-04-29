@@ -263,6 +263,8 @@ def desi_gold(args):
     in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
     
     desi_zs                   = desi_zs[in_gold]
+    desi_zs['RA']             = desi_zs['TARGET_RA']
+    desi_zs['DEC']            = desi_zs['TARGET_DEC']
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)

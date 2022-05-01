@@ -12,3 +12,6 @@ def survey_specifics(survey):
     assert  survey in specifics.keys(), f'Requested {survey} is not available.'
 
     return  specifics[survey]
+
+
+raise NotImplementedError('DEPRECATE:  Add as header info. to GOLD files only.')

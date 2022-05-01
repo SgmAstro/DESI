@@ -11,10 +11,10 @@ import astropy.io.fits as   fits
 from   collections     import OrderedDict
 from   astropy.table   import Table, vstack
 from   delta8_limits   import d8_limits
-from   gama_fields     import gama_fields
-from   desi_fields     import desi_fields
 from   astropy.io.fits import getval, getheader
 from   utils           import run_command
+from   pkg_resources   import resource_filename
+
 
 supported = ['gold',\
              'kE',\
@@ -99,14 +99,10 @@ def write_desitable(opath, table, test=False):
         print(cmd, output)
 
 def fetch_fields(survey):
-    if survey == 'gama':
-        fields = gama_fields   
+    assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
 
-    elif survey == 'desi':
-        fields = desi_fields
-
-    else:
-        raise NotImplementedError
+    fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
+    fields = np.loadtxt(fpath)
 
     return fields
 
@@ -417,6 +413,8 @@ if __name__ == '__main__':
     
     # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    safe_reset(printonly=True)
+    # safe_reset(printonly=True)
     
     # fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')
+
+    fetch_fields('desi')

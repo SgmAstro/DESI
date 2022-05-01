@@ -15,7 +15,6 @@ from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
-from   desi_fields         import desi_fields
 
 
 def desi_gold(args):

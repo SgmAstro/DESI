@@ -1,6 +1,6 @@
 import os
 import sys
-import json
+import yaml
 import runtime
 import argparse
 import pylab as pl
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         jpath                         = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
 
         with open(jpath, 'w') as ofile:
-            json.dump(limits, ofile)
+            yaml.dump(limits, ofile, default_flow_style=False)
 
         print(f'Writing: {jpath}')
 
@@ -223,11 +223,9 @@ if __name__ == '__main__':
             rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
             
             jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
-            
-            # to do: write jk_limits to file
-            
+                        
             with open(jpath, 'w') as ofile:
-                json.dump(limits, ofile)
+                yaml.dump(limits, ofile, default_flow_style=False)
             
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

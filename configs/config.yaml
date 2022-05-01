@@ -3,3 +3,13 @@ runtime:
 
 comments:
   1st: 'A config. for standard run.'
+
+
+jk0:
+  ra_min: -99.
+  ra_max: 50.
+  ...
+
+jk1:
+  ...
+  ...

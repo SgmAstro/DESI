@@ -102,7 +102,7 @@ def fetch_fields(survey):
     assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
 
     fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
-    fields = np.loadtxt(fpath)
+    fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
 
     return fields
 
@@ -416,5 +416,7 @@ if __name__ == '__main__':
     # safe_reset(printonly=True)
     
     # fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')
+    
+    fields = fetch_fields('desi')
 
-    fetch_fields('desi')
+    print(fields)

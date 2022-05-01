@@ -280,7 +280,12 @@ def desi_gold(args):
     desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
 
-    opath                     = findfile(ftype='gold', dryrun=dryrun, survey=survey)
+    desi_zs.meta['RLIM']       = 19.5
+    desi_zs.meta['RMAX']       = 12.0
+    desi_zs.meta['MAX_SEP']    = 10.0 # Expected max. angular separation in a rosette.
+    desi_zs.meta['PET_OFFSET'] = 0.12 
+    
+    opath                      = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 
     print('Writing {}'.format(opath))
 

@@ -13,7 +13,6 @@ from   gama_limits         import gama_field
 from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
-from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
 
 
@@ -122,7 +121,8 @@ def desi_gold(args):
     desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
     desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
     
-    desi_zs['LEGACYPET']  = desi_zs['RMAG_DRED'] + survey_specifics('desi')['pet_offset']
+    desi_zs.meta['PET_OFFSET'] = 0.12
+    desi_zs['LEGACYPET']       = desi_zs['RMAG_DRED'] + desi_zs.meta['PET_OFFSET']
     
     desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
@@ -283,7 +283,6 @@ def desi_gold(args):
     desi_zs.meta['RLIM']       = 19.5
     desi_zs.meta['RMAX']       = 12.0
     desi_zs.meta['MAX_SEP']    = 10.0 # Expected max. angular separation in a rosette.
-    desi_zs.meta['PET_OFFSET'] = 0.12 
     
     opath                      = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 

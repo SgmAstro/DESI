@@ -130,7 +130,10 @@ def gama_gold(argset):
     
     dat.meta = {'AREA': dat.meta['AREA'],\
                 'GOLD_NGAL': dat.meta['GOLD_NGAL'],\
-                'IMMUTABLE': 'FALSE'}
+                'IMMUTABLE': 'FALSE',\
+                'RLIM': 19.8,\
+                'RMAX': 12.0,\
+                'MAX_SEP': 70.0} 
 
     write_desitable(opath, dat)
     

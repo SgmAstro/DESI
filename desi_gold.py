@@ -13,9 +13,7 @@ from   gama_limits         import gama_field
 from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
-from   survey              import survey_specifics
 from   bitmask             import lumfn_mask
-from   desi_fields         import desi_fields
 
 
 def desi_gold(args, survey='sv3', release='fuji'):
@@ -127,7 +125,8 @@ def desi_gold(args, survey='sv3', release='fuji'):
     desi_zs['GMR']        = desi_zs['GMAG_DRED'] - desi_zs['RMAG_DRED']
     desi_zs['DETMAG']     = desi_zs['RMAG_DRED']
     
-    desi_zs['LEGACYPET']  = desi_zs['RMAG_DRED'] + survey_specifics('desi')['pet_offset']
+    desi_zs.meta['PET_OFFSET'] = 0.12
+    desi_zs['LEGACYPET']       = desi_zs['RMAG_DRED'] + desi_zs.meta['PET_OFFSET']
     
     desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
 
@@ -267,6 +266,8 @@ def desi_gold(args, survey='sv3', release='fuji'):
     in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
     
     desi_zs                   = desi_zs[in_gold]
+    desi_zs['RA']             = desi_zs['TARGET_RA']
+    desi_zs['DEC']            = desi_zs['TARGET_DEC']
     desi_zs['ZSURV']          = desi_zs['ZDESI']
     desi_zs['DETMAG']         = desi_zs['RMAG_DRED']
     desi_zs['DISTMOD']        = distmod(desi_zs['ZDESI'].data)
@@ -283,7 +284,11 @@ def desi_gold(args, survey='sv3', release='fuji'):
     desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
     desi_zs.meta['IMMUTABLE'] = 'TRUE'
 
-    opath                     = findfile(ftype='gold', dryrun=dryrun, survey=survey)
+    desi_zs.meta['RLIM']       = 19.5
+    desi_zs.meta['RMAX']       = 12.0
+    desi_zs.meta['MAX_SEP']    = 10.0 # Expected max. angular separation in a rosette.
+    
+    opath                      = findfile(ftype='gold', dryrun=dryrun, survey=survey)
 
     print('Writing {}'.format(opath))
 

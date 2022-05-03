@@ -22,7 +22,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     '''
 
     rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
-
+    
     # TODO: replace with general bitmasks.
     rand = volfracs(rand, bitmasks=bitmasks)    
 
@@ -32,12 +32,16 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
+    # HACK BUG TODO MJW                                                                                                                                                                                 
+    dat['RA']  = dat['TARGET_RA']
+    dat['DEC'] = dat['TARGET_DEC']
+
     # Columns to be propagated
-    extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN']
+    extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC']
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']
-
+        
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
         

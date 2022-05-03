@@ -9,8 +9,6 @@ from   smith_kcorr     import GAMA_KCorrection
 from   rest_gmr        import smith_rest_gmr
 from   tmr_ecorr       import tmr_ecorr, tmr_q
 from   abs_mag         import abs_mag
-from   gama_limits     import gama_field, gama_fields
-from   desi_fields     import desi_fields
 from   findfile        import findfile, fetch_fields, overwrite_check
 from   multiprocessing import Pool
 from   functools       import partial

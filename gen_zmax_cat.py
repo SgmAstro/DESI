@@ -13,7 +13,6 @@ from   astropy.table import Table
 from   functools import partial
 from   multiprocessing import Pool
 from   findfile import findfile, overwrite_check
-from   survey import survey_specifics
 from   config import Configuration
 
 kcorr_r = GAMA_KCorrection(band='R')
@@ -102,10 +101,8 @@ if __name__ == '__main__':
     config.update_attributes('zmax', args)
     config.write()
 
-    specifics = survey_specifics(survey)
-
-    rlim      = specifics['rlim']
-    rmax      = specifics['rmax']
+    rlim      = fetch_header(ftype='gold', name='RLIM', survey=survey)
+    rmax      = fetch_header(ftype='gold', name='RMAX', survey=survey)
 
     start     = time.time()
 

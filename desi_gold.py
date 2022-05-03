@@ -25,7 +25,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     dryrun   = args.dryrun
 
     releases = {'sv3': 'fuji', 'main': 'guadalupe'}
-    release  = releases[survey] 
+    release  = releases[release] 
     
     root     = os.environ['DESI_ROOT'] + f'/spectro/redux/{release}/healpix/'
     fpath    = root + 'tilepix.fits'

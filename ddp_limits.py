@@ -45,7 +45,7 @@ gmrs_0p1 = np.array([0.131, 0.298, 0.443, 0.603, 0.785, 0.933, 1.067])
 gmrs_0p0 = np.array([0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960])
 
 # bright and faint limits.   
-rlimis   = [fetch_header(ftype='gold', name='RMAX', survey=survey),\
+rlims    = [fetch_header(ftype='gold', name='RMAX', survey=survey),\
             fetch_header(ftype='gold', name='RLIM', survey=survey)]
 
 root     = os.environ['GOLD_DIR'] + f'/ddrp_limits/'

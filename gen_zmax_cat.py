@@ -12,7 +12,7 @@ from   scipy.optimize import brentq, minimize
 from   astropy.table import Table
 from   functools import partial
 from   multiprocessing import Pool
-from   findfile import findfile, overwrite_check
+from   findfile import findfile, overwrite_check, write_desitable
 from   config import Configuration
 
 kcorr_r = GAMA_KCorrection(band='R')
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
     dat.pprint()
 
-    dat.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, dat)
 
     nwarn   = (dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)
     nwarn   = np.count_nonzero(nwarn)

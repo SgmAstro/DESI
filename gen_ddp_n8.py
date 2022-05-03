@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat
+from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat, write_desitable
 from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask
 from   delta8_limits import d8_limits
@@ -183,7 +183,7 @@ for x in dat.meta.keys():
 
 print('Writing {}'.format(opath))
 
-dat.write(opath, overwrite=True, format='fits')
+write_desitable(opath, dat)
 
 #  ----  Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range)  ----
 dat = dat[(dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])]
@@ -230,7 +230,8 @@ for tier in np.arange(len(d8_limits)):
         print('Writing {} galaxies from field {} to {}.'.format(len(to_write_field), np.unique(to_write_field['FIELD'].data), opath_field))
 
         to_write_field.meta['AREA'] = to_write.meta['AREA'] / len(fields)
-        to_write_field.write(opath_field, format='fits', overwrite=True)
+
+        write_desitable(opath_field, to_write_field)
 
 print('\n\nDone.\n\n')
 

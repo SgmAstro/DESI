@@ -9,7 +9,7 @@ from   smith_kcorr     import GAMA_KCorrection
 from   rest_gmr        import smith_rest_gmr
 from   tmr_ecorr       import tmr_ecorr, tmr_q
 from   abs_mag         import abs_mag
-from   findfile        import findfile, fetch_fields, overwrite_check
+from   findfile        import findfile, fetch_fields, overwrite_check, write_desitable
 from   multiprocessing import Pool
 from   functools       import partial
 from   config          import Configuration
@@ -103,7 +103,7 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
 
     print('Writing {}.'.format(opath))
 
-    dat.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, dat)
 
     if log:
         sys.stdout.close()

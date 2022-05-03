@@ -15,7 +15,7 @@ from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
 from   jackknife_limits import solve_jackknife, set_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
@@ -55,7 +55,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         
     print('Writing {}.'.format(opath))
 
-    vmax.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, vmax)
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
@@ -64,7 +64,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     result.meta['EXTNAME'] = 'LUMFN'
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
 
-    result.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, result)
     
     return  0
 

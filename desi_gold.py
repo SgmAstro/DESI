@@ -33,13 +33,14 @@ def desi_gold(args, survey='sv3', release='fuji'):
 
     tpix     = Table.read(fpath)
 
-    # Max. Bright SV3 tileid is 595.
+    # Note:  max. Bright SV3 tileid is 595.
     tiles    = np.arange(1000)
     ros      = np.array([tile2rosette(x) for x in tiles])
     
     # https://desi.lbl.gov/trac/wiki/SurveyOps/OnePercent
     # G12: [1,2]; G15: [8,9,10, 17]
-    
+
+    # Unique rosettes in SV3.
     uros   = np.unique(ros)
     uros   = uros[uros > -1]
     
@@ -69,9 +70,6 @@ def desi_gold(args, survey='sv3', release='fuji'):
 
         tids  = np.unique(zbest['TARGETID'])
 
-        # row ordered.                                                                                                                                                                              
-        assert  np.all(zbest['TARGETID'] == fmap['TARGETID'])
-    
         efmap['ROS'] = tile2rosette(efmap['TILEID'].data)
     
         efmap_tid = efmap['TARGETID', 'ROS'] 
@@ -81,13 +79,16 @@ def desi_gold(args, survey='sv3', release='fuji'):
         assert  np.all(efmap_tid['TARGETID'].data == tids)
     
         del  fmap['TARGETID']
-    
+
+        # row ordered.  
+        assert  np.all(zbest['TARGETID'] == fmap['TARGETID'])
+        
         zbest = hstack([zbest, fmap])
     
-        # 
         zbest = join(zbest, efmap_tid, join_type='left', keys='TARGETID')
         zbest['ROS_DIST'] = 1.e4 * np.ones_like(zbest['Z'])
-    
+
+        # Distance to the closest rosette center. 
         for rosn in np.unique(efmap['ROS'].data):
             # TODO: Small rosette overlap.                                                                                                                                                         
             isin  = zbest['ROS'].data == rosn
@@ -114,9 +115,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
     ##  Cut DESI to good redshifts.                                                                                                                                                                
     desi_zs['GAMA_FIELD'] = gama_field(desi_zs['TARGET_RA'].data, desi_zs['TARGET_DEC'].data)
 
-    ##  HACK: PHOTSYS ASSUMED S.                                                                                                                                                                     
-    desi_zs['GMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
-    desi_zs['RMAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
+    ##  TODO/HACK: PHOTSYS ASSUMED S.                                                                                                                                                                     
+    desi_zs['GMAG_DRED']   = 22.5 - 2.5 * np.log10(desi_zs['FLUX_G'].data / mwdust_transmission(desi_zs['EBV'].data, 'G', 'S', match_legacy_surveys=True))
+    desi_zs['RMAG_DRED']   = 22.5 - 2.5 * np.log10(desi_zs['FLUX_R'].data / mwdust_transmission(desi_zs['EBV'].data, 'R', 'S', match_legacy_surveys=True))
 
     desi_zs['W1MAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_W1'].data / mwdust_transmission(desi_zs['EBV'].data, 'W1', 'S', match_legacy_surveys=True))
     desi_zs['W2MAG_DRED']  = 22.5 - 2.5 * np.log10(desi_zs['FLUX_W2'].data / mwdust_transmission(desi_zs['EBV'].data, 'W2', 'S', match_legacy_surveys=True))
@@ -141,7 +142,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
     full_cols       = ['NTILE', 'TILES', 'TILELOCIDS', 'LOCATION_ASSIGNED', 'TILELOCID_ASSIGNED', 'COMP_TILE', 'FRACZ_TILELOCID', 'BITWEIGHTS', 'PROB_OBS']
                        
     for cols, cat in zip([clustering_cols, full_cols], [clustering, full]):
-        cols       += ['TARGETID']                       
+        cols       += ['TARGETID']
+
+        # TODO/HACK multiple targetid occurences in clustering catalog?
         desi_zs     = join(desi_zs, cat[cols], keys='TARGETID')
                        
     ##  Archive step. 
@@ -170,14 +173,14 @@ def desi_gold(args, survey='sv3', release='fuji'):
     desi_zs.pprint()
 
     survey = 'desi'
-    
+    '''
     fpath  = findfile(ftype='gold', dryrun=False, survey=survey)
     opath  = fpath.replace('desi_gold', 'desi_sv3_gold')
 
     print('Writing {}'.format(opath))
 
     desi_zs.write(opath, format='fits', overwrite=True)
-    '''
+    
     ##  ----  GAMA GOLD
     gold  = Table.read(fpath)
 
@@ -264,7 +267,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
     '''
 
     in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
-    in_gold                  &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
+
+    # No cut to GAMA rosettes.
+    # in_gold                &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
     
     desi_zs                   = desi_zs[in_gold]
     desi_zs['RA']             = desi_zs['TARGET_RA']

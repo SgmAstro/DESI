@@ -1,9 +1,10 @@
 import fitsio
-import astropy.io.fits as fits
-import numpy         as     np
+import subprocess
+import astropy.io.fits as      fits
+import numpy           as      np
 
-from   astropy.table import Table
-from   cosmo         import volcom
+from   astropy.table   import  Table
+from   cosmo           import  volcom
 
 
 def multifield_lumfn(lumfn_list, ext=None, weight=None):
@@ -141,12 +142,12 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
     
-    result.meta['MS']         = str(['{:.4f}'.format(x) for x in Ms.tolist()])
-    result.meta['VOLUME']     = vol
-    result.meta['ABSMAG_DEF'] = Mcol
+    result.meta['MS']          = str(['{:.4f}'.format(x) for x in Ms.tolist()])
+    result.meta['VOLUME']      = vol
+    result.meta['ABSMAG_DEF']  = Mcol
     
     if jackknife is not None:
-        _lumfn = fitsio.read(opath)
+        _lumfn                 = fitsio.read(opath)
 
         result.meta['EXTNAME'] = 'LUMFN_JK{}'.format(jackknife)
         result.meta['RENORM']  = 'FALSE'
@@ -155,6 +156,15 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
         with fits.open(opath, mode='update') as hdulist:
             hdulist.append(result)
             hdulist.flush()  
+
+        cmds   = []
+        cmds.append(f'chgrp desi {opath}')
+        cmds.append(f'chmod  770 {opath}')
+
+        for cmd in cmds:
+            output = subprocess.check_output(cmd, shell=True)
+
+            print(cmd, output)
 
     else:
         return  result 

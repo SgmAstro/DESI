@@ -68,6 +68,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
         fmap  = Table.read(x, hdu='FIBERMAP')
         efmap = Table.read(x, hdu='EXP_FIBERMAP')
 
+        # row ordered.                                                                                                                                                                                     
+        assert  np.all(zbest['TARGETID'] == fmap['TARGETID'])
+        
         tids  = np.unique(zbest['TARGETID'])
 
         efmap['ROS'] = tile2rosette(efmap['TILEID'].data)
@@ -79,9 +82,6 @@ def desi_gold(args, survey='sv3', release='fuji'):
         assert  np.all(efmap_tid['TARGETID'].data == tids)
     
         del  fmap['TARGETID']
-
-        # row ordered.  
-        assert  np.all(zbest['TARGETID'] == fmap['TARGETID'])
         
         zbest = hstack([zbest, fmap])
     

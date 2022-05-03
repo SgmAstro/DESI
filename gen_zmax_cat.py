@@ -12,7 +12,7 @@ from   scipy.optimize import brentq, minimize
 from   astropy.table import Table
 from   functools import partial
 from   multiprocessing import Pool
-from   findfile import findfile, overwrite_check, write_desitable
+from   findfile import findfile, overwrite_check, write_desitable, fetch_header
 from   config import Configuration
 
 kcorr_r = GAMA_KCorrection(band='R')

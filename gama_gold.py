@@ -11,9 +11,7 @@ from   astropy.table    import Table
 from   cosmo            import cosmo, distmod
 from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
-from   survey           import survey_specifics
 from   bitmask          import BitMask, lumfn_mask
-from   jackknife_limits import _set_jackknife
 from   config           import Configuration
 
 def gama_gold(argset):

@@ -20,12 +20,11 @@ def desi_gold(args, survey='sv3', release='fuji'):
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
-    
-    survey   = 'desi'
+
     dryrun   = args.dryrun
 
     releases = {'sv3': 'fuji', 'main': 'guadalupe'}
-    release  = releases[release] 
+    release  = releases[survey] 
     
     root     = os.environ['DESI_ROOT'] + f'/spectro/redux/{release}/healpix/'
     fpath    = root + 'tilepix.fits'
@@ -57,7 +56,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     fpaths = [x for x in fpaths if os.path.exists(x)]
 
     print('Fetching {}'.format(fpaths[0]))
-
+    
     # e.g. 280/28027/redrock-sv3-bright-28027.fits
     tabs   = []
 
@@ -170,8 +169,10 @@ def desi_gold(args, survey='sv3', release='fuji'):
     
     desi_zs.pprint()
 
-    fpath = findfile(ftype='gold', dryrun=False, survey=survey)
-    opath = fpath.replace('desi_gold', 'desi_sv3_gold')
+    survey = 'desi'
+    
+    fpath  = findfile(ftype='gold', dryrun=False, survey=survey)
+    opath  = fpath.replace('desi_gold', 'desi_sv3_gold')
 
     print('Writing {}'.format(opath))
 
@@ -281,9 +282,10 @@ def desi_gold(args, survey='sv3', release='fuji'):
 
     desi_zs                   = desi_zs[desi_zs['IN_D8LUMFN'].data == 0]
 
-    desi_zs.meta['AREA']      = area * len(np.unique(desi_zs['FIELD'].data))
-    desi_zs.meta['IMMUTABLE'] = 'TRUE'
-
+    desi_zs.meta['AREA']       = area * len(np.unique(desi_zs['FIELD'].data))
+    desi_zs.meta['IMMUTABLE']  = 'TRUE'
+    desi_zs.meta['RELEASE']    = release.upper()
+    
     desi_zs.meta['RLIM']       = 19.5
     desi_zs.meta['RMAX']       = 12.0
     desi_zs.meta['MAX_SEP']    = 10.0 # Expected max. angular separation in a rosette.

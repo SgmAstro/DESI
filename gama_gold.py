@@ -13,7 +13,7 @@ from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
 from   survey           import survey_specifics
 from   bitmask          import BitMask, lumfn_mask
-from   jackknife_limits import _set_jackknife
+from   jackknife_limits import set_jackknife
 from   config           import Configuration
 
 def gama_gold(argset):
@@ -103,7 +103,7 @@ def gama_gold(argset):
     dat['GMR']    = dat['GMAG_DRED_SDSS'] - dat['RMAG_DRED_SDSS']
     dat['DETMAG'] = dat['R_PETRO']
 
-    dat['JK']     = _set_jackknife(dat['RA'], dat['DEC'])
+    dat['JK']     = set_jackknife(dat['RA'], dat['DEC'])
     
     '''
     if argset.in_bgsbright:

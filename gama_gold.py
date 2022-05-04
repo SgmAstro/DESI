@@ -11,7 +11,6 @@ from   astropy.table    import Table
 from   cosmo            import cosmo, distmod
 from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
-from   survey           import survey_specifics
 from   bitmask          import BitMask, lumfn_mask
 from   jackknife_limits import set_jackknife
 from   config           import Configuration
@@ -130,7 +129,10 @@ def gama_gold(argset):
     
     dat.meta = {'AREA': dat.meta['AREA'],\
                 'GOLD_NGAL': dat.meta['GOLD_NGAL'],\
-                'IMMUTABLE': 'FALSE'}
+                'IMMUTABLE': 'FALSE',\
+                'RLIM': 19.8,\
+                'RMAX': 12.0,\
+                'MAX_SEP': 70.0} 
 
     write_desitable(opath, dat)
     

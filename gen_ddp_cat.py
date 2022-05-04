@@ -6,7 +6,7 @@ import fitsio
 
 from   astropy.table import Table
 from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
-from   findfile      import findfile, overwrite_check
+from   findfile      import findfile, overwrite_check, write_desitable
 from   bitmask       import lumfn_mask, consv_mask
 from   config        import Configuration
 
@@ -61,7 +61,7 @@ print(zlims)
 
 print('Writing: {}'.format(opath))
 
-dat.write(opath, format='fits', overwrite=True)
+write_desitable(opath, dat)
 
 if log:
     sys.stdout.close()

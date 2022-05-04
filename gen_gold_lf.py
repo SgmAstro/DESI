@@ -1,6 +1,6 @@
 import os
 import sys
-import json
+import yaml
 import runtime
 import argparse
 import pylab as pl
@@ -15,7 +15,7 @@ from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
 from   jackknife_limits import solve_jackknife, set_jackknife
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
@@ -55,7 +55,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         
     print('Writing {}.'.format(opath))
 
-    vmax.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, vmax)
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
@@ -64,7 +64,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     result.meta['EXTNAME'] = 'LUMFN'
     # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
 
-    result.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, result)
     
     return  0
 
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         jpath                         = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
 
         with open(jpath, 'w') as ofile:
-            json.dump(limits, ofile)
+            yaml.dump(limits, ofile, default_flow_style=False)
 
         print(f'Writing: {jpath}')
 
@@ -223,11 +223,9 @@ if __name__ == '__main__':
             rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
             
             jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
-            
-            # to do: write jk_limits to file
-            
+                        
             with open(jpath, 'w') as ofile:
-                json.dump(limits, ofile)
+                yaml.dump(limits, ofile, default_flow_style=False)
             
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

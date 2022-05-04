@@ -9,7 +9,7 @@ from    runtime         import calc_runtime
 from    functools       import partial
 from    multiprocessing import Pool
 from    astropy.table   import Table
-from    findfile        import findfile, overwrite_check
+from    findfile        import findfile, overwrite_check, write_desitable
 from    schechter       import named_schechter
 from    ddp             import initialise_ddplimits
 
@@ -190,14 +190,15 @@ if __name__ == '__main__':
     runtime                = calc_runtime(start, 'Writing {}'.format(opath))    
 
     result.meta['IMMUTABLE'] = 'FALSE'
-    result.write(opath, format='fits', overwrite=True)
+    
+    write_desitable(opath, result)
 
     ddp                    = Table.read(fpath) 
     ddp['WEIGHT_STEPWISE'] = weights
 
     runtime = calc_runtime(start, 'Writing {}'.format(fpath))
 
-    ddp.write(fpath, format='fits', overwrite=True)
+    write_desitable(fpath, ddp)
 
     runtime = calc_runtime(start, 'Finished')
 

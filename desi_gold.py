@@ -23,6 +23,9 @@ def desi_gold(args, survey='sv3', release='fuji'):
 
     dryrun   = args.dryrun
 
+    if survey != 'sv3':
+        raise  NotImplementedError('Only SV3 is currently supported.')
+
     releases = {'sv3': 'fuji', 'main': 'guadalupe'}
     release  = releases[survey] 
     

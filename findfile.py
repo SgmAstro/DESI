@@ -91,7 +91,7 @@ def write_desitable(opath, table, test=False):
 
     cmds   = []
     cmds.append(f'chgrp desi {opath}')
-    cmds.append(f'chmod  770 {opath}')
+    cmds.append(f'chmod  700 {opath}')
     
     for cmd in cmds:
         output = subprocess.check_output(cmd, shell=True)

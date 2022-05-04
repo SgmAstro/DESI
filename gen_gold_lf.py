@@ -148,6 +148,23 @@ if __name__ == '__main__':
 
         print(f'Written {lpath}')
 
+        
+        # jackknife error work
+        lf = Table.read(opath, hdu=1)
+        array = lf['PHI_IVMAX'].data
+
+        for idx in range(2, jackknife+1):
+            lf = Table.read(opath, hdu=idx)
+            ivmax = lf['PHI_IVMAX'].data
+            array = np.c_[array, ivmax]
+        
+        jk_mean = np.mean(array, axis=1)
+        jk_var  = np.var(array, axis=1)
+        jk_err = np.sqrt(jk_var * (n+1))
+        
+        lf['PHI_JK'] = jk_mean
+        lf['PHI_JK_ERR'] = jk_err
+        
         print('Done.')
 
         if log:

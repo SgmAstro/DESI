@@ -1,8 +1,17 @@
 import numpy             as np
 import matplotlib.pyplot as plt
-
 from   collections       import OrderedDict
 
+
+jk_limits = {'JK0': {'ra_min': 129.,  'ra_max': 133.,  'dec_min': -2., 'dec_max': 3.},
+             'JK1': {'ra_min': 133.,  'ra_max': 137.,  'dec_min': -2., 'dec_max': 3.},
+             'JK2': {'ra_min': 137.,  'ra_max': 141.,  'dec_min': -2., 'dec_max': 3.},
+             'JK3': {'ra_min': 174.,  'ra_max': 178.,  'dec_min': -3., 'dec_max': 2.},
+             'JK4': {'ra_min': 178.,  'ra_max': 182.,  'dec_min': -3., 'dec_max': 2.},
+             'JK5': {'ra_min': 182.,  'ra_max': 186.,  'dec_min': -3., 'dec_max': 2.},
+             'JK6': {'ra_min': 211.5, 'ra_max': 215.5, 'dec_min': -2., 'dec_max': 3.},
+             'JK7': {'ra_min': 215.5, 'ra_max': 219.5, 'dec_min': -2., 'dec_max': 3.},
+             'JK8': {'ra_min': 219.5, 'ra_max': 223.5, 'dec_min': -2., 'dec_max': 3.}}
 
 def set_jackknife(ras, decs, limits=None, debug=True):
     result       = np.array(['None'] * len(ras), dtype=str)

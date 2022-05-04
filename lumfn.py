@@ -146,6 +146,8 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['ABSMAG_DEF'] = Mcol
     
     if jackknife is not None:
+        
+        # is _lumfn correct here? Not used again!
         _lumfn = fitsio.read(opath)
 
         result.meta['EXTNAME'] = 'LUMFN_JK{}'.format(jackknife)
@@ -155,6 +157,23 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
         with fits.open(opath, mode='update') as hdulist:
             hdulist.append(result)
             hdulist.flush()  
+            
+            
+        # jackknife error work
+        lumfn = Table.read(fpath, hdu=1)
+        array = lumfn['PHI_IVMAX'].data
+
+        for idx in range(2, jackknife+1):
+            lumfn = Table.read(fpath, hdu=idx)
+            ivmax = lumfn['PHI_IVMAX'].data
+            array = np.c_[array, ivmax]
+        
+        jk_mean = np.mean(array, axis=1)
+        jk_var  = np.var(array, axis=1)
+        jk_err = np.sqrt(jk_var * (n+1))
+        
+        lumfn['PHI_JK'] = jk_mean
+        lumfn['PHI_JK_ERR'] = jk_err
 
     else:
         return  result 

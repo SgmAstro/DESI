@@ -32,10 +32,13 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
-    # HACK BUG TODO MJW                                                                                                                                                                                 
-    dat['RA']  = dat['TARGET_RA']
-    dat['DEC'] = dat['TARGET_DEC']
-
+    # HACK BUG TODO MJW
+    try:
+        dat['RA']  = dat['TARGET_RA']
+        dat['DEC'] = dat['TARGET_DEC']
+    except:
+        pass
+        
     # Columns to be propagated
     extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC']
 

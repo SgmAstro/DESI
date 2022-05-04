@@ -20,7 +20,7 @@ from   jackknife_limits import solve_jackknife, set_jackknife
 
 
 # TODO: rename and move
-def jackknife_function(fpath):           
+def jackknife_function(fpath, jackknife):           
     lf = Table.read(fpath, hdu=1)
     array = lf['PHI_IVMAX'].data
 
@@ -37,6 +37,10 @@ def jackknife_function(fpath):
     lf['PHI_VAR'] = jk_var
     lf['PHI_ERR'] = jk_err
 
+    # HACK for testing, TODO
+    lf.write(fpath.replace('lumfn', 'lumfn_test2'), format='fits', overwrite=True)
+    
+    
     # check this
     result = lf
     keys           = sorted(result.meta.keys())    
@@ -178,14 +182,13 @@ if __name__ == '__main__':
         print(f'Writing: {jpath}')
 
         lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-
         jackknife = np.arange(njack)
         lumfn(vmax, jackknife=jackknife, opath=lpath)
 
         print(f'Written {lpath}')
 
         # TODO: integrate into lumfn?
-        jackknife_function(lpath)
+        jackknife_function(lpath, jackknife)
 
         print('Done.')
 
@@ -256,13 +259,14 @@ if __name__ == '__main__':
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
             
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
-
+            jackknife = np.arange(njack)
+                
             rand_vmax['JK'] = jks
             rand_vmax.meta['NJACK'] = njack
             rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
             
             jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
-                        
+            
             with open(jpath, 'w') as ofile:
                 yaml.dump(limits, ofile, default_flow_style=False)
             
@@ -319,7 +323,13 @@ if __name__ == '__main__':
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
 
             # TODO: integrate into lumfn?
-            jackknife_function(jpath)
+            
+            # add lumfn
+            
+            lpath = findfile(ftype='ddp_n8_d0_lumfn', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
+            jackknife = np.arange(njack)
+            lumfn(vmax, jackknife=jackknife, opath=lpath)
+            jackknife_function(lpath, jackknife)
 
             
         print('Done.')

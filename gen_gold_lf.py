@@ -144,23 +144,24 @@ if __name__ == '__main__':
 
         lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
 
-        lumfn(vmax, jackknife=np.arange(njack), opath=lpath)
+        jackknife = np.arange(njack)
+        lumfn(vmax, jackknife=jackknife, opath=lpath)
 
         print(f'Written {lpath}')
 
         
-        # jackknife error work
-        lf = Table.read(opath, hdu=1)
+        # jackknife error work, place in lumfn()
+        lf = Table.read(lpath, hdu=1)
         array = lf['PHI_IVMAX'].data
 
-        for idx in range(2, jackknife+1):
-            lf = Table.read(opath, hdu=idx)
+        for idx in range(2, len(jackknife)+1):
+            lf = Table.read(lpath, hdu=idx)
             ivmax = lf['PHI_IVMAX'].data
             array = np.c_[array, ivmax]
         
         jk_mean = np.mean(array, axis=1)
         jk_var  = np.var(array, axis=1)
-        jk_err = np.sqrt(jk_var * (n+1))
+        jk_err = np.sqrt(jk_var * (len(jackknife)+1))
         
         lf['PHI_JK'] = jk_mean
         lf['PHI_JK_ERR'] = jk_err

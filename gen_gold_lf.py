@@ -150,7 +150,9 @@ if __name__ == '__main__':
         print(f'Written {lpath}')
 
         
-        # jackknife error work, place in lumfn()
+        
+        
+        # jackknife error work, place in lumfn or function
         lf = Table.read(lpath, hdu=1)
         array = lf['PHI_IVMAX'].data
 
@@ -162,9 +164,30 @@ if __name__ == '__main__':
         jk_mean = np.mean(array, axis=1)
         jk_var  = np.var(array, axis=1)
         jk_err = np.sqrt(jk_var * (len(jackknife)+1))
-        
+
         lf['PHI_JK'] = jk_mean
-        lf['PHI_JK_ERR'] = jk_err
+        lf['PHI_VAR'] = jk_var
+        lf['PHI_ERR'] = jk_err
+        
+        # check this
+        result = lf
+        keys           = sorted(result.meta.keys())    
+        header         = {}
+            
+        for key in keys:
+            header[key] = str(result.meta[key])
+
+        primary_hdu    = fits.PrimaryHDU()
+        hdr            = fits.Header(header)
+        result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
+        hdul           = fits.HDUList([primary_hdu, result_hdu])
+        hdul.writeto(opath.replace('lumfn', 'lumfn_test'), overwrite=True, checksum=True)
+        
+        
+        
+        
+        
+        
         
         print('Done.')
 

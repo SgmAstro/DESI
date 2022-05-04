@@ -18,23 +18,27 @@ from   bitmask             import lumfn_mask
 from   desi_fields         import desi_fields
 
 
-def desi_gold(args):
+def desi_gold(args, survey='sv3', release='fuji'):
     from   desiutil.dust                 import mwdust_transmission
     from   desitarget.sv3.sv3_targetmask import desi_mask, bgs_mask
 
     
-    survey = 'desi'
-    dryrun = args.dryrun
+    survey   = 'desi'
+    dryrun   = args.dryrun
 
-    root   = os.environ['DESI_ROOT'] + '/spectro/redux/everest/healpix/'
-    fpath  = root + 'tilepix.fits'
+    releases = {'sv3': 'fuji', 'main': 'guadalupe'}
+    release  = releases[survey] 
+    
+    root     = os.environ['DESI_ROOT'] + f'/spectro/redux/{release}/healpix/'
+    fpath    = root + 'tilepix.fits'
 
     print(f'Fetching {fpath}')
 
-    tpix   = Table.read(fpath)
+    tpix     = Table.read(fpath)
 
-    tiles  = np.arange(1000)
-    ros    = np.array([tile2rosette(x) for x in tiles])
+    # Max. Bright SV3 tileid is 595.
+    tiles    = np.arange(1000)
+    ros      = np.array([tile2rosette(x) for x in tiles])
     
     # https://desi.lbl.gov/trac/wiki/SurveyOps/OnePercent
     # G12: [1,2]; G15: [8,9,10, 17]
@@ -49,9 +53,9 @@ def desi_gold(args):
     tpix   = tpix[np.isin(tpix['TILEID'].data, tiles)]
     hps    = np.unique(tpix['HEALPIX'].data)
 
-    root  += '/sv3/bright/'
+    root  += '/{}/bright/'.format(survey)
 
-    fpaths = [root + '{}/{}/redrock-sv3-bright-{}.fits'.format(str(x)[:3], x, x) for x in hps]
+    fpaths = [root + '{}/{}/redrock-{}-bright-{}.fits'.format(str(x)[:3], x, survey, x) for x in hps]
     fpaths = [x for x in fpaths if os.path.exists(x)]
 
     print('Fetching {}'.format(fpaths[0]))

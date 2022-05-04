@@ -18,6 +18,41 @@ from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
 from   jackknife_limits import solve_jackknife, set_jackknife
 
+
+# TODO: rename and move
+def jackknife_function(fpath):           
+    lf = Table.read(fpath, hdu=1)
+    array = lf['PHI_IVMAX'].data
+
+    for idx in range(2, len(jackknife)+1):
+        lf = Table.read(fpath, hdu=idx)
+        ivmax = lf['PHI_IVMAX'].data
+        array = np.c_[array, ivmax]
+
+    jk_mean = np.mean(array, axis=1)
+    jk_var  = np.var(array, axis=1)
+    jk_err = np.sqrt(jk_var * (len(jackknife)+1))
+
+    lf['PHI_JK'] = jk_mean
+    lf['PHI_VAR'] = jk_var
+    lf['PHI_ERR'] = jk_err
+
+    # check this
+    result = lf
+    keys           = sorted(result.meta.keys())    
+    header         = {}
+
+    for key in keys:
+        header[key] = str(result.meta[key])
+
+    primary_hdu    = fits.PrimaryHDU()
+    hdr            = fits.Header(header)
+    result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)    
+    hdul           = fits.HDUList([primary_hdu, result_hdu])
+    hdul.writeto(fpath.replace('lumfn', 'lumfn_test'), overwrite=True, checksum=True)
+
+            
+
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
 
@@ -149,46 +184,9 @@ if __name__ == '__main__':
 
         print(f'Written {lpath}')
 
-        
-        
-        
-        # jackknife error work, place in lumfn or function
-        lf = Table.read(lpath, hdu=1)
-        array = lf['PHI_IVMAX'].data
+        # TODO: integrate into lumfn?
+        jackknife_function(lpath)
 
-        for idx in range(2, len(jackknife)+1):
-            lf = Table.read(lpath, hdu=idx)
-            ivmax = lf['PHI_IVMAX'].data
-            array = np.c_[array, ivmax]
-        
-        jk_mean = np.mean(array, axis=1)
-        jk_var  = np.var(array, axis=1)
-        jk_err = np.sqrt(jk_var * (len(jackknife)+1))
-
-        lf['PHI_JK'] = jk_mean
-        lf['PHI_VAR'] = jk_var
-        lf['PHI_ERR'] = jk_err
-        
-        # check this
-        result = lf
-        keys           = sorted(result.meta.keys())    
-        header         = {}
-            
-        for key in keys:
-            header[key] = str(result.meta[key])
-
-        primary_hdu    = fits.PrimaryHDU()
-        hdr            = fits.Header(header)
-        result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
-        hdul           = fits.HDUList([primary_hdu, result_hdu])
-        hdul.writeto(opath.replace('lumfn', 'lumfn_test'), overwrite=True, checksum=True)
-        
-        
-        
-        
-        
-        
-        
         print('Done.')
 
         if log:
@@ -320,6 +318,10 @@ if __name__ == '__main__':
 
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
 
+            # TODO: integrate into lumfn?
+            jackknife_function(jpath)
+
+            
         print('Done.')
 
         if log:

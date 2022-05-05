@@ -40,7 +40,6 @@ def jackknife_function(fpath, jackknife):
     # HACK for testing, TODO
     lf.write(fpath.replace('lumfn', 'lumfn_test2'), format='fits', overwrite=True)
     
-    
     # check this
     result = lf
     keys           = sorted(result.meta.keys())    
@@ -53,7 +52,7 @@ def jackknife_function(fpath, jackknife):
     hdr            = fits.Header(header)
     result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)    
     hdul           = fits.HDUList([primary_hdu, result_hdu])
-    hdul.writeto(fpath.replace('lumfn', 'lumfn_test'), overwrite=True, checksum=True)
+    hdul.writeto(fpath, overwrite=True, checksum=True)
 
             
 
@@ -258,6 +257,8 @@ if __name__ == '__main__':
             # MJW:  Load three-field randoms/meta directly. 
             rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
             
+            rand_vmax = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
+            
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
             jackknife = np.arange(njack)
                 
@@ -285,7 +286,6 @@ if __name__ == '__main__':
 
             print(f'Written {lpath}')
 
-            # TODO: integrate into lumfn?
             jackknife_function(lpath, jackknife)
             
             

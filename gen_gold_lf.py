@@ -265,10 +265,32 @@ if __name__ == '__main__':
             rand_vmax.meta['NJACK'] = njack
             rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
             
+            vmax_path = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
+            vmax = Table.read(vmax_path, format='fits')
+            
+            vmax['JK']                    = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+            vmax.meta['NJACK']            = njack
+            vmax.meta['JK_VOLFRAC']       = jk_volfrac
+        
             jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
             
             with open(jpath, 'w') as ofile:
                 yaml.dump(limits, ofile, default_flow_style=False)
+            
+            
+            # ADDED CODE FOR JACKKNIFE
+            lpath                         = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
+            jackknife = np.arange(njack)
+            lumfn(vmax, jackknife=jackknife, opath=lpath)
+
+            print(f'Written {lpath}')
+
+            # TODO: integrate into lumfn?
+            jackknife_function(lpath, jackknife)
+            
+            
+            
+            
             
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
@@ -321,16 +343,6 @@ if __name__ == '__main__':
             hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
             hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
-
-            # TODO: integrate into lumfn?
-            
-            # add lumfn
-            
-            lpath = findfile(ftype='ddp_n8_d0_lumfn', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
-            jackknife = np.arange(njack)
-            lumfn(vmax, jackknife=jackknife, opath=lpath)
-            jackknife_function(lpath, jackknife)
-
             
         print('Done.')
 

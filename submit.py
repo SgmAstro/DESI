@@ -136,7 +136,7 @@ def customise_script(args, debug=False):
 
     print('\nWriting {}'.format(opath))
 
-    os.system(f'chmod 770 {opath}')
+    os.system(f'chmod 700 {opath}')
 
 
 if __name__ == '__main__':

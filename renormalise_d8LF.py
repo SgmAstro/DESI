@@ -14,10 +14,15 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
     
     cat = Table(cat, copy=True)
     
-    cat['PHI_N']           /= fdelta
-    cat['PHI_N_ERROR']     /= fdelta
-    cat['PHI_IVMAX']       /= fdelta
-    cat['PHI_IVMAX_ERROR'] /= fdelta
+    cols = ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']
+    
+    if 'PHI_IVMAX_JK' in cat.dtype.names:
+        print('Including JK estimates in renormalisation.')
+
+        cols += ['PHI_IVMAX_JK', 'PHI_IVMAX_ERROR_JK']
+
+    for col in cols:
+        cat[col] /= fdelta
     
     if self_count:
         print('Applying log10|self-count correction| of {:.6f}'.format(np.log10(fdelta / fdelta_zeropoint)))
@@ -25,7 +30,7 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
         # tmr_DDP1: [-21.8, -20.1] 
         is_ddp1 = (cat['MEDIAN_M'] > tmr_DDP1[0]) & (cat['MEDIAN_M'] < tmr_DDP1[1])
 
-        for col in ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']:
+        for col in cols:
             cat[col][is_ddp1] *= (fdelta / fdelta_zeropoint)
 
     return  cat

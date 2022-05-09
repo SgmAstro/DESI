@@ -20,6 +20,8 @@ from   jackknife_limits import solve_jackknife, set_jackknife
 
 
 def jackknife_mean(fpath):           
+    print('Appending JK mean and error to lumfn. extension.')
+
     with fits.open(fpath, mode='update') as hdulist:
         nphi =  0
         phis = []
@@ -222,6 +224,8 @@ if __name__ == '__main__':
             utiers = np.arange(len(d8_limits))
                     
         for idx in utiers:
+            print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n\n\n')
+
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
@@ -260,7 +264,6 @@ if __name__ == '__main__':
             rand_vmax = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
 
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
-            jackknife                      = np.arange(njack).astype(int)
                 
             rand_vmax['JK']                = jks
             rand_vmax.meta['NJACK']        = njack
@@ -280,9 +283,8 @@ if __name__ == '__main__':
             
             lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
 
+            jackknife                      = np.arange(njack).astype(int)
             lumfn(vmax, jackknife=jackknife, opath=lpath)
-
-            print(f'Written {lpath}')
             
             jackknife_mean(lpath)
                         

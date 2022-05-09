@@ -222,7 +222,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         else:
             dryrun = ''
 
-        return gold_dir + '/randoms/jackknife{}{}.json'.format(prefix.replace('randoms', ''), dryrun)
+        return gold_dir + '/randoms/jackknife{}{}.yaml'.format(prefix.replace('randoms', ''), dryrun)
 
     if survey == None:
         survey = 'gama'

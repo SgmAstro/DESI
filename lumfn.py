@@ -76,11 +76,18 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jackknife=None, opath=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
-            lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=jk, opath=opath)
+            lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=int(jk), opath=opath)
+
+        return 0
     
+    elif type(jackknife) == int:
+        pass
+
+    elif jackknife is None:
+        pass
+
     else:
-        if jackknife != None:
-            jackknife = int(jackknife)
+        raise ValueError('Unsupported jackknife of type {}'.format(type(jackknife)))
                 
     dat   = Table(dat, copy=True)
     dat   = dat[dat[bitmask] == 0]
@@ -91,6 +98,8 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     # default:  bins[i-1] <= x < bins[i]
     
     if jackknife is not None:
+        print('Solving for jack knife {}'.format(jackknife))
+
         jk_volfrac = dat.meta['JK_VOLFRAC']
 
         vol       *= jk_volfrac
@@ -147,9 +156,6 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['ABSMAG_DEF']  = Mcol
     
     if jackknife is not None:        
-        # SM: is _lumfn correct here? Not used again!
-        _lumfn                 = fitsio.read(opath)
-
         result.meta['EXTNAME'] = 'LUMFN_JK{}'.format(jackknife)
         result.meta['RENORM']  = 'FALSE'
         result                 = fits.convenience.table_to_hdu(result)
@@ -167,6 +173,8 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
             output = subprocess.check_output(cmd, shell=True)
 
             print(cmd, output)
+
+        return  0
 
     else:
         return  result 

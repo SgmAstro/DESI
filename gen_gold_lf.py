@@ -181,8 +181,9 @@ if __name__ == '__main__':
 
         print(f'Writing: {jpath}')
 
-        lpath                         = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-        jackknife = np.arange(njack)
+        lpath                          = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        jackknife                      = np.arange(njack).astype(int)
+
         lumfn(vmax, jackknife=jackknife, opath=lpath)
 
         print(f'Written {lpath}')

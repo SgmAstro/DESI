@@ -19,40 +19,40 @@ from   findfile         import findfile, fetch_fields, overwrite_check, gather_c
 from   jackknife_limits import solve_jackknife, set_jackknife
 
 
-# TODO: rename and move
-def jackknife_function(fpath, jackknife):           
-    lf    = Table.read(fpath, hdu=1)
-    array = lf['PHI_IVMAX'].data
+def jackknife_mean(fpath):           
+    with fits.open(fpath, mode='update') as hdulist:
+        phis = []
 
-    for idx in range(2, len(jackknife)+1):
-        lf    = Table.read(fpath, hdu=idx)
-        ivmax = lf['PHI_IVMAX'].data
-        array = np.c_[array, ivmax]
+        for i, hdu in enumerate(hdulist):
+            # skip primary.
+            if i > 0:
+                phis.append(hdu.data['PHI_IVMAX'])
 
-    jk_mean   = np.mean(array, axis=1)
-    jk_var    = np.var(array, axis=1)
-    jk_err    = np.sqrt(jk_var * (len(jackknife)+1))
+        phis = np.array(phis)
 
-    lf['PHI_JK']  = jk_mean
-    lf['PHI_VAR'] = jk_var
-    lf['PHI_ERR'] = jk_err
+        mean = np.mean(phis, axis=0)
 
-    # HACK for testing, TODO
-    lf.write(fpath.replace('lumfn', 'lumfn_test2'), format='fits', overwrite=True)
-    
-    # check this
-    result = lf
-    keys           = sorted(result.meta.keys())    
-    header         = {}
+        err  =  np.std(phis, axis=0)
+        err *=  (1 + len(phis))
 
-    for key in keys:
-        header[key] = str(result.meta[key])
+        hdr   = hdulist['LUMFN'].header
 
-    primary_hdu    = fits.PrimaryHDU()
-    hdr            = fits.Header(header)
-    result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)    
-    hdul           = fits.HDUList([primary_hdu, result_hdu])
-    hdul.writeto(fpath, overwrite=True, checksum=True)
+        lumfn = hdulist['LUMFN'].data 
+        lumfn = Table(lumfn, names=lumfn.names)
+
+        # print(mean.shape)
+
+        lumfn['PHI_IVMAX_JK']     = mean
+        lumfn['PHI_IVMAX_JK_ERR'] = err 
+
+        lumfn.pprint()
+
+        lumfn = fits.BinTableHDU(lumfn, name='LUMFN', header=hdr)
+
+        hdulist[1] = lumfn
+
+        hdulist.flush()
+        hdulist.close()
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -188,8 +188,7 @@ if __name__ == '__main__':
 
         print(f'Written {lpath}')
 
-        # TODO: integrate into lumfn?
-        # jackknife_function(lpath, jackknife)
+        jackknife_mean(lpath)
 
         print('Done.')
 
@@ -287,11 +286,8 @@ if __name__ == '__main__':
             lumfn(vmax, jackknife=jackknife, opath=lpath)
 
             print(f'Written {lpath}')
-
-            jackknife_function(lpath, jackknife)
             
-            
-            
+            jackknife_mean(lpath)
             
             
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])

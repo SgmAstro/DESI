@@ -146,8 +146,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result.meta['VOLUME']      = vol
     result.meta['ABSMAG_DEF']  = Mcol
     
-    if jackknife is not None:
-        
+    if jackknife is not None:        
         # SM: is _lumfn correct here? Not used again!
         _lumfn                 = fitsio.read(opath)
 
@@ -158,10 +157,11 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
         with fits.open(opath, mode='update') as hdulist:
             hdulist.append(result)
             hdulist.flush()  
+            hdulist.close()
 
         cmds   = []
         cmds.append(f'chgrp desi {opath}')
-        cmds.append(f'chmod  770 {opath}')
+        cmds.append(f'chmod  700 {opath}')
 
         for cmd in cmds:
             output = subprocess.check_output(cmd, shell=True)

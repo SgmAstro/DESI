@@ -21,19 +21,19 @@ from   jackknife_limits import solve_jackknife, set_jackknife
 
 # TODO: rename and move
 def jackknife_function(fpath, jackknife):           
-    lf = Table.read(fpath, hdu=1)
+    lf    = Table.read(fpath, hdu=1)
     array = lf['PHI_IVMAX'].data
 
     for idx in range(2, len(jackknife)+1):
-        lf = Table.read(fpath, hdu=idx)
+        lf    = Table.read(fpath, hdu=idx)
         ivmax = lf['PHI_IVMAX'].data
         array = np.c_[array, ivmax]
 
-    jk_mean = np.mean(array, axis=1)
-    jk_var  = np.var(array, axis=1)
-    jk_err = np.sqrt(jk_var * (len(jackknife)+1))
+    jk_mean   = np.mean(array, axis=1)
+    jk_var    = np.var(array, axis=1)
+    jk_err    = np.sqrt(jk_var * (len(jackknife)+1))
 
-    lf['PHI_JK'] = jk_mean
+    lf['PHI_JK']  = jk_mean
     lf['PHI_VAR'] = jk_var
     lf['PHI_ERR'] = jk_err
 
@@ -53,8 +53,6 @@ def jackknife_function(fpath, jackknife):
     result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)    
     hdul           = fits.HDUList([primary_hdu, result_hdu])
     hdul.writeto(fpath, overwrite=True, checksum=True)
-
-            
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -160,20 +158,20 @@ if __name__ == '__main__':
 
         process_cat(fpath, opath, survey=survey, fillfactor=False)
 
-        vmax            = Table.read(opath)
-        rand_vmax       = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+        vmax                           = Table.read(opath)
+        rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
         njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
 
-        rand_vmax['JK']               = jks
-        rand_vmax.meta['NJACK']       = njack
-        rand_vmax.meta['JK_VOLFRAC']  = jk_volfrac
+        rand_vmax['JK']                = jks
+        rand_vmax.meta['NJACK']        = njack
+        rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
 
-        vmax['JK']                    = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
-        vmax.meta['NJACK']            = njack
-        vmax.meta['JK_VOLFRAC']       = jk_volfrac
+        vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+        vmax.meta['NJACK']             = njack
+        vmax.meta['JK_VOLFRAC']        = jk_volfrac
 
-        jpath                         = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+        jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
 
         with open(jpath, 'w') as ofile:
             yaml.dump(limits, ofile, default_flow_style=False)
@@ -187,7 +185,7 @@ if __name__ == '__main__':
         print(f'Written {lpath}')
 
         # TODO: integrate into lumfn?
-        jackknife_function(lpath, jackknife)
+        # jackknife_function(lpath, jackknife)
 
         print('Done.')
 

@@ -21,6 +21,7 @@ from   jackknife_limits import solve_jackknife, set_jackknife
 
 def jackknife_mean(fpath):           
     with fits.open(fpath, mode='update') as hdulist:
+        nphi =  0
         phis = []
 
         for i, hdu in enumerate(hdulist):
@@ -28,22 +29,21 @@ def jackknife_mean(fpath):
             if i > 0:
                 phis.append(hdu.data['PHI_IVMAX'])
 
-        phis = np.array(phis)
+                nphi += 1 
 
-        mean = np.mean(phis, axis=0)
+        phis  = np.array(phis)
 
-        err  =  np.std(phis, axis=0)
-        err *=  (1 + len(phis))
+        mean  = np.mean(phis, axis=0)
+
+        err   =  np.std(phis, axis=0)
 
         hdr   = hdulist['LUMFN'].header
 
         lumfn = hdulist['LUMFN'].data 
         lumfn = Table(lumfn, names=lumfn.names)
 
-        # print(mean.shape)
-
-        lumfn['PHI_IVMAX_JK']     = mean
-        lumfn['PHI_IVMAX_JK_ERR'] = err 
+        lumfn['PHI_IVMAX_JK']       = mean
+        lumfn['PHI_IVMAX_ERROR_JK'] = err 
 
         lumfn.pprint()
 
@@ -256,40 +256,36 @@ if __name__ == '__main__':
             result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
 
             # MJW:  Load three-field randoms/meta directly. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
-            
+            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
             rand_vmax = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
-            
+
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
-            jackknife = np.arange(njack)
+            jackknife                      = np.arange(njack).astype(int)
                 
-            rand_vmax['JK'] = jks
-            rand_vmax.meta['NJACK'] = njack
-            rand_vmax.meta['JK_VOLFRAC'] = jk_volfrac
+            rand_vmax['JK']                = jks
+            rand_vmax.meta['NJACK']        = njack
+            rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
             
-            vmax_path = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
-            vmax = Table.read(vmax_path, format='fits')
+            vmax_path                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
+            vmax                           = Table.read(vmax_path, format='fits')
             
-            vmax['JK']                    = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
-            vmax.meta['NJACK']            = njack
-            vmax.meta['JK_VOLFRAC']       = jk_volfrac
+            vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+            vmax.meta['NJACK']             = njack
+            vmax.meta['JK_VOLFRAC']        = jk_volfrac
         
-            jpath = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+            jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
             
             with open(jpath, 'w') as ofile:
-                yaml.dump(limits, ofile, default_flow_style=False)
+                yaml.dump(dict(limits), ofile, default_flow_style=False)
             
-            
-            # ADDED CODE FOR JACKKNIFE
-            lpath                         = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
-            jackknife = np.arange(njack)
+            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
+
             lumfn(vmax, jackknife=jackknife, opath=lpath)
 
             print(f'Written {lpath}')
             
             jackknife_mean(lpath)
-            
-            
+                        
             fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 

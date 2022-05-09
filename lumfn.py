@@ -151,14 +151,16 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
     
-    result.meta['MS']          = str(['{:.4f}'.format(x) for x in Ms.tolist()])
-    result.meta['VOLUME']      = vol
-    result.meta['ABSMAG_DEF']  = Mcol
+    result.meta['MS']             = str(['{:.4f}'.format(x) for x in Ms.tolist()])
+    result.meta['VOLUME']         = vol
+    result.meta['ABSMAG_DEF']     = Mcol
     
     if jackknife is not None:        
-        result.meta['EXTNAME'] = 'LUMFN_JK{}'.format(jackknife)
-        result.meta['RENORM']  = 'FALSE'
-        result                 = fits.convenience.table_to_hdu(result)
+        result.meta['EXTNAME']    = 'LUMFN_JK{}'.format(jackknife)
+        result.meta['RENORM']     = 'FALSE'
+        result.meta['JK_VOLFRAC'] = dat.meta['JK_VOLFRAC']
+        result.meta['NJACK']      = dat.meta['NJACK']
+        result                    = fits.convenience.table_to_hdu(result)
 
         with fits.open(opath, mode='update') as hdulist:
             hdulist.append(result)

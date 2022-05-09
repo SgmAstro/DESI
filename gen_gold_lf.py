@@ -161,20 +161,23 @@ if __name__ == '__main__':
         vmax                           = Table.read(opath)
         rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
 
+        # Solve for jack knife limits.
         njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
 
         rand_vmax['JK']                = jks
         rand_vmax.meta['NJACK']        = njack
         rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
 
+        # Set jack knife limits to data.
         vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
         vmax.meta['NJACK']             = njack
         vmax.meta['JK_VOLFRAC']        = jk_volfrac
 
+        # Save jack knife limits.
         jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
 
         with open(jpath, 'w') as ofile:
-            yaml.dump(limits, ofile, default_flow_style=False)
+            yaml.dump(dict(limits), ofile, default_flow_style=False)
 
         print(f'Writing: {jpath}')
 

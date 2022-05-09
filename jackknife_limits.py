@@ -79,7 +79,7 @@ def solve_jackknife(rand, ndiv=4):
 
             print('\t{:.6f}\t{:.6f}'.format(declow, dechigh))
 
-            limits[f'JK{jk}'] = {'ra_min': ralow, 'ra_max': rahigh, 'dec_min': declow, 'dec_max': dechigh}
+            limits[f'JK{jk}'] = {'ra_min': float(ralow), 'ra_max': float(rahigh), 'dec_min': float(declow), 'dec_max': float(dechigh)}
 
             jk     += 1
 

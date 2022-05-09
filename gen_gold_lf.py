@@ -224,7 +224,7 @@ if __name__ == '__main__':
             utiers = np.arange(len(d8_limits))
                     
         for idx in utiers:
-            print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n\n\n')
+            print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
 
             ddp_idx   = idx + 1
 
@@ -246,11 +246,13 @@ if __name__ == '__main__':
                 continue 
         
             print('LF process cat. complete.')
-                    
-            result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
-            # result.pprint()
 
-            # Single-field values.
+            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
+
+            result                         = Table.read(lpath)
+            # result.pprint()                                                                                                                                                                          
+
+            # Single-field values.                                                                                                                                                                       
             rand      = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
 
             fdelta    = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
@@ -258,11 +260,18 @@ if __name__ == '__main__':
 
             result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+                    
+            # MJW:  Load three-field randoms/meta directly, for e.g. volume fractions. 
+            rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
+            rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
 
-            # MJW:  Load three-field randoms/meta directly. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
-            rand_vmax = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
+            fdelta                         = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp                      = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
+            d8                             = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
+            d8_zp                          = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+
+            ##  Aside for jack knife.
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
                 
             rand_vmax['JK']                = jks
@@ -278,21 +287,17 @@ if __name__ == '__main__':
         
             jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
             
-            with open(jpath, 'w') as ofile:
-                yaml.dump(dict(limits), ofile, default_flow_style=False)
-            
-            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
+            with open(jpath, 'w') as jfile:
+                yaml.dump(dict(limits), jfile, default_flow_style=False)
 
             jackknife                      = np.arange(njack).astype(int)
+
             lumfn(vmax, jackknife=jackknife, opath=lpath)
             
             jackknife_mean(lpath)
-                        
-            fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
-            fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
-            d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
-            d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+            # Reload result with JK columns.
+            result                         = Table.read(lpath)
 
             if (fdelta > 0.0) & (fdelta_zp > 0.0):
                 result = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
@@ -322,8 +327,6 @@ if __name__ == '__main__':
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
             ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
             
-            print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
-
             ##  
             keys           = sorted(result.meta.keys())
             
@@ -336,9 +339,19 @@ if __name__ == '__main__':
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
-            hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
+            
+            # hdul         = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
-            hdul.writeto(lpath, overwrite=True, checksum=True)
+            print('Writing {}'.format(lpath))
+
+            with fits.open(lpath, mode='update') as hdulist:
+                assert  hdulist[1].header['EXTNAME'] == 'LUMFN'
+
+                hdulist[1]  = result_hdu
+
+                hdulist.append(ref_result_hdu)
+                hdulist.flush()
+                hdulist.close()
             
         print('Done.')
 

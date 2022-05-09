@@ -144,12 +144,12 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
                        nsample,
                        median_vmax])
 
-        print(result[-1])
-
     names  = ['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
+
+    result.pprint()
     
     result.meta['MS']             = str(['{:.4f}'.format(x) for x in Ms.tolist()])
     result.meta['VOLUME']         = vol

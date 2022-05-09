@@ -17,6 +17,8 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
     cols = ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']
     
     if 'PHI_IVMAX_JK' in cat.dtype.names:
+        print('Including JK estimates in renormalisation.')
+
         cols += ['PHI_IVMAX_JK', 'PHI_IVMAX_ERROR_JK']
 
     for col in cols:

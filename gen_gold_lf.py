@@ -293,7 +293,7 @@ if __name__ == '__main__':
             d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
 
             if (fdelta > 0.0) & (fdelta_zp > 0.0):
-                result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
+                result = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             
             else:
                 assert dryrun, 'ERROR:  lf renormalisation has failed.'
@@ -336,7 +336,7 @@ if __name__ == '__main__':
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
             hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
-            hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
+            hdul.writeto(lpath, overwrite=True, checksum=True)
             
         print('Done.')
 

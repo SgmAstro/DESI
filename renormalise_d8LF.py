@@ -4,7 +4,7 @@ from astropy.table import Table
 from ddp import tmr_DDP1
 
 
-def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False, cols=None):
+def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
     '''
     fscale equal to Equation 7 in McNaught-Roberts (2014).
     See: https://arxiv.org/pdf/1409.4681.pdf
@@ -14,11 +14,7 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False, cols=
     
     cat = Table(cat, copy=True)
 
-    if cols == None:
-        cols = ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']
-
-    else:
-        cols = []
+    cols = ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']
     
     if 'PHI_IVMAX_JK' in cat.dtype.names:
         print('Including JK estimates in renormalisation.')

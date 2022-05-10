@@ -347,8 +347,21 @@ if __name__ == '__main__':
             with fits.open(lpath, mode='update') as hdulist:
                 assert  hdulist[1].header['EXTNAME'] == 'LUMFN'
 
-                hdulist[1]  = result_hdu
+                hdulist[1] = result_hdu
+                '''
+                for i, hdu in enumerate(hdulist):
+                    hdr     = hdu.header
+                    extname = hdu.header['EXTNAME']
 
+                    if 'JK' in extname:
+                        print(f'Updating {extname}')
+
+                        result_jk = Table(hdu.data, names=hdu.data.names)
+                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count, cols=['PHI_IVMAX_JK', 'PHI_IVMAX_ERROR_JK'])
+                        result_jk = fits.BinTableHDU(result_jk, name=extname, header=hdr)
+
+                        hdulist[i] = result_jk
+                '''
                 hdulist.append(ref_result_hdu)
                 hdulist.flush()
                 hdulist.close()

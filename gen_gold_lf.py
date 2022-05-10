@@ -379,7 +379,7 @@ if __name__ == '__main__':
                         print(f'Updating {extname}')
 
                         result_jk = Table(hdu.data, names=hdu.data.names)
-                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count, cols=['PHI_IVMAX_JK', 'PHI_IVMAX_ERROR_JK'])
+                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count, cols=None)
                         result_jk = fits.BinTableHDU(result_jk, name=extname, header=hdr)
 
                         hdulist[i] = result_jk

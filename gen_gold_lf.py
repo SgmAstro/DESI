@@ -366,12 +366,16 @@ if __name__ == '__main__':
                 assert  hdulist[1].header['EXTNAME'] == 'LUMFN'
 
                 hdulist[1] = result_hdu
-                '''
+
                 for i, hdu in enumerate(hdulist):
                     hdr     = hdu.header
-                    extname = hdu.header['EXTNAME']
 
-                    if 'JK' in extname:
+                    if 'EXTNAME' not in hdu.header:
+                        continue
+
+                    if 'JK' in hdu.header['EXTNAME']:
+                        extname = hdu.header['EXTNAME']
+
                         print(f'Updating {extname}')
 
                         result_jk = Table(hdu.data, names=hdu.data.names)
@@ -379,7 +383,7 @@ if __name__ == '__main__':
                         result_jk = fits.BinTableHDU(result_jk, name=extname, header=hdr)
 
                         hdulist[i] = result_jk
-                '''
+
                 hdulist.append(ref_result_hdu)
                 hdulist.flush()
                 hdulist.close()

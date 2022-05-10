@@ -101,7 +101,10 @@ def write_desitable(opath, table, test=False):
 def fetch_fields(survey):
     assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
 
-    fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
+    # HACK TODO
+    fpath = os.environ['HOME'] + f'/DESI/data/{survey}_fields.txt'
+    
+    #fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
     fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
 
     return fields

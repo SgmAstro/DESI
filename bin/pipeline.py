@@ -87,7 +87,7 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
         cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
         cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
-        cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
+        cmds.append('git clone --branch jk_implement https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
 
    
         for cmd in cmds:    

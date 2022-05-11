@@ -1,0 +1,30 @@
+#!/bin/bash
+
+export SURVEY=desi
+
+export PATH=$CODE_ROOT:$PATH
+export RANDOMS_DIR=$CSCRATCH/norberg/GAMA4/randoms/
+
+echo $CODE_ROOT
+echo $RANDOMS_DIR
+
+# python3 gen_gold.py --survey desi --dryrun
+# python3 gen_gold.py --survey desi
+
+mapfile -t FIELDS < $CODE_ROOT/data/$SURVEY'_fields.txt'
+
+for FIELD in ${FIELDS[@]}
+do
+    echo 'Running: '$FIELD
+
+    # python3 randoms.py --survey desi --field $FIELD --dryrun
+    # python3 randoms.py --survey desi --field $FIELD
+done
+
+echo ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+echo ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/randoms/
+
+# scp -i ~/.ssh/id_rsa $CSCRATCH/norberg/GAMA4/desi_gold_dryrun.fits $CSCRATCH/norberg/GAMA4/desi_gold.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/
+
+scp -i ~/.ssh/id_rsa $RANDOMS_DIR/randoms_R*_0_dryrun.fits $RANDOMS_DIR/randoms_R*_0.fits $RANDOMS_DIR/randoms_R*_x8_0.fits ${1:-1}@login5.cosma.dur.ac.uk:/cosma/home/durham/${1:-1}/data/GAMA4/randoms/ 
+

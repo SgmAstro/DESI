@@ -30,15 +30,10 @@ else
   echo 'SURVEY SET TO BE '$SURVEY
 fi
 
-if [[ $SURVEY = 'gama' ]]
-then
-    declare -a FIELDS=('G9' 'G12' 'G15')
-else
-    declare -a FIELDS=('R1' 'R2' 'R8' 'R9' 'R10' 'R17')
-fi
-
 export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
 export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
+
+mapfile -t FIELDS < $CODE_ROOT/data/$SURVEY'_fields.txt'
 
 echo
 echo 'Environment:'
@@ -46,6 +41,7 @@ echo
 echo 'Code: '$CODE_ROOT
 echo 'Gold output dir.: '$GOLD_DIR
 echo 'Randoms output dir: '$RANDOMS_DIR
+echo 'Fields: '${FIELDS[@]}
 
 cd $CODE_ROOT
 

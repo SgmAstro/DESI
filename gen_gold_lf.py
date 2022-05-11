@@ -1,5 +1,6 @@
 import os
 import sys
+import yaml
 import runtime
 import argparse
 import pylab as pl
@@ -14,8 +15,46 @@ from   schechter        import schechter, named_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
-from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature
+from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
+from   jackknife_limits import solve_jackknife, set_jackknife
 
+
+def jackknife_mean(fpath):           
+    print('Appending JK mean and error to lumfn. extension.')
+
+    with fits.open(fpath, mode='update') as hdulist:
+        nphi =  0
+        phis = []
+
+        for i, hdu in enumerate(hdulist):
+            # skip primary.
+            if i > 0:
+                phis.append(hdu.data['PHI_IVMAX'])
+
+                nphi += 1 
+
+        phis  = np.array(phis)
+
+        mean  = np.mean(phis, axis=0)
+
+        err   =  np.std(phis, axis=0)
+
+        hdr   = hdulist['LUMFN'].header
+
+        lumfn = hdulist['LUMFN'].data 
+        lumfn = Table(lumfn, names=lumfn.names)
+
+        lumfn['PHI_IVMAX_JK']       = mean
+        lumfn['PHI_IVMAX_ERROR_JK'] = err 
+
+        lumfn.pprint()
+
+        lumfn = fits.BinTableHDU(lumfn, name='LUMFN', header=hdr)
+
+        hdulist[1] = lumfn
+
+        hdulist.flush()
+        hdulist.close()
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
@@ -48,26 +87,23 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, conservative=conservative, extra_cols=extra_cols)
 
     print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
-    
-    # TODO: Why do we need this?                                                                                                   
-    vmax = vmax[vmax['ZMAX'] >= 0.0]
+
+    vmax.meta['EXTNAME'] = 'VMAX'
     # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
 
-    vmax.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, vmax)
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
-
-    ## TODO: remove bitmasks dependence. 
     result = lumfn(vmax, bitmask='IN_D8LUMFN')
-    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
-    
-    print('Writing {}.'.format(opath))
-    
-    result.write(opath, format='fits', overwrite=True)
 
+    result.meta['EXTNAME'] = 'LUMFN'
+    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
+
+    write_desitable(opath, result)
+    
     return  0
 
 
@@ -124,6 +160,38 @@ if __name__ == '__main__':
 
         process_cat(fpath, opath, survey=survey, fillfactor=False)
 
+        vmax                           = Table.read(opath)
+        rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+
+        # Solve for jack knife limits.
+        njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
+
+        rand_vmax['JK']                = jks
+        rand_vmax.meta['NJACK']        = njack
+        rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
+
+        # Set jack knife limits to data.
+        vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+        vmax.meta['NJACK']             = njack
+        vmax.meta['JK_VOLFRAC']        = jk_volfrac
+
+        # Save jack knife limits.
+        jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+
+        with open(jpath, 'w') as ofile:
+            yaml.dump(dict(limits), ofile, default_flow_style=False)
+
+        print(f'Writing: {jpath}')
+
+        lpath                          = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        jackknife                      = np.arange(njack).astype(int)
+
+        lumfn(vmax, jackknife=jackknife, opath=lpath)
+
+        print(f'Written {lpath}')
+
+        jackknife_mean(lpath)
+
         print('Done.')
 
         if log:
@@ -156,6 +224,8 @@ if __name__ == '__main__':
             utiers = np.arange(len(d8_limits))
                     
         for idx in utiers:
+            print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
+
             ddp_idx   = idx + 1
 
             # Bounded by DDP1 z limits. 
@@ -176,33 +246,82 @@ if __name__ == '__main__':
                 continue 
         
             print('LF process cat. complete.')
-                    
-            result    = Table.read(ddp_opath.replace('vmax', 'lumfn'))        
-            # result.pprint()
 
-            # Single-field values.
-            rand      = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
+            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
 
-            fdelta    = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
-            fdelta_zp = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+            result                         = Table.read(lpath)
+            # result.pprint()                                                                                                                                                                          
+
+            # Single-field values.                                                                                                                                                                       
+            print('Calculating single-field volume fractions.')
+            
+            rand                           = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
+
+            fdelta                         = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp                      = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
             result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+                    
+            # MJW:  Load three-field randoms/meta directly, for e.g. volume fractions. 
+            print('Calculating multi-field volume fractions.')
 
-            # MJW:  Load three-field randoms/meta directly. 
-            rand_vmax = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+            rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
+            rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
 
-            fdelta    = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
-            fdelta_zp = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+            fdelta                         = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp                      = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
-            d8        = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
-            d8_zp     = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+            d8                             = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
+            d8_zp                          = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
+
+            ##  Aside for jack knife.
+            print('Solving for jack knife limits.')
+            
+            njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
+                
+            rand_vmax['JK']                = jks
+            rand_vmax.meta['NJACK']        = njack
+            rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
+
+            print('Setting data jack knife limits.')
+            
+            vmax_path                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
+            vmax                           = Table.read(vmax_path, format='fits')
+            
+            vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
+            vmax.meta['NJACK']             = njack
+            vmax.meta['JK_VOLFRAC']        = jk_volfrac
+        
+            print('Writing jack knife limits yaml')
+
+            jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
+            
+            with open(jpath, 'w') as jfile:
+                yaml.dump(dict(limits), jfile, default_flow_style=False)
+
+            jackknife                      = np.arange(njack).astype(int)
+
+            print('Solving for jacked up luminosity functions.')
+
+            lumfn(vmax, jackknife=jackknife, opath=lpath)
+
+            print('Solving for jacked up luminosity function mean.')
+            
+            jackknife_mean(lpath)
+
+            # Reload result with JK columns.
+            result                         = Table.read(lpath)
+
+            print('Renormalising LUMFN.')
 
             if (fdelta > 0.0) & (fdelta_zp > 0.0):
-                result    = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
+                result = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             
             else:
                 assert dryrun, 'ERROR:  lf renormalisation has failed.'
+
+            print('Solving for reference Schechter.')
 
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
@@ -226,8 +345,6 @@ if __name__ == '__main__':
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
             ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
             
-            print('Writing {}'.format(ddp_opath.replace('vmax', 'lumfn')))
-
             ##  
             keys           = sorted(result.meta.keys())
             
@@ -240,10 +357,37 @@ if __name__ == '__main__':
             hdr            = fits.Header(header)
             result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
-            hdul           = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
+            
+            # hdul         = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
-            hdul.writeto(ddp_opath.replace('vmax', 'lumfn'), overwrite=True, checksum=True)
+            print('Writing {}'.format(lpath))
 
+            with fits.open(lpath, mode='update') as hdulist:
+                assert  hdulist[1].header['EXTNAME'] == 'LUMFN'
+
+                hdulist[1] = result_hdu
+
+                for i, hdu in enumerate(hdulist):
+                    hdr     = hdu.header
+
+                    if 'EXTNAME' not in hdu.header:
+                        continue
+
+                    if 'JK' in hdu.header['EXTNAME']:
+                        extname = hdu.header['EXTNAME']
+
+                        print(f'Updating {extname}')
+
+                        result_jk = Table(hdu.data, names=hdu.data.names)
+                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count)
+                        result_jk = fits.BinTableHDU(result_jk, name=extname, header=hdr)
+
+                        hdulist[i] = result_jk
+
+                hdulist.append(ref_result_hdu)
+                hdulist.flush()
+                hdulist.close()
+            
         print('Done.')
 
         if log:

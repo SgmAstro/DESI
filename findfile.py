@@ -11,10 +11,10 @@ import astropy.io.fits as   fits
 from   collections     import OrderedDict
 from   astropy.table   import Table, vstack
 from   delta8_limits   import d8_limits
-from   gama_fields     import gama_fields
-from   desi_fields     import desi_fields
 from   astropy.io.fits import getval, getheader
 from   utils           import run_command
+from   pkg_resources   import resource_filename
+
 
 supported = ['gold',\
              'kE',\
@@ -91,7 +91,7 @@ def write_desitable(opath, table, test=False):
 
     cmds   = []
     cmds.append(f'chgrp desi {opath}')
-    cmds.append(f'chmod  770 {opath}')
+    cmds.append(f'chmod  700 {opath}')
     
     for cmd in cmds:
         output = subprocess.check_output(cmd, shell=True)
@@ -99,14 +99,10 @@ def write_desitable(opath, table, test=False):
         print(cmd, output)
 
 def fetch_fields(survey):
-    if survey == 'gama':
-        fields = gama_fields   
+    assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
 
-    elif survey == 'desi':
-        fields = desi_fields
-
-    else:
-        raise NotImplementedError
+    fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
+    fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
 
     return fields
 
@@ -218,6 +214,15 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     # Special cases:                                                                                                                                                                                      
     if ftype == 'config':
         return gold_dir + '/configs/config.yaml'
+
+    if ftype == 'jackknife':
+        if dryrun:
+            dryrun = '_dryrun'
+
+        else:
+            dryrun = ''
+
+        return gold_dir + '/randoms/jackknife{}{}.yaml'.format(prefix.replace('randoms', ''), dryrun)
 
     if survey == None:
         survey = 'gama'
@@ -409,6 +414,10 @@ if __name__ == '__main__':
     
     # print('\n\nSuccess: {}\n\n'.format(~failure))
 
-    safe_reset(printonly=True)
+    # safe_reset(printonly=True)
     
     # fetch_header('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_R1_0.fits', name='IMMUTABLE')
+    
+    fields = fetch_fields('desi')
+
+    print(fields)

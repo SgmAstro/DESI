@@ -5,3 +5,8 @@ bin/*~
 bin/test.sh
 bin/*.log
 bin/custom
+.ipynb_checkpoints/
+__pycache__/
+bin/__pycache__/
+bin/deprecated/
+*.pyc

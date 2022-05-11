@@ -206,7 +206,7 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 if __name__ == '__main__':
     # --log
     # Sbatch: python3 pipeline.py --survey gama --use_sbatch --queue cosma --reset                                                                                                               
-    # Head:   python3 pipeline.py --survey desi                                                                                                                                                            
+    # Head:   python3 pipeline.py --survey desi --dryrun                                                                                                                                                 
     # 
     # Note:   use sinfo to see available nodes to each queue.
     # 

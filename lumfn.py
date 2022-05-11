@@ -1,7 +1,10 @@
-import numpy         as     np
+import fitsio
+import subprocess
+import astropy.io.fits as      fits
+import numpy           as      np
 
-from   astropy.table import Table
-from   cosmo         import volcom
+from   astropy.table   import  Table
+from   cosmo           import  volcom
 
 
 def multifield_lumfn(lumfn_list, ext=None, weight=None):
@@ -70,18 +73,40 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN'):
-    dat   = Table(dat, copy=True)
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jackknife=None, opath=None):
+    if type(jackknife) == np.ndarray:
+        for jk in jackknife:
+            lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=int(jk), opath=opath)
 
+        return 0
+    
+    elif type(jackknife) == int:
+        pass
+
+    elif jackknife is None:
+        pass
+
+    else:
+        raise ValueError('Unsupported jackknife of type {}'.format(type(jackknife)))
+                
+    dat   = Table(dat, copy=True)
     dat   = dat[dat[bitmask] == 0]
 
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']
     
-    # assert  dat[Mcol].min() >= Ms.min()
-    # assert  dat[Mcol].max() <= Ms.max()
-
     # default:  bins[i-1] <= x < bins[i]
+    
+    if jackknife is not None:
+        print('Solving for jack knife {}'.format(jackknife))
+
+        jk_volfrac = dat.meta['JK_VOLFRAC']
+
+        vol       *= jk_volfrac
+
+        dat        = dat[dat['JK'] != f'JK{jackknife}']
+        dvmax      = jk_volfrac * dat['VMAX'].data
+    
     idxs   = np.digitize(dat[Mcol], bins=Ms)
 
     result = []
@@ -119,15 +144,39 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
                        nsample,
                        median_vmax])
 
-        print(result[-1])
-
     names  = ['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)
-    
-    result.meta['MS']         = str(['{:.4f}'.format(x) for x in Ms.tolist()])
-    result.meta['VOLUME']     = vol
-    result.meta['ABSMAG_DEF'] = Mcol
 
-    return  result 
+    result.pprint()
+    
+    result.meta['MS']             = str(['{:.4f}'.format(x) for x in Ms.tolist()])
+    result.meta['VOLUME']         = vol
+    result.meta['ABSMAG_DEF']     = Mcol
+    
+    if jackknife is not None:        
+        result.meta['EXTNAME']    = 'LUMFN_JK{}'.format(jackknife)
+        result.meta['RENORM']     = 'FALSE'
+        result.meta['JK_VOLFRAC'] = dat.meta['JK_VOLFRAC']
+        result.meta['NJACK']      = dat.meta['NJACK']
+        result                    = fits.convenience.table_to_hdu(result)
+
+        with fits.open(opath, mode='update') as hdulist:
+            hdulist.append(result)
+            hdulist.flush()  
+            hdulist.close()
+
+        cmds   = []
+        cmds.append(f'chgrp desi {opath}')
+        cmds.append(f'chmod  700 {opath}')
+
+        for cmd in cmds:
+            output = subprocess.check_output(cmd, shell=True)
+
+            print(cmd, output)
+
+        return  0
+
+    else:
+        return  result 

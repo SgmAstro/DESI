@@ -1,7 +1,8 @@
 import numpy as np
 
+from findfile import fetch_fields
 
-gama_fields = np.array(['G9', 'G12', 'G15'], dtype=np.str)
+gama_fields = fetch_fields('gama')
 
 # from https://github.com/michaelJwilson/lumfn/blob/master/py/lumfn/GAMA4/in_gama.py
 gama_limits = {gama_fields[0]: {'ra_min': 129.,  'ra_max': 141.,  'dec_min': -2., 'dec_max': 3.},
@@ -24,3 +25,6 @@ def gama_field(ras, decs):
 
     return  result
 
+
+if __name__ == '__main__': 
+    print(gama_fields)

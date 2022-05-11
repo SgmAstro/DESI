@@ -253,15 +253,19 @@ if __name__ == '__main__':
             # result.pprint()                                                                                                                                                                          
 
             # Single-field values.                                                                                                                                                                       
-            rand      = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
+            print('Calculating single-field volume fractions.')
+            
+            rand                           = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
 
-            fdelta    = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
-            fdelta_zp = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
+            fdelta                         = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
+            fdelta_zp                      = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
 
             result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
             result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
                     
             # MJW:  Load three-field randoms/meta directly, for e.g. volume fractions. 
+            print('Calculating multi-field volume fractions.')
+
             rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
             rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
 
@@ -272,11 +276,15 @@ if __name__ == '__main__':
             d8_zp                          = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
 
             ##  Aside for jack knife.
+            print('Solving for jack knife limits.')
+            
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
                 
             rand_vmax['JK']                = jks
             rand_vmax.meta['NJACK']        = njack
             rand_vmax.meta['JK_VOLFRAC']   = jk_volfrac
+
+            print('Setting data jack knife limits.')
             
             vmax_path                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
             vmax                           = Table.read(vmax_path, format='fits')
@@ -285,6 +293,8 @@ if __name__ == '__main__':
             vmax.meta['NJACK']             = njack
             vmax.meta['JK_VOLFRAC']        = jk_volfrac
         
+            print('Writing jack knife limits yaml')
+
             jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)
             
             with open(jpath, 'w') as jfile:
@@ -292,18 +302,26 @@ if __name__ == '__main__':
 
             jackknife                      = np.arange(njack).astype(int)
 
+            print('Solving for jacked up luminosity functions.')
+
             lumfn(vmax, jackknife=jackknife, opath=lpath)
+
+            print('Solving for jacked up luminosity function mean.')
             
             jackknife_mean(lpath)
 
             # Reload result with JK columns.
             result                         = Table.read(lpath)
 
+            print('Renormalising LUMFN.')
+
             if (fdelta > 0.0) & (fdelta_zp > 0.0):
                 result = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
             
             else:
                 assert dryrun, 'ERROR:  lf renormalisation has failed.'
+
+            print('Solving for reference Schechter.')
 
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
             result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
@@ -348,20 +366,24 @@ if __name__ == '__main__':
                 assert  hdulist[1].header['EXTNAME'] == 'LUMFN'
 
                 hdulist[1] = result_hdu
-                '''
+
                 for i, hdu in enumerate(hdulist):
                     hdr     = hdu.header
-                    extname = hdu.header['EXTNAME']
 
-                    if 'JK' in extname:
+                    if 'EXTNAME' not in hdu.header:
+                        continue
+
+                    if 'JK' in hdu.header['EXTNAME']:
+                        extname = hdu.header['EXTNAME']
+
                         print(f'Updating {extname}')
 
                         result_jk = Table(hdu.data, names=hdu.data.names)
-                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count, cols=['PHI_IVMAX_JK', 'PHI_IVMAX_ERROR_JK'])
+                        result_jk = renormalise_d8LF(idx, result_jk, fdelta, fdelta_zp, self_count)
                         result_jk = fits.BinTableHDU(result_jk, name=extname, header=hdr)
 
                         hdulist[i] = result_jk
-                '''
+
                 hdulist.append(ref_result_hdu)
                 hdulist.flush()
                 hdulist.close()

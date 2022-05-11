@@ -4,11 +4,17 @@ DESI Change Log
 
 5.0.1 (2022-April-27)
 -------------------
-* restict to fillfactor > 0.8 for volfracs.
+* Restict to fillfactor > 0.8 for volfracs.
   (PR `#165`_).
-* more careful header updates in gen_ddp_n8.
+* More careful header updates in gen_ddp_n8.
 * Multiple realisations (16) of DESI randoms (PR #174)
 * Extension to all DESI rosettes rather than GAMA (PR #174)
+* Change default rosette radii to allow low completeness regions (PR #174)
+* Remove survey specifics in favor of propagated header info (PR #174)
+* Limit DDP N8 counting to each single field (PR #174)
+* More control of propagated header info (PR #174)
+* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR #174)
+* Possibility of weights in multi-field luminosity function (PR #174)
   
 .. _`#165`: https://github.com/desihub/redrock/pull/165
 
@@ -35,8 +41,10 @@ Note: Major changes
 * suppress merge conflict warnings (PR `#155`_).
 * fix bug in submit.py for logs (PR `#155`_).
 * fix bug in volfracs calc.: ddp1_rand = rand[rand['DDPZLIMS'][:,0] == 1] (PR `#155`_).
-* fix bug where fillfactor_vmax was incorrectly wrapped by vmaxer.
-* make selfcount_volfracs a default.
-* fix failure to pass $SURVEYARG to ddp_limits. 
+* fix bug where fillfactor_vmax was incorrectly wrapped by vmaxer (PR `#155`_).
+* make selfcount_volfracs a default (PR `#155`_).
+* fix failure to pass $SURVEYARG to ddp_limits (PR `#155`_). 
+* single origin for survey field definition (PR `#155`_).
+* safe_reset: remove run files, but ignore immutable (PR `#155`_). 
 
 .. _`#155`: https://github.com/desihub/redrock/pull/155

@@ -242,9 +242,7 @@ if __name__ == '__main__':
             lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
 
             result                         = Table.read(lpath)
-            # result.pprint()                                                                                                                                                                          
 
-            # MJW:  Load three-field randoms/meta directly, for e.g. volume fractions. 
             print('Calculating multi-field volume fractions.')
 
             rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
@@ -255,12 +253,6 @@ if __name__ == '__main__':
 
             d8                             = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp                          = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
-
-            # Update lumfn.fits with volfracs etc.
-            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
-            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
-            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
-            result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
             
             print('Solving for jack knife limits.')
             
@@ -286,7 +278,7 @@ if __name__ == '__main__':
             with open(jpath, 'w') as jfile:
                 yaml.dump(dict(limits), jfile, default_flow_style=False)
 
-            jackknife                      = np.arange(njack).astype(int)
+            jackknife                      = np.arange(njack)
 
             print('Solving for jacked up luminosity functions.')
 
@@ -314,15 +306,21 @@ if __name__ == '__main__':
 
             result['REF_RATIO']      = result['PHI_IVMAX'] / result['REF_SCHECHTER']
 
+            # Update lumfn.fits with volfracs etc.                                                                                                                                                         
+            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
+            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
+            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+            result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
+
             print('LF renormalization and ref. schechter complete.')
             
             result.pprint()
 
             # Reference Schechter - finer binning
-            sch_Ms = np.arange(-23., -15., 1.e-3)
+            sch_Ms     = np.arange(-23., -15., 1.e-3)
 
-            sch    = named_schechter(sch_Ms, named_type='TMR')
-            sch   *= (1. + d8) / (1. + 0.007)
+            sch        = named_schechter(sch_Ms, named_type='TMR')
+            sch       *= (1. + d8) / (1. + 0.007)
 
             ##
             ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'REFSCHECHTER'])            
@@ -331,20 +329,18 @@ if __name__ == '__main__':
             ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
             ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
             
-            ##  
-            keys           = sorted(result.meta.keys())
-            
-            header         = {}
+            keys            = sorted(result.meta.keys())
+            header          = {}
             
             for key in keys:
                 header[key] = str(result.meta[key])
 
-            primary_hdu    = fits.PrimaryHDU()
-            hdr            = fits.Header(header)
-            result_hdu     = fits.BinTableHDU(result, name='LUMFN', header=hdr)
-            ref_result_hdu = fits.BinTableHDU(ref_result, name='REFERENCE')
+            primary_hdu     = fits.PrimaryHDU()
+            hdr             = fits.Header(header)
+            result_hdu      = fits.BinTableHDU(result, name='LUMFN', header=hdr)
+            ref_result_hdu  = fits.BinTableHDU(ref_result, name='REFERENCE')
             
-            # hdul         = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
+            # hdul          = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
 
             print('Writing {}'.format(lpath))
 

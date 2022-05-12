@@ -62,7 +62,8 @@ opath   = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey
 
 if nooverwrite:
     overwrite_check(opath)
-    
+
+# Should be solid angle and DDP1 z-limit defined randoms.     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
 
@@ -132,16 +133,16 @@ rand['DDP3_DELTA8_ZEROPOINT'] = ((1 + rand['DDP3_N8']) / (rand.meta['VOL8'] * da
 
 rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
 
+# Meeting sphere-completeness cut.  Ultimately, this will correct VMAX from solid angle and DDP1                                                                                                         
+# redshift limits to that meeting the completeness cut (in volume).                                                                                                                                        
+#                                                                                                                                                                                                         
+# TODO/Note: Is there a double counting element here? 
+rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+
 for ii, xx in enumerate(d8_limits):
     rand.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-# Meeting sphere-completeness cut.  Ultimately, this will correct VMAX from solid angle and DDP1 
-# redshift limits to that meeting the completeness cut (in volume).
-#
-# TODO/Note: Is there a double counting element here?
-rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
-
-# Single field values defined in header.
+# Single-field values defined in header.
 rand    = volfracs(rand, bitmasks=['IN_D8LUMFN'])
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)

@@ -4,6 +4,11 @@ from   delta8_limits import d8_limits
 
 
 def volfracs(rand, bitmasks=['IN_D8LUMFN']):
+    '''
+    Calculate volume fractions, typically used to rescale VMAX from solid angle and 
+    (DDP1) redshift defined to account for e.g. density restrictions and sphere completeness
+    restrictions.
+    '''
     utiers    = np.unique(rand['DDP1_DELTA8_TIER'].data)
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
@@ -22,6 +27,7 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
         in_tier = (ddp1_rand['DDP1_DELTA8_TIER'].data == ut)
 
         for bm in bitmasks:
+            # At least a cut on sphere completeness.
             in_tier &= (ddp1_rand[bm].data == 0)
 
             print(bm, np.mean(in_tier))

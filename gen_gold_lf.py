@@ -213,8 +213,7 @@ if __name__ == '__main__':
         assert  field != None
 
         prefix = 'randoms_ddp1'
-
-        rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
+        rpath  = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
         
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 

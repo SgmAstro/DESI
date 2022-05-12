@@ -96,8 +96,8 @@ dat['FILLFACTOR_VMAX'] = -99.
 
 print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].data.min(), dat['ZMAX'].data.max()))
 
-_idxs                  = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
-volavg_fillfrac        = 0.0
+_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
+volavg_fillfrac     = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
@@ -186,10 +186,10 @@ print('Writing {}'.format(opath))
 write_desitable(opath, dat)
 
 #  ----  Generate ddp_n8_d0 files for LF(d8) files, limited to DDP1 (and redshift range)  ----
-dat = dat[(dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])]
+dat                     = dat[(dat['ZSURV'] > dat.meta['DDP1_ZMIN']) & (dat['ZSURV'] < dat.meta['DDP1_ZMAX'])]
 dat['DDP1_DELTA8_TIER'] = delta8_tier(dat['DDP1_DELTA8'])
 
-utiers = np.unique(dat['DDP1_DELTA8_TIER'].data)
+utiers                  = np.unique(dat['DDP1_DELTA8_TIER'].data)
 
 if -99 in utiers:
     utiers = utiers.tolist()    

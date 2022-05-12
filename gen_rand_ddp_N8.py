@@ -16,6 +16,7 @@ from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
 from   volfracs          import volfracs
+from   bitmask           import lumfn_mask, consv_mask
 
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
@@ -123,7 +124,7 @@ rand['DDP1_DELTA8']   = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_D
 rand['DDP2_DELTA8']   = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8']   = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
-rand['DDP1_DELTA8_TIER']        = delta8_tier(rand['DDP1_DELTA8'].data)
+rand['DDP1_DELTA8_TIER']      = delta8_tier(rand['DDP1_DELTA8'].data)
 
 rand['DDP1_DELTA8_ZEROPOINT'] = ((1 + rand['DDP1_N8']) / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8_ZEROPOINT'] = ((1 + rand['DDP2_N8']) / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
@@ -134,8 +135,14 @@ rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
 for ii, xx in enumerate(d8_limits):
     rand.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-# TODO:  Handle bitmasks such that cut is not assumed to be fillfactor > 0.8 only.
-rand = volfracs(rand)
+# Meeting sphere-completeness cut.  Ultimately, this will correct VMAX from solid angle and DDP1 
+# redshift limits to that meeting the completeness cut (in volume).
+#
+# TODO/Note: Is there a double counting element here?
+rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+
+# Single field values defined in header.
+rand    = volfracs(rand, bitmasks=['IN_D8LUMFN'])
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

@@ -13,6 +13,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
     rand   = vstack([Table.read(xx) for xx in rpaths])
 
+    # TODO Update bit rather than straight addition.
     rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
     
     rand   = volfracs(rand, bitmasks=bitmasks)    

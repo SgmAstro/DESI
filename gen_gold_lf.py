@@ -56,7 +56,7 @@ def jackknife_mean(fpath):
         hdulist.flush()
         hdulist.close()
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=[], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -84,12 +84,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     if field != None:
         assert  len(found_fields) == 1, 'ERROR: expected single-field restricted input, e.g. G9.'
 
-    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, conservative=conservative, extra_cols=extra_cols)
-
-    print('WARNING:  Found {:.3f}% with zmax < 0.0'.format(100. * np.mean(vmax['ZMAX'] <= 0.0)))
-
+    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols)
     vmax.meta['EXTNAME'] = 'VMAX'
-    # vmax.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
         
     print('Writing {}.'.format(opath))
 
@@ -97,10 +93,9 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
-    result = lumfn(vmax, bitmask='IN_D8LUMFN')
 
+    result = lumfn(vmax, bitmask='IN_D8LUMFN')
     result.meta['EXTNAME'] = 'LUMFN'
-    # result.meta['INPUT_CAT'] = fpath.replace(os.environ['GOLD_DIR'], '$GOLD_DIR')
 
     write_desitable(opath, result)
     
@@ -225,17 +220,15 @@ if __name__ == '__main__':
         for idx in utiers:
             print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
 
-            ddp_idx   = idx + 1
-
             # Bounded by DDP1 z limits. 
-            ddp_fpath = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
-            ddp_opath = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
+            ddp_fpath   = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
+            ddp_opath   = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
 
             try:
-                failure   = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
+                failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
 
             except Exception as E:
                 print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
@@ -251,17 +244,6 @@ if __name__ == '__main__':
             result                         = Table.read(lpath)
             # result.pprint()                                                                                                                                                                          
 
-            # Single-field values.                                                                                                                                                                       
-            print('Calculating single-field volume fractions.')
-            
-            rand                           = Table.read(findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix))
-
-            fdelta                         = float(rand.meta['DDP1_d{}_VOLFRAC'.format(idx)])
-            fdelta_zp                      = float(rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
-
-            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
-            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
-                    
             # MJW:  Load three-field randoms/meta directly, for e.g. volume fractions. 
             print('Calculating multi-field volume fractions.')
 
@@ -274,7 +256,12 @@ if __name__ == '__main__':
             d8                             = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)])
             d8_zp                          = float(rand_vmax.meta['DDP1_d{}_TIERMEDd8'.format(idx)])
 
-            ##  Aside for jack knife.
+            # Update lumfn.fits with volfracs etc.
+            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta)
+            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8)
+            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6e}'.format(fdelta_zp)
+            result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6e}'.format(d8_zp)
+            
             print('Solving for jack knife limits.')
             
             njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)

@@ -73,7 +73,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D8LUMFN', jackknife=None, opath=None):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
             lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=int(jk), opath=opath)
@@ -90,7 +90,6 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', bitmask='IN_D
         raise ValueError('Unsupported jackknife of type {}'.format(type(jackknife)))
                 
     dat   = Table(dat, copy=True)
-    dat   = dat[dat[bitmask] == 0]
 
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']

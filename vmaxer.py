@@ -13,32 +13,16 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
     rand   = vstack([Table.read(xx) for xx in rpaths])
 
-    '''
-    if conservative:
-        rand['CONSERVATIVE'] += (rand['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
-    
-        isin                  = (rand['ZSURV'] < 0.9 * rand.meta['DDP1_ZMAX']) & (rand['ZSURV'] > 1.1 * rand.meta['DDP1_ZMIN'])
-        rand['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM
-    '''
-
     rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
     
-    # TODO: replace with general bitmasks.
-    rand = volfracs(rand, bitmasks=bitmasks)    
+    rand   = volfracs(rand, bitmasks=bitmasks)    
 
     return  rand
 
-def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
+def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN']):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
-    # HACK BUG TODO MJW
-    try:
-        dat['RA']  = dat['TARGET_RA']
-        dat['DEC'] = dat['TARGET_DEC']
-    except:
-        pass
-        
     # Columns to be propagated
     extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC']
 
@@ -48,9 +32,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     if fillfactor == True:
         extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
         
-    if conservative == True:
-        extra_cols += ['CONSERVATIVE']
-
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))
 
@@ -61,6 +42,10 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     result      = result[result['ZSURV'] >= zmin]
     result      = result[result['ZSURV'] <= zmax]
     
+    # Apply bitmask cut. 
+    for bmask in bitmasks:
+        result  = result[result[bmask] == 0]
+
     result.meta.update({'FORCE_ZMIN': zmin,\
                         'FORCE_ZMAX': zmax})
 
@@ -85,7 +70,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
     result['VZ']    = volcom(result['ZSURV'], area)
     result['VZ']   -= volcom(result['ZMIN'], area)
 
-    result.meta['CONSERVATIVE'] = conservative
     result.meta['FILLFACTOR']   = fillfactor
 
     if fillfactor:
@@ -97,10 +81,4 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, conservative=False):
 
         result['VMAX']           *= result['FILLFACTOR_VMAX']
     
-    if conservative:
-        result['CONSERVATIVE'] += (result['BOUND_DIST'].data < 8.) * consv_mask.BOUNDDIST
-
-        isin                    = (result['ZSURV'] < 0.9 * result.meta['DDP1_ZMAX']) & (dat['ZSURV'] > 1.1 * result.meta['DDP1_ZMIN'])                                                                    
-        result['CONSERVATIVE'][~isin] += consv_mask.DDP1ZLIM 
-
     return  result

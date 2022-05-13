@@ -299,8 +299,6 @@ if __name__ == '__main__':
             result_hdu      = fits.BinTableHDU(result, name='LUMFN', header=hdr)
             ref_result_hdu  = fits.BinTableHDU(ref_result, name='REFERENCE')
             
-            # hdul          = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
-
             print('Writing {}'.format(lpath))
 
             with fits.open(lpath, mode='update') as hdulist:

@@ -11,7 +11,7 @@ from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
 from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat, write_desitable
 from   config        import Configuration
-from   bitmask       import lumfn_mask, consv_mask
+from   bitmask       import lumfn_mask, consv_mask, update_bit
 from   delta8_limits import d8_limits
 from   runtime       import calc_runtime
 
@@ -90,7 +90,8 @@ dat['RANDSEP']     = dd
 dat['RANDMATCH']   = rand['RANDID'][ii]
 dat['BOUND_DIST']  = rand['BOUND_DIST'][ii]
 dat['FILLFACTOR']  = rand['FILLFACTOR'][ii]
-dat['IN_D8LUMFN'] += (dat['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+
+update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', dat['FILLFACTOR'].data < 0.8)
 
 dat['FILLFACTOR_VMAX'] = -99.
 

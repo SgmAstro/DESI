@@ -104,7 +104,8 @@ def gama_gold(argset):
     '''
     if argset.in_bgsbright:
         offset             = survey_specifics('desi')['pet_offset']
-        dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
+
+        update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'INBGSBRIGHT', dat['DETMAG'].data + offset < 19.5)
     '''
     
     # Randomise rows.

@@ -12,7 +12,6 @@ from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
-from   bitmask           import lumfn_mask, consv_mask
 from   config            import Configuration
 
 

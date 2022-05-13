@@ -45,7 +45,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     # Apply bitmask cut. 
     for bmask in bitmasks:
         isin    = result[bmask] == 0
-
         result  = result[isin]
 
         print(bmask, np.mean(isin))
@@ -74,7 +73,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     result['VZ']    = volcom(result['ZSURV'], area)
     result['VZ']   -= volcom(result['ZMIN'], area)
 
-    result.meta['FILLFACTOR']   = fillfactor
+    result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
         # Wrap volavg fillfactor(< z) required for vmax.

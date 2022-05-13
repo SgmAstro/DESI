@@ -15,7 +15,6 @@ from   astropy.table   import Table
 from   multiprocessing import Pool
 from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
-from   bitmask         import lumfn_mask, consv_mask
 from   config          import Configuration
 
 '''

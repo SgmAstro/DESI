@@ -76,7 +76,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
 def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
-            lumfn(dat, Ms=Ms, Mcol=Mcol, bitmask=bitmask, jackknife=int(jk), opath=opath)
+            lumfn(dat, Ms=Ms, Mcol=Mcol, jackknife=int(jk), opath=opath)
 
         return 0
     

@@ -19,9 +19,11 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
     utiers_zp = np.unique(rand['DDP1_DELTA8_TIER_ZEROPOINT'].data)
 
     utiers    = utiers[utiers >= 0]
+    utiers_zp = utiers_zp[utiers_zp >= 0]
 
     print('Unique tiers: {}'.format(utiers))
 
+    # Limit randoms to DDP1 redshift limits. 
     ddp1_rand = rand[rand['DDPZLIMS'][:,0] == 1]
 
     print('DDP1 randoms: {:.6f} < z < {:.6f}'.format(ddp1_rand['Z'].min(), ddp1_rand['Z'].max()))
@@ -54,9 +56,6 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
 
         # Zero point.                                                                                                                                                                                      
         in_tier = (ddp1_rand['DDP1_DELTA8_TIER_ZEROPOINT'].data == ut) 
-
-        for bm in bitmasks:
-            in_tier &= (ddp1_rand[bm].data == 0)
 
         if np.count_nonzero(in_tier) > 0:
             rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(ut)]   = '{:.6f}'.format(np.mean(in_tier))

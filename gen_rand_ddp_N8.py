@@ -88,7 +88,7 @@ del points
 
 gc.collect()
 
-# Calculate DDP1/2/3 for each random. 
+# Calculate DDP1/2/3 8-sphere counts for each random. 
 for idx in range(3):
     ddp_idx      = idx + 1
 
@@ -114,7 +114,6 @@ ddp3_zmax           = dat.meta['DDP3_ZMAX']
 
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
-# TODO: IN_DDP column akin to galaxies.
 rand['DDPZLIMS']      = np.zeros(len(rand) * 3, dtype=int).reshape(len(rand), 3)
 
 rand['DDPZLIMS'][:,0] = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
@@ -127,6 +126,7 @@ rand['DDP3_DELTA8']   = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_D
 
 rand['DDP1_DELTA8_TIER']      = delta8_tier(rand['DDP1_DELTA8'].data)
 
+# Same again, but random included in sphere-8 count for volume fractions used within DDP1 magnitude limits.
 rand['DDP1_DELTA8_ZEROPOINT'] = ((1 + rand['DDP1_N8']) / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8_ZEROPOINT'] = ((1 + rand['DDP2_N8']) / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8_ZEROPOINT'] = ((1 + rand['DDP3_N8']) / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.

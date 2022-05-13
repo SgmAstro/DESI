@@ -16,47 +16,10 @@ from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
-from   jackknife_limits import solve_jackknife, set_jackknife
+from   jackknife_limits import solve_jackknife, set_jackknife, jackknife_mean
 
 
-def jackknife_mean(fpath):           
-    print('Appending JK mean and error to lumfn. extension.')
-
-    with fits.open(fpath, mode='update') as hdulist:
-        nphi =  0
-        phis = []
-
-        for i, hdu in enumerate(hdulist):
-            # skip primary.
-            if i > 0:
-                phis.append(hdu.data['PHI_IVMAX'])
-
-                nphi += 1 
-
-        phis  = np.array(phis)
-
-        mean  = np.mean(phis, axis=0)
-
-        err   =  np.std(phis, axis=0)
-
-        hdr   = hdulist['LUMFN'].header
-
-        lumfn = hdulist['LUMFN'].data 
-        lumfn = Table(lumfn, names=lumfn.names)
-
-        lumfn['PHI_IVMAX_JK']       = mean
-        lumfn['PHI_IVMAX_ERROR_JK'] = err 
-
-        lumfn.pprint()
-
-        lumfn = fits.BinTableHDU(lumfn, name='LUMFN', header=hdr)
-
-        hdulist[1] = lumfn
-
-        hdulist.flush()
-        hdulist.close()
-
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, stepwise=False, version='GAMA4'):        
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, stepwise=False):        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -111,7 +74,6 @@ if __name__ == '__main__':
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
-    parser.add_argument('--version', help='Version', default='GAMA4')
     parser.add_argument('--conservative', help='Conservative analysis choices', action='store_true')
     
     args          = parser.parse_args()
@@ -122,7 +84,6 @@ if __name__ == '__main__':
     survey        = args.survey
     density_split = args.density_split
     self_count    = args.selfcount_volfracs
-    version       = args.version
     conservative  = args.conservative
     
     if not density_split:
@@ -143,9 +104,8 @@ if __name__ == '__main__':
 
         prefix = 'randoms'
         
-        # MJW/HACK:  repeated calls in this script to specify version == GAMA4? 
-        fpath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-        opath  = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
+        fpath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix)
+        opath  = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -178,8 +138,8 @@ if __name__ == '__main__':
 
         print(f'Writing: {jpath}')
 
-        lpath                          = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix, version=version)
-        jackknife                      = np.arange(njack).astype(int)
+        lpath                          = findfile(ftype='lumfn', dryrun=dryrun, survey=survey, prefix=prefix)
+        jackknife                      = np.arange(njack)
 
         lumfn(vmax, jackknife=jackknife, opath=lpath)
 
@@ -194,7 +154,7 @@ if __name__ == '__main__':
 
     else:
         if log:
-            # TODO NOTE: Do not support version.
+            # HACK
             logfile = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, survey=survey, log=True).replace('vmax', 'lumfn').replace('_{utier}', '')
                         
             print(f'Logging to {logfile}')
@@ -208,7 +168,7 @@ if __name__ == '__main__':
         assert  field != None
 
         prefix = 'randoms_ddp1'
-        rpath  = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, version=version)
+        rpath  = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
         
         if dryrun:
             # A few galaxies have a high probability to be in highest density only. 
@@ -221,8 +181,8 @@ if __name__ == '__main__':
             print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
 
             # Bounded by DDP1 z limits. 
-            ddp_fpath   = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
-            ddp_opath   = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix, version=version)
+            ddp_fpath   = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
+            ddp_opath   = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx, prefix=prefix)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
@@ -239,7 +199,7 @@ if __name__ == '__main__':
         
             print('LF process cat. complete.')
 
-            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix, version=version)
+            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix)
 
             result                         = Table.read(lpath)
 

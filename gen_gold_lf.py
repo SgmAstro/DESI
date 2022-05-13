@@ -94,7 +94,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
     ##  Luminosity fn.
     opath  = opath.replace('vmax', 'lumfn')
 
-    result = lumfn(vmax, bitmask='IN_D8LUMFN')
+    result = lumfn(vmax)
     result.meta['EXTNAME'] = 'LUMFN'
 
     write_desitable(opath, result)

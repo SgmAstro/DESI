@@ -2,7 +2,7 @@ import numpy           as     np
 
 from   astropy.table   import Table, vstack
 from   cosmo           import volcom
-from   bitmask         import lumfn_mask, consv_mask
+from   bitmask         import lumfn_mask, consv_mask, update_bit
 from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields
 
@@ -13,8 +13,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
     rand   = vstack([Table.read(xx) for xx in rpaths])
 
-    # TODO Update bit rather than straight addition.
-    rand['IN_D8LUMFN'] += (rand['FILLFACTOR'].data < 0.8) * lumfn_mask.FILLFACTOR
+    update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < 0.8)
     
     rand   = volfracs(rand, bitmasks=bitmasks)    
 
@@ -45,7 +44,11 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     
     # Apply bitmask cut. 
     for bmask in bitmasks:
-        result  = result[result[bmask] == 0]
+        isin    = result[bmask] == 0
+
+        result  = result[isin]
+
+        print(bmask, np.mean(isin))
 
     result.meta.update({'FORCE_ZMIN': zmin,\
                         'FORCE_ZMAX': zmax})

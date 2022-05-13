@@ -1,11 +1,12 @@
-'''
-Taken from desiutil/bitmask.py
-'''
-
 import yaml
+import numpy as np
+
 
 class _MaskBit(int):
-    """A single mask bit.
+    """
+    Taken from desiutil/bitmask.py
+
+    A single mask bit.
     Subclasses :class:`int` to act like an :class:`int`, but allows the
     ability to extend with blat.name, blat.comment, blat.mask, blat.bitnum.
     Attributes
@@ -202,9 +203,19 @@ class BitMask(object):
             result.append(line)
 
         return "\n".join(result)
-    
-    
-# TODO: Wrap in main?
+
+def not_set(mask, attribute, column):
+    return  (column.data & getattr(mask, attribute)) == 0
+
+def update_bit(column, mask, attribute, updates):
+    ns = not_set(mask, attribute, column)
+
+    print('{} has fraction {} not set.'.format(attribute, np.mean(ns)))
+
+    column.data[updates & ns] += getattr(mask, attribute) 
+
+    print('{} has fraction {} now set.'.format(attribute, np.mean(updates & ns)))
+
 _bitdefs = yaml.safe_load('''
     lumfn_mask:
      - [DDP1ZLIM,     0, "Galaxy not in DDP limits"]

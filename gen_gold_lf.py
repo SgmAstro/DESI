@@ -19,7 +19,7 @@ from   findfile         import findfile, fetch_fields, overwrite_check, gather_c
 from   jackknife_limits import solve_jackknife, set_jackknife, jackknife_mean
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, stepwise=False):        
+def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False):        
     assert 'vmax' in vmax_opath
 
     opath = vmax_opath
@@ -188,7 +188,7 @@ if __name__ == '__main__':
             print('Reading: {}'.format(ddp_fpath))
 
             try:
-                failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, stepwise=False)
+                failure = process_cat(ddp_fpath, ddp_opath, field=field, rand_paths=[rpath], extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
 
             except Exception as E:
                 print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
@@ -200,7 +200,6 @@ if __name__ == '__main__':
             print('LF process cat. complete.')
 
             lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx, prefix=prefix)
-
             result                         = Table.read(lpath)
 
             print('Calculating multi-field volume fractions.')

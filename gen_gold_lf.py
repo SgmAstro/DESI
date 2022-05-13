@@ -223,7 +223,7 @@ if __name__ == '__main__':
 
             print('Setting data jack knife limits.')
             
-            vmax_path                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=False, field=field, utier=idx, survey=survey)
+            vmax_path                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, utier=idx, survey=survey)
             vmax                           = Table.read(vmax_path, format='fits')
             
             vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)

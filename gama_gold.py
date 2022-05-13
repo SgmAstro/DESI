@@ -44,8 +44,7 @@ def gama_gold(argset):
         if x not in ['VERSION', 'DATE']:
             del dat.meta[x]
 
-    specifics        = survey_specifics('gama')
-    dat.meta['AREA'] = specifics['area']
+    dat.meta['AREA'] = 5. * 12.
     
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
@@ -102,6 +101,8 @@ def gama_gold(argset):
     dat['DETMAG'] = dat['R_PETRO']
     
     '''
+    Note: survey_specifics is deprecated
+
     if argset.in_bgsbright:
         offset             = survey_specifics('desi')['pet_offset']
 

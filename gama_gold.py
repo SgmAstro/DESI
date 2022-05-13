@@ -44,7 +44,7 @@ def gama_gold(argset):
         if x not in ['VERSION', 'DATE']:
             del dat.meta[x]
 
-    dat.meta['AREA'] = 5. * 12.
+    dat.meta['AREA'] = 180.
     
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')

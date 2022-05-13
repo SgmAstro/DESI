@@ -1,6 +1,9 @@
 import numpy             as np
 import matplotlib.pyplot as plt
+import astropy.io.fits   as fits
+
 from   collections       import OrderedDict
+from   astropy.table     import Table
 
 
 jk_limits = {'JK0': {'ra_min': 129.,  'ra_max': 133.,  'dec_min': -2., 'dec_max': 3.},
@@ -50,7 +53,7 @@ def plot_jackknife(dat):
 
     return fig, ax
 
-def solve_jackknife(rand, ndiv=4):
+def solve_jackknife(rand, ndiv=2):
     '''
     Splits up dat and rand into jackknife areas based on (ra, dec) in (ndiv x ndiv) chunks.
     '''           

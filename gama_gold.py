@@ -13,6 +13,7 @@ from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
 from   bitmask          import BitMask, lumfn_mask
 from   config           import Configuration
+from   data.ddp_zlimits import ddp_zlimits
 
 def gama_gold(argset):
     if argset.dryrun:
@@ -61,12 +62,14 @@ def gama_gold(argset):
     dat = dat[minimal_cols]
 
     # 'SURVEY_CLASS' < 4 for GAMA-II (rpet <= 19.8 by extension.
-    # 0.02 < z < 0.263, DDP1 sample.	
     # r=12 bright cut;
     # 1 cat. per field (G9, 12, 15).
     
+    zlow       = ddp_zlimits['DDP1'][0]
+    zhigh      = ddp_zlimits['DDP1'][1]
+
     sclass_cut = (dat['SURVEY_CLASS'] >= 4)
-    z_cut      = (dat['ZGAMA'] > 0.02) & (dat['ZGAMA'] < 0.263)
+    z_cut      = (dat['ZGAMA'] > zlow) & (dat['ZGAMA'] < zhigh)
     r_cut      = (dat['R_PETRO'] > 12)
     nq_cut     = (dat['NQ'] >= 3)
 

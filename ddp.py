@@ -65,7 +65,7 @@ def get_ddps(Area, M_0P0s, zs, survey):
 
         ddp_zs  = zs[in_ddp]
 
-        # print(zmin, zmax, len(ddp_zs))
+        print(zmin, zmax, len(ddp_zs))
         
         zmax = np.array([zmax, ddp_zs.max()]).min()
         zmin = np.array([zmin, ddp_zs.min()]).max()

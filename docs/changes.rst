@@ -2,6 +2,14 @@
 DESI Change Log
 ==================
 
+5.0.2 (2022-May-16)
+-------------------
+* Correct for overcounting of fillfactor contribution to vmax.
+* Correct for bit bug for FILLFACTOR > 0.8
+* Change gama gold lower z limit to 0.02 due to typo in TMR.
+
+
+
 5.0.1 (2022-April-27)
 -------------------
 * Restict to fillfactor > 0.8 for volfracs.

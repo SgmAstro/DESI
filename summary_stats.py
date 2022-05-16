@@ -6,10 +6,6 @@ import numpy as np
 
 from   astropy.io    import ascii
 from   astropy.table import Table
-
-home  = os.environ['HOME']
-sys.path.append('{}/DESI'.format(home))
-
 from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   delta8_limits import delta8_tier, d8_limits
 from   findfile      import findfile
@@ -24,39 +20,32 @@ fpath            = findfile(ftype='ddp', survey=survey)
 dat              = Table.read(fpath)
 names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
 
-tmr_DDPs         = np.array([tmr_DDP1, tmr_DDP2, tmr_DDP3])
-tmr_ngold_ratios = np.array([1.002, 0.591, 0.097])
-tmr_ddp_ratios   = np.array([1., 0.589, 0.097])
-tmr_Nd8          = np.array([2.18, 2.31, 2.72, 9.48, 16.1, 17.3, 16.2, 7.21, 7.57])
+tmr_DDPs = [tmr_DDP1, tmr_DDP2, tmr_DDP3]
 
-result   = Table()
-rows     = []
+result = Table()
+rows   = []
 
 print('\n\n')
 
-for ddp, tmr_DDP, tmr_ngold_ratio, tmr_ddp_ratio in zip(np.arange(1, 4, 1), tmr_DDPs, tmr_ngold_ratios, tmr_ddp_ratios):
+for ddp, tmr_DDP in zip(np.arange(1, 4, 1), tmr_DDPs):
     row = [ddp, tmr_DDP[0], tmr_DDP[1]]
     
     for col in names:
         row += [dat.meta['DDP{}_{}'.format(ddp, col)]]
         
-    row += [dat.meta['DDP{}{}'.format(ddp, 'ZLIMS_NGAL')]]
-    row += [1. * dat.meta['DDP{}_NGAL'.format(ddp)] / dat.meta['GOLD_NGAL']]
-    row += [tmr_ngold_ratio]
-        
-    row = tuple(row)         
+    row += [dat.meta['DDP{}{}'.format(ddp, 'ZLIMS_NGAL')]]        
+    row  = tuple(row)         
     rows.append(row)
 
-names  = ['DDP', 'MIN_M', 'MAX_M'] + names + ['ZLIMS_NGAL', 'N_NGOLD', 'N_NREF_TMR']
+names  = ['DDP', 'MIN_M', 'MAX_M'] + names + ['ZLIMS_NGAL']
 result = Table(rows=rows, names=names)
 
 result['ZLIMS_NGAL']      = result['ZLIMS_NGAL'] / 10**3
 result['VZ']              = result['VZ'] / 10**6
 result['DENS']            = result['DENS'] / 10**-3
-result['N_GAL/N_GAL_MAX'] = 1. * result['ZLIMS_NGAL'] / max(result['ZLIMS_NGAL'])
 
 for name in result.dtype.names:
-    result[name]          = np.round(result[name], 3)
+    result[name]          = np.round(result[name], 4)
 
 opath = 'tables/Tab2.fits'
 result.write(opath, format='fits', overwrite=True)
@@ -68,13 +57,6 @@ result.rename_column('ZMAX', r'$z_{\rm Max.}$')
 result.rename_column('ZLIMS_NGAL', r'$N_{GAL} / 10^3$')
 result.rename_column('VZ', r'$V_{\rm DDP}$ / 10^6$')
 result.rename_column('DENS', r'$\rho_{\rm DDP} / 10^{-3}$')
-# result.rename_column('N_NGOLD', '$N/N_{GOLD}$')
-# result.rename_column('N_NREF_TMR', '$N/N_{REF}_{TMR}$')
-# result.rename_column('N_GAL/N_GAL_MAX', '$N_{GAL}/N_{GALMAX}$')
-
-del result['N_NGOLD']
-del result['N_NREF_TMR']
-del result['N_GAL/N_GAL_MAX']
 
 result.pprint()
 

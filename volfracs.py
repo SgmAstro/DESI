@@ -28,6 +28,14 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
 
     print('DDP1 randoms: {:.6f} < z < {:.6f}'.format(ddp1_rand['Z'].min(), ddp1_rand['Z'].max()))
 
+    for idx in range(3):
+        ddp_idx = idx + 1
+
+        # Within a given DDP z limits.
+        sub     = rand[rand['DDPZLIMS'][:,idx] == 1]
+
+        rand.meta['DDP{}_FULL8FRAC'.format(ddp_idx)] = np.mean(sub['FILLFACTOR'] > 0.8) 
+    
     for bm in bitmasks:
         isin      = (ddp1_rand[bm].data == 0)
 

@@ -16,13 +16,11 @@ from   findfile      import findfile
 
 parser = argparse.ArgumentParser(description='Generate Summary Stats')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
-parser.add_argument('-v', '--version', help='Select version', default='GAMA4')
 
-args    = parser.parse_args()
-survey  = args.survey
-version = args.version
+args             = parser.parse_args()
+survey           = args.survey
 
-fpath            = findfile(ftype='ddp', survey=survey, version=version)
+fpath            = findfile(ftype='ddp', survey=survey)
 dat              = Table.read(fpath)
 names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
 
@@ -63,19 +61,27 @@ for name in result.dtype.names:
 opath = 'tables/Tab2.fits'
 result.write(opath, format='fits', overwrite=True)
     
-result.rename_column('MIN_M', '$M_{Min.}$')
-result.rename_column('MAX_M', '$M_{Max.}$')
-result.rename_column('ZLIMS_NGAL', '$N_{GAL} / 10^3$')
-result.rename_column('VZ', '$V_{DDP}$ / 10^6$')
-result.rename_column('DENS', '$\\rho_{DDP} / 10^{-3}$')
-result.rename_column('N_NGOLD', '$N/N_{GOLD}$')
-result.rename_column('N_NREF_TMR', '$N/N_{REF}_{TMR}$')
-result.rename_column('N_GAL/N_GAL_MAX', '$N_{GAL}/N_{GALMAX}$')
+result.rename_column('MIN_M', r'$M_{\rm Min.}$')
+result.rename_column('MAX_M', r'$M_{\rm Max.}$')
+result.rename_column('ZMIN', r'$z_{\rm Min.}$')
+result.rename_column('ZMAX', r'$z_{\rm Max.}$')
+result.rename_column('ZLIMS_NGAL', r'$N_{GAL} / 10^3$')
+result.rename_column('VZ', r'$V_{\rm DDP}$ / 10^6$')
+result.rename_column('DENS', r'$\rho_{\rm DDP} / 10^{-3}$')
+# result.rename_column('N_NGOLD', '$N/N_{GOLD}$')
+# result.rename_column('N_NREF_TMR', '$N/N_{REF}_{TMR}$')
+# result.rename_column('N_GAL/N_GAL_MAX', '$N_{GAL}/N_{GALMAX}$')
+
+del result['N_NGOLD']
+del result['N_NREF_TMR']
+del result['N_GAL/N_GAL_MAX']
 
 result.pprint()
 
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
+
+exit(0)
 
 rows = []
 

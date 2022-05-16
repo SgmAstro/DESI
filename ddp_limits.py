@@ -82,7 +82,7 @@ for rlim in rlims:
                     continue
 
             if (zs is None) | (mus is None):
-                zs   = np.arange(0.01, 0.6, 0.01)
+                zs   = np.arange(1.e-3, 0.6, 1.e-3)
                 mus  = cosmo.distmod(zs)
 
             gmr_0P1  = gmr_0P1 * np.ones_like(zs)

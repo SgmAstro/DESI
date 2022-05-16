@@ -59,15 +59,14 @@ def gama_gold(argset):
 
     # Minimal catalogue.
     dat = dat[minimal_cols]
-    dat.pprint()
 
     # 'SURVEY_CLASS' < 4 for GAMA-II (rpet <= 19.8 by extension.
-    # 0.039 < z < 0.263, DDP1 sample.	
+    # 0.02 < z < 0.263, DDP1 sample.	
     # r=12 bright cut;
     # 1 cat. per field (G9, 12, 15).
     
     sclass_cut = (dat['SURVEY_CLASS'] >= 4)
-    z_cut      = (dat['ZGAMA'] > 0.039) & (dat['ZGAMA'] < 0.263)
+    z_cut      = (dat['ZGAMA'] > 0.02) & (dat['ZGAMA'] < 0.263)
     r_cut      = (dat['R_PETRO'] > 12)
     nq_cut     = (dat['NQ'] >= 3)
 
@@ -115,7 +114,7 @@ def gama_gold(argset):
 
     dat = dat[idx]
 
-    print('Writing {}.'.format(opath))
+    print('Solved for GAMA gold')
 
     if not os.path.isdir(os.environ['GOLD_DIR']):
         print('Creating {}'.format(os.environ['GOLD_DIR']))
@@ -132,6 +131,8 @@ def gama_gold(argset):
                 'RLIM': 19.8,\
                 'RMAX': 12.0,\
                 'MAX_SEP': 70.0} 
+
+    print('Writing {}.'.format(opath))
 
     write_desitable(opath, dat)
     
@@ -171,7 +172,7 @@ def gama_gold(argset):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser = argparse.ArgumentParser(description='Gen GAMA gold cat.')
     parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')

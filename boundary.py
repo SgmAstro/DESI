@@ -42,7 +42,7 @@ parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 # Defaults to GAMA Gold limits. 
-parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=0.039)
+parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=0.020)
 parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=0.263)
 
 

@@ -131,7 +131,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     desi_zs.meta['PET_OFFSET'] = 0.12
     desi_zs['LEGACYPET']       = desi_zs['RMAG_DRED'] + desi_zs.meta['PET_OFFSET']
     
-    desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.02)  & (desi_zs['ZDESI'] < 0.263)
 
     clustering, full      = fetch_lss(pprint=False, sort=False) 
 
@@ -269,7 +269,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     gold.write(opath, format='fits', overwrite=True)
     '''
 
-    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.02)  & (desi_zs['ZDESI'] < 0.263)
 
     # No cut to GAMA rosettes.
     # in_gold                &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])

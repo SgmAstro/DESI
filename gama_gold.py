@@ -15,6 +15,7 @@ from   bitmask          import BitMask, lumfn_mask
 from   config           import Configuration
 from   ddp_zlimits      import ddp_zlimits
 
+
 def gama_gold(argset):
     if argset.dryrun:
         print('Dryrun gama_gold created on full run; Exiting.')

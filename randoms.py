@@ -12,11 +12,11 @@ from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
 from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
 from   gama_limits       import gama_limits, gama_field
-from   ddp_limits        import ddp_limits
+from   ddp_zlimits       import ddp_zlimits
 from   config            import Configuration
 
 
-def randoms(field='G9', survey='gama', density=1., zmin=ddp_limits['DDP1'][0], zmax=ddp_limits['DDP1'][1], dryrun=False, prefix='', seed=314, oversample=8, realz=0):
+def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], zmax=ddp_zlimits['DDP1'][1], dryrun=False, prefix='', seed=314, oversample=8, realz=0):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -222,8 +222,8 @@ if __name__ == '__main__':
     parser.add_argument('--seed',         help='Random seed.', default=314, type=int)
     
     # Defaults to GAMA Gold limits. 
-    parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=ddp_limits['DDP1'][0])
-    parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=ddp_limits['DDP1'][1])
+    parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=ddp_zlimits['DDP1'][0])
+    parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=ddp_zlimits['DDP1'][1])
 
     args    = parser.parse_args()
     log     = args.log

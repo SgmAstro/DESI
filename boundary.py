@@ -17,7 +17,7 @@ from   gama_limits             import gama_limits, gama_field
 from   scipy.spatial.transform import Rotation as R
 from   ros_tools               import roscen, ros_limits
 from   config                  import Configuration
-from   ddp_limits              import ddp_limits
+from   ddp_zlimits             import ddp_zlimits
 
 np.random.seed(314)
 
@@ -43,8 +43,8 @@ parser.add_argument('--prefix',       help='filename prefix', default='randoms')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 # Defaults to GAMA Gold limits. 
-parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=ddp_limits['DDP1'][0])
-parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=ddp_limits['DDP1'][1])
+parser.add_argument('--zmin', type=float, help='Minimum redshift limit', default=ddp_zlimits['DDP1'][0])
+parser.add_argument('--zmax', type=float, help='Maximum redshift limit', default=ddp_zlimits['DDP1'][1])
 
 
 args     = parser.parse_args()

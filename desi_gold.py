@@ -14,7 +14,7 @@ from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   bitmask             import lumfn_mask
-from   ddp_limits          import ddp_limits
+from   ddp_zlimits         import ddp_zlimits
 
 
 def desi_gold(args, survey='sv3', release='fuji'):

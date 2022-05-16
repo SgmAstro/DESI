@@ -205,6 +205,9 @@ if __name__ == '__main__':
             print('Calculating multi-field volume fractions.')
 
             rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
+            
+
+
             rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
 
             fdelta                         = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
@@ -229,7 +232,11 @@ if __name__ == '__main__':
             vmax['JK']                     = set_jackknife(vmax['RA'], vmax['DEC'], limits=limits, debug=False)
             vmax.meta['NJACK']             = njack
             vmax.meta['JK_VOLFRAC']        = jk_volfrac
-        
+
+            for ii in np.arange(1,4,1):
+                # Fraction of DDP1 volume meeting completeness cut.   
+                vmax.meta['DDP1_FULL8FRAC'] = rand_vmax.meta['DDP1_FULL8FRAC']
+
             print('Writing jack knife limits yaml')
 
             jpath                          = findfile(ftype='jackknife', prefix=prefix, dryrun=dryrun)

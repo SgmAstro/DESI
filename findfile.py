@@ -301,9 +301,6 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     if prefix != None:
         assert 'randoms' in prefix;
         
-        # HACK TODO: Fix
-        #assert 'randoms' in fpath
-
         dirname = os.path.dirname(fpath)
         fpath   = os.path.basename(fpath)
             

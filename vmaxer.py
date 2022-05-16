@@ -17,6 +17,14 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     
     rand   = volfracs(rand, bitmasks=bitmasks)    
 
+    # HACK 
+    assert survey == 'gama'
+
+    opath  = findfile(ftype=ftype, dryrun=dryrun, field='G9', survey=survey, prefix=prefix)
+    opath  = opath.replace('G9', 'GALL')
+
+    write_desitable(opath, rand)
+
     return  rand
 
 def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN']):

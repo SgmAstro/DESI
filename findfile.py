@@ -238,7 +238,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     fields = fetch_fields(survey)
     
     if field != None:
-        assert field in fields, print(f'Requested field {field} is not available in fields {fields}')
+        valid = (field in fields) | ('ALL' in field)
+
+        assert valid, print(f'Requested field {field} is not valid ({fields})')
     
     if dryrun:
         dryrun = '_dryrun'

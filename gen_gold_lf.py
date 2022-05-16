@@ -177,6 +177,8 @@ if __name__ == '__main__':
         else:
             utiers = np.arange(len(d8_limits))
                     
+        write_rand = True
+
         for idx in utiers:
             print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
 
@@ -204,11 +206,10 @@ if __name__ == '__main__':
 
             print('Calculating multi-field volume fractions.')
 
-            rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)            
-            
-
-
+            rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=write_rand)            
             rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
+
+            write_rand                     = False 
 
             fdelta                         = float(rand_vmax.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp                      = float(rand_vmax.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])

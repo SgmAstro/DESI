@@ -4,10 +4,10 @@ from   astropy.table   import Table, vstack
 from   cosmo           import volcom
 from   bitmask         import lumfn_mask, consv_mask, update_bit
 from   volfracs        import volfracs
-from   findfile        import findfile, fetch_fields
+from   findfile        import findfile, fetch_fields, write_desitable
 
 
-def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False):    
+def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False, write=False):    
     fields = fetch_fields(survey=survey)
 
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
@@ -20,8 +20,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     # HACK 
     assert survey == 'gama'
 
-    opath  = findfile(ftype=ftype, dryrun=dryrun, field='G9', survey=survey, prefix=prefix)
-    opath  = opath.replace('G9', 'GALL')
+    opath  = findfile(ftype=ftype, dryrun=dryrun, field='GALL', survey=survey, prefix=prefix)
 
     write_desitable(opath, rand)
 

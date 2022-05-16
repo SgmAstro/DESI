@@ -8,7 +8,8 @@ from   astropy.io    import ascii
 from   astropy.table import Table
 from   ddp           import tmr_DDP1, tmr_DDP2, tmr_DDP3
 from   delta8_limits import delta8_tier, d8_limits
-from   findfile      import findfile
+from   findfile      import findfile, fetch_header
+
 
 parser = argparse.ArgumentParser(description='Generate Summary Stats')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
@@ -20,24 +21,34 @@ fpath            = findfile(ftype='ddp', survey=survey)
 dat              = Table.read(fpath)
 names            = ['ZMIN', 'ZMAX', 'VZ', 'DENS']
 
-tmr_DDPs = [tmr_DDP1, tmr_DDP2, tmr_DDP3]
+tmr_DDPs         = [tmr_DDP1, tmr_DDP2, tmr_DDP3]
 
 result = Table()
 rows   = []
 
 print('\n\n')
 
+rpath  = findfile(ftype='randoms_bd_ddp_n8', dryrun=False, field='GALL', survey=survey, prefix='randoms_ddp1')
+
+print(f'Fetching {rpath}')
+
 for ddp, tmr_DDP in zip(np.arange(1, 4, 1), tmr_DDPs):
-    row = [ddp, tmr_DDP[0], tmr_DDP[1]]
+    name  = 'DDP{}_FULL8FRAC'.format(ddp)
+    value = fetch_header(fpath=rpath, name=name)
+
+    row   = [ddp, tmr_DDP[0], tmr_DDP[1]]
     
     for col in names:
         row += [dat.meta['DDP{}_{}'.format(ddp, col)]]
         
     row += [dat.meta['DDP{}{}'.format(ddp, 'ZLIMS_NGAL')]]        
+    row += [value]
+
     row  = tuple(row)         
+
     rows.append(row)
 
-names  = ['DDP', 'MIN_M', 'MAX_M'] + names + ['ZLIMS_NGAL']
+names  = ['DDP', 'MIN_M', 'MAX_M'] + names + ['ZLIMS_NGAL', 'DDP_FULL8FRAC']
 result = Table(rows=rows, names=names)
 
 result['ZLIMS_NGAL']      = result['ZLIMS_NGAL'] / 10**3
@@ -57,6 +68,7 @@ result.rename_column('ZMAX', r'$z_{\rm Max.}$')
 result.rename_column('ZLIMS_NGAL', r'$N_{GAL} / 10^3$')
 result.rename_column('VZ', r'$V_{\rm DDP}$ / 10^6$')
 result.rename_column('DENS', r'$\rho_{\rm DDP} / 10^{-3}$')
+result.rename_column('DDP_FULL8FRAC', r'Complete frac.')
 
 result.pprint()
 

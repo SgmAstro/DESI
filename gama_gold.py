@@ -13,7 +13,7 @@ from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
 from   bitmask          import BitMask, lumfn_mask
 from   config           import Configuration
-from   data.ddp_zlimits import ddp_zlimits
+from   ddp_zlimits      import ddp_zlimits
 
 def gama_gold(argset):
     if argset.dryrun:

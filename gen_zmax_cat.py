@@ -3,17 +3,18 @@ import sys
 import time
 import argparse
 import runtime
-import numpy as np
+import numpy           as     np
 
-from   cosmo import distmod, volcom
-from   smith_kcorr import GAMA_KCorrection
-from   tmr_ecorr import tmr_ecorr
-from   scipy.optimize import brentq, minimize
-from   astropy.table import Table
-from   functools import partial
+from   cosmo           import distmod, volcom
+from   smith_kcorr     import GAMA_KCorrection
+from   tmr_ecorr       import tmr_ecorr
+from   scipy.optimize  import brentq, minimize
+from   astropy.table   import Table
+from   functools       import partial
 from   multiprocessing import Pool
-from   findfile import findfile, overwrite_check, write_desitable, fetch_header
-from   config import Configuration
+from   findfile        import findfile, overwrite_check, write_desitable, fetch_header
+from   config          import Configuration
+
 
 kcorr_r = GAMA_KCorrection(band='R')
 
@@ -36,7 +37,7 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      warn = 0
 
      try:
-        result = brentq(diff, 1.e-3, 1.6)
+        result = brentq(diff, 1.e-6, 2.5)
 
      except ValueError as VE:
         warn = 1
@@ -170,6 +171,9 @@ if __name__ == '__main__':
     nwarn   = np.count_nonzero(nwarn)
 
     print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
+
+    towarn  = dat[(dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)]
+    towarn.pprint()
 
     runtime = (time.time() - start) / 60.
 

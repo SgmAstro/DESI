@@ -10,6 +10,7 @@ import numpy               as np
 import astropy.io.fits     as fits
 import matplotlib.pyplot   as plt
 
+from   datetime            import datetime
 from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
@@ -180,7 +181,7 @@ with Pool(nproc, maxtasksperchild=1) as pool:
             pool_time = (time.time() - pool_start)  / 60.
             runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
 
-    # pool.close()
+    pool.close()
     # pool.join()
 
 runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))

@@ -116,7 +116,7 @@ if __name__ == '__main__':
         process_cat(fpath, opath, survey=survey, fillfactor=False)
 
         vmax                           = Table.read(opath)
-        rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative)
+        rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=False)
 
         # Solve for jack knife limits.
         njack, jk_volfrac, limits, jks = solve_jackknife(rand_vmax)
@@ -177,7 +177,7 @@ if __name__ == '__main__':
         else:
             utiers = np.arange(len(d8_limits))
                     
-        write_rand = True
+        rand_vmax_all   = None 
 
         for idx in utiers:
             print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
@@ -206,8 +206,10 @@ if __name__ == '__main__':
 
             print('Calculating multi-field volume fractions.')
 
-            rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=write_rand)            
-            rand_vmax                      = rand_vmax[rand_vmax['DDP1_DELTA8_TIER'] == idx]
+            if rand_vmax_all == None:
+                rand_vmax_all              = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=True)            
+
+            rand_vmax                      = rand_vmax_all[rand_vmax_all['DDP1_DELTA8_TIER'] == idx]
 
             write_rand                     = False 
 

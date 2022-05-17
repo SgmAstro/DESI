@@ -50,7 +50,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
 
     if ext in [None, 'LUMFN']:
         sum_cols   = ['N']
-        mean_cols  = ['MEDIAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
+        mean_cols  = ['MEDIAN_M', 'MEAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
         qsum_cols  = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
     elif ext == 'REFERENCE':
@@ -120,9 +120,11 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
 
         if nsample > 0:
             median = np.median(sample[Mcol])
+            mean   =   np.mean(sample[Mcol])
 
         else:
             median = 0.5 * (Ms[idx] + Ms[idx+1])
+            mean   = median
 
         vmax    = dvmax[idxs == idx]
 
@@ -135,6 +137,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
             median_vmax = np.median(vmax) / vol
 
         result.append([median,\
+                       mean,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\
                        np.sum(ivmax) / dM,\
@@ -142,7 +145,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
                        nsample,
                        median_vmax])
 
-    names  = ['MEDIAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
+    names  = ['MEDIAN_M', 'MEAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)

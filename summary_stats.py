@@ -75,11 +75,9 @@ result.pprint()
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
 
-exit(0)
+rows  = []
 
-rows = []
-
-rpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, version=version, field='G9')
+rpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, field='GALL')
 rand  = Table.read(rpath)
 
 print('\n\n')
@@ -87,29 +85,30 @@ print('\n\n')
 for idx in np.arange(9):    
     nd8 = 0 
     
-    for field in ['G9', 'G12', 'G15']:
-        
-        fpath = findfile(ftype='ddp_n8_d0', survey=survey, version=version, field=field, utier=idx)
+    for field in ['G9', 'G12', 'G15']:        
+        # Number of galaxies in each density tier (across fields). 
+        fpath = findfile(ftype='ddp_n8_d0', survey=survey, field=field, utier=idx)
         dat   = Table.read(fpath)
                 
         nd8  += len(dat) / 1.e3
+
+    # 3-field. 
+    volfrac    = rand.meta['DDP1_d{}_VOLFRAC'.format(idx)] 
+    volfrac_zp = rand.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)] 
+
+    d8         = rand.meta['DDP1_d{}_TIERMEDd8'.format(idx)]
         
-    rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], nd8, rand.meta['DDP1_d{}_VOLFRAC'.format(idx)]))
+    rows.append(('d{}'.format(idx), d8_limits[idx][0], d8_limits[idx][1], nd8, volfrac, volfrac_zp, d8))
     
 print('\n\n')
 
 # Generate Table 3 of McNaught-Roberts (2014).
-result = Table(rows=rows, names=['Label', 'Min_{d8}', 'Max_{d8}', 'N_{d8} [1e3]', 'fd8']) #, 'N_{d8}/N_{max}'])
+names  = np.array(['Label', r'Min. $\delta_8$', r'Max. $\delta_8$', '\# galaxies [1e3]', 'Vol. frac.', 'Zeropoint vol. frac.', r'$\langle \delta_8 \rangle$'])
+result = Table(rows=rows, names=names)
 
-# TODO: CHECK THE MATHS BY HAND
-result['N_{d8} / N_{max}'] = result['N_{d8} [1e3]'] / max(result['N_{d8} [1e3]'])
-
-# BUG: result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[5]
-result['TMR N/N_{max}'] = tmr_Nd8 / tmr_Nd8[4]
-
-for col in result.itercols():
-    if col.info.dtype.kind == 'f':        
-        np.around(col, decimals=3, out=col)
+for name in names[1:]:
+    result[name] = result[name].data.astype(float)
+    result[name] = np.round(result[name], 4)
 
 result.pprint()
 
@@ -118,7 +117,5 @@ result.write(opath, format='fits', overwrite=True)
 
 # https://arxiv.org/pdf/1409.4681.pdf
 ascii.write(result, 'tables/Tab3.tex', Writer=ascii.Latex, latexdict=ascii.latex.latexdicts['AA'], overwrite=True)
-
-# subprocess.run('cd {}/tables; pdflatex compile_tables.tex'.format(os.environ['CODE_ROOT']), shell=True, check=True)
 
 print('\n\nDone.\n\n')

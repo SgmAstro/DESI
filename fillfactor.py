@@ -61,16 +61,16 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
 
     call_signature(dryrun, sys.argv)
     
-    # Read randoms file, split by field (DDP1, or not).
-    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-    _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-    points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
-
     fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
     overpoints_hdr = fitsio.read_header(fpath, ext=1)
 
     _overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
     overpoints  = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
+
+    # Read randoms file, split by field (DDP1, or not).                                                                                                                                                  
+    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+    points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
     runtime     = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
 
@@ -135,7 +135,7 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     done_nsplit = 1
 
     # maxtasksperchild:  restart process after max tasks to contain resource leaks;
-    with Pool(nproc, maxtasksperchild=1) as pool:
+    with Pool(nproc, maxtasksperchild=4) as pool:
         for result in tqdm.tqdm(pool.imap(partial(process_one, start=start), iterable=runs[1:], chunksize=4), total=(nchunk-1)):
             results.append(result)
 
@@ -154,18 +154,27 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     for rr in results:
         flat_result += rr
 
-    fpath                = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-    rand                 = Table.read(fpath)
+ 
+    runtime                = calc_runtime(start, 'Reading randoms')
 
+    fpath                  = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    rand                   = Table.read(fpath)
+
+    runtime                = calc_runtime(start, 'Sorting randoms by X')
+    
     rand.sort('CARTESIAN_X')
 
     # print(len(rand), len(flat_result))
 
-    rand['RAND_N8']      = np.array(flat_result).astype(np.int32)
-    rand['FILLFACTOR']   = rand['RAND_N8'] / overpoints_hdr['NRAND8']
+    runtime                = calc_runtime(start, 'Assigning counts to randoms')
 
-    rand.meta['RSPHERE'] = 8.
+    rand['RAND_N8']        = np.array(flat_result).astype(np.int32)
+    rand['FILLFACTOR']     = rand['RAND_N8'] / overpoints_hdr['NRAND8']
+
+    rand.meta['RSPHERE']   = 8.
     rand.meta['IMMUTABLE'] = 'FALSE'
+
+    runtime  = calc_runtime(start, f'Reading {fpath}')
 
     boundary = Table.read(fpath, 'BOUNDARY')
     
@@ -193,7 +202,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
     parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
-    parser.add_argument('--nproc', help='nproc', default=12, type=int)
+    parser.add_argument('--nproc', help='nproc', default=8, type=int)
     parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)

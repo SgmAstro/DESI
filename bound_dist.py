@@ -143,7 +143,6 @@ with Pool(nproc) as pool:
         results.append(result)
 
     pool.close()
-    pool.join()
 
 runtime = calc_runtime(start, 'POOL:  Done with queries')
 

@@ -37,7 +37,7 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      warn = 0
 
      try:
-        result = brentq(diff, 1.e-6, 2.5)
+        result = brentq(diff, 1.e-6, 1.6)
 
      except ValueError as VE:
         warn = 1
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     survey    = args.survey.lower()
     theta_def = args.theta_def
 
-    config = Configuration(args.config)
+    config    = Configuration(args.config)
     config.update_attributes('zmax', args)
     config.write()
 

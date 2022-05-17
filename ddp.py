@@ -13,9 +13,6 @@ tmr_DDP1       = [-21.8, -20.1]
 tmr_DDP2       = [-20.6, -19.3]
 tmr_DDP3       = [-19.6, -17.8]
 
-
-root           = os.environ['GOLD_DIR'] + '/ddrp_limits/'
-
 def initialise_ddplimits(survey, Mcol='M0P0_QALL'):
     assert  Mcol == 'M0P0_QALL', 'Hard coded limit numbers and curves'
 

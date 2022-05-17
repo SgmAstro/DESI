@@ -30,9 +30,6 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     def mean_rule(tables, col, weights=None):
         data = [table[col].data for table in tables]
         data = np.c_[data].T
-
-        if weights is not None:
-            print('Mean rule:  applying relative weights.')
         
         return np.average(data, axis=1, weights=weights)
 
@@ -40,9 +37,11 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
         data = [table[col].data for table in tables]
         data = np.c_[data].T
         
-        # TODO 
+        # TODO
         if weights is not None:
-            print('WARNING: weights is unsupported for lumfn quadsum rule.')
+            pass 
+
+            # print('WARNING: weights is unsupported for lumfn quadsum rule.')
 
         return  np.sqrt(np.sum(data**2., axis=1))
 

@@ -7,7 +7,11 @@ DESI Change Log
 * Correct for overcounting of fillfactor contribution to vmax.
 * Correct for bit bug for FILLFACTOR > 0.8
 * Change gama gold lower z limit to 0.02 due to typo in TMR.
-
+* Require fillfactor > 0.8 for volume of reference lf.
+* Add bitmask.update_bit
+* Add __name__ clauses to prevent pool hangs.
+* Add ddp_zlimits to specify external redshift limits.
+* Allow GALL and RALL for multi-field catalogs (to findfile).
 
 
 5.0.1 (2022-April-27)

@@ -17,11 +17,10 @@ from   delta8_limits    import d8_limits
 from   config           import Configuration
 from   findfile         import findfile, fetch_fields, overwrite_check, gather_cat, call_signature, write_desitable
 from   jackknife_limits import solve_jackknife, set_jackknife, jackknife_mean
+from   bitmask          import update_bit, lumfn_mask
 
 
 def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False):        
-    assert 'vmax' in vmax_opath
-
     opath = vmax_opath
 
     if not os.path.isfile(fpath):
@@ -29,23 +28,18 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', rand_paths=[], ext
         print('WARNING:  Failed to find {}'.format(fpath))
         return  1
 
-    zmax = Table.read(fpath)
+    zmax  = Table.read(fpath)
 
     if len(zmax) == 0:
         print('Zero length catalogue, nothing to be done; Exiting.') 
         return 0
-         
-    found_fields = np.unique(zmax['FIELD'].data)
-        
-    print('Found fields: {}'.format(found_fields))
-    
+             
     minz = zmax['ZSURV'].min()
     maxz = zmax['ZSURV'].max()
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(minz, maxz))
 
-    if field != None:
-        assert  len(found_fields) == 1, 'ERROR: expected single-field restricted input, e.g. G9.'
+    update_bit(zmax['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', zmax['FILLFACTOR'].data < 0.8)
 
     vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols)
     vmax.meta['EXTNAME'] = 'VMAX'
@@ -104,8 +98,8 @@ if __name__ == '__main__':
 
         prefix = 'randoms'
         
-        fpath  = findfile(ftype='ddp',  dryrun=dryrun, survey=survey, prefix=prefix)
-        opath  = findfile(ftype='vmax', dryrun=dryrun, survey=survey, prefix=prefix)
+        fpath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
+        opath  = findfile(ftype='vmax',   dryrun=dryrun, survey=survey)
 
         if args.nooverwrite:
             overwrite_check(opath)
@@ -113,8 +107,8 @@ if __name__ == '__main__':
         print(f'Reading: {fpath}')
         print(f'Writing: {opath}')
 
-        process_cat(fpath, opath, survey=survey, fillfactor=False)
-
+        process_cat(fpath, opath, survey=survey, fillfactor=True)
+        '''
         vmax                           = Table.read(opath)
         rand_vmax                      = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=False)
 
@@ -146,7 +140,7 @@ if __name__ == '__main__':
         print(f'Written {lpath}')
 
         jackknife_mean(lpath)
-
+        '''
         print('Done.')
 
         if log:

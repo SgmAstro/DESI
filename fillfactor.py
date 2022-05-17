@@ -17,13 +17,14 @@ from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
 from   config              import Configuration
 
+
 parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-f', '--field', type=str, help='Select equatorial GAMA field: G9, G12, G15', default='G9')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
 parser.add_argument('--prefix', help='filename prefix', default='randoms')
-parser.add_argument('--nproc', help='nproc', default=8, type=int)
+parser.add_argument('--nproc', help='nproc', default=12, type=int)
 parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)
@@ -115,7 +116,7 @@ for i, idx in enumerate(split_idx):
 
     runs.append([split_tree, complement])
 
-runtime = calc_runtime(start, 'Created {} big trees and complement chunked by x'.format(nchunk))
+runtime = calc_runtime(start, 'Created {} big trees and complement chunked by ...'.format(nchunk))
 
 del points
 del overpoints
@@ -179,8 +180,7 @@ with Pool(nproc, maxtasksperchild=1) as pool:
             pool_time = (time.time() - pool_start)  / 60.
             runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
 
-    pool.close()
-
+    # pool.close()
     # pool.join()
 
 runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))

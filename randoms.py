@@ -34,6 +34,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
 
     call_signature(dryrun, sys.argv)
 
+    print('Solving for redshift limits: {} < z < {}.'.format(ddp_zlimits['DDP1'][0], ddp_zlimits['DDP1'][1]))
+
     ##  ras and decs.                                                                                                                                                              
     if survey == 'gama':    
         Area    = 60.

@@ -72,7 +72,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', jackknife=None, opath=None):
+def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
             lumfn(dat, Ms=Ms, Mcol=Mcol, jackknife=int(jk), opath=opath)
@@ -87,8 +87,16 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', jackknife=Non
 
     else:
         raise ValueError('Unsupported jackknife of type {}'.format(type(jackknife)))
+
+    if Ms == None:
+        # np.arange(-25.5, -15.5, 0.2) 
+        Ms = np.linspace(-23.,  -16.,  36)
                 
     dat   = Table(dat, copy=True)
+
+    # If values in x are beyond the bounds of bins, 0 or len(bins) is returned as appropriate.
+    keep  = (dat[Mcol] >= Ms.min()) & (dat[Mcol] <= Ms.max())
+    dat   = dat[keep]
 
     dvmax = dat['VMAX'].data
     vol   = dat.meta['VOLUME']
@@ -106,27 +114,34 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', jackknife=Non
         dvmax      = jk_volfrac * dat['VMAX'].data
     
     idxs   = np.digitize(dat[Mcol], bins=Ms)
-
     result = []
 
+    print('Solving for Ms: {}'.format(Ms))
+
     ds     = np.diff(Ms)
+
+    ds     = np.round(ds, decimals=4)
     dM     = ds[0]
 
     assert  np.all(ds == dM)
     
-    for idx in np.arange(len(Ms) - 1):
+    for ii, idx in enumerate(np.unique(idxs)):
         sample  = dat[idxs == idx]
         nsample = len(sample)
+
+        print(sample)
 
         if nsample > 0:
             median = np.median(sample[Mcol])
             mean   = np.mean(sample[Mcol])
-            mid    = 0.5 * (Ms[idx] + Ms[idx+1])
+            mid    = Ms[ii] + dM/2.
 
         else:
-            median = 0.5 * (Ms[idx] + Ms[idx+1])
+            median = Ms[ii] + dM/2.
             mean   = median
             mid    = mean
+
+        # print(median)
 
         vmax    = dvmax[idxs == idx]
 

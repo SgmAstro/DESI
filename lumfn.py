@@ -72,7 +72,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
     
     return  result
 
-def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=None, opath=None):
+def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.2), Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
             lumfn(dat, Ms=Ms, Mcol=Mcol, jackknife=int(jk), opath=opath)
@@ -120,11 +120,13 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
 
         if nsample > 0:
             median = np.median(sample[Mcol])
-            mean   =   np.mean(sample[Mcol])
+            mean   = np.mean(sample[Mcol])
+            mid    = 0.5 * (Ms[idx] + Ms[idx+1])
 
         else:
             median = 0.5 * (Ms[idx] + Ms[idx+1])
             mean   = median
+            mid    = mean
 
         vmax    = dvmax[idxs == idx]
 
@@ -138,6 +140,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
 
         result.append([median,\
                        mean,\
+                       mid,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\
                        np.sum(ivmax) / dM,\
@@ -145,7 +148,7 @@ def lumfn(dat, Ms=np.arange(-25.5, -15.5, 0.4), Mcol='MCOLOR_0P0', jackknife=Non
                        nsample,
                        median_vmax])
 
-    names  = ['MEDIAN_M', 'MEAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
+    names  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)

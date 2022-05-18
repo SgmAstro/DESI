@@ -96,6 +96,14 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
     with Pool(nproc) as pool:
         dat = vstack(pool.map(partial(sub_kE, kcorr_r=kcorr_r, kcorr_g=kcorr_g), dat))
 
+    nwarn   = (dat['REST_GMR_0P1_WARN'].data > 0)
+    nwarn   = np.count_nonzero(nwarn)
+
+    print(f'WARNING:  rest gmr warnings triggered on {nwarn} galaxies.')
+
+    towarn  = dat[(dat['REST_GMR_0P1_WARN'].data > 0)]
+    towarn.pprint()
+
     ##  Stack
     dat.meta['IMMUTABLE'] = 'False'
 

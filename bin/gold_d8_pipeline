@@ -47,19 +47,21 @@ cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
 
-echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
-
-python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
-
-# References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
-python gen_gold_lf.py $DRYRUN $SURVEYARG --log
-
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/'$SURVEY'_ddp_n8.log'
 
 # Defaults to randoms_ddp1.
 python gen_ddp_n8.py $DRYRUN $SURVEYARG --log
+
+# References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                        
+# Dependency on ddp file, due to fillfactor completeness requirement.
+python gen_gold_lf.py $DRYRUN $SURVEYARG --log
+
+echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
+
+# TODO: should also be restricted to fillfactor > 0.8;
+python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 

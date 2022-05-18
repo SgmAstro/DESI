@@ -40,18 +40,19 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
         result = brentq(diff, 1.e-6, 1.6)
 
      except ValueError as VE:
-        warn = 1
-        result = np.nan
+        warn   = 1
+        result = -99. # np.nan
 
         # Brent method fails, requires sign change across boundaries.                                                                                          
-        result = minimize(absdiff, 1.)
+        result = minimize(absdiff, 2.5)
 
         if result.success:
-            result = result.x[0]
+            result  = result.x[0]
+            warn    = 0
 
         else:
-             warn = 2
-             result = np.nan
+             warn   = 2
+             result = -99. # np.nan
 
      return  result, warn
 

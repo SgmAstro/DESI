@@ -129,33 +129,37 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
         sample  = dat[idxs == idx]
         nsample = len(sample)
 
-        print(sample)
-
-        if nsample > 0:
-            median = np.median(sample[Mcol])
-            mean   = np.mean(sample[Mcol])
-            mid    = Ms[ii] + dM/2.
-
-        else:
-            median = Ms[ii] + dM/2.
-            mean   = median
-            mid    = mean
-
-        # print(median)
-
+        # print(sample)
+        
         vmax    = dvmax[idxs == idx]
 
         ivmax   = 1. / vmax
         ivmax2  = 1. / vmax**2.
 
+        if nsample > 0:
+            median = np.median(sample[Mcol])
+            mean   = np.mean(sample[Mcol])
+            wmean  = np.average(sample[Mcol], weights=ivmax) 
+            mid    = Ms[ii] + dM/2.
+
+        else:
+            median = Ms[ii] + dM/2.
+            mean   = median
+            wmean  = mean
+            mid    = mean
+
+        # print(median)
+
         if len(vmax) == 0:
             median_vmax = 0
+
         else:
             median_vmax = np.median(vmax) / vol
 
         result.append([median,\
                        mean,\
                        mid,\
+                       wmean,\
                        nsample / dM / vol,\
                        np.sqrt(nsample) / dM / vol,\
                        np.sum(ivmax) / dM,\
@@ -163,7 +167,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
                        nsample,
                        median_vmax])
 
-    names  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
+    names  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'IVMAXMEAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
     result.meta.update(dat.meta)

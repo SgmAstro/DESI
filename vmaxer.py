@@ -32,13 +32,11 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
 
     # Columns to be propagated
     extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC']
+    extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']
-        
-    if fillfactor == True:
-        extra_cols += ['FILLFACTOR', 'FILLFACTOR_VMAX']
-        
+                
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))
 
@@ -83,12 +81,6 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
-        # Wrap volavg fillfactor(< z) required for vmax.
-        fillfactor_vmax_min       = result['FILLFACTOR_VMAX'].min()
-        fillfactor_vmax_max       = result['FILLFACTOR_VMAX'].max()
-
-        result['FILLFACTOR_VMAX'] = np.clip(result['FILLFACTOR_VMAX'], fillfactor_vmax_min, fillfactor_vmax_max)
-
         result['VMAX']           *= result['FILLFACTOR_VMAX']
     
     return  result

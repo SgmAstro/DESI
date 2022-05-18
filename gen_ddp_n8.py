@@ -21,14 +21,12 @@ parser.add_argument('--log', help='Create a log file of stdout.', action='store_
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
-parser.add_argument('--prefix', help='randoms filename prefix', default='randoms_ddp1')
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
 log    = args.log
 realz  = args.realz
 dryrun = args.dryrun
-prefix = args.prefix
 survey = args.survey.lower()
 
 fields = fetch_fields(survey)
@@ -60,6 +58,7 @@ kd_tree_all  = KDTree(points)
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
+prefix       = 'randoms_ddp1'
 rpaths       = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
 
 for rpath in rpaths:
@@ -97,15 +96,15 @@ dat['FILLFACTOR_VMAX'] = -99.
 
 print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].data.min(), dat['ZMAX'].data.max()))
 
-_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
+_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 1.e-3))
 volavg_fillfrac     = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
 
-    sub_rand        = rand[rand['Z'] <= zmax]
+    sub_rand        = rand[rand['Z'].data <= zmax]
     
-    isin            = (sub_rand['FILLFACTOR'] > 0.8)
+    isin            = (sub_rand['FILLFACTOR'].data > 0.8)
 
     if np.count_nonzero(isin):
         volavg_fillfrac = np.mean(isin)

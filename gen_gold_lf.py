@@ -230,9 +230,9 @@ if __name__ == '__main__':
             vmax.meta['NJACK']             = njack
             vmax.meta['JK_VOLFRAC']        = jk_volfrac
 
-            for ii in np.arange(1,4,1):
+            for ii in np.arange(1,2,1):
                 # Fraction of DDP1 volume meeting completeness cut.   
-                vmax.meta['DDP1_FULL8FRAC'] = rand_vmax.meta['DDP1_FULL8FRAC']
+                vmax.meta['DDP1_FULL8FRAC'] = rand_vmax_all.meta['DDP1_FULL8FRAC']
 
             print('Writing jack knife limits yaml')
 

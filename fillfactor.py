@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('--nproc', help='nproc', default=14, type=int)
     parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=8, type=int)
+    parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=4, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
     args        = parser.parse_args()

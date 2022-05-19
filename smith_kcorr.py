@@ -5,6 +5,8 @@ import os
 
 from   scipy.interpolate import interp1d
 from   pkg_resources     import resource_filename
+from   tmr_kcorr         import tmr_kcorr
+
 
 raw_dir = os.environ['CODE_ROOT'] + '/data/'        
 
@@ -209,20 +211,30 @@ def test_nonnative_plots(axes, zref):
     kcorr_r = GAMA_KCorrection(band='R')
     kcorr_g = GAMA_KCorrection(band='G')
 
-    z    = np.arange(-0.01,0.601,0.01)
-    cols = 0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731
+    z       = np.arange(0.01,0.601,0.01)
+    cols    = [0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731]
+
+    # TMR test
+    # cols  = [0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960]
+
+    colors  = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
     # make r-band k-correction plot                                                                                                                     
-    for c in cols:
-        col = np.ones(len(z)) * c
-        k = kcorr_r.k_nonnative_zref(zref, z, col)
-        axes[0].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c)
+    for i, c in enumerate(cols):
+        col  = np.ones(len(z)) * c
+        k    = kcorr_r.k_nonnative_zref(zref, z, col)
+        axes[0].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c, c=colors[i], alpha=1.)
+    '''
+    for i, c in enumerate(cols):
+        k  = kcorr_tmr.ref_eval(c, z)
 
+        axes[0].plot(z, k, '--', c=colors[i], alpha=0.75)
+    '''
     axes[0].set_xlabel(r"$z$")
     axes[0].set_ylabel(r"$^{0.0}K_r(z)$")
     axes[0].set_xlim(0,0.6)
     axes[0].set_ylim(-0.6,1)
-    axes[0].legend(loc="upper left").draw_frame(False)
+    axes[0].legend(loc="upper left", frameon=False)
 
     # make g-band k-correction plot                                                                                                                     
     for c in cols:

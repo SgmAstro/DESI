@@ -64,7 +64,7 @@ def gather_cat(fpaths):
     if len(fpaths) == 0:
         return  None
 
-    assert  np.all(np.array([os.path.isfile(x) for x in fpaths]))
+    assert  np.all(np.array([os.path.isfile(x) for x in fpaths])), 'Failed to find {}'.format(fpaths)
 
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)

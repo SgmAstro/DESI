@@ -7,7 +7,7 @@ from   astropy.table   import  Table
 from   cosmo           import  volcom
 
 
-def multifield_lumfn(lumfn_list, ext=None, weight=None):
+def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
     if ext is None:
         tables = [Table.read(x) for x in lumfn_list]
     else:
@@ -46,7 +46,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
         return  np.sqrt(np.sum(data**2., axis=1))
 
     
-    result    = Table()
+    result = Table()
 
     if ext in [None, 'LUMFN']:
         sum_cols   = ['N']
@@ -60,6 +60,11 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None):
 
     else:
         raise  RuntimeError(f'MultifieldLumfn:  Extension {ext} is not supported.')
+
+    if sub_cols != None:
+        mean_cols = [x for x in sub_cols if x in sub_cols]
+        mean_cols = [x for x in mean_cols if x in sub_cols]
+        qsum_cols = [x for x in qsum_cols if x in sub_cols]
 
     for m in mean_cols:
         result[m] = mean_rule(tables, m, weights=weights)
@@ -125,7 +130,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
 
     assert  np.all(ds == dM)
     
-    for ii, idx in enumerate(np.unique(idxs)):
+    for ii, idx in enumerate(np.arange(0, len(Ms), 1)):
         sample  = dat[idxs == idx]
         nsample = len(sample)
 

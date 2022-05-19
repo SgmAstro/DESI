@@ -246,11 +246,11 @@ if __name__ == '__main__':
             print('Solving for jacked up luminosity functions.')
 
             lumfn(vmax, jackknife=jackknife, opath=lpath)
-
+            '''
             print('Solving for jacked up luminosity function mean.')
             
             jackknife_mean(lpath)
-
+            '''
             # Reload result with JK columns.
             result                         = Table.read(lpath)
 

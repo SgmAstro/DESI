@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from   astropy.table import Table, vstack
 from   scipy.spatial import KDTree
 from   delta8_limits import delta8_tier, d8_limits
-from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat, write_desitable
+from   findfile      import findfile, fetch_fields, overwrite_check, gather_cat, write_desitable, fetch_header
 from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask, update_bit
 from   delta8_limits import d8_limits
@@ -21,6 +21,7 @@ parser.add_argument('--log', help='Create a log file of stdout.', action='store_
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
+parser.add_argument('--oversample', help='Oversample', default=8, type=int)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args   = parser.parse_args()
@@ -28,6 +29,7 @@ log    = args.log
 realz  = args.realz
 dryrun = args.dryrun
 survey = args.survey.lower()
+oversample = args.oversample
 
 fields = fetch_fields(survey)
 
@@ -56,9 +58,26 @@ points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
 
+# Oversampled randoms
+#
+prefix       = 'randoms_ddp1'
+onrand8      = fetch_header(fpath=findfile(ftype='randoms', dryrun=dryrun, field=fields[0], survey=survey, prefix=prefix, oversample=oversample), name='NRAND8')
+rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample) for ff in fields]
+
+for rpath in rpaths:
+    print('Reading: {}'.format(rpath))
+
+orand        = gather_cat(rpaths)
+
+orpoints     = np.c_[orand['CARTESIAN_X'], orand['CARTESIAN_Y'], orand['CARTESIAN_Z']]
+orpoints     = np.array(orpoints, copy=True)
+
+print('Creating oversample rand. tree.')
+
+obig_tree    = KDTree(orpoints)
+
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-prefix       = 'randoms_ddp1'
 rpaths       = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
 
 for rpath in rpaths:
@@ -88,7 +107,12 @@ dd, ii   = big_tree.query([x for x in points], k=1)
 dat['RANDSEP']     = dd
 dat['RANDMATCH']   = rand['RANDID'][ii]
 dat['BOUND_DIST']  = rand['BOUND_DIST'][ii]
-dat['FILLFACTOR']  = rand['FILLFACTOR'][ii]
+dat['rFILLFACTOR'] = rand['FILLFACTOR'][ii]
+
+##
+indexes_dat        = kd_tree_all.query_ball_tree(obig_tree, r=8.)
+dat['RAND_N8']     = np.array([len(idx) for idx in indexes_dat])
+dat['FILLFACTOR']  = dat['RAND_N8'] / onrand8
 
 update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', dat['FILLFACTOR'].data < 0.8)
 

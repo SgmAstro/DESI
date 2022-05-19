@@ -72,6 +72,9 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
     points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
+    del _points
+    del _overpoints
+
     runtime     = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
 
     idx         = np.argsort(points[:,0])
@@ -205,7 +208,7 @@ if __name__ == '__main__':
     parser.add_argument('--nproc', help='nproc', default=14, type=int)
     parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--oversample', help='Random sampling factor (for fillfactor/volfrac)', default=4, type=int)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
     args        = parser.parse_args()

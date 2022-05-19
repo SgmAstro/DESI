@@ -9,21 +9,21 @@
 #SBATCH --open-mode=append   
 
 if [[ -z "${FIELD}" ]]; then
-  export FIELD="R1"
+  export FIELD="G9"
 else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
 if [ -z ${DRYRUN+x} ]; then
-  # export DRYRUN=''                                                                                                                                                                                
-  export DRYRUN='--dryrun'
+  export DRYRUN=''                                                                                                                                                                                
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='desi'
-  export SURVEYARG='--survey desi'
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
 else
   export SURVEYARG='--survey '$SURVEY
 

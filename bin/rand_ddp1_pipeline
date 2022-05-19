@@ -16,7 +16,7 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="G9"
+  export FIELD="G12"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
@@ -30,8 +30,8 @@ else
 fi
 
 if [[ -z "${NOOVERWRITE}" ]]; then
-  export NOOVERWRITE=''                                                                                                                                                                             
-  # export NOOVERWRITE='--nooverwrite'
+  # export NOOVERWRITE=''                                                                                                                                                                             
+  export NOOVERWRITE='--nooverwrite'
 else
   echo  'RESET SET TO BE '$NOOVERWRITE
 fi

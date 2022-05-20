@@ -16,7 +16,7 @@ from   ddp_zlimits       import ddp_zlimits
 from   config            import Configuration
 
 
-def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], zmax=ddp_zlimits['DDP1'][1], dryrun=False, prefix='', seed=None, oversample=4, realz=0):
+def randoms(field='G9', survey='gama', density=.5, zmin=ddp_zlimits['DDP1'][0], zmax=ddp_zlimits['DDP1'][1], dryrun=False, prefix='', seed=None, oversample=4, realz=0):
     start   = time.time()
 
     fields  = fetch_fields(survey)
@@ -52,7 +52,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
 
         vol        = volcom(zmax, Area) - volcom(zmin, Area)
 
-        nrand      = int(np.ceil(vol * density * oversample) / 2.0)
+        nrand      = int(np.ceil(vol * density * oversample))
         
         cos_theta  = np.random.uniform(ctheta_min, ctheta_max, nrand)
         theta      = np.arccos(cos_theta)
@@ -143,19 +143,19 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
 
     print('Solved {:d} for field {}'.format(nrand, field))
 
-    print('Applying rotation.')
+    ras               = randoms['RANDOM_RA']
+    decs              = randoms['RANDOM_DEC']
 
-    ras      = randoms['RANDOM_RA']
-    decs     = randoms['RANDOM_DEC']
-
-    randoms['Z'] = zs
-    randoms['V'] = Vdraws
+    randoms['Z']      = zs
+    randoms['V']      = Vdraws
     randoms['RANDID'] = np.arange(len(randoms))
 
     randoms['FIELD']      = field
 
     # TODO/HACK/RESTORE
     randoms['GAMA_FIELD'] = gama_field(ras, decs)
+
+    print('Applying rotation.')
 
     xyz      = cartesian(ras, decs, zs)
 
@@ -221,7 +221,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1., type=float)
+    parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=.5, type=float)
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=4, type=int)
     parser.add_argument('--seed',         help='Random seed.', default=0, type=int)
     
@@ -268,4 +268,3 @@ if __name__ == '__main__':
 
     if log:
         sys.stdout.close()
-

@@ -84,13 +84,17 @@ for realz in np.arange(oversample_nrealisations):
     indexes_dat     = kd_tree_all.query_ball_tree(obig_tree, r=8.)
     dat['RAND_N8'] += np.array([len(idx) for idx in indexes_dat])
 
-# Note: assumes all realizations has been collated into zeroth. 
+del orand
+del orpoints
+del obig_tree
+
 hpath               = findfile(ftype='randoms_n8', dryrun=dryrun, field=fields[0], survey=survey, prefix=prefix, oversample=1, realz=0)
 
 print(f'Fetching header information from {hpath}')
 
-onrand8             = oversample * fetch_header(fpath=hpath, name='NRAND8')
-ordens              = oversample * fetch_header(fpath=hpath, name='RAND_DENS') 
+onrand8             = oversample_nrealisations * oversample * fetch_header(fpath=hpath, name='NRAND8')
+ordens              = oversample_nrealisations * oversample * fetch_header(fpath=hpath, name='RAND_DENS') 
+
 dat['FILLFACTOR']   = dat['RAND_N8'] / onrand8
 
 print('Normalised galaxy fill factors with {:.2f} expected randoms per 8-sphere (density: {:.6e}).'.format(onrand8, ordens))
@@ -137,7 +141,7 @@ dat['FILLFACTOR_VMAX'] = -99.
 
 print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].data.min(), dat['ZMAX'].data.max()))
 
-_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 1.e-3))
+_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
 volavg_fillfrac     = 0.0
 
 for i, _idx in enumerate(np.unique(_idxs)):

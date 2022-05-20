@@ -2,22 +2,36 @@
 DESI Change Log
 ==================
 
-5.0.2 (2022-May-16)
+5.0.2 (2022-May-20)
 -------------------
-* Correct for overcounting of fillfactor contribution to vmax.
-* Correct for bit bug for FILLFACTOR > 0.8
-* Change gama gold lower z limit to 0.02 due to typo in TMR.
-* Require fillfactor > 0.8 for volume of reference lf.
-* Add bitmask.update_bit
-* Add __name__ clauses to prevent pool hangs.
-* Add ddp_zlimits to specify external redshift limits.
-* Allow GALL and RALL for multi-field catalogs (to findfile).
+* Correct for overcounting of fillfactor contribution to vmax (PR `#196`_).
+* Correct for bit bug for FILLFACTOR > 0.8, with update_bit (PR `#196`_).
+* Change gama gold lower z limit to 0.02 due to typo in TMR (PR `#196`_).
+* Require fillfactor > 0.8 for volume of reference lf (PR `#196`_).
+* Add bitmask.update_bit (PR `#196`_).
+* Add __name__ clauses to prevent pool hangs (PR `#196`_).
+* Add ddp_zlimits to specify external redshift limits (PR `#196`_).
+* Allow GALL and RALL for multi-field catalogs (to findfile) (PR `#196`_).
+* Collate multiple oversampled realizations for fillfactor calculation (in bound dist.)  (PR `#196`_)
+* Start params file for common hardcoding, e.g. fillfactor threshold, sphere radius (PR `#196`_).
+* External redshift limits specified by ddp_zlimits (PR `#196`_).
+* Add plot idx to delta8_limits for TMR comparison (PR `#196`_).
+* Notebook improvements (PR `#196`_).
+* Switch to oversample 4 as default (more robust to memory & hanging issues.)  (PR `#196`_).
+* Calculate exact fillfactors for galaxies, don't rely on random matching. rFILLFACTOR is matched (PR `#196`_).
+* Improved initialisation of Brent method to catch color, zmin and zmax failures (PR `#196`_).
+* Default jack knife as 4 jks per field (PR `#196`_).
+* Mid, mean, median Ms for LF calc.  (PR `#196`_).
+* Default to TMR-like LF binning (PR `#196`_).
+* Add TMR d8-schechter model for plot comparison (PR `#196`_).
+* Improve summary stats for more useful table comparison (PR `#196`_).
 
+.. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 
 5.0.1 (2022-April-27)
 -------------------
 * Restict to fillfactor > 0.8 for volfracs.
-  (PR `#165`_).
+  (PR `#174`_).
 * More careful header updates in gen_ddp_n8.
 * Multiple realisations (16) of DESI randoms (PR #174)
 * Extension to all DESI rosettes rather than GAMA (PR #174)
@@ -28,7 +42,7 @@ DESI Change Log
 * Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR #174)
 * Possibility of weights in multi-field luminosity function (PR #174)
   
-.. _`#165`: https://github.com/desihub/redrock/pull/165
+.. _`#174`: https://github.com/SgmAstro/DESI/pull/174
 
 5.0.0 (2022-April-25)
 -------------------
@@ -59,4 +73,4 @@ Note: Major changes
 * Single origin for survey field definition (PR `#155`_).
 * Safe_reset: remove run files, but ignore immutable (PR `#155`_). 
 
-.. _`#155`: https://github.com/desihub/redrock/pull/155
+.. _`#155`: https://github.com/SgmAstro/DESI/pull/155

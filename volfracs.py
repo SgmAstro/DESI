@@ -43,7 +43,7 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
         # At least a cut on sphere completeness.                                                                                                                                                        
         ddp1_rand = ddp1_rand[isin]
 
-        print(bm, isin)
+        print(bm, np.mean(isin))
 
     for ut in range(len(d8_limits)):
         print()

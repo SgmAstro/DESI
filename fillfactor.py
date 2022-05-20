@@ -63,9 +63,6 @@ def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=
         
     print('Effective rand. density of {:.6f} to {:.6f}.'.format(mainreal.meta['RAND_DENS'], mainreal.meta['RAND_DENS'] * len(realzs)))
 
-    mainreal.meta['RAND_DENS']  *= len(realzs) * oversample
-    mainreal.meta['NRAND8']      = mainreal.meta['RAND_DENS'] * mainreal.meta['VOL8'] * oversample
-    mainreal.meta['NRAND8_PERR'] = np.sqrt(mainreal.meta['NRAND8'])
     mainreal.meta['COLLATE']     = 'TRUE'
     mainreal.meta['NREALZ']      = len(realzs)       
 

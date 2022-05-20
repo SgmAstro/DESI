@@ -11,26 +11,32 @@ class tmr_kcorr():
 
     def __init__(self):
         self.z0      = 0.0
-        
+
         self.raw_dir = resource_filename('lumfn', 'data/')
         self.raw     = np.loadtxt(self.raw_dir + '/tmr_kcorr.txt')
         self.base    = 4 - np.arange(0, 5, 1)
         
+        self.ncol    = len(self.raw[:,0])
+
     def ref_eval(self, ref_gmr, zz):
         '''
         TMR r-band kcorrection at z reference 0.0
         '''
-        
-        idx = np.digitize(ref_gmr, bins=self.raw[:,0], right=True)        
-        aa  = self.raw[idx, 1:]
-        zz  = np.exp(np.log(zz)[:,None] * self.base[None,:])
-        res = aa * zz        
-        res = np.sum(res, axis=1)
+
+        zz       = np.atleast_1d(zz)
+        ref_gmr  = np.atleast_1d(ref_gmr)
+
+        idx      = np.digitize(ref_gmr, bins=self.raw[:,0], right=True)        
+        idx[idx >= self.ncol] = (self.ncol - 1)
+
+        aa       = self.raw[idx, 1:]
+        zz       = np.exp(np.log(zz)[:,None] * self.base[None,:])
+        res      = aa * zz        
+        res      = np.sum(res, axis=1)
         
         return  res
         
-
-if __name__ == '__main__':
+def plot():
     import pylab as pl
     import matplotlib.pyplot as plt
 

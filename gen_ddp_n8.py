@@ -14,7 +14,7 @@ from   config        import Configuration
 from   bitmask       import lumfn_mask, consv_mask, update_bit
 from   delta8_limits import d8_limits
 from   runtime       import calc_runtime
-from   params        import fillfactor_threshold
+from   params        import fillfactor_threshold, oversample_nrealisations, sphere_radius
 
 
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
@@ -25,17 +25,17 @@ parser.add_argument('--realz', help='Realization', default=0, type=int)
 parser.add_argument('--oversample', help='Oversample', default=4, type=int)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
-args       = parser.parse_args()
-log        = args.log
-realz      = args.realz
-dryrun     = args.dryrun
-survey     = args.survey.lower()
-oversample = args.oversample
+args        = parser.parse_args()
+log         = args.log
+realz       = args.realz
+dryrun      = args.dryrun
+survey      = args.survey.lower()
+oversample  = args.oversample
 
-fields     = fetch_fields(survey)
+fields      = fetch_fields(survey)
 
-fpath      = findfile(ftype='ddp',    dryrun=dryrun, survey=survey)
-opath      = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
+fpath       = findfile(ftype='ddp',    dryrun=dryrun, survey=survey)
+opath       = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
 
 if log:
     logfile = findfile(ftype='ddp_n8', dryrun=False, survey=survey, log=True)
@@ -63,7 +63,7 @@ kd_tree_all  = KDTree(points)
 prefix           = 'randoms_ddp1'
 dat['RAND_N8']   = 0.
 
-for realz in np.arange(3):
+for realz in np.arange(oversample_nrealisations):
     print(f'Solving for galaxy fillfactors with oversampled realization {realz}.')
 
     rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample, realz=realz) for ff in fields]
@@ -81,14 +81,19 @@ for realz in np.arange(3):
     obig_tree    = KDTree(orpoints)
 
     ##                                                                                                                                                                                                    
-    indexes_dat        = kd_tree_all.query_ball_tree(obig_tree, r=8.)
-    dat['RAND_N8']    += np.array([len(idx) for idx in indexes_dat])
+    indexes_dat     = kd_tree_all.query_ball_tree(obig_tree, r=8.)
+    dat['RAND_N8'] += np.array([len(idx) for idx in indexes_dat])
 
 # Note: assumes all realizations has been collated into zeroth. 
-onrand8            = fetch_header(fpath=findfile(ftype='randoms', dryrun=dryrun, field=fields[0], survey=survey, prefix=prefix, oversample=oversample, realz=0), name='NRAND8')
-dat['FILLFACTOR']  = dat['RAND_N8'] / onrand8
+hpath               = findfile(ftype='randoms_n8', dryrun=dryrun, field=fields[0], survey=survey, prefix=prefix, oversample=1, realz=0)
 
-print(f'Normalised galaxy fill factors with {onrand8} expected randoms per 8-sphere.')
+print(f'Fetching header information from {hpath}')
+
+onrand8             = oversample * fetch_header(fpath=hpath, name='NRAND8')
+ordens              = oversample * fetch_header(fpath=hpath, name='RAND_DENS') 
+dat['FILLFACTOR']   = dat['RAND_N8'] / onrand8
+
+print('Normalised galaxy fill factors with {:.2f} expected randoms per 8-sphere (density: {:.6e}).'.format(onrand8, ordens))
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
@@ -122,6 +127,9 @@ dat['RANDSEP']     = dd
 dat['RANDMATCH']   = rand['RANDID'][ii]
 dat['BOUND_DIST']  = rand['BOUND_DIST'][ii]
 dat['rFILLFACTOR'] = rand['FILLFACTOR'][ii]
+
+## 
+dat['FILLFACTOR'][dat['BOUND_DIST'] > sphere_radius] = 1.
 
 update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', dat['FILLFACTOR'].data < fillfactor_threshold)
 

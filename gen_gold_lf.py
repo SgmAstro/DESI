@@ -32,8 +32,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bit
     zmax  = Table.read(fpath)
 
     if len(zmax) == 0:
-        print('Zero length catalogue, nothing to be done; Exiting.') 
-        return 0
+        print('Zero length catalogue, nothing to be done.') 
+        return -99
              
     minz = zmax['ZSURV'].min()
     maxz = zmax['ZSURV'].max()
@@ -195,6 +195,10 @@ if __name__ == '__main__':
                 continue 
         
             print('LF process cat. complete.')
+
+            if failure == -99:
+                # Zero length (dryrun) catalog, nothing to be done.
+                continue
 
             lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx)
             result                         = Table.read(lpath)

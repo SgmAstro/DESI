@@ -21,31 +21,40 @@ from   config              import Configuration
 from   ddp_zlimits         import ddp_zlimits
 
 
-def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True):
+def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=4):
     print('Collating fillfactor realizations into main (realz=0).')
     
-    realzs   = np.sort(realzs)
+    realzs     = np.sort(realzs)
 
     assert realzs[0] == 0
 
-    opaths   = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
+    opaths     = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
+    opath      = opaths[0] 
     
-    for opath in opaths:
-        print(f'Fetching {opath}.')
+    for oo in opaths:
+        print(f'Fetching {oo}.')
     
-    orealzs  = [Table.read(opath) for opath in opaths]
-    mainreal = orealzs[0]
+    orealzs    = [Table.read(opath) for opath in opaths]
+    mainreal   = orealzs[0]
 
     if len(realzs) == 1:
         print('Only one realization, nothing to be done. Exiting.')
+        return mainreal
 
+    keys = list(mainreal.meta.keys())
+
+    for key in keys:
+        print(key, mainreal.meta[key])
+
+    if ('COLLATE' in keys) and (not force):
+        print('Results have already been collated to zeroth realization. Exiting')
         return mainreal
     
     for col in ['FILLFACTOR', 'RAND_N8']:
         print(f'Solving for {col}')
 
-        cols = [orealz[col].data.tolist() for orealz in orealzs]
-        cols = np.array(cols).T
+        cols                     = [orealz[col].data.tolist() for orealz in orealzs]
+        cols                     = np.array(cols).T
                 
         mainreal[col]            = np.mean(cols, axis=1)
         
@@ -54,9 +63,11 @@ def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=
         
     print('Effective rand. density of {:.6f} to {:.6f}.'.format(mainreal.meta['RAND_DENS'], mainreal.meta['RAND_DENS'] * len(realzs)))
 
-    mainreal.meta['RAND_DENS']  *= len(realzs)
-    mainreal.meta['NRAND8']      = mainreal.meta['RAND_DENS'] * mainreal.meta['VOL8']
+    mainreal.meta['RAND_DENS']  *= len(realzs) * oversample
+    mainreal.meta['NRAND8']      = mainreal.meta['RAND_DENS'] * mainreal.meta['VOL8'] * oversample
     mainreal.meta['NRAND8_PERR'] = np.sqrt(mainreal.meta['NRAND8'])
+    mainreal.meta['COLLATE']     = 'TRUE'
+    mainreal.meta['NREALZ']      = len(realzs)       
 
     fpath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
     boundary = Table.read(fpath, 'BOUNDARY')
@@ -67,12 +78,13 @@ def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=
     hx.append(fits.PrimaryHDU(header=header))
     hx.append(fits.convenience.table_to_hdu(mainreal))
     hx.append(fits.convenience.table_to_hdu(boundary))
-    
-    opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
-    
-    print(f'Writing {opath}.')
+        
+    if write:
+        opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
 
-    hx.writeto(opath, overwrite=True)
+        print(f'Writing {opath}.')
+
+        hx.writeto(opath, overwrite=True)
 
     print('Finished.')
     

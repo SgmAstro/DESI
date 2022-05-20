@@ -69,7 +69,8 @@ fi
 
 echo 'Running randoms pipeline for field '$FIELD
 
-for REALZ in 0 1 2
+# Should match params.oversample_nrealisations
+for REALZ in {0..5}
 do
     python randoms.py --realz $REALZ --field $FIELD $DRYRUN $NOOVERWRITE $SURVEYARG --log
 

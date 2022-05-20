@@ -165,14 +165,16 @@ def test_plots(axes):
     kcorr_r = GAMA_KCorrection(band='R')
     kcorr_g = GAMA_KCorrection(band='G')
 
-    z    = np.arange(-0.01,0.601,0.01)
-    cols = 0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731
+    z       = np.arange(-0.01,0.601,0.01)
+    cols    = 0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731
+
+    colors  = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
     # make r-band k-correction plot                                                                                                                      
-    for c in cols:
+    for i, c in enumerate(cols):
         col = np.ones(len(z)) * c
-        k = kcorr_r.k(z, col)
-        axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        k   = kcorr_r.k(z, col)
+        axes[0].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c, c=colors[i])
 
     axes[0].set_xlabel(r"$z$")
     axes[0].set_ylabel(r"$^{0.1}K_r(z)$")
@@ -181,69 +183,64 @@ def test_plots(axes):
     axes[0].legend(loc="upper left").draw_frame(False)
 
     # make g-band k-correction plot                                                                                                                      
-    for c in cols:
+    for i, c in enumerate(cols):
         col = np.ones(len(z)) * c
         k = kcorr_g.k(z, col)
-        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c, c=colors[i])
 
     axes[1].set_xlabel(r"$z$")
     axes[1].set_ylabel(r"$^{0.1}K_g(z)$")
     axes[1].set_xlim(-0.01,0.6)
     axes[1].set_ylim(-0.4,1.4)
     axes[1].legend(loc="upper left").draw_frame(False)
-    axes[0].set_ylabel(r"$^{0.1}K_r(z)$")
-    axes[0].set_xlim(0,0.6)
-    axes[0].set_ylim(-0.6,1)
-    axes[0].legend(loc="upper left").draw_frame(False)
+        
+def test_nonnative_plots(kE, zref, axes=None):    
+    kcorr_tmr = tmr_kcorr()
 
-    # make g-band k-correction plot
-    for c in cols:
-        col = np.ones(len(z)) * c
-        k = kcorr_g.k(z, col)
-        axes[1].plot(z, k, label=r"$^{0.1}(g-r)_\mathrm{med}=%.3f$"%c)
+    kcorr_r   = GAMA_KCorrection(band='R')
+    kcorr_g   = GAMA_KCorrection(band='G')
 
-    axes[1].set_xlabel(r"$z$")
-    axes[1].set_ylabel(r"$^{0.1}K_g(z)$")
-    axes[1].set_xlim(-0.01,0.6)
-    axes[1].set_ylim(-0.4,1.4)
-
-def test_nonnative_plots(axes, zref):    
-    kcorr_r = GAMA_KCorrection(band='R')
-    kcorr_g = GAMA_KCorrection(band='G')
-
-    z       = np.arange(0.01,0.601,0.01)
-    cols    = [0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731]
+    z         = np.arange(0.01, 0.601, 0.01)
+    cols      = [0.130634, 0.298124, 0.443336, 0.603434, 0.784644, 0.933226, 1.06731]
 
     # TMR test
     # cols  = [0.158, 0.298, 0.419, 0.553, 0.708, 0.796, 0.960]
+    
+    if axes == None:
+        fig, axes = plt.subplots(1, 2, figsize=(20,10))
 
     colors  = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
+    for idx in np.unique(kE['REST_GMR_0P1_INDEX']):
+        isin = (kE['REST_GMR_0P1_INDEX'] == idx)
+        
+        axes[0].scatter(kE['ZSURV'][isin], kE['KCORR_R0P0'][isin], s=0.25)
+        axes[1].scatter(kE['ZSURV'][isin], kE['KCORR_G0P0'][isin], s=0.25)
+    
     # make r-band k-correction plot                                                                                                                     
     for i, c in enumerate(cols):
         col  = np.ones(len(z)) * c
         k    = kcorr_r.k_nonnative_zref(zref, z, col)
         axes[0].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c, c=colors[i], alpha=1.)
-    '''
+
+        k    = kcorr_tmr.ref_eval(c, z)
+    '''    
     for i, c in enumerate(cols):
-        k  = kcorr_tmr.ref_eval(c, z)
+        k    = kcorr_tmr.ref_eval(c, z)
+        isin = (z <= 0.5)
 
-        axes[0].plot(z, k, '--', c=colors[i], alpha=0.75)
+        axes[0].plot(z[isin], k[isin], '--', c=colors[i], alpha=0.75)
     '''
-    axes[0].set_xlabel(r"$z$")
-    axes[0].set_ylabel(r"$^{0.0}K_r(z)$")
-    axes[0].set_xlim(0,0.6)
-    axes[0].set_ylim(-0.6,1)
-    axes[0].legend(loc="upper left", frameon=False)
-
     # make g-band k-correction plot                                                                                                                     
-    for c in cols:
+    for i, c in enumerate(cols):
         col = np.ones(len(z)) * c
         k = kcorr_g.k_nonnative_zref(zref, z, col)
-        axes[1].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c)
+        axes[1].plot(z, k, label=r"$^{0.0}(g-r)_\mathrm{med}=%.3f$"%c, c=colors[i])
+    
+    axes[0].set_xlim(0, 0.3)
+    axes[1].set_xlim(0, 0.3)
 
-    axes[1].set_xlabel(r"$z$")
-    axes[1].set_ylabel(r"$^{0.0}K_g(z)$")
-    axes[1].set_xlim(-0.01,0.6)
-    axes[1].set_ylim(-0.4,1.4)
+    axes[0].set_ylim(-0.2, 1.2)
+    axes[1].set_ylim(-0.2, 1.2)
+    
     

@@ -1,8 +1,8 @@
 import numpy as np
 
-def fillfactor_expectation(bound_dist, radius=8., nbar=2.):
-    # https://en.wikipedia.org/wiki/Spherical_cap
-    radius      = radius
+
+def fillfactor_expectation(bound_dist, radius=8.):
+    # https://en.wikipedia.org/wiki/Spherical_cap/
     V_sphere    = (4./3.) * np.pi * radius ** 3.
 
     h           = np.abs(radius - bound_dist)

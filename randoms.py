@@ -243,7 +243,7 @@ if __name__ == '__main__':
     density    = args.density
     oversample = args.oversample
 
-    assert oversample in np.arange(1, 21, 1)
+    assert oversample < 9
 
     if log:
         logfile    = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
@@ -257,7 +257,7 @@ if __name__ == '__main__':
     config.write()
     '''
     for xx in [1, oversample]:        
-        seed = seed
+        seed      = seed
 
         # only generate independent realizations for oversample.
         if oversample > 1:

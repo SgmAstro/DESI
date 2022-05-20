@@ -48,6 +48,8 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
             cmds.append('rm -f {}/logs/*.log'.format(root))
             cmds.append('rm -f {}/*_dryrun.fits'.format(root))
 
+        cmds.append('rm -f {}/*.fits'.format(os.environ['RANDOMS_DIR']))
+
         for cmd in cmds:
             print(cmd)
 

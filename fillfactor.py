@@ -18,7 +18,65 @@ from   multiprocessing     import Pool
 from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
 from   config              import Configuration
+from   ddp_zlimits         import ddp_zlimits
 
+
+def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True):
+    print('Collating fillfactor realizations into main (realz=0).')
+    
+    realzs   = np.sort(realzs)
+
+    assert realzs[0] == 0
+
+    opaths   = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
+    
+    for opath in opaths:
+        print(f'Fetching {opath}.')
+    
+    orealzs  = [Table.read(opath) for opath in opaths]
+    mainreal = orealzs[0]
+
+    if len(realzs) == 1:
+        print('Only one realization, nothing to be done. Exiting.')
+
+        return mainreal
+    
+    for col in ['FILLFACTOR', 'RAND_N8']:
+        print(f'Solving for {col}')
+
+        cols = [orealz[col].data.tolist() for orealz in orealzs]
+        cols = np.array(cols).T
+                
+        mainreal[col]            = np.mean(cols, axis=1)
+        
+        # TODO: Check error on the mean.
+        mainreal[col + '_STD']   =  np.std(cols, axis=1) / np.sqrt(len(realzs))
+        
+    print('Effective rand. density of {:.6f} to {:.6f}.'.format(mainreal.meta['RAND_DENS'], mainreal.meta['RAND_DENS'] * len(realzs)))
+
+    mainreal.meta['RAND_DENS']  *= len(realzs)
+    mainreal.meta['NRAND8']      = mainreal.meta['RAND_DENS'] * mainreal.meta['VOL8']
+    mainreal.meta['NRAND8_PERR'] = np.sqrt(mainreal.meta['NRAND8'])
+
+    fpath    = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
+    boundary = Table.read(fpath, 'BOUNDARY')
+
+    header   = fits.Header()
+
+    hx       = fits.HDUList()
+    hx.append(fits.PrimaryHDU(header=header))
+    hx.append(fits.convenience.table_to_hdu(mainreal))
+    hx.append(fits.convenience.table_to_hdu(boundary))
+    
+    opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
+    
+    print(f'Writing {opath}.')
+
+    hx.writeto(opath, overwrite=True)
+
+    print('Finished.')
+    
+    return  mainreal
 
 def process_one(run, pid=0, start=0.0):
     try:
@@ -52,23 +110,24 @@ def process_one(run, pid=0, start=0.0):
     return  flat
 
 def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite):
-    opath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
     if nooverwrite:
         overwrite_check(opath)
 
-    start  = time.time()
+    start    = time.time()
 
     call_signature(dryrun, sys.argv)
     
-    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample)
+    fpath          = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, oversample=oversample, realz=realz)
     overpoints_hdr = fitsio.read_header(fpath, ext=1)
 
-    _overpoints = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-    overpoints  = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
+    _overpoints    = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+    overpoints     = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
     # Read randoms file, split by field (DDP1, or not).                                                                                                                                                  
-    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    # Note: realz handles oversampled realizations only.
+    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
     _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
     points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
 
@@ -188,11 +247,11 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     hx.append(fits.convenience.table_to_hdu(rand))
     hx.append(fits.convenience.table_to_hdu(boundary))
 
-    runtime = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
+    runtime  = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 
     hx.writeto(opath, overwrite=True)
 
-    runtime = calc_runtime(start, 'Finished')
+    runtime  = calc_runtime(start, 'Finished')
 
     if log:
         sys.stdout.close()
@@ -208,7 +267,7 @@ if __name__ == '__main__':
     parser.add_argument('--nproc', help='nproc', default=14, type=int)
     parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=8, type=int)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=4, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
     args        = parser.parse_args()
@@ -227,16 +286,16 @@ if __name__ == '__main__':
     fields      = fetch_fields(survey)
 
     if log:
-        logfile = findfile(ftype='randoms_n8', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
+        logfile = findfile(ftype='randoms_n8', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)
 
         print(f'Logging to {logfile}')
 
         sys.stdout = open(logfile, 'w')
-
+    '''
     config = Configuration(args.config)
     config.update_attributes('fillfactor', args)
     config.write()
-
+    '''
     assert field in fields, 'Error: Field not in fields'
 
     fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite)

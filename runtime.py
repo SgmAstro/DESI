@@ -11,7 +11,7 @@ warnings.simplefilter('ignore', category=VerifyWarning)
 warnings.simplefilter('ignore', category=MergeConflictWarning)
 
 def sizeofMB(xx):
-    return  sys.getsizeof(xx) / 1.e6
+    return  sys.getsizeof(xx)
 
 def calc_runtime(start, log=None, memuse=False, xx=None):
     runtime  = time.time() - start

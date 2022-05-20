@@ -171,6 +171,9 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
     if fpath is None:
         fpath = findfile(ftype=ftype, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
+
+        if debug:
+            print(f'Fetching header of {fpath}')
  
     if name:
         return  getval(fpath, name, ext)

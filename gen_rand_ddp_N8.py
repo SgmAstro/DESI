@@ -17,6 +17,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
 from   volfracs          import volfracs
 from   bitmask           import lumfn_mask, consv_mask, update_bit
+from   params            import fillfactor_threshold
 
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
@@ -135,7 +136,7 @@ rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
 
 # Meeting sphere-completeness cut.  Ultimately, this will correct VMAX from solid angle and DDP1                                                                                                         
 # redshift limits to that meeting the completeness cut (in volume).                                                                                                                                        
-update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < 0.8)
+update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < fillfactor_threshold)
 
 print('Fraction of randoms meeting IN_D8LUMFN cut: {}'.format(np.mean(rand['IN_D8LUMFN'])))
 

@@ -16,7 +16,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
     if weight is not None:
         weights = np.array([tab.meta[weight] for tab in tables]).astype(float)
 
-        print('Retrieved relative weights: {} for {} weight.'.format(weights, weight))
+        print('Retrieved relative weights: {} for {} weight.'.format(weights / np.sum(weights), weight))
 
     else:
         weights = None
@@ -50,7 +50,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
 
     if ext in [None, 'LUMFN']:
         sum_cols   = ['N']
-        mean_cols  = ['MEDIAN_M', 'MEAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
+        mean_cols  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'IVMAXMEAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
         qsum_cols  = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
         
     elif ext == 'REFERENCE':

@@ -12,8 +12,7 @@ def renormalise_d8LF(idx, cat, fdelta, fdelta_zeropoint, self_count=False):
 
     print('Renormalising (IVMAX) LF with log10(fdelta)={:.6e} for tier {}'.format(np.log10(fdelta), idx))
     
-    cat = Table(cat, copy=True)
-
+    cat  = Table(cat, copy=True)
     cols = ['PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR']
     
     if 'PHI_IVMAX_JK' in cat.dtype.names:

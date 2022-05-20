@@ -1,6 +1,7 @@
 import numpy         as     np
 
 from   delta8_limits import d8_limits
+from   params        import fillfactor_threshold
 
 
 def volfracs(rand, bitmasks=['IN_D8LUMFN']):
@@ -34,7 +35,7 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
         # Within a given DDP z limits.
         sub     = rand[rand['DDPZLIMS'][:,idx] == 1]
 
-        rand.meta['DDP{}_FULL8FRAC'.format(ddp_idx)] = np.mean(sub['FILLFACTOR'] > 0.8) 
+        rand.meta['DDP{}_FULL8FRAC'.format(ddp_idx)] = np.mean(sub['FILLFACTOR'] > fillfactor_threshold) 
     
     for bm in bitmasks:
         isin      = (ddp1_rand[bm].data == 0)

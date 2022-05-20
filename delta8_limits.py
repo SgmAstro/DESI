@@ -1,17 +1,18 @@
 import numpy as np
 
 # Table 3 of https://arxiv.org/pdf/1409.4681.pdf
-d8_limits = [[-1.0, -0.75],\
+d8_limits = [[-1.00, -0.75],\
              [-0.75, -0.55],\
              [-0.55, -0.40],\
-             [-0.4, 0.0],\
-             [0.0, 0.7],\
-             [0.7, 1.60],\
-             [1.60, 2.90],\
-             [2.90, 4.00],\
-             [4.0, 1.e4]]
+             [-0.40,  0.00],\
+             [ 0.00,  0.70],\
+             [ 0.70,  1.60],\
+             [ 1.60,  2.90],\
+             [ 2.90,  4.00],\
+             [ 4.00,  1.e12]]
 
-d8_limits = np.array(d8_limits)
+d8_limits   = np.array(d8_limits)
+d8_plot_idx = [0, 3, 5, 8]
 
 def delta8_tier(delta8):
     result = -99 * np.ones(len(delta8), dtype=np.int)

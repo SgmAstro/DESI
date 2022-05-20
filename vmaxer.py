@@ -5,6 +5,7 @@ from   cosmo           import volcom
 from   bitmask         import lumfn_mask, consv_mask, update_bit
 from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields, write_desitable
+from   params          import fillfactor_threshold
 
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False, write=False):    
@@ -13,16 +14,26 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     rpaths = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
     rand   = vstack([Table.read(xx) for xx in rpaths])
 
-    update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < 0.8)
+    update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < fillfactor_threshold)
     
     rand   = volfracs(rand, bitmasks=bitmasks)    
 
     # HACK 
     assert survey == 'gama'
 
-    opath  = findfile(ftype=ftype, dryrun=dryrun, field='GALL', survey=survey, prefix=prefix)
+    print('\n\n')
 
-    write_desitable(opath, rand)
+    for key in rand.meta.keys():
+        print(key, rand.meta[key])
+
+    print('\n\n')
+
+    if write:
+        opath  = findfile(ftype=ftype, dryrun=dryrun, field='GALL', survey=survey, prefix=prefix)
+
+        print(f'Writing {opath}')
+
+        write_desitable(opath, rand)
 
     return  rand
 

@@ -17,11 +17,6 @@ from   ddp_zlimits      import ddp_zlimits
 
 
 def gama_gold(argset):
-    if argset.dryrun:
-        print('Dryrun gama_gold created on full run; Exiting.')
-
-        return 0
-
     if argset.log:
         logfile = findfile(ftype='gold', dryrun=False, survey='gama', log=True)
 
@@ -33,6 +28,13 @@ def gama_gold(argset):
     fpath  = root + '/TilingCatv46.fits'
 
     opath  = findfile(ftype='gold', dryrun=False, survey='gama')
+
+    if argset.dryrun:
+        dpath = findfile(ftype='gold', dryrun=True, survey='gama')
+
+        if os.path.isfile(dpath):
+            print('Dryrun gama_gold created on full run; Exiting.')
+            return 0
 
     if argset.nooverwrite:
         overwrite_check(opath)

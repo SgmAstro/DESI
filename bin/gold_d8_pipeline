@@ -61,7 +61,7 @@ python gen_gold_lf.py $DRYRUN $SURVEYARG --log
 echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
 
 # TODO: should also be restricted to fillfactor > 0.8;
-python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
+# python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 

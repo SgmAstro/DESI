@@ -16,7 +16,7 @@ from   multiprocessing import Pool
 from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
 from   config          import Configuration
-
+from   fillfactor      import collate_fillfactors
 
 def process_one(run, pid=0):
     split      = run[0]
@@ -36,6 +36,9 @@ def process_one(run, pid=0):
 
 def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite):
     start  = time.time()
+
+    # Collate multiple n8 realizations:
+    collate_fillfactors(realzs=np.array([0, 1, 2]), field=field, survey=survey, dryrun=dryrun, prefix=prefix)
     
     # https://www.dur.ac.uk/icc/cosma/cosma5/
     fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)

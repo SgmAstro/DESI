@@ -77,7 +77,7 @@ ascii.write(result, 'tables/Tab2.tex', Writer=ascii.Latex, latexdict=ascii.latex
 
 rows  = []
 
-rpath = findfile(ftype='randoms_bd_ddp_n8', survey=survey, field='GALL')
+rpath = findfile(ftype='randoms_bd_ddp_n8', dryrun=False, field='GALL', survey=survey, prefix='randoms_ddp1')
 rand  = Table.read(rpath)
 
 print('\n\n')

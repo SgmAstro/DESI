@@ -82,12 +82,15 @@ ddp1_zmax=$(echo $ddp1_zmax | cut -d " " -f 9)
 echo 'DDP1_ZMIN:  '$ddp1_zmin
 echo 'DDP1_ZMAX:  '$ddp1_zmax
 
-python randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
+for REALZ in 0 1 2
+do
+    python randoms.py --realz $REALZ --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
-python boundary.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
+    python boundary.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
-# Uses Pool, should be on interactive. 
-python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log
+    # Uses Pool, should be on interactive. 
+    python fillfactor.py --realz $REALZ --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log
+done
 
 # Uses Pool, should be on interactive.
 python bound_dist.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log

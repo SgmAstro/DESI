@@ -25,9 +25,9 @@ DESI Change Log
 * Default to TMR-like LF binning (PR `#196`_).
 * Add TMR d8-schechter model for plot comparison (PR `#196`_).
 * Improve summary stats for more useful table comparison (PR `#196`_).
-* Increase the split/complement buffer in bound_dist to 2. Mpc/h.
-* Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer. 
-* Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer.
+* Increase the split/complement buffer in bound_dist to 2. Mpc/h (PR `#196`_).
+* Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer (PR `#196`_).
+* Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer (PR `#196`_).
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 
@@ -35,15 +35,15 @@ DESI Change Log
 -------------------
 * Restict to fillfactor > 0.8 for volfracs.
   (PR `#174`_).
-* More careful header updates in gen_ddp_n8.
-* Multiple realisations (16) of DESI randoms (PR #174)
-* Extension to all DESI rosettes rather than GAMA (PR #174)
-* Change default rosette radii to allow low completeness regions (PR #174)
-* Remove survey specifics in favor of propagated header info (PR #174)
-* Limit DDP N8 counting to each single field (PR #174)
-* More control of propagated header info (PR #174)
-* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR #174)
-* Possibility of weights in multi-field luminosity function (PR #174)
+* More careful header updates in gen_ddp_n8 (PR `#174`_).
+* Multiple realisations (16) of DESI randoms (PR `#174`_).
+* Extension to all DESI rosettes rather than GAMA (PR `#174`_).
+* Change default rosette radii to allow low completeness regions (PR `#174`_).
+* Remove survey specifics in favor of propagated header info (PR `#174`_).
+* Limit DDP N8 counting to each single field (PR `#174`_).
+* More control of propagated header info (PR `#174`_).
+* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR `#174`_).
+* Possibility of weights in multi-field luminosity function (PR `#174`_).
   
 .. _`#174`: https://github.com/SgmAstro/DESI/pull/174
 
@@ -58,7 +58,7 @@ Note: Major changes
 * Working customisation of queue in pipeline run, e.g. cosma/cordelia (PR `#155`_).
 * Send pipelog scripts to the right place (PR `#155`_).
 * Working configurations to write python script args to one place. replayable soon? (PR `#155`_).
-* Protect against divison warnings for exactly zero fillfactor.
+* Protect against divison warnings for exactly zero fillfactor (PR `#155`_).
 * Add protection against negative z for cosmo functions to remove zero div. errors (PR `#155`_).
 * Add change log, this file (PR `#155`_).
 * Fix fillfactor normalisation bug, where should be properly normalised against oversampled randoms (PR `#155`_).

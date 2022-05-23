@@ -19,6 +19,7 @@ from   runtime             import calc_runtime
 from   findfile            import findfile, fetch_fields, overwrite_check, call_signature, gather_cat
 from   config              import Configuration
 from   ddp_zlimits         import ddp_zlimits
+from   params              import sphere_radius
 
 
 def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=2):
@@ -110,7 +111,7 @@ def process_one(run, pid=0, start=0.0):
 
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.query_ball_tree.html#scipy.spatial.KDTree.query_ball_tree                                                               
     # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.KDTree.count_neighbors.html#scipy.spatial.KDTree.count_neighbors                                                               
-    indexes  = bigtree.query_ball_tree(kd_tree, r=8.)
+    indexes  = bigtree.query_ball_tree(kd_tree, r=sphere_radius)
 
     del kd_tree
     del bigtree
@@ -118,9 +119,11 @@ def process_one(run, pid=0, start=0.0):
 
     flat     = [len(idx) for idx in indexes]
 
+    time.sleep(.1)
+
     return  flat
 
-def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite):
+def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite, debug=False):
     opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
     if nooverwrite:
@@ -136,22 +139,42 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     _overpoints    = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
     overpoints     = np.c_[_overpoints['CARTESIAN_X'], _overpoints['CARTESIAN_Y'], _overpoints['CARTESIAN_Z']]
 
+    print(f'Fetching {fpath}')
+    print('Fetched x{} oversampled randoms.'.format(overpoints_hdr['OVERSAMPLE']))
+
     # Read randoms file, split by field (DDP1, or not).                                                                                                                                                  
     # Note: realz handles oversampled realizations only.
-    fpath       = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
-    _points     = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
-    points      = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
+    fpath          = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
+    points_hdr     = fitsio.read_header(fpath, ext=1)
 
+    _points        = fitsio.read(fpath, ext=1, columns=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z'])
+    points         = np.c_[_points['CARTESIAN_X'], _points['CARTESIAN_Y'], _points['CARTESIAN_Z']]
+ 
+    print(f'Fetching {fpath}')
+    print('Fetched randoms of density {}.'.format(points_hdr['RAND_DENS']))
+    
     del _points
     del _overpoints
 
-    runtime     = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
+    runtime        = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(overpoints) / 1.e6), xx=overpoints)
 
-    idx         = np.argsort(points[:,0])
-    points      = points[idx]
+    print('Sorting.')
 
-    idx         = np.argsort(overpoints[:,0])
-    overpoints  = overpoints[idx]
+    idx            = np.argsort(points[:,0])
+    points         = points[idx]
+
+    idx            = np.argsort(overpoints[:,0])
+    overpoints     = overpoints[idx]
+
+    if debug:
+        print('Assuming debug configuration.')
+
+        debug_downsample = 5
+
+        points           = points[::debug_downsample] 
+        overpoints       = overpoints[::debug_downsample]
+
+        print(f'Downsampling randoms by x{debug_downsample}.')
 
     runtime     = calc_runtime(start, 'Sorted randoms by X')
 
@@ -172,7 +195,7 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
         buff       = .1  # [Mpc/h] 
     
         # Complement uses the oversampled version
-        complement = (overpoints[:,0] > (xmin - 8. - buff)) & (overpoints[:,0] < (xmax + 8. + buff))
+        complement = (overpoints[:,0] > (xmin - sphere_radius - buff)) & (overpoints[:,0] < (xmax + sphere_radius + buff))
         complement = overpoints[complement]
     
         cmin       = complement[:,0].min()
@@ -208,25 +231,35 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     done_nsplit = 1
 
     # maxtasksperchild:  restart process after max tasks to contain resource leaks;
-    with Pool(nproc, maxtasksperchild=1) as pool:
-        for result in tqdm.tqdm(pool.imap(partial(process_one, start=start), iterable=runs[1:], chunksize=4), total=(nchunk-1)):
-            results.append(result)
+    with Pool(nproc, maxtasksperchild=4) as pool:
+        total   = (nchunk-1)
 
-            done_nsplit  += 1
-        
-            if (done_nsplit % nproc) == 0:
-                pool_time = (time.time() - pool_start)  / 60.
-                runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
+        with tqdm.tqdm(total=total) as pbar:
+            for result in pool.imap(partial(process_one, start=start), iterable=runs[1:], chunksize=4):
+                results.append(result)
+
+                pbar.update()
+
+                done_nsplit  += 1
+                
+                '''
+                if (done_nsplit % nproc) == 0:
+                    pool_time = (time.time() - pool_start)  / 60.
+                    runtime   = calc_runtime(start, 'POOL:  New expected runtime of {:.3f} minutes with {:d} proc.'.format(nchunk * pool_time / done_nsplit, nproc))
+                '''
 
         pool.close()
 
-    runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
+        # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join                                                                                                       
+        pool.join()
+
+    runtime     = calc_runtime(start, 'POOL:  Done with queries of {} splits'.format(done_nsplit))
+    # runtime   = calc_runtime(start, 'POOL:  Done with queries of {} splits with effective split time {}'.format(done_nsplit, pool_time / done_nsplit))
 
     flat_result = []
     
     for rr in results:
         flat_result += rr
-
  
     runtime                = calc_runtime(start, 'Reading randoms')
 
@@ -237,6 +270,9 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     
     rand.sort('CARTESIAN_X')
 
+    if debug:
+        rand               = rand[::debug_downsample] 
+
     # print(len(rand), len(flat_result))
 
     runtime                = calc_runtime(start, 'Assigning counts to randoms')
@@ -244,25 +280,25 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     rand['RAND_N8']        = np.array(flat_result).astype(np.int32)
     rand['FILLFACTOR']     = rand['RAND_N8'] / overpoints_hdr['NRAND8']
 
-    rand.meta['RSPHERE']   = 8.
+    rand.meta['RSPHERE']   = sphere_radius
     rand.meta['IMMUTABLE'] = 'FALSE'
 
-    runtime  = calc_runtime(start, f'Reading {fpath}')
+    runtime                = calc_runtime(start, f'Reading {fpath}')
 
-    boundary = Table.read(fpath, 'BOUNDARY')
+    boundary               = Table.read(fpath, 'BOUNDARY')
     
-    header   = fits.Header()
+    header                 = fits.Header()
 
-    hx       = fits.HDUList()
+    hx                     = fits.HDUList()
     hx.append(fits.PrimaryHDU(header=header))
     hx.append(fits.convenience.table_to_hdu(rand))
     hx.append(fits.convenience.table_to_hdu(boundary))
 
-    runtime  = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
+    runtime                = calc_runtime(start, 'Writing {}.'.format(opath), xx=rand)
 
     hx.writeto(opath, overwrite=True)
 
-    runtime  = calc_runtime(start, 'Finished')
+    runtime                = calc_runtime(start, 'Finished')
 
     if log:
         sys.stdout.close()
@@ -282,6 +318,7 @@ if __name__ == '__main__':
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=2, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
+    parser.add_argument('--debug', help='Trigger debug options, e.g. undersample', action='store_true')
 
     args        = parser.parse_args()
     log         = args.log
@@ -290,6 +327,7 @@ if __name__ == '__main__':
     prefix      = args.prefix
     survey      = args.survey.lower()
     oversample  = args.oversample
+    debug       = args.debug
 
     # https://www.dur.ac.uk/icc/cosma/cosma5/                                                                                                                                                            
     nproc       = args.nproc
@@ -311,4 +349,4 @@ if __name__ == '__main__':
     '''
     assert field in fields, 'Error: Field not in fields'
 
-    fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite)
+    fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite, debug)

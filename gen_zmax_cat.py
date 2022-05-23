@@ -79,6 +79,11 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
        result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
    
+       pool.close()
+
+       # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join                                                                                                        
+       pool.join()
+
    result = np.array(result)
 
    return  result[:,0], result[:,1]

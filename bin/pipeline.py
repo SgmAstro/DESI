@@ -206,8 +206,8 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
     
     # possibly missing RESET=$RESET
-    cmd           = 'serialorparallel -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
-    cmd           = cmd.format(int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
+    cmd           = 'serialorparallel -n {} -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
+    cmd           = cmd.format('gold_d8_pipeline', int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
     gold_d8_jobid = run_command(cmd)
         
     print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')

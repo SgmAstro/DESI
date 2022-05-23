@@ -97,6 +97,11 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
         for result in tqdm.tqdm(pool.imap(partial(process_one, Mmins=Mmins, Mmaxs=Mmaxs, phi_Ms=phi_Ms, phis=phis), iterable=splits), total=len(splits)):
             results += result
     
+        pool.close()
+
+        # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join                                                                                                       
+        pool.join()
+
     results  = np.array(results) # [1/dM]
 
     # pool.close()

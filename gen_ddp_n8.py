@@ -21,7 +21,7 @@ parser.add_argument('--log', help='Create a log file of stdout.', action='store_
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
-parser.add_argument('--oversample', help='Oversample', default=4, type=int)
+parser.add_argument('--oversample', help='Oversample', default=2, type=int)
 parser.add_argument('--oversample_nrealisations', help='Oversample realization number', default=None)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 

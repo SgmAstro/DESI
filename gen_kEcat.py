@@ -96,6 +96,11 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
     with Pool(nproc) as pool:
         dat = vstack(pool.map(partial(sub_kE, kcorr_r=kcorr_r, kcorr_g=kcorr_g), dat))
 
+        pool.close()
+
+        # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join                                                                                                       
+        pool.join()
+
     nwarn   = (dat['REST_GMR_0P1_WARN'].data > 0)
     nwarn   = np.count_nonzero(nwarn)
 

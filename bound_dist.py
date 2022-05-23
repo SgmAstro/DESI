@@ -17,7 +17,7 @@ from   runtime         import calc_runtime
 from   findfile        import findfile, overwrite_check, call_signature
 from   config          import Configuration
 from   fillfactor      import collate_fillfactors
-from   params          import oversample_nrealisations
+from   params          import oversample_nrealisations, sphere_radius
 
 def process_one(run, pid=0):
     split      = run[0]
@@ -86,11 +86,11 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
         xmin       = split[:,0].min()
         xmax       = split[:,0].max()
 
-        buff       = 2. # Mpc                                                                                                                                                                             
+        buff       = .2 # Mpc                                                                                                                                                                             
 
         # Boundary complement. 
         # TODO HARDCODE                                                                                                                                                                                 
-        complement = (boundary[:,0] > (xmin - 8. - buff)) & (boundary[:,0] < (xmax + 8. + buff))
+        complement = (boundary[:,0] > (xmin - sphere_radius - buff)) & (boundary[:,0] < (xmax + sphere_radius + buff))
         complement =  boundary[complement]
 
         cmin       = complement[:,0].min()
@@ -123,6 +123,9 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
 
         pool.close()
 
+        # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join
+        pool.join()
+
     runtime = calc_runtime(start, 'POOL:  Done with queries')
 
     flat_result = []
@@ -140,8 +143,6 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
 
     rand['BOUND_DIST'] = np.array(flat_result)
     rand['BOUNDID']    = bids[np.array(flat_ii)]
-
-    sphere_radius      = rand.meta['RSPHERE']
 
     rand['FILLFACTOR_POISSON'] = rand['FILLFACTOR']
     rand['FILLFACTOR'][rand['BOUND_DIST'].data > sphere_radius] = 1.

@@ -21,7 +21,7 @@ from   config              import Configuration
 from   ddp_zlimits         import ddp_zlimits
 
 
-def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=4):
+def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=2):
     print('Collating fillfactor realizations into main (realz=0).')
     
     realzs     = np.sort(realzs)
@@ -276,7 +276,7 @@ if __name__ == '__main__':
     parser.add_argument('--nproc', help='nproc', default=14, type=int)
     parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=4, type=int)
+    parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=2, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
 
     args        = parser.parse_args()

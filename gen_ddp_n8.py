@@ -71,7 +71,7 @@ prefix           = 'randoms_ddp1'
 dat['RAND_N8']   = 0.
 
 for realz in np.arange(oversample_nrealisations):
-    print(f'Solving for galaxy fillfactors with oversampled realization {realz}.')
+    print(f'\n\nSolving for galaxy fillfactors with oversampled realization {realz}.')
 
     rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample, realz=realz) for ff in fields]
 
@@ -106,6 +106,7 @@ dat['FILLFACTOR']   = dat['RAND_N8'] / onrand8
 
 print('Normalised galaxy fill factors with {:.2f} expected randoms per 8-sphere (density: {:.6e}).'.format(onrand8, ordens))
 
+
 # ----  Find closest matching oversampled random to inherit bounddist  ----
 print('Finding bound dist measure.')
 
@@ -124,6 +125,7 @@ dd, ii              = boundary_tree.query(split, k=1)
 dat['BOUND_DIST']   = dd
 
 dat['FILLFACTOR'][dat['BOUND_DIST'] > sphere_radius] = 1.
+
 
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.

@@ -267,6 +267,8 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     if log:
         sys.stdout.close()
 
+    return 0
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Calculate fill factor using randoms.')

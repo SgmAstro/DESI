@@ -211,6 +211,8 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
 
     runtime = calc_runtime(start, 'Finished'.format(opath))
 
+    return 0
+
 
 if __name__ == '__main__':
     parser  = argparse.ArgumentParser(description='Select GAMA field.')

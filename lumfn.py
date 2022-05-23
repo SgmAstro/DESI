@@ -104,7 +104,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     dat   = dat[keep]
 
     dvmax = dat['VMAX'].data
-    vol   = dat.meta['VOLUME']
+    vol   = dat.meta['FORCE_VOL']
     
     # default:  bins[i-1] <= x < bins[i]
     
@@ -180,7 +180,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     result.pprint()
     
     result.meta['MS']             = str(['{:.4f}'.format(x) for x in Ms.tolist()])
-    result.meta['VOLUME']         = vol
+    result.meta['FORCE_VOL']      = vol
     result.meta['ABSMAG_DEF']     = Mcol
     
     if jackknife is not None:        

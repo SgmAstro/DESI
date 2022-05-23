@@ -14,6 +14,7 @@ from   findfile          import fetch_fields, findfile, overwrite_check, call_si
 from   gama_limits       import gama_limits, gama_field
 from   ddp_zlimits       import ddp_zlimits
 from   config            import Configuration
+from   params            import oversample_nrealisations
 
 
 def randoms(field='G9', survey='gama', density=.5, zmin=ddp_zlimits['DDP1'][0], zmax=ddp_zlimits['DDP1'][1], dryrun=False, prefix='', seed=None, oversample=4, realz=0):
@@ -221,7 +222,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix',       help='filename prefix', default='randoms')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=.5, type=float)
+    parser.add_argument('--density',      help='Random density per (Mpc/h)^3', default=1., type=float)
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=4, type=int)
     parser.add_argument('--seed',         help='Random seed.', default=0, type=int)
     
@@ -243,7 +244,8 @@ if __name__ == '__main__':
     density    = args.density
     oversample = args.oversample
 
-    assert oversample < 9
+    assert oversample < 9, f'Oversample of {oversample} is not supported.'
+    assert realz < oversample_nrealisations, f'Provided realization number is inconsistent with that expected in params; consult there and bin/rand_pipeline scripts.'
 
     if log:
         logfile    = findfile(ftype='randoms', dryrun=False, field=field, survey=survey, prefix=prefix, realz=realz, log=True)

@@ -35,11 +35,13 @@ def process_one(run, pid=0):
 
     return  dd.tolist(), ii.tolist()
 
-def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite):
+def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, collate=True):
     start  = time.time()
 
-    # Collate multiple n8 realizations:
-    collate_fillfactors(realzs=np.arange(oversample_nrealisations), field=field, survey=survey, dryrun=dryrun, prefix=prefix, write=True)
+    if collate:
+        # Collate multiple n8 measurements from N>1 oversampled realizations into the 0th realization. 
+        # Note: null op if already applied.
+        collate_fillfactors(realzs=np.arange(oversample_nrealisations), field=field, survey=survey, dryrun=dryrun, prefix=prefix, write=True)
     
     # https://www.dur.ac.uk/icc/cosma/cosma5/
     fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
@@ -84,8 +86,9 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite):
         xmin       = split[:,0].min()
         xmax       = split[:,0].max()
 
-        buff       = .1 # Mpc                                                                                                                                                                             
+        buff       = 2. # Mpc                                                                                                                                                                             
 
+        # Boundary complement. 
         # TODO HARDCODE                                                                                                                                                                                 
         complement = (boundary[:,0] > (xmin - 8. - buff)) & (boundary[:,0] < (xmax + 8. + buff))
         complement =  boundary[complement]
@@ -185,14 +188,14 @@ if __name__ == '__main__':
     parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
     parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
-    args   = parser.parse_args()
-    log    = args.log
-    field  = args.field.upper()
-    dryrun = args.dryrun
-    prefix = args.prefix
-    survey = args.survey.lower()
-    nproc  = args.nproc
-    realz  = args.realz
+    args        = parser.parse_args()
+    log         = args.log
+    field       = args.field.upper()
+    dryrun      = args.dryrun
+    prefix      = args.prefix
+    survey      = args.survey.lower()
+    nproc       = args.nproc
+    realz       = args.realz
     nooverwrite = args.nooverwrite
 
     '''                                                                                                                                                                                                 

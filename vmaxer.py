@@ -51,13 +51,29 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     cols        = ['ZSURV', 'ZMIN', 'ZMAX'] + extra_cols
     cols        = list(set(cols))
 
+    print('Solving for VMAX catalog.')
+
     result      = Table(dat[cols], copy=True)
     result.meta = dat.meta
 
     # Apply redshift limits.
     result      = result[result['ZSURV'] >= zmin]
     result      = result[result['ZSURV'] <= zmax]
+
+    print('VMAX catalog cut to {:.6f} <= z <= {:.6f}.'.format(zmin, zmax))
+
+    # First, define vmaxes on vl1 redshift limits. 
+    result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
+    result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
     
+    area            = dat.meta['AREA']
+
+    result['VZ']    = volcom(result['ZSURV'], area)
+    result['VZ']   -= volcom(result['ZMIN'],  area)
+
+    result['VMAX']  = volcom(result['ZMAX'],  area)
+    result['VMAX'] -= volcom(result['ZMIN'],  area)
+
     # Apply bitmask cut. 
     for bmask in bitmasks:
         isin    = result[bmask] == 0
@@ -65,33 +81,24 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
 
         print(bmask, np.mean(isin))
 
-    result.meta.update({'FORCE_ZMIN': zmin,\
-                        'FORCE_ZMAX': zmax})
-
     # New limits of subset. 
     zmin        = result['ZSURV'].min()
     zmax        = result['ZSURV'].max()
-
-    area        = dat.meta['AREA']
     
     VV          = volcom(zmax, area) - volcom(zmin, area)
 
     print('Retrieved area {:.4f} [sq. deg.]'.format(area))
-    
-    result.meta.update({'VOLUME': VV})
 
-    result['ZMIN']  = np.clip(result['ZMIN'], zmin, None)
-    result['ZMAX']  = np.clip(result['ZMAX'], None, zmax)
-    
-    result['VMAX']  = volcom(result['ZMAX'], area)
-    result['VMAX'] -= volcom(result['ZMIN'], area)
+    # Include impact of e.g. bitmask cuts on these quantities.
+    result.meta.update({'FORCE_ZMIN': zmin,\
+                        'FORCE_ZMAX': zmax,\
+                        'FORCE_VOL':    VV})
 
-    result['VZ']    = volcom(result['ZSURV'], area)
-    result['VZ']   -= volcom(result['ZMIN'], area)
-
+    # Was fillfactor applied?
     result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
+        result['VZ']             *= result['FILLFACTOR_VMAX']
         result['VMAX']           *= result['FILLFACTOR_VMAX']
     
     return  result

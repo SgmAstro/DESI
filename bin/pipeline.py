@@ -110,7 +110,13 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     Path(os.environ['RANDOMS_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
 
     if stages == None:
-        stages = ['gold', 'rand', 'rand_ddp1', 'rand_d8', 'rand_ddp1_d8', 'gold_d8']
+       # TODO:  difficulty is handing the dependency jobids.
+        stages = ['gold',\
+                  'rand',\
+                  'rand_ddp1',\
+                  'rand_d8',\
+                  'rand_ddp1_d8',\
+                  'gold_d8']
 
     #  ---------------------------------------------
     # Generate all steps up to reference LF. 

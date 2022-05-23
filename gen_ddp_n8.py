@@ -23,6 +23,7 @@ parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
 parser.add_argument('-s', '--survey', help='Select survey', default='gama')
 parser.add_argument('--realz', help='Realization', default=0, type=int)
 parser.add_argument('--oversample', help='Oversample', default=4, type=int)
+parser.add_argument('--oversample_nrealisations', help='Oversample realization number', default=None)
 parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
 
 args        = parser.parse_args()
@@ -31,6 +32,11 @@ realz       = args.realz
 dryrun      = args.dryrun
 survey      = args.survey.lower()
 oversample  = args.oversample
+
+if args.oversample_nrealisations != None:
+    oversample_nrealisations = int(args.oversample_nrealisations)
+  
+    print(f'Overriding number of oversampled realizations used with {oversample_nrealisations}')
 
 fields      = fetch_fields(survey)
 
@@ -59,11 +65,12 @@ points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
 
+
 # Oversampled randoms 
 prefix           = 'randoms_ddp1'
 dat['RAND_N8']   = 0.
 
-for realz in np.arange(oversample_nrealisations):
+for realz in np.arange(oversample_nrealisations)[::-1]:
     print(f'Solving for galaxy fillfactors with oversampled realization {realz}.')
 
     rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample, realz=realz) for ff in fields]
@@ -74,16 +81,16 @@ for realz in np.arange(oversample_nrealisations):
     orand        = gather_cat(rpaths)
 
     orpoints     = np.c_[orand['CARTESIAN_X'], orand['CARTESIAN_Y'], orand['CARTESIAN_Z']]
-    orpoints     = np.array(orpoints, copy=True)
 
     print('Creating oversample rand. tree.')
 
-    obig_tree    = KDTree(orpoints)
-
-    ##                                                                                                                                                                                                    
+    obig_tree       = KDTree(orpoints)
+    
     indexes_dat     = kd_tree_all.query_ball_tree(obig_tree, r=8.)
     dat['RAND_N8'] += np.array([len(idx) for idx in indexes_dat])
 
+    print('After solving for realization {}, median number of randoms per 8-sphere is {}'.format(realz, np.median(dat['RAND_N8'])))
+    
 del orand
 del orpoints
 del obig_tree
@@ -99,14 +106,33 @@ dat['FILLFACTOR']   = dat['RAND_N8'] / onrand8
 
 print('Normalised galaxy fill factors with {:.2f} expected randoms per 8-sphere (density: {:.6e}).'.format(onrand8, ordens))
 
+# ----  Find closest matching oversampled random to inherit bounddist  ----
+print('Finding bound dist measure.')
+
+bpaths              = [findfile(ftype='randoms_n8', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
+boundary            = [Table.read(bpath, 'BOUNDARY') for bpath in bpaths]
+
+# TODO Note: BOUNDID will not be unique.
+boundary            = vstack(boundary)
+boundary            = np.c_[boundary['CARTESIAN_X'], boundary['CARTESIAN_Y'], boundary['CARTESIAN_Z']]
+boundary_tree       = KDTree(boundary)
+
+body                = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
+split               = [x for x in body]
+
+dd, ii              = boundary_tree.query(split, k=1)
+dat['BOUND_DIST']   = dd
+
+dat['FILLFACTOR'][dat['BOUND_DIST'] > sphere_radius] = 1.
+
 # ----  Find closest matching random to inherit fill factor  ----
 # Read randoms bound_dist.
-rpaths       = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]
+rpaths              = [findfile(ftype='randoms_bd', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=1, realz=0) for ff in fields]
 
 for rpath in rpaths:
     print('Reading: {}'.format(rpath))
 
-rand         = gather_cat(rpaths)
+rand                = gather_cat(rpaths)
 
 print('Retrieved galaxies for {}'.format(np.unique(dat['FIELD'].data)))
 print('Retrieved randoms for {}'.format(np.unique(rand['FIELD'].data)))
@@ -115,7 +141,6 @@ for i, rpath in enumerate(rpaths):
     dat.meta['RPATH_{}'.format(i)] = rpath
 
 rpoints  = np.c_[rand['CARTESIAN_X'], rand['CARTESIAN_Y'], rand['CARTESIAN_Z']]
-rpoints  = np.array(rpoints, copy=True)
 
 print('Creating big rand. tree.')
 
@@ -127,13 +152,10 @@ dd, ii   = big_tree.query([x for x in points], k=1)
 
 # Find closest random for bound_dist and fill factor. 
 # These randoms are split by field.
-dat['RANDSEP']     = dd
-dat['RANDMATCH']   = rand['RANDID'][ii]
-dat['BOUND_DIST']  = rand['BOUND_DIST'][ii]
+dat['rRANDSEP']    = dd
+dat['rRANDMATCH']  = rand['RANDID'][ii]
+dat['rBOUND_DIST'] = rand['BOUND_DIST'][ii]
 dat['rFILLFACTOR'] = rand['FILLFACTOR'][ii]
-
-## 
-dat['FILLFACTOR'][dat['BOUND_DIST'] > sphere_radius] = 1.
 
 update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', dat['FILLFACTOR'].data < fillfactor_threshold)
 
@@ -144,9 +166,12 @@ print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].
 _idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
 volavg_fillfrac     = 0.0
 
+# Note:  this neglects the impact of the zmin cut on this calculation.
+# TODO?
 for i, _idx in enumerate(np.unique(_idxs)):
     zmax            = dat['ZMAX'][_idxs == _idx].max()
 
+    # Randoms determined by vol. lim. 1 redshift limits, i.e. ddp1 without fillfactor cut.   
     sub_rand        = rand[rand['Z'].data <= zmax]
     
     isin            = (sub_rand['FILLFACTOR'].data > fillfactor_threshold)

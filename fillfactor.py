@@ -206,7 +206,7 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     done_nsplit = 1
 
     # maxtasksperchild:  restart process after max tasks to contain resource leaks;
-    with Pool(nproc, maxtasksperchild=4) as pool:
+    with Pool(nproc, maxtasksperchild=1) as pool:
         for result in tqdm.tqdm(pool.imap(partial(process_one, start=start), iterable=runs[1:], chunksize=4), total=(nchunk-1)):
             results.append(result)
 

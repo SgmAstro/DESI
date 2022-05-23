@@ -16,7 +16,7 @@ from   scipy.spatial       import KDTree
 from   astropy.table       import Table
 from   multiprocessing     import Pool
 from   runtime             import calc_runtime
-from   findfile            import findfile, fetch_fields, overwrite_check, call_signature
+from   findfile            import findfile, fetch_fields, overwrite_check, call_signature, gather_cat
 from   config              import Configuration
 from   ddp_zlimits         import ddp_zlimits
 
@@ -30,6 +30,8 @@ def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=
 
     opaths     = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
     opath      = opaths[0] 
+
+    assert  np.all(np.array([os.path.isfile(x) for x in opaths])), 'Failed to find {}'.format(opaths)
     
     for oo in opaths:
         print(f'Fetching {oo}.')

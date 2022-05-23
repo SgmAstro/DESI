@@ -66,6 +66,9 @@ def gather_cat(fpaths):
 
     assert  np.all(np.array([os.path.isfile(x) for x in fpaths])), 'Failed to find {}'.format(fpaths)
 
+    for fpath in fpaths:
+        print(f'Fetching {fpath}.')
+
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)
 
@@ -290,6 +293,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
                       'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
                       'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
                       'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
+                      'volavg_fillfactor':  {'dir': rand_dir, 'id': 'volavg_fillfactor',      'ftype': realz},\
                       'boundary':           {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
                      }
         

@@ -6,7 +6,7 @@ from   bitmask         import lumfn_mask, consv_mask, update_bit
 from   volfracs        import volfracs
 from   findfile        import findfile, fetch_fields, write_desitable
 from   params          import fillfactor_threshold
-
+from   volfracs        import eval_volavg_fillfactor
 
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False, write=False):    
     fields = fetch_fields(survey=survey)
@@ -18,7 +18,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
     
     rand   = volfracs(rand, bitmasks=bitmasks)    
 
-    # HACK 
+    # HACK SURVEYHACK
     assert survey == 'gama'
 
     print('\n\n')
@@ -98,6 +98,9 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
+        # HACK SURVEYHACK
+        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9')
+
         result['VZ']             *= result['FILLFACTOR_VMAX']
         result['VMAX']           *= result['FILLFACTOR_VMAX']
     

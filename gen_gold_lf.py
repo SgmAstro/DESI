@@ -98,8 +98,6 @@ if __name__ == '__main__':
         # Bounded by gama gold, reference schechter limits:  
         # 0.039 < z < 0.263.
         # Note: not split by field. 
-
-        prefix = 'randoms'
         
         fpath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
         opath  = findfile(ftype='vmax',   dryrun=dryrun, survey=survey)

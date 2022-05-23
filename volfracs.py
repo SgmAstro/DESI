@@ -1,8 +1,78 @@
-import numpy         as     np
+import numpy             as     np
 
-from   delta8_limits import d8_limits
-from   params        import fillfactor_threshold
+from   delta8_limits     import d8_limits
+from   params            import fillfactor_threshold
+from   scipy.interpolate import interp1d
+from   cosmo             import volcom
+from   ddp_zlimits       import ddp_zlimits
+from   astropy.table     import Table, vstack
+from   findfile          import findfile, fetch_fields, gather_cat
 
+
+def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9'):
+    print('\n\nSolving for volume average fillfactor.')
+
+    fields      = fetch_fields(survey=survey)
+    rpaths      = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]    
+    rand        = gather_cat(rpaths)
+
+    ## 
+    idx         = np.argsort(rand['Z']) 
+    sorted_rand = Table(rand, copy=True)[idx]
+
+    print('Randoms {:.6f} <= z <= {:.6f}'.format(sorted_rand['Z'].min(), sorted_rand['Z'].max()))
+
+    dbin        = 1.e-3
+
+    zlo         = ddp_zlimits['DDP1'][0]
+    zhi         = ddp_zlimits['DDP1'][1]
+
+    bins        = np.arange(zlo, zhi + dbin, dbin)
+    idx         = np.digitize(sorted_rand['Z'], bins=bins)
+
+    result      = []
+
+    for i, bb in enumerate(bins):
+        sub     = idx <= i
+        vfrac   = 1. * np.count_nonzero(sub) / len(rand)
+
+        sub    &= (sorted_rand['FILLFACTOR'] > fillfactor_threshold)
+        cfrac   = 1. * np.count_nonzero(sub) / len(rand)  
+
+        midb    = bb + dbin/2.
+
+        result.append([midb, vfrac, cfrac])
+
+    result      = np.array(result)
+    result      = Table(result, names=['Z', 'RANDFRAC', 'RANDFRAC_FILLFACTOR'])
+    
+    result.pprint()
+
+    if write:
+        opath   = findfile(ftype='volavg_fillfactor', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+        result.write(opath, format='fits', overwrite=True)
+
+    vol_splint  = interp1d(result['Z'], result['RANDFRAC'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    cut_splint  = interp1d(result['Z'], result['RANDFRAC_FILLFACTOR'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+
+    return  vol_splint, cut_splint
+
+def eval_volavg_fillfactor(dat, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9'):
+    vol_splint, cut_splint = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field)
+
+    def _eval_volavg_fillfactor(zmax, zmin):
+        return (cut_splint(zmax) - cut_splint(zmin)) / (vol_splint(zmax) - vol_splint(zmin))
+
+    result = []
+
+    for row in dat:
+        result.append(_eval_volavg_fillfactor(row['ZMAX'], row['ZMIN']))
+        
+    result = np.array(result)
+
+    dat['FILLFACTOR_VMAX'] = result
+
+    return  0
 
 def volfracs(rand, bitmasks=['IN_D8LUMFN']):
     '''
@@ -78,3 +148,10 @@ def volfracs(rand, bitmasks=['IN_D8LUMFN']):
         print('DDP1_d{}_ZEROPOINT_TIERMED d8 OF {} added.'.format(ut, rand.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(ut)]))
 
     return  rand
+
+
+if __name__ == '__main__':
+    rand = Table.read('/cosma5/data/durham/dc-wils7/GAMA4/randoms/randoms_ddp1_bd_ddp_n8_GALL_0.fits')
+    rand.pprint()
+
+    volavg_fillfactor(rand)

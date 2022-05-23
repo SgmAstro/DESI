@@ -16,7 +16,6 @@ from   delta8_limits import d8_limits
 from   runtime       import calc_runtime
 from   params        import fillfactor_threshold, oversample_nrealisations, sphere_radius
 
-
 parser = argparse.ArgumentParser(description='Generate DDP1 N8 for all gold galaxies.')
 parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
 parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
@@ -64,7 +63,6 @@ points       = np.c_[dat['CARTESIAN_X'], dat['CARTESIAN_Y'], dat['CARTESIAN_Z']]
 points       = np.array(points, copy=True)
 
 kd_tree_all  = KDTree(points)
-
 
 # Oversampled randoms 
 prefix           = 'randoms_ddp1'
@@ -161,31 +159,6 @@ dat['rFILLFACTOR'] = rand['FILLFACTOR'][ii]
 
 update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', dat['FILLFACTOR'].data < fillfactor_threshold)
 
-dat['FILLFACTOR_VMAX'] = -99.
-
-print('Solving vol. avg. fill factor for z limits: {} to {}'.format(dat['ZMAX'].data.min(), dat['ZMAX'].data.max()))
-
-_idxs               = np.digitize(dat['ZMAX'].data, bins=np.arange(0.0, 1.0, 2.5e-3))
-volavg_fillfrac     = 0.0
-
-# Note:  this neglects the impact of the zmin cut on this calculation.
-# TODO?
-for i, _idx in enumerate(np.unique(_idxs)):
-    zmax            = dat['ZMAX'][_idxs == _idx].max()
-
-    # Randoms determined by vol. lim. 1 redshift limits, i.e. ddp1 without fillfactor cut.   
-    sub_rand        = rand[rand['Z'].data <= zmax]
-    
-    isin            = (sub_rand['FILLFACTOR'].data > fillfactor_threshold)
-
-    if np.count_nonzero(isin):
-        volavg_fillfrac = np.mean(isin)
-    
-    else:
-        print('Warning:  assuming previous vol. avg. fillfactor of {:.6f} for {:.6f}'.format(volavg_fillfrac, zmax))
- 
-    dat['FILLFACTOR_VMAX'][_idxs == _idx] = volavg_fillfrac
-    
 if not dryrun:
     match_sep = 6.5
 

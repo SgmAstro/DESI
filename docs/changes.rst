@@ -35,15 +35,15 @@ DESI Change Log
 -------------------
 * Restict to fillfactor > 0.8 for volfracs.
   (PR `#174`_).
-* More careful header updates in gen_ddp_n8.
-* Multiple realisations (16) of DESI randoms (PR #174)
-* Extension to all DESI rosettes rather than GAMA (PR #174)
-* Change default rosette radii to allow low completeness regions (PR #174)
-* Remove survey specifics in favor of propagated header info (PR #174)
-* Limit DDP N8 counting to each single field (PR #174)
-* More control of propagated header info (PR #174)
-* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR #174)
-* Possibility of weights in multi-field luminosity function (PR #174)
+* More careful header updates in gen_ddp_n8 (PR `#174`_).
+* Multiple realisations (16) of DESI randoms (PR `#174`_).
+* Extension to all DESI rosettes rather than GAMA (PR `#174`_).
+* Change default rosette radii to allow low completeness regions (PR `#174`_).
+* Remove survey specifics in favor of propagated header info (PR `#174`_).
+* Limit DDP N8 counting to each single field (PR `#174`_).
+* More control of propagated header info (PR `#174`_).
+* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR `#174`_).
+* Possibility of weights in multi-field luminosity function (PR `#174`_).
   
 .. _`#174`: https://github.com/SgmAstro/DESI/pull/174
 

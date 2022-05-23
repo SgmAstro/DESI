@@ -58,7 +58,7 @@ Note: Major changes
 * Working customisation of queue in pipeline run, e.g. cosma/cordelia (PR `#155`_).
 * Send pipelog scripts to the right place (PR `#155`_).
 * Working configurations to write python script args to one place. replayable soon? (PR `#155`_).
-* Protect against divison warnings for exactly zero fillfactor.
+* Protect against divison warnings for exactly zero fillfactor (PR `#155`_).
 * Add protection against negative z for cosmo functions to remove zero div. errors (PR `#155`_).
 * Add change log, this file (PR `#155`_).
 * Fix fillfactor normalisation bug, where should be properly normalised against oversampled randoms (PR `#155`_).

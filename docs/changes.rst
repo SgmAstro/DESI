@@ -25,6 +25,8 @@ DESI Change Log
 * Default to TMR-like LF binning (PR `#196`_).
 * Add TMR d8-schechter model for plot comparison (PR `#196`_).
 * Improve summary stats for more useful table comparison (PR `#196`_).
+* Increase the split/complement buffer in bound_dist to 2. Mpc/h.
+* Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer. 
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 

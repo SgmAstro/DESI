@@ -70,7 +70,7 @@ kd_tree_all  = KDTree(points)
 prefix           = 'randoms_ddp1'
 dat['RAND_N8']   = 0.
 
-for realz in np.arange(oversample_nrealisations)[::-1]:
+for realz in np.arange(oversample_nrealisations):
     print(f'Solving for galaxy fillfactors with oversampled realization {realz}.')
 
     rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample, realz=realz) for ff in fields]
@@ -188,13 +188,13 @@ if not dryrun:
     match_sep = 6.5
 
     # Typically, bounded by 1.6
-    # assert  np.all(dat['RANDSEP'].data < match_sep), 'Failed to find matching random with < 5 Mpc/h separation.'
+    # assert  np.all(dat['rRANDSEP'].data < match_sep), 'Failed to find matching random with < 5 Mpc/h separation.'
 
-    if not np.all(dat['RANDSEP'].data < match_sep):
+    if not np.all(dat['rRANDSEP'].data < match_sep):
         # Note: DESI randoms are less dense, larger expected separation.
         print('WARNING: poor random match, with maximum comoving random separation >3Mpc/h.')
 
-        poor_match = dat['RANDSEP'].data > match_sep
+        poor_match = dat['rRANDSEP'].data > match_sep
 
         print(dat[poor_match])
 

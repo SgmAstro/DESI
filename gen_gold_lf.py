@@ -21,7 +21,7 @@ from   bitmask          import update_bit, lumfn_mask
 from   params           import fillfactor_threshold
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False):        
+def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, tier=None):        
     opath = vmax_opath
 
     if not os.path.isfile(fpath):
@@ -42,7 +42,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bit
 
     update_bit(zmax['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', zmax['FILLFACTOR'].data < fillfactor_threshold)
 
-    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols)
+    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols, tier=tier)
     vmax.meta['EXTNAME'] = 'VMAX'
         
     print('Writing {}.'.format(opath))
@@ -182,8 +182,9 @@ if __name__ == '__main__':
             print()
             print('Reading: {}'.format(ddp_fpath))
 
+            '''
             try:
-                failure = process_cat(ddp_fpath, ddp_opath, field=field, extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True)
+                failure = process_cat(ddp_fpath, ddp_opath, field=field, extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, tier=idx)
 
             except Exception as E:
                 print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
@@ -191,7 +192,10 @@ if __name__ == '__main__':
                 print('skipping.')
                 
                 continue 
-        
+            '''
+
+            failure = process_cat(ddp_fpath, ddp_opath, field=field, extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, tier=idx) 
+
             print('LF process cat. complete.')
 
             if failure == -99:

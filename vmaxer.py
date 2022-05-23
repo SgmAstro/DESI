@@ -8,6 +8,7 @@ from   findfile        import findfile, fetch_fields, write_desitable
 from   params          import fillfactor_threshold
 from   volfracs        import eval_volavg_fillfactor
 
+
 def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', bitmasks=['IN_D8LUMFN'], conservative=False, write=False):    
     fields = fetch_fields(survey=survey)
 
@@ -37,7 +38,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
 
     return  rand
 
-def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN']):
+def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN'], tier=None):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
@@ -99,7 +100,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
 
     if fillfactor:
         # HACK SURVEYHACK
-        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9')
+        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=tier)
 
         result['VZ']             *= result['FILLFACTOR_VMAX']
         result['VMAX']           *= result['FILLFACTOR_VMAX']

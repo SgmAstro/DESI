@@ -28,6 +28,7 @@ DESI Change Log
 * Increase the split/complement buffer in bound_dist to 2. Mpc/h (PR `#196`_).
 * Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer (PR `#196`_).
 * Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer (PR `#196`_).
+* <FILLFACTOR> needs to be restricted to density tiers for d8 LF (PR `#196`_).
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 

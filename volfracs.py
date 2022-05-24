@@ -12,7 +12,7 @@ from   ddp               import tmr_DDP1
 
 
 def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None, pprint=False, self_count=False):
-    print(f'\n\nSolving for volume average fillfactor with self_count: {self_count}.')
+    print(f'\n\nSolving volume average fillfactor for field {field} with self_count: {self_count}.')
 
     fields      = fetch_fields(survey=survey)
     rpaths      = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]    

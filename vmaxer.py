@@ -38,7 +38,7 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
 
     return  rand
 
-def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN'], tier=None):
+def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN'], tier=None, field=None):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
@@ -99,8 +99,10 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
+        assert field != None
+
         # HACK SURVEYHACK
-        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=tier)
+        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field=field, tier=tier)
 
         result['VZ']             *= result['FILLFACTOR_VMAX']
         result['VMAX']           *= result['FILLFACTOR_VMAX']

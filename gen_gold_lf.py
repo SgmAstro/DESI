@@ -42,7 +42,7 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bit
 
     update_bit(zmax['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', zmax['FILLFACTOR'].data < fillfactor_threshold)
 
-    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols, tier=tier)
+    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols, tier=tier, field=field)
     vmax.meta['EXTNAME'] = 'VMAX'
         
     print('Writing {}.'.format(opath))

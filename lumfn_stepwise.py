@@ -12,6 +12,7 @@ from    astropy.table   import Table
 from    findfile        import findfile, overwrite_check, write_desitable
 from    schechter       import named_schechter
 from    ddp             import initialise_ddplimits
+from    ddp_limits      import limiting_curve_path
 
 
 def lum_binner(x, dM=0.1):
@@ -63,21 +64,16 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
     '''
     Eqn. 2.12, of Efstathiou, Ellis & Peterson.   
     '''
-    bright_curve, bright_curve_r, faint_curve, faint_curve_r = initialise_ddplimits(survey=survey)
+    # HACK SURVEYHACK
+    bidx, bpath = limiting_curve_path(survey, 12.,  'QCOLOR', 0.603, gmr_0P0=None, debug=False)
+    fidx, fpath = limiting_curve_path(survey, 19.8, 'QCOLOR', 0.603, gmr_0P0=None, debug=False)
 
-    # HACK MALL, MQALL?
-    assert  Mcol == 'MALL_0P0' 
+    bright_curve, bright_curve_r, faint_curve, faint_curve_r = initialise_ddplimits(bright_idx=bidx, faint_idx=fidx)
 
-    zmin      = 0.0 # bright_curve(phi_M) 
-    zmax      = faint_curve(phi_M)
+    zmin        = bright_curve(phi_M) 
+    zmax        = faint_curve(phi_M)
 
-    # TODO: switch to ZSURV.
-    try:
-        zcol      = 'Z{}'.format(survey.upper())
-        vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
-    except:
-        zcol      = 'ZSURV'
-        vol_lim   = vmax[(vmax[zcol] > zmin) & (vmax[zcol] < zmax)]
+    vol_lim     = vmax[(vmax['ZSURV'] > zmin) & (vmax['ZSURV'] < zmax)]
 
         
     Mmins     = bright_curve_r(vol_lim[zcol].data)
@@ -104,15 +100,14 @@ def lumfn_stepwise_eval(vmax, phi_M, phi, phis, phi_Ms, dM, Mcol='MALL_0P0', sur
 
     results  = np.array(results) # [1/dM]
 
-    # pool.close()
-
     #  dM * phis.   
     return  results
 
-def lumfn_stepwise(vmax, Mcol='MALL_0P0', Mmin_col='DDPMALL_0P0_VISZ', survey='gama', tolerance=1.e-3):
-    dM        = 0.2
-    phi_Ms    = np.arange(-25.5, -15.5, dM)
+def lumfn_stepwise(vmax, Mcol='MCOLOR_0P0', survey='gama', tolerance=1.e-3):
+    # Note: match lumfn binning.
+    phi_Ms    = np.linspace(-23.,  -16.,  36)
 
+    # Initialise phi estimates - uniform. 
     phi_init  = dM * 1. * np.ones(len(phi_Ms), dtype=float)
 
     diff      = 1.e99

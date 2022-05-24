@@ -15,6 +15,49 @@ from   data.ke_params    import *
 from   findfile          import findfile, fetch_header
 from   config            import Configuration
 
+def limiting_curve_path(survey, rlim, all_type, gmr_0P1, gmr_0P0=None, debug=True):
+    fpath = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count='all')
+
+    print(f'Fetching {fpath}')
+
+    f     = open(fpath, 'r')
+    lines = f.readlines()
+
+    for line in lines:
+        #  12.0/19.8    QALL/QCOLOR    0.131    /cosma5/data/durham/dc-wils7/GAMA4//ddrp_limits/gama_ddrp_limit_0.fits
+        _count, _rlim, _all_type, _gmr_0P1, _gmr_0P0, _fpath = line.split()
+        
+        _count   = int(_count)
+        _rlim    = float(_rlim)
+  
+        _gmr_0P1 = float(_gmr_0P1)
+        _gmr_0P0 = float(_gmr_0P0)
+
+        if debug:
+            print(_count, _rlim, _all_type, _gmr_0P1, _gmr_0P0, _fpath)
+
+        match    = (_rlim == rlim)
+        match   &= (_all_type == all_type)
+        match   &= ((_gmr_0P1 == gmr_0P1) | (_gmr_0P0 == gmr_0P0))
+
+        if match:
+            return _count, _fpath
+    
+    raise RuntimeError('Failed to find a limiting curve for {} {} {} {}'.format(rlim, all_type, gmr_0P1, gmr_0P0))
+
+def grab_ddplimit(fpath):
+    dat    = fits.open(fpath)
+    result = {}
+    
+    for key in ['RLIM', 'GMR_0P0', 'GMR_0P1', 'ALL']:
+        result[key] = dat[1].header[key]
+        
+    result['DATA']  = Table.read(fpath)
+    result['COUNT'] = fpath.split('_')[-1].replace('.fits', '')
+    
+    print(fpath)
+    
+    return result
 
 if __name__ == '__main__':
     parser   = argparse.ArgumentParser(description='Gen kE DDP limit curves')
@@ -27,7 +70,7 @@ if __name__ == '__main__':
     log      = args.log
     survey   = args.survey.lower()
     
-    config = Configuration(args.config)
+    config   = Configuration(args.config)
     config.update_attributes('ddp_limits', args)
     config.write()
     
@@ -59,6 +102,8 @@ if __name__ == '__main__':
     count    = 0
 
     zs = mus = None
+
+    summary  = []
 
     for rlim in rlims:
         print('----------------------------------')
@@ -98,10 +143,24 @@ if __name__ == '__main__':
             
                 dat.write(opath, format='fits', overwrite=True)
             
+                line     = '{} \t {} \t {} \t {} \t {} \t {}'.format(count, rlim, all_type, gmr_0P1[0], gmr_0P0[0], opath)
+
+                print('Solved for {}'.format(line))
+
+                summary.append(line)
+
                 count   += 1
 
-                print()
-                print('Solved for {} {} {}: {}'.format(rlim, all_type, gmr_0P1[0], opath))
+    opath = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count='all')
+
+    print(f'Writing ddp limit summary to {opath}')
+
+    with open(opath, 'w') as f:
+        for line in summary:
+            f.write(line)
+            f.write('\n')
+
+    f.close()
 
     print('Done.')
 

@@ -265,8 +265,12 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
             return gold_dir + '/logs/' + '{}_ddrp_limit.log'.format(survey)
 
         else:
-            assert ddp_count >= 0
-            return gold_dir + '/ddrp_limits/' + '{}_ddrp_limit_{:d}.fits'.format(survey, ddp_count)
+            fpath = gold_dir + '/ddrp_limits/' + '{}_ddrp_limit_{}.fits'.format(survey, ddp_count)
+            
+            if ddp_count == 'all':
+                fpath = fpath.replace('.fits', '.txt')
+
+        return fpath
                 
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]

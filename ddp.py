@@ -13,21 +13,28 @@ tmr_DDP1       = [-21.8, -20.1]
 tmr_DDP2       = [-20.6, -19.3]
 tmr_DDP3       = [-19.6, -17.8]
 
-def initialise_ddplimits(survey, Mcol='M0P0_QALL'):
-    assert  Mcol == 'M0P0_QALL', 'Hard coded limit numbers and curves'
+def initialise_ddplimits(survey, Mcol='M0P0_QALL', bright_idx=None, faint_idx=None):
+    if bright_idx == None:
+        bright_idx = 3
 
-    bpath  = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count= 3) 
-    fpath  = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=17) 
+        assert Mcol == 'M0P0_QALL'
+
+    if  faint_idx == None:
+        faint_idx  = 17
+
+        assert Mcol == 'M0P0_QALL'
+
+    return _initialise_ddplimits(bright_idx, faint_idx)
+
+def _initialise_ddplimits(bright_idx, faint_idx):
+    bpath          = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=bright_idx) 
+    fpath          = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=faint_idx) 
 
     print(f'Reading {bpath}')
     print(f'Reading {fpath}')
 
     _bright_curve  = Table.read(bpath)
     _faint_curve   = Table.read(fpath)
-
-    # TODO/MJW/ why did this fail to catch ddp_limits not provided with SURVEYARG??
-    assert  _bright_curve.meta['SURVEY'] == survey, f'Survey mismatch for found ddp limit files: {bfpath}'
-    assert  _faint_curve.meta['SURVEY']  == survey, f'Survey mismatch for found ddp limit files: {fpath}'
 
     # TODO: extend the curve limits and put bounds_error back on.
     bright_curve   = interp1d(_bright_curve[Mcol], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)

@@ -29,6 +29,8 @@ DESI Change Log
 * Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer (PR `#196`_).
 * Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer (PR `#196`_).
 * <FILLFACTOR> needs to be restricted to density tiers for d8 LF (PR `#196`_).
+* <FILLFACTOR> needs to be restricted to density tiers for d8 LF - field dependent correction (PR `#196`_).
+* QCOLOR stepwise.
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 

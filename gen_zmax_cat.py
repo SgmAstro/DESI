@@ -14,9 +14,10 @@ from   functools       import partial
 from   multiprocessing import Pool
 from   findfile        import findfile, overwrite_check, write_desitable, fetch_header
 from   config          import Configuration
+from   abs_mag         import abs_mag
 
 
-kcorr_r = GAMA_KCorrection(band='R')
+kcorr_r          = GAMA_KCorrection(band='R')
 
 def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=False):
     z            = np.atleast_1d(z)
@@ -64,17 +65,6 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    if debug:
         print('Solving for zlimit.')
 
-   '''
-   for i, (rest_gmr_0p1, rest_gmr_0p0, theta_z, dr) in enumerate(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs)):
-        interim, warn = solve_theta(rest_gmr_0p1, rest_gmr_0p0, theta_z, dr, aall=aall)
-
-        result.append([interim, warn])
-
-        if (i % 500 == 0) & debug:
-             runtime = (time.time() - start) / 60.
-
-             print('{:.3f}% complete after {:.2f} mins.'.format(100. * i / len(theta_zs), runtime))
-   '''
    with Pool(processes=14) as pool:
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
        result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
@@ -147,12 +137,12 @@ if __name__ == '__main__':
                        aall=aall,\
                        debug=True)
 
-    dat['ZMAX']      = zmaxs
-    dat['ZMAX_WARN'] = warn
-
-    dat['DELTA_DETMAG_BRIGHT'] = rmax - dat['DETMAG']
+    dat['ZMAX']           = zmaxs
+    dat['ZMAX_WARN']      = warn
 
     print('Solving for {} bounding curve'.format(rmax))
+
+    dat['DELTA_DETMAG_BRIGHT'] = rmax - dat['DETMAG']
     
     zmins, warn = zmax(dat['REST_GMR_0P1'],\
                        dat['REST_GMR_0P0'],\
@@ -161,8 +151,8 @@ if __name__ == '__main__':
                        aall=aall,\
                        debug=True)
 
-    dat['ZMIN']      = zmins
-    dat['ZMIN_WARN'] = warn
+    dat['ZMIN']           = zmins
+    dat['ZMIN_WARN']      = warn
 
     dat.meta['THETA_DEF'] = theta_def
 

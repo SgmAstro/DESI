@@ -3,9 +3,11 @@ import sys
 import argparse
 import runtime
 import fitsio
+import numpy         as     np
 
 from   astropy.table import Table
-from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3
+from   ddp           import get_ddps, tmr_DDP1, tmr_DDP2, tmr_DDP3, _initialise_ddplimits
+from   ddp_limits    import limiting_curve_path
 from   findfile      import findfile, overwrite_check, write_desitable
 from   bitmask       import lumfn_mask, consv_mask, update_bit
 from   config        import Configuration
@@ -48,7 +50,22 @@ Area   = dat.meta['AREA']
 print('Retrieved Area: {}'.format(Area))
 print('Judging DDP.')
 
-dat['DDP'], dat['DDPZLIMS'], zlims, _ = get_ddps(Area, dat['DDPMALL_0P0'], dat['ZSURV'], survey)
+dat['DDP'], dat['DDPZLIMS'], zlims = get_ddps(Area, dat['DDPMALL_0P0'], dat['ZSURV'], survey)
+
+dat['STEPWISE_FAINTLIM_0P0']  = -99.
+dat['STEPWISE_BRIGHTLIM_0P0'] = -99.
+
+for color_idx in np.unique(dat['REST_GMR_0P1_INDEX']):
+    isin                                 = (dat['REST_GMR_0P1_INDEX'] == color_idx)
+
+    # Stepwise limiting magnitudes for a given zref=0.1 color and redshift.
+    fidx, faint_limit_path               = limiting_curve_path(survey, dat.meta['RLIM'], 'QCOLOR', gmr_0P1_idx=color_idx, gmr_0P1=None, gmr_0P0=None, debug=False)
+    bidx, bright_limit_path              = limiting_curve_path(survey, dat.meta['RMAX'], 'QCOLOR', gmr_0P1_idx=color_idx, gmr_0P1=None, gmr_0P0=None, debug=False)
+
+    _, bright_curve_r, _, faint_curve_r  = _initialise_ddplimits(bidx, fidx, survey=survey, Mcol='M0P0_QCOLOR')
+
+    dat['STEPWISE_FAINTLIM_0P0'][isin]   =  faint_curve_r(dat['ZSURV'][isin]) 
+    dat['STEPWISE_BRIGHTLIM_0P0'][isin]  = bright_curve_r(dat['ZSURV'][isin])
 
 update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'DDP1ZLIM', dat['DDPZLIMS'][:,0] == 0)
 

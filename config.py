@@ -40,7 +40,7 @@ class Configuration:
 
         self.fpath = fpath
 
-        print(f'Reading {fpath}')
+        print(f'\n\nReading {fpath}')
 
         # Load the config data into memory.
         with open(fpath) as f:

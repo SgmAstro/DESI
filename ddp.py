@@ -24,9 +24,9 @@ def initialise_ddplimits(survey, Mcol='M0P0_QALL', bright_idx=None, faint_idx=No
 
         assert Mcol == 'M0P0_QALL'
 
-    return _initialise_ddplimits(bright_idx, faint_idx)
+    return _initialise_ddplimits(bright_idx, faint_idx, survey=survey)
 
-def _initialise_ddplimits(bright_idx, faint_idx):
+def _initialise_ddplimits(bright_idx, faint_idx, Mcol='M0P0_QALL', survey='gama'):
     bpath          = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=bright_idx) 
     fpath          = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=faint_idx) 
 
@@ -37,11 +37,11 @@ def _initialise_ddplimits(bright_idx, faint_idx):
     _faint_curve   = Table.read(fpath)
 
     # TODO: extend the curve limits and put bounds_error back on.
-    bright_curve   = interp1d(_bright_curve[Mcol], _bright_curve['Z'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
-    bright_curve_r = interp1d(_bright_curve['Z'],  _bright_curve['M0P0_QALL'], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    bright_curve   = interp1d(_bright_curve[Mcol], _bright_curve['Z'],  kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    bright_curve_r = interp1d(_bright_curve['Z'],  _bright_curve[Mcol], kind='linear', copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
 
-    faint_curve    = interp1d(_faint_curve[Mcol],  _faint_curve['Z'],  kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
-    faint_curve_r  = interp1d(_faint_curve['Z'],   _faint_curve['M0P0_QALL'],   kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
+    faint_curve    = interp1d(_faint_curve[Mcol],  _faint_curve['Z'],   kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
+    faint_curve_r  = interp1d(_faint_curve['Z'],   _faint_curve[Mcol],  kind='linear', copy=True, bounds_error=False, fill_value=1.0, assume_sorted=False)
 
     return  bright_curve, bright_curve_r, faint_curve, faint_curve_r
 
@@ -84,7 +84,7 @@ def get_ddps(Area, M_0P0s, zs, survey):
         zlims['DDP{}_NGAL'.format(i+1)] = np.count_nonzero(in_ddp) 
         zlims['DDP{}_DENS'.format(i+1)] = np.count_nonzero(in_ddp) / zlims['DDP{}_VZ'.format(i+1)] 
                 
-    return  result, resultz, zlims, faint_curve_r(zs)
+    return  result, resultz, zlims
 
 
 if __name__ == '__main__':    

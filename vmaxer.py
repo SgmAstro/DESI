@@ -44,7 +44,7 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
 
     # Columns to be propagated
     extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC', 'DDPMALL_0P0']
-    extra_cols += ['FILLFACTOR']
+    extra_cols += ['FILLFACTOR', 'REST_GMR_0P1_INDEX', 'STEPWISE_BRIGHTLIM_0P0', 'STEPWISE_FAINTLIM_0P0']
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']

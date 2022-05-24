@@ -56,6 +56,8 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bit
     result.meta['EXTNAME'] = 'LUMFN'
 
     write_desitable(opath, result)
+
+    phi_Ms, phis, weights  = lumfn_stepwise(ddp)
     
     return  0
 

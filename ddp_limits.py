@@ -15,7 +15,7 @@ from   data.ke_params    import *
 from   findfile          import findfile, fetch_header
 from   config            import Configuration
 
-def limiting_curve_path(survey, rlim, all_type, gmr_0P1, gmr_0P0=None, debug=True):
+def limiting_curve_path(survey, rlim, all_type, gmr_0P1_idx=None, gmr_0P1=None, gmr_0P0=None, debug=True):
     fpath = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count='all')
 
     print(f'Fetching {fpath}')
@@ -25,7 +25,7 @@ def limiting_curve_path(survey, rlim, all_type, gmr_0P1, gmr_0P0=None, debug=Tru
 
     for line in lines:
         #  12.0/19.8    QALL/QCOLOR    0.131    /cosma5/data/durham/dc-wils7/GAMA4//ddrp_limits/gama_ddrp_limit_0.fits
-        _count, _rlim, _all_type, _gmr_0P1, _gmr_0P0, _fpath = line.split()
+        _count, _rlim, _all_type, color_idx, _gmr_0P1, _gmr_0P0, _fpath = line.split()
         
         _count   = int(_count)
         _rlim    = float(_rlim)
@@ -33,17 +33,19 @@ def limiting_curve_path(survey, rlim, all_type, gmr_0P1, gmr_0P0=None, debug=Tru
         _gmr_0P1 = float(_gmr_0P1)
         _gmr_0P0 = float(_gmr_0P0)
 
+        color_idx = int(color_idx)
+
         if debug:
             print(_count, _rlim, _all_type, _gmr_0P1, _gmr_0P0, _fpath)
 
         match    = (_rlim == rlim)
         match   &= (_all_type == all_type)
-        match   &= ((_gmr_0P1 == gmr_0P1) | (_gmr_0P0 == gmr_0P0))
+        match   &= ((_gmr_0P1 == gmr_0P1) | (_gmr_0P0 == gmr_0P0)) | (color_idx == gmr_0P1_idx)
 
         if match:
             return _count, _fpath
     
-    raise RuntimeError('Failed to find a limiting curve for {} {} {} {}'.format(rlim, all_type, gmr_0P1, gmr_0P0))
+    raise RuntimeError('Failed to find a limiting curve for {} {} {} {} {}'.format(rlim, all_type, gmr_0P1_idx, gmr_0P1, gmr_0P0))
 
 def grab_ddplimit(fpath):
     dat    = fits.open(fpath)
@@ -106,13 +108,16 @@ if __name__ == '__main__':
     summary  = []
 
     for rlim in rlims:
-        print('----------------------------------')
+        print('\n\n----------------------------------\n\n')
 
         rs = rlim * np.ones_like(zs)
 
         for aall, all_type in zip([True, False], ['QALL', 'QCOLOR']):
-            for gmr_0P1 in gmrs_0p1:
-                opath    = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=count)
+            for color_idx, gmr_0P1 in enumerate(gmrs_0p1):
+                opath      = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count=count)
+
+                # Fortran indexing.
+                color_idx += 1
 
                 if args.nooverwrite & os.path.isfile(opath):
                     hdul = fits.open(opath)
@@ -143,7 +148,7 @@ if __name__ == '__main__':
             
                 dat.write(opath, format='fits', overwrite=True)
             
-                line     = '{} \t {} \t {} \t {} \t {} \t {}'.format(count, rlim, all_type, gmr_0P1[0], gmr_0P0[0], opath)
+                line     = '{} \t {} \t {} \t {} \t {} \t {} \t {}'.format(count, rlim, all_type.ljust(6), color_idx, '{:.6f}'.format(gmr_0P1[0]), '{:.6f}'.format(gmr_0P0[0]), opath)
 
                 print('Solved for {}'.format(line))
 
@@ -151,9 +156,11 @@ if __name__ == '__main__':
 
                 count   += 1
 
+            print()
+
     opath = findfile(ftype='ddp_limit', dryrun=False, survey=survey, ddp_count='all')
 
-    print(f'Writing ddp limit summary to {opath}')
+    print(f'\n\nWriting ddp limit summary to {opath}')
 
     with open(opath, 'w') as f:
         for line in summary:
@@ -162,7 +169,7 @@ if __name__ == '__main__':
 
     f.close()
 
-    print('Done.')
+    print('\n\nDone.\n\n')
 
     if log:
         sys.stdout.close()

@@ -19,41 +19,41 @@ np.random.seed(314)
 def sub_kE(dat, kcorr_r, kcorr_g):
     rest_gmr_0p1, rest_gmr_0p1_warn = smith_rest_gmr(dat['ZSURV'], dat['GMR'])
 
-    dat['REST_GMR_0P1']      = rest_gmr_0p1
-    dat['REST_GMR_0P1_WARN'] = rest_gmr_0p1_warn.astype(np.int32)
+    dat['REST_GMR_0P1']       = rest_gmr_0p1
+    dat['REST_GMR_0P1_WARN']  = rest_gmr_0p1_warn.astype(np.int32)
 
-    dat['REST_GMR_0P1_INDEX'] = kcorr_r.rest_gmr_index(dat['REST_GMR_0P1'], kcoeff=False)
+    dat['REST_GMR_0P1_INDEX'] = kcorr_r.rest_gmr_index(dat['REST_GMR_0P1'].data, kcoeff=False)
 
-    dat['KCORR_R0P1'] = kcorr_r.k(dat['ZSURV'], dat['REST_GMR_0P1'])
-    dat['KCORR_G0P1'] = kcorr_g.k(dat['ZSURV'], dat['REST_GMR_0P1'])
+    dat['KCORR_R0P1']         = kcorr_r.k(dat['ZSURV'], dat['REST_GMR_0P1'])
+    dat['KCORR_G0P1']         = kcorr_g.k(dat['ZSURV'], dat['REST_GMR_0P1'])
 
-    dat['KCORR_R0P0'] = kcorr_r.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'])
-    dat['KCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'])
+    dat['KCORR_R0P0']         = kcorr_r.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'])
+    dat['KCORR_G0P0']         = kcorr_g.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'])
 
-    dat['REST_GMR_0P0'] = dat['GMR'] - (dat['KCORR_G0P0'] - dat['KCORR_R0P0'])
+    dat['REST_GMR_0P0']       = dat['GMR'] - (dat['KCORR_G0P0'] - dat['KCORR_R0P0'])
 
-    dat['Q_COLOR_0P0'] = tmr_q(dat['REST_GMR_0P0'], aall=False)
+    dat['Q_COLOR_0P0']        = tmr_q(dat['REST_GMR_0P0'], aall=False)
 
-    dat['EQ_ALL_0P0']   = tmr_ecorr(dat['ZSURV'], dat['REST_GMR_0P0'], aall=True)
-    dat['EQ_COLOR_0P0'] = tmr_ecorr(dat['ZSURV'], dat['REST_GMR_0P0'], aall=False)
+    dat['EQ_ALL_0P0']         = tmr_ecorr(dat['ZSURV'], dat['REST_GMR_0P0'], aall=True)
+    dat['EQ_COLOR_0P0']       = tmr_ecorr(dat['ZSURV'], dat['REST_GMR_0P0'], aall=False)
 
-    dat['MALL_0P0']     = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
-    dat['MCOLOR_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
-    dat['MQZERO_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], np.zeros_like(dat['EQ_ALL_0P0']))
+    dat['MALL_0P0']           = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_ALL_0P0'])
+    dat['MCOLOR_0P0']         = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], dat['EQ_COLOR_0P0'])
+    dat['MQZERO_0P0']         = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['KCORR_R0P0'], np.zeros_like(dat['EQ_ALL_0P0']))
 
-    dat['Z_THETA_QALL']   = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
-    dat['Z_THETA_QZERO']  = dat['DISTMOD'] + dat['KCORR_R0P0'] + np.zeros_like(dat['EQ_ALL_0P0'])
-    dat['Z_THETA_QCOLOR'] = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
+    dat['Z_THETA_QALL']       = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_ALL_0P0']
+    dat['Z_THETA_QZERO']      = dat['DISTMOD'] + dat['KCORR_R0P0'] + np.zeros_like(dat['EQ_ALL_0P0'])
+    dat['Z_THETA_QCOLOR']     = dat['DISTMOD'] + dat['KCORR_R0P0'] + dat['EQ_COLOR_0P0']
 
     ##  ----  DDP  ----                                                                                                                                                                                    
     ##  Note:  assumes median rest-frame colour and QALL.                                                                                                                                                  
-    dat['DDPKCORR_R0P1'] = kcorr_r.k(dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
-    dat['DDPKCORR_G0P1'] = kcorr_g.k(dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
+    dat['DDPKCORR_R0P1']      = kcorr_r.k(dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
+    dat['DDPKCORR_G0P1']      = kcorr_g.k(dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
 
-    dat['DDPKCORR_R0P0'] = kcorr_r.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
-    dat['DDPKCORR_G0P0'] = kcorr_g.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
+    dat['DDPKCORR_R0P0']      = kcorr_r.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
+    dat['DDPKCORR_G0P0']      = kcorr_g.k_nonnative_zref(0.0, dat['ZSURV'], dat['REST_GMR_0P1'], median=True)
 
-    dat['DDPMALL_0P0']   = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['DDPKCORR_R0P0'], dat['EQ_ALL_0P0'])
+    dat['DDPMALL_0P0']        = abs_mag(dat['DETMAG'], dat['DISTMOD'], dat['DDPKCORR_R0P0'], dat['EQ_ALL_0P0'])
 
     return dat
 

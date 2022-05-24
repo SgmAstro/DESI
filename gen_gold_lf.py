@@ -292,7 +292,7 @@ if __name__ == '__main__':
                     
                     hdulist.flush()
                     hdulist.close()
-
+            '''
             print('Renormalising LUMFN.')
 
             if self_count & (fdelta > 0.0) & (fdelta_zp > 0.0):
@@ -300,7 +300,7 @@ if __name__ == '__main__':
             
             else:
                 assert dryrun, 'ERROR:  lf renormalisation has failed.'
-
+            '''
             print('Solving for reference Schechter.')
 
             result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')

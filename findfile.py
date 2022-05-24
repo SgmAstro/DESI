@@ -87,7 +87,7 @@ def write_desitable(opath, table, test=False):
         opath      = './test.fits'
 
     # HACK TODO: FIX
-    #assert table != None
+    # assert table != None
     assert 'fits' in opath
 
     table.write(opath, format='fits', overwrite=True)
@@ -96,6 +96,8 @@ def write_desitable(opath, table, test=False):
     cmds.append(f'chgrp desi {opath}')
     cmds.append(f'chmod  700 {opath}')
     
+    print('\n\n')
+
     for cmd in cmds:
         output = subprocess.check_output(cmd, shell=True)
         

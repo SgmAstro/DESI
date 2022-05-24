@@ -121,7 +121,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     idxs   = np.digitize(dat[Mcol], bins=Ms)
     result = []
 
-    print('Solving for Ms: {}'.format(Ms))
+    print('\n\nSolving for Ms: {}'.format(Ms))
 
     ds     = np.diff(Ms)
 

@@ -8,18 +8,16 @@ from   cosmo             import volcom
 from   ddp_zlimits       import ddp_zlimits
 from   astropy.table     import Table, vstack
 from   findfile          import findfile, fetch_fields, gather_cat
+from   ddp               import tmr_DDP1
 
 
-def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None, pprint=False):
-    print('\n\nSolving for volume average fillfactor.')
+def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None, pprint=False, self_count=False):
+    print(f'\n\nSolving for volume average fillfactor with self_count: {self_count}.')
 
     fields      = fetch_fields(survey=survey)
     rpaths      = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]    
     rand        = gather_cat(rpaths)
     nrand       = len(rand)
-
-    if tier != None:
-        rand    = rand[rand['DDP1_DELTA8_TIER'].data == tier]
 
     ## 
     idx         = np.argsort(rand['Z']) 
@@ -39,14 +37,24 @@ def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, pr
 
     result      = []
 
+    if self_count:
+        tcol    = 'DDP1_DELTA8_TIER_ZEROPOINT' 
+
+    else:
+        tcol    = 'DDP1_DELTA8_TIER'
+
     for i, bb in enumerate(bins):
-        sub     = idx <= i
-        vfrac   = 1. * np.count_nonzero(sub) / nrand
+        sub      = idx <= i
+        vfrac    = 1. * np.count_nonzero(sub) / nrand
 
-        sub    &= (sorted_rand['FILLFACTOR'] > fillfactor_threshold)
-        cfrac   = 1. * np.count_nonzero(sub) / nrand
+        sub     &= (sorted_rand['FILLFACTOR'] > fillfactor_threshold)
 
-        midb    = bb + dbin/2.
+        if tier != None:
+            sub &= (sorted_rand[tcol].data == tier)
+
+        cfrac    = 1. * np.count_nonzero(sub) / nrand
+
+        midb     = bb + dbin/2.
 
         result.append([midb, vfrac, cfrac])
 
@@ -70,15 +78,27 @@ def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, pr
     return  vol_splint, cut_splint
 
 def eval_volavg_fillfactor(dat, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None):
-    vol_splint, cut_splint = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field, tier=tier)
+    vol_splint, cut_splint           = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field, tier=tier, self_count=False)
+    ddp1_vol_splint, ddp1_cut_splint = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field, tier=tier, self_count=True)
 
     def _eval_volavg_fillfactor(zmax, zmin):
         return (cut_splint(zmax) - cut_splint(zmin)) / (vol_splint(zmax) - vol_splint(zmin))
 
-    result = []
+    def _eval_ddp1_volavg_fillfactor(zmax, zmin):
+        return (ddp1_cut_splint(zmax) - ddp1_cut_splint(zmin)) / (ddp1_vol_splint(zmax) - ddp1_vol_splint(zmin))
 
-    for row in dat:
-        result.append(_eval_volavg_fillfactor(row['ZMAX'], row['ZMIN']))
+    # Note: must match gen_ddp_cat.py; can distinguish per galaxy in a way renormalise_lf does not.
+    is_ddp1s = (dat['DDPMALL_0P0'] > tmr_DDP1[0]) & (dat['DDPMALL_0P0'] < tmr_DDP1[1])
+
+    result   = []
+
+    for row, is_ddp1 in zip(dat, is_ddp1s):
+        if is_ddp1:
+            func = _eval_ddp1_volavg_fillfactor
+        else:
+            func = _eval_volavg_fillfactor
+
+        result.append(func(row['ZMAX'], row['ZMIN']))
         
     result = np.array(result)
 

@@ -26,7 +26,7 @@ def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, pr
 
     del rand
 
-    print('Randoms {:.6f} <= z <= {:.6f}'.format(sorted_rand['Z'].min(), sorted_rand['Z'].max()))
+    print('\n\nRandoms {:.6f} <= z <= {:.6f}'.format(sorted_rand['Z'].min(), sorted_rand['Z'].max()))
 
     dbin        = 1.e-3
 

@@ -65,7 +65,7 @@ def named_schechter(M, named_type='TMR', zz=None, evolve=False):
 def ref_schechter(named_type='TMR', sch_Ms=None, d8=None):
     if sch_Ms == None:
         # Reference Schechter - finer binning                                                                                                                                                             
-        sch_Ms = np.arange(-23., -15., 1.e-3)
+        sch_Ms = np.arange(-23., -16., 1.e-3)
 
     sch        = named_schechter(sch_Ms, named_type='TMR')
 

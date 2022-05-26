@@ -55,10 +55,10 @@ def process_cat(fpath, vmax_opath, survey='gama', extra_cols=[], bitmasks=['IN_D
 
     ##  Stepwise luminosity function estimate
     result_stepwise = lumfn_stepwise(vmax, d8=d8) 
-
+    '''
     if fdelta != None:
         result_stepwise = renormalise_d8LF(tier, result_stepwise, fdelta, fdelta_zp, self_count=True)
-
+    '''
     ##  Reference Schechter - finer binning                                                                                                                                                           
     ref_result = ref_schechter(d8=d8)
 

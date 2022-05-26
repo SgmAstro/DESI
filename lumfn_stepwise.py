@@ -179,7 +179,7 @@ def lumfn_stepwise(vmax, Mcol='MCOLOR_0P0', tolerance=1.e-3, d8=None, normalise=
     norm       = np.sum(phis)
 
     if d8 != None:
-        norm   = (1. + d8) / (1. + 0.007)
+        norm  *= (1. + d8) / (1. + 0.007)
 
     iteration  = 0
     diff       = 1.e99
@@ -219,6 +219,17 @@ def lumfn_stepwise(vmax, Mcol='MCOLOR_0P0', tolerance=1.e-3, d8=None, normalise=
         phis        = _phis
 
         iteration  += 1
+
+    if normalise:
+        isin = (nMs >= 5) & np.isfinite(phis)
+        norm = np.sum(phi_inits[isin])
+
+        if d8 != None:
+            norm  *= (1. + d8) / (1. + 0.007)
+
+        # print(norm, np.sum(phis[isin]))
+
+        phis *= (norm / np.sum(phis[isin]))
 
     phis    = phis / dM 
     phi_Ms += dM/2.

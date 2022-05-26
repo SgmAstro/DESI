@@ -3,15 +3,15 @@ import sys
 import yaml
 import runtime
 import argparse
-import pylab as pl
-import numpy as np
-import astropy.io.fits as fits
+import pylab            as     pl
+import numpy            as     np
+import astropy.io.fits  as     fits
 
 from   astropy.table    import Table, vstack
 from   vmaxer           import vmaxer, vmaxer_rand
 from   lumfn            import lumfn
 from   lumfn_stepwise   import lumfn_stepwise
-from   schechter        import schechter, named_schechter
+from   schechter        import schechter, named_schechter, ref_schechter
 from   renormalise_d8LF import renormalise_d8LF
 from   delta8_limits    import d8_limits
 from   config           import Configuration
@@ -19,9 +19,10 @@ from   findfile         import findfile, fetch_fields, overwrite_check, gather_c
 from   jackknife_limits import solve_jackknife, set_jackknife, jackknife_mean
 from   bitmask          import update_bit, lumfn_mask
 from   params           import fillfactor_threshold
+from   runtime          import calc_runtime
 
 
-def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, tier=None):        
+def process_cat(fpath, vmax_opath, survey='gama', extra_cols=[], bitmasks=['IN_D8LUMFN'], fillfactor=False, conservative=False, tier=None, d8=None, fdelta=None, fdelta_zp=None):        
     opath = vmax_opath
 
     if not os.path.isfile(fpath):
@@ -35,29 +36,46 @@ def process_cat(fpath, vmax_opath, field=None, survey='gama', extra_cols=[], bit
         print('Zero length catalogue, nothing to be done.') 
         return -99
              
-    minz = zmax['ZSURV'].min()
-    maxz = zmax['ZSURV'].max()
+    minz  = zmax['ZSURV'].min()
+    maxz  = zmax['ZSURV'].max()
     
     print('Found redshift limits: {:.3f} < z < {:.3f}'.format(minz, maxz))
 
     update_bit(zmax['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', zmax['FILLFACTOR'].data < fillfactor_threshold)
 
-    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols, tier=tier, field=field)
+    vmax  = vmaxer(zmax, minz, maxz, fillfactor=fillfactor, bitmasks=bitmasks, extra_cols=extra_cols, tier=tier)
     vmax.meta['EXTNAME'] = 'VMAX'
         
     print('Writing {}.'.format(opath))
 
     write_desitable(opath, vmax)
     
-    ##  Luminosity fn.
-    opath  = opath.replace('vmax', 'lumfn')
+    ##  Luminosity function estimate
+    result = lumfn(vmax, d8=d8)
 
-    result = lumfn(vmax)
-    result.meta['EXTNAME'] = 'LUMFN'
+    ##  Stepwise luminosity function estimate
+    result_stepwise = lumfn_stepwise(vmax, d8=d8) 
 
-    write_desitable(opath, result)
+    if fdelta != None:
+        result_stepwise = renormalise_d8LF(tier, result_stepwise, fdelta, fdelta_zp, self_count=True)
 
-    phi_Ms, phis, weights  = lumfn_stepwise(ddp)
+    ##  Reference Schechter - finer binning                                                                                                                                                           
+    ref_result = ref_schechter(d8=d8)
+
+    ##  Write.
+    opath      = opath.replace('vmax', 'lumfn')
+
+    print(f'Writing {opath}')
+
+    header     = fits.Header()
+
+    hx         = fits.HDUList()
+    hx.append(fits.PrimaryHDU(header=header))
+    hx.append(fits.convenience.table_to_hdu(result))
+    hx.append(fits.convenience.table_to_hdu(result_stepwise))
+    hx.append(fits.convenience.table_to_hdu(ref_result))
+
+    hx.writeto(opath, overwrite=True)
     
     return  0
 
@@ -70,7 +88,6 @@ if __name__ == '__main__':
     parser.add_argument('--density_split', help='Trigger density split luminosity function.', action='store_true')
     parser.add_argument('--dryrun', action='store_true', help='dryrun.')
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
-    parser.add_argument('--selfcount_volfracs', help='Apply volfrac corrections based on randoms counting themselves as ddps.', action='store_true')
     parser.add_argument('--jackknife', help='Apply jack knife.', action='store_true')
     parser.add_argument('--conservative', help='Conservative analysis choices', action='store_true')
     
@@ -81,7 +98,6 @@ if __name__ == '__main__':
     dryrun        = args.dryrun
     survey        = args.survey
     density_split = args.density_split
-    self_count    = args.selfcount_volfracs
     jackknife     = args.jackknife
     conservative  = args.conservative
     
@@ -178,34 +194,11 @@ if __name__ == '__main__':
             print(f'\n\n\n\n----------------  Solving for density tier {idx}  ----------------\n\n')
 
             # Bounded by DDP1 z limits. 
-            ddp_fpath   = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx)
-            ddp_opath   = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx)
+            ddp_fpath                      = findfile(ftype='ddp_n8_d0', dryrun=dryrun, field=field, survey=survey, utier=idx)
+            ddp_opath                      = findfile(ftype='ddp_n8_d0_vmax', dryrun=dryrun, field=field, survey=survey, utier=idx)
     
             print()
             print('Reading: {}'.format(ddp_fpath))
-
-            '''
-            try:
-                failure = process_cat(ddp_fpath, ddp_opath, field=field, extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, tier=idx)
-
-            except Exception as E:
-                print('Error: Failed gen_gold_lf --density_split on d0 tier {:d} with Exception:'.format(idx))
-                print(E)
-                print('skipping.')
-                
-                continue 
-            '''
-
-            failure = process_cat(ddp_fpath, ddp_opath, field=field, extra_cols=['MCOLOR_0P0', 'FIELD'], fillfactor=True, tier=idx) 
-
-            print('LF process cat. complete.')
-
-            if failure == -99:
-                # Zero length (dryrun) catalog, nothing to be done.
-                continue
-
-            lpath                          = findfile(ftype='ddp_n8_d0_lumfn', field=field, dryrun=dryrun, survey=survey, utier=idx)
-            result                         = Table.read(lpath)
 
             prefix                         = 'randoms_ddp1'
             rpath                          = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
@@ -216,7 +209,7 @@ if __name__ == '__main__':
             if rand_vmax_all == None:
                 print('Calculating multi-field volume fractions.')
 
-                rand_vmax_all              = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=True)            
+                rand_vmax_all              = vmaxer_rand(survey=survey, ftype='randoms_bd_ddp_n8', dryrun=dryrun, prefix=prefix, conservative=conservative, write=False)            
 
             fdelta                         = float(rand_vmax_all.meta['DDP1_d{}_VOLFRAC'.format(idx)])
             fdelta_zp                      = float(rand_vmax_all.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)])
@@ -226,6 +219,14 @@ if __name__ == '__main__':
 
             rand_vmax                      = rand_vmax_all[rand_vmax_all['DDP1_DELTA8_TIER'] == idx]
         
+            failure                        = process_cat(ddp_fpath, ddp_opath, fillfactor=True, tier=idx, d8=d8, fdelta=fdelta, fdelta_zp=fdelta_zp)
+
+            print('LF process cat. complete.')
+
+            if failure == -99:
+                # Zero length (dryrun) catalog, nothing to be done.                                                                                                                                        
+                continue
+
             if jackknife:
                 print('Solving for jack knife limits.')
             
@@ -294,66 +295,6 @@ if __name__ == '__main__':
                     
                     hdulist.flush()
                     hdulist.close()
-            '''
-            print('Renormalising LUMFN.')
-
-            if self_count & (fdelta > 0.0) & (fdelta_zp > 0.0):
-                result = renormalise_d8LF(idx, result, fdelta, fdelta_zp, self_count)
-            
-            else:
-                assert dryrun, 'ERROR:  lf renormalisation has failed.'
-            '''
-            print('Solving for reference Schechter.')
-
-            result['REF_SCHECHTER']  = named_schechter(result['MEDIAN_M'], named_type='TMR')
-            result['REF_SCHECHTER'] *= (1. + d8) / (1. + 0.007)
-
-            result['REF_RATIO']      = result['PHI_IVMAX'] / result['REF_SCHECHTER']
-
-            # Update lumfn.fits with volfracs etc.                                                                                                                                                         
-            result.meta['DDP1_d{}_VOLFRAC'.format(idx)]             = '{:.6f}'.format(fdelta)
-            result.meta['DDP1_d{}_TIERMEDd8'.format(idx)]           = '{:.6f}'.format(d8)
-            result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6f}'.format(fdelta_zp)
-            result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6f}'.format(d8_zp)
-            result.meta['DDP1_d{}_VOLFRAC_FIELD'.format(idx)]       = fdelta_field
-
-            print('LF renormalization and ref. schechter complete.')
-            
-            result.pprint()
-
-            # Reference Schechter - finer binning
-            sch_Ms     = np.arange(-23., -15., 1.e-3)
-
-            sch        = named_schechter(sch_Ms, named_type='TMR')
-            sch       *= (1. + d8) / (1. + 0.007)
-
-            ##
-            ref_result = Table(np.c_[sch_Ms, sch], names=['MS', 'REFSCHECHTER'])            
-            ref_result.meta['DDP1_d{}_VOLFRAC'.format(idx)]             = '{:.6f}'.format(fdelta)
-            ref_result.meta['DDP1_d{}_TIERMEDd8'.format(idx)]           = '{:.6f}'.format(d8)
-            ref_result.meta['DDP1_d{}_ZEROPOINT_VOLFRAC'.format(idx)]   = '{:.6f}'.format(fdelta_zp)
-            ref_result.meta['DDP1_d{}_ZEROPOINT_TIERMEDd8'.format(idx)] = '{:.6f}'.format(d8_zp)
-            
-            keys            = sorted(result.meta.keys())
-            header          = {}
-
-            print('Creating header:')
-            
-            for key in keys:
-                header[key] = str(result.meta[key])
-
-                print(key, header[key])
-
-            primary_hdu     = fits.PrimaryHDU()
-            hdr             = fits.Header(header)
-            result_hdu      = fits.BinTableHDU(result, name='LUMFN', header=hdr)
-            ref_result_hdu  = fits.BinTableHDU(ref_result, name='REFERENCE')
-            
-            hdul            = fits.HDUList([primary_hdu, result_hdu, ref_result_hdu])
-
-            print('Writing {}'.format(lpath))
-
-            hdul.writeto(lpath, overwrite=True, checksum=True)
             
         print('Done.')
 

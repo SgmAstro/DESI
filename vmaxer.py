@@ -38,13 +38,18 @@ def vmaxer_rand(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='
 
     return  rand
 
-def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN'], tier=None, field=None):
+def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMFN'], tier=None):
     assert  dat['ZSURV'].min() <= zmin
     assert  dat['ZSURV'].max() >= zmax
 
     # Columns to be propagated
-    extra_cols += ['MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC', 'DDPMALL_0P0']
-    extra_cols += ['FILLFACTOR', 'REST_GMR_0P1_INDEX', 'STEPWISE_BRIGHTLIM_0P0', 'STEPWISE_FAINTLIM_0P0']
+    extra_cols += ['FIELD', 'MALL_0P0', 'MCOLOR_0P0', 'FIELD', 'IN_D8LUMFN', 'RA', 'DEC', 'DDPMALL_0P0']
+    extra_cols += ['FILLFACTOR', 'REST_GMR_0P1_INDEX']
+
+
+    if 'STEPWISE_BRIGHTLIM_0P0' in dat.dtype.names:
+        extra_cols += ['STEPWISE_BRIGHTLIM_0P0', 'STEPWISE_FAINTLIM_0P0']
+
 
     if 'WEIGHT_STEPWISE' in dat.dtype.names:
         extra_cols += ['WEIGHT_STEPWISE']
@@ -99,12 +104,16 @@ def vmaxer(dat, zmin, zmax, extra_cols=[], fillfactor=True, bitmasks=['IN_D8LUMF
     result.meta['FILLFACTOR']     = fillfactor
 
     if fillfactor:
-        assert field != None
-
         # HACK SURVEYHACK
-        eval_volavg_fillfactor(result, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field=field, tier=tier)
+        result['FILLFACTOR_VMAX']  = eval_volavg_fillfactor(result,\
+                                                            survey='gama',\
+                                                            ftype='randoms_bd_ddp_n8',\
+                                                            dryrun=False,\
+                                                            prefix='randoms_ddp1',\
+                                                            write=False,\
+                                                            tier=tier)
 
-        result['VZ']             *= result['FILLFACTOR_VMAX']
-        result['VMAX']           *= result['FILLFACTOR_VMAX']
+        result['VZ']   *= result['FILLFACTOR_VMAX']
+        result['VMAX'] *= result['FILLFACTOR_VMAX']
     
     return  result

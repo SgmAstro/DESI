@@ -5,6 +5,7 @@ import numpy           as      np
 
 from   astropy.table   import  Table
 from   cosmo           import  volcom
+from   schechter       import  named_schechter
 
 
 def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
@@ -50,8 +51,13 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
 
     if ext in [None, 'LUMFN']:
         sum_cols   = ['N']
-        mean_cols  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'IVMAXMEAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO']
+        mean_cols  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'IVMAXMEAN_M', 'PHI_N', 'PHI_IVMAX', 'V_ON_VMAX', 'REF_SCHECHTER', 'REF_RATIO', 'PHI_STEPWISE']
         qsum_cols  = ['PHI_N_ERROR', 'PHI_IVMAX_ERROR']
+
+    elif ext == 'LUMFN_STEP':
+        sum_cols   = ['N']
+        mean_cols  = ['MID_M', 'PHI_STEPWISE', 'REF_RATIO']
+        qsum_cols  = []
         
     elif ext == 'REFERENCE':
         sum_cols   = []
@@ -62,7 +68,7 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
         raise  RuntimeError(f'MultifieldLumfn:  Extension {ext} is not supported.')
 
     if sub_cols != None:
-        mean_cols = [x for x in sub_cols if x in sub_cols]
+        sum_cols  = [x for x in sum_cols  if x in sub_cols]
         mean_cols = [x for x in mean_cols if x in sub_cols]
         qsum_cols = [x for x in qsum_cols if x in sub_cols]
 
@@ -74,10 +80,13 @@ def multifield_lumfn(lumfn_list, ext=None, weight=None, sub_cols=None):
         
     for q in qsum_cols:
         result[q] = quadsum_rule(tables, q, weights=weights)
+
+    if ext != 'REFERENCE':
+        result['VALID'] = result['N'] >= 5
     
     return  result
 
-def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
+def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None, d8=None):
     if type(jackknife) == np.ndarray:
         for jk in jackknife:
             lumfn(dat, Ms=Ms, Mcol=Mcol, jackknife=int(jk), opath=opath)
@@ -175,6 +184,16 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     names  = ['MEDIAN_M', 'MEAN_M', 'MID_M', 'IVMAXMEAN_M', 'PHI_N', 'PHI_N_ERROR', 'PHI_IVMAX', 'PHI_IVMAX_ERROR', 'N', 'V_ON_VMAX']
 
     result = Table(np.array(result), names=names)
+    result['VALID'] = result['N'] >= 5.
+    result['REF_SCHECHTER']       = named_schechter(result['MEDIAN_M'], named_type='TMR')
+
+    if d8 != None:
+        # TODO HARDCODE 0.007                                                                                                                                                                             
+        result['REF_SCHECHTER']  *= (1. + d8) / (1. + 0.007)
+        result.meta['DDP1_D8']    = d8     
+
+    result['REF_RATIO']           = result['PHI_IVMAX'] / result['REF_SCHECHTER']
+
     result.meta.update(dat.meta)
 
     result.pprint()
@@ -182,6 +201,7 @@ def lumfn(dat, Ms=None, Mcol='MCOLOR_0P0', jackknife=None, opath=None):
     result.meta['MS']             = str(['{:.4f}'.format(x) for x in Ms.tolist()])
     result.meta['FORCE_VOL']      = vol
     result.meta['ABSMAG_DEF']     = Mcol
+    result.meta['EXTNAME']        = 'LUMFN'
     
     if jackknife is not None:        
         result.meta['EXTNAME']    = 'LUMFN_JK{}'.format(jackknife)

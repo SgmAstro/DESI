@@ -14,6 +14,9 @@ d8_limits = [[-1.00, -0.75],\
 d8_limits   = np.array(d8_limits)
 d8_plot_idx = [0, 3, 5, 8]
 
+# Derived from our overleaf, approx.
+d8_tmr      = [-0.895, -0.657, 0.4986, -0.2156, 0.3287, 1.1053, 2.1505, 3.3827, 5.0958]
+
 def delta8_tier(delta8):
     result = -99 * np.ones(len(delta8), dtype=np.int)
 

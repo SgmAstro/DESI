@@ -11,10 +11,11 @@ from   findfile          import findfile, fetch_fields, gather_cat
 from   ddp               import tmr_DDP1
 
 
-def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None, pprint=False, self_count=False):
-    print(f'\n\nSolving volume average fillfactor for field {field} with self_count: {self_count}.')
+def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, tier=None, pprint=False, self_count=False):
+    print(f'\n\nSolving volume average fillfactor with self_count: {self_count}.')
 
-    fields      = fetch_fields(survey=survey)
+    fields      = fetch_fields(survey)
+
     rpaths      = [findfile(ftype=ftype, dryrun=dryrun, field=ff, survey=survey, prefix=prefix) for ff in fields]    
     rand        = gather_cat(rpaths)
     nrand       = len(rand)
@@ -77,18 +78,24 @@ def volavg_fillfactor(survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, pr
 
     return  vol_splint, cut_splint
 
-def eval_volavg_fillfactor(dat, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, field='G9', tier=None):
-    vol_splint, cut_splint           = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field, tier=tier, self_count=False)
-    ddp1_vol_splint, ddp1_cut_splint = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, field=field, tier=tier, self_count=True)
+def eval_volavg_fillfactor(dat, survey='gama', ftype='randoms_bd_ddp_n8', dryrun=False, prefix='randoms_ddp1', write=False, tier=None):
+    vol_splint, cut_splint           = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, tier=tier, self_count=False)
 
     def _eval_volavg_fillfactor(zmax, zmin):
         return (cut_splint(zmax) - cut_splint(zmin)) / (vol_splint(zmax) - vol_splint(zmin))
 
-    def _eval_ddp1_volavg_fillfactor(zmax, zmin):
-        return (ddp1_cut_splint(zmax) - ddp1_cut_splint(zmin)) / (ddp1_vol_splint(zmax) - ddp1_vol_splint(zmin))
-
     # Note: must match gen_ddp_cat.py; can distinguish per galaxy in a way renormalise_lf does not.
     is_ddp1s = (dat['DDPMALL_0P0'] > tmr_DDP1[0]) & (dat['DDPMALL_0P0'] < tmr_DDP1[1])
+
+    if tier == None:
+        is_ddp1s = np.zeros(len(dat), dtype=bool)
+
+    else:
+        ddp1_vol_splint, ddp1_cut_splint = volavg_fillfactor(survey=survey, ftype=ftype, dryrun=dryrun, prefix=prefix, write=write, tier=tier, self_count=True)
+
+        def _eval_ddp1_volavg_fillfactor(zmax, zmin):
+            return (ddp1_cut_splint(zmax) - ddp1_cut_splint(zmin)) / (ddp1_vol_splint(zmax) - ddp1_vol_splint(zmin))
+
 
     result   = []
 
@@ -102,9 +109,7 @@ def eval_volavg_fillfactor(dat, survey='gama', ftype='randoms_bd_ddp_n8', dryrun
         
     result = np.array(result)
 
-    dat['FILLFACTOR_VMAX'] = result
-
-    return  0
+    return result
 
 def volfracs(rand, bitmasks=['IN_D8LUMFN']):
     '''

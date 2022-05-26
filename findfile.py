@@ -67,7 +67,7 @@ def gather_cat(fpaths):
     assert  np.all(np.array([os.path.isfile(x) for x in fpaths])), 'Failed to find {}'.format(fpaths)
 
     for fpath in fpaths:
-        print(f'Fetching {fpath}.')
+        print(f'\tFetching {fpath}.')
 
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)
@@ -86,11 +86,9 @@ def write_desitable(opath, table, test=False):
 
         opath      = './test.fits'
 
-    # HACK TODO: FIX
-    # assert table != None
     assert 'fits' in opath
 
-    table.write(opath, format='fits', overwrite=True)
+    table.write(opath, overwrite=True)
 
     cmds   = []
     cmds.append(f'chgrp desi {opath}')
@@ -292,15 +290,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
-        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
-                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
-                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
-                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
-                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
-                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
-                      'volavg_fillfactor':  {'dir': rand_dir, 'id': 'volavg_fillfactor',      'ftype': '_{}_{}'.format(realz, utier)},\
-                      'boundary':           {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
+        file_types = {'ddp_n8_d0':            {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
+                      'ddp_n8_d0_vmax':       {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
+                      'ddp_n8_d0_lumfn':      {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
+                      'ddp_n8_d0_lumfn_step': {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn_step'.format(utier)},\
+                      'randoms':              {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
+                      'randoms_n8':           {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
+                      'randoms_bd':           {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
+                      'randoms_bd_ddp_n8':    {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
+                      'volavg_fillfactor':    {'dir': rand_dir, 'id': 'volavg_fillfactor',      'ftype': '_{}_{}'.format(realz, utier)},\
+                      'boundary':             {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
                      }
         
         parts      = file_types[ftype]
@@ -311,7 +310,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
             oversample = ''
             
         fpath      = f'' + parts['dir'] + '/{}_{}{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
-            
+           
     if prefix != None:
         assert 'randoms' in prefix;
         
@@ -331,7 +330,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     if log:
         fpath = os.path.dirname(fpath) + '/logs/' + os.path.basename(fpath).split('.')[0] + '.log'
-
+        
     return  fpath
 
 def supported_files(dryrun=None):        

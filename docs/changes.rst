@@ -17,7 +17,7 @@ DESI Change Log
 * External redshift limits specified by ddp_zlimits (PR `#196`_).
 * Add plot idx to delta8_limits for TMR comparison (PR `#196`_).
 * Notebook improvements (PR `#196`_).
-* Switch to oversample 4 as default (more robust to memory & hanging issues.)  (PR `#196`_).
+* Switch to oversample 2 as default (more robust to memory & hanging issues.)  (PR `#196`_).
 * Calculate exact fillfactors for galaxies, don't rely on random matching. rFILLFACTOR is matched (PR `#196`_).
 * Improved initialisation of Brent method to catch color, zmin and zmax failures (PR `#196`_).
 * Default jack knife as 4 jks per field (PR `#196`_).
@@ -30,7 +30,10 @@ DESI Change Log
 * Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer (PR `#196`_).
 * <FILLFACTOR> needs to be restricted to density tiers for d8 LF (PR `#196`_).
 * <FILLFACTOR> needs to be restricted to density tiers for d8 LF - field dependent correction (PR `#196`_).
-* QCOLOR stepwise.
+* Multiple oversampling realisations and collation (PR `#196`_).
+* Color-dependent stepwise (PR `#196`_).
+* Slurm jobnames contain field and realisation (PR `#196`_).
+* Params file for sphere radius and oversample realisation number (PR `#196`_).
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 

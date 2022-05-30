@@ -2,21 +2,56 @@
 DESI Change Log
 ==================
 
+5.0.2 (2022-May-20)
+-------------------
+* Correct for overcounting of fillfactor contribution to vmax (PR `#196`_).
+* Correct for bit bug for FILLFACTOR > 0.8, with update_bit (PR `#196`_).
+* Change gama gold lower z limit to 0.02 due to typo in TMR (PR `#196`_).
+* Require fillfactor > 0.8 for volume of reference lf (PR `#196`_).
+* Add bitmask.update_bit (PR `#196`_).
+* Add __name__ clauses to prevent pool hangs (PR `#196`_).
+* Add ddp_zlimits to specify external redshift limits (PR `#196`_).
+* Allow GALL and RALL for multi-field catalogs (to findfile) (PR `#196`_).
+* Collate multiple oversampled realizations for fillfactor calculation (in bound dist.)  (PR `#196`_)
+* Start params file for common hardcoding, e.g. fillfactor threshold, sphere radius (PR `#196`_).
+* External redshift limits specified by ddp_zlimits (PR `#196`_).
+* Add plot idx to delta8_limits for TMR comparison (PR `#196`_).
+* Notebook improvements (PR `#196`_).
+* Switch to oversample 2 as default (more robust to memory & hanging issues.)  (PR `#196`_).
+* Calculate exact fillfactors for galaxies, don't rely on random matching. rFILLFACTOR is matched (PR `#196`_).
+* Improved initialisation of Brent method to catch color, zmin and zmax failures (PR `#196`_).
+* Default jack knife as 4 jks per field (PR `#196`_).
+* Mid, mean, median Ms for LF calc.  (PR `#196`_).
+* Default to TMR-like LF binning (PR `#196`_).
+* Add TMR d8-schechter model for plot comparison (PR `#196`_).
+* Improve summary stats for more useful table comparison (PR `#196`_).
+* Increase the split/complement buffer in bound_dist to 2. Mpc/h (PR `#196`_).
+* Do not update zmin for fillfactor cut for VMAX evaluation in vmaxer (PR `#196`_).
+* Rewrite vol. avg. fillfactor calc.  Now evaluated in vmaxer (PR `#196`_).
+* <FILLFACTOR> needs to be restricted to density tiers for d8 LF (PR `#196`_).
+* <FILLFACTOR> needs to be restricted to density tiers for d8 LF - field dependent correction (PR `#196`_).
+* Multiple oversampling realisations and collation (PR `#196`_).
+* Color-dependent stepwise (PR `#196`_).
+* Slurm jobnames contain field and realisation (PR `#196`_).
+* Params file for sphere radius and oversample realisation number (PR `#196`_).
+
+.. _`#196`: https://github.com/SgmAstro/DESI/pull/196
+
 5.0.1 (2022-April-27)
 -------------------
 * Restict to fillfactor > 0.8 for volfracs.
-  (PR `#165`_).
-* More careful header updates in gen_ddp_n8.
-* Multiple realisations (16) of DESI randoms (PR #174)
-* Extension to all DESI rosettes rather than GAMA (PR #174)
-* Change default rosette radii to allow low completeness regions (PR #174)
-* Remove survey specifics in favor of propagated header info (PR #174)
-* Limit DDP N8 counting to each single field (PR #174)
-* More control of propagated header info (PR #174)
-* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR #174)
-* Possibility of weights in multi-field luminosity function (PR #174)
+  (PR `#174`_).
+* More careful header updates in gen_ddp_n8 (PR `#174`_).
+* Multiple realisations (16) of DESI randoms (PR `#174`_).
+* Extension to all DESI rosettes rather than GAMA (PR `#174`_).
+* Change default rosette radii to allow low completeness regions (PR `#174`_).
+* Remove survey specifics in favor of propagated header info (PR `#174`_).
+* Limit DDP N8 counting to each single field (PR `#174`_).
+* More control of propagated header info (PR `#174`_).
+* Tweaked Brent initialisation to not have zmax fail on ~100 (bright) galaxies (PR `#174`_).
+* Possibility of weights in multi-field luminosity function (PR `#174`_).
   
-.. _`#165`: https://github.com/desihub/redrock/pull/165
+.. _`#174`: https://github.com/SgmAstro/DESI/pull/174
 
 5.0.0 (2022-April-25)
 -------------------
@@ -29,7 +64,7 @@ Note: Major changes
 * Working customisation of queue in pipeline run, e.g. cosma/cordelia (PR `#155`_).
 * Send pipelog scripts to the right place (PR `#155`_).
 * Working configurations to write python script args to one place. replayable soon? (PR `#155`_).
-* Protect against divison warnings for exactly zero fillfactor.
+* Protect against divison warnings for exactly zero fillfactor (PR `#155`_).
 * Add protection against negative z for cosmo functions to remove zero div. errors (PR `#155`_).
 * Add change log, this file (PR `#155`_).
 * Fix fillfactor normalisation bug, where should be properly normalised against oversampled randoms (PR `#155`_).
@@ -47,4 +82,4 @@ Note: Major changes
 * Single origin for survey field definition (PR `#155`_).
 * Safe_reset: remove run files, but ignore immutable (PR `#155`_). 
 
-.. _`#155`: https://github.com/desihub/redrock/pull/155
+.. _`#155`: https://github.com/SgmAstro/DESI/pull/155

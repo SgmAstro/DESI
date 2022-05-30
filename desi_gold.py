@@ -14,6 +14,7 @@ from   cartesian           import cartesian, rotate
 from   cosmo               import cosmo, distmod
 from   lss                 import fetch_lss
 from   bitmask             import lumfn_mask
+from   ddp_zlimits         import ddp_zlimits
 
 
 def desi_gold(args, survey='sv3', release='fuji'):
@@ -131,7 +132,10 @@ def desi_gold(args, survey='sv3', release='fuji'):
     desi_zs.meta['PET_OFFSET'] = 0.12
     desi_zs['LEGACYPET']       = desi_zs['RMAG_DRED'] + desi_zs.meta['PET_OFFSET']
     
-    desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    zlow                  = ddp_limits['DDP1'][0]
+    zhigh                 = ddp_limits['DDP1'][1]
+
+    desi_zs['IN_GOLD']    = desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > zlow)  & (desi_zs['ZDESI'] < zhigh)
 
     clustering, full      = fetch_lss(pprint=False, sort=False) 
 
@@ -269,7 +273,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     gold.write(opath, format='fits', overwrite=True)
     '''
 
-    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > 0.039)  & (desi_zs['ZDESI'] < 0.263)
+    in_gold                   =  desi_zs['GOOD_Z'].data & (desi_zs['ZDESI'] > ddp_limits['DDP1'][0])  & (desi_zs['ZDESI'] < ddp_limits['DDP1'][1])
 
     # No cut to GAMA rosettes.
     # in_gold                &=  np.isin(desi_zs['ROS'].data, [1,2,8,9,10,17])
@@ -286,7 +290,7 @@ def desi_gold(args, survey='sv3', release='fuji'):
     hi_comp                   = (desi_zs['ROS_DIST'].data > limits[0]) & (desi_zs['ROS_DIST'].data < limits[1])
     area                      = np.pi * (limits[1]**2. - limits[0]**2.)
 
-    desi_zs['IN_D8LUMFN']    += ~hi_comp * lumfn_mask.DESI_HICOMP
+    update_bit(desi_zs['IN_D8LUMFN'], lumfn_mask, 'DESI_HICOMP', ~hi_comp)
 
     desi_zs                   = desi_zs[desi_zs['IN_D8LUMFN'].data == 0]
 

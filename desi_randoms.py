@@ -1,7 +1,7 @@
 import os
 import numpy         as     np
 
-from   bitmask       import lumfn_mask
+from   bitmask       import lumfn_mask, update_bit
 from   astropy.table import Table, unique, vstack
 from   ros_tools     import tile2rosette, calc_rosr, ros_limits
 
@@ -38,7 +38,8 @@ def desi_randoms(ros, nrealz=4, oversample=8, dryrun=False):
     limits                    = ros_limits(dryrun)
 
     hi_comp             = (rand['ROS_DIST'].data > limits[0]) & (rand['ROS_DIST'].data < limits[1])
-    rand['IN_D8LUMFN']  = ~hi_comp * lumfn_mask.DESI_HICOMP
+
+    update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'DESI_HICOMP', ~hi_comp)
 
     rand                = rand[rand['IN_D8LUMFN'].data == 0]
     

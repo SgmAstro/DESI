@@ -1,7 +1,7 @@
 #!/bin/bash                                                                                                               
 #SBATCH -p cordelia
 #SBATCH --mem=50G
-#SBATCH -t 02:00:00  
+#SBATCH -t 00:45:00  
 #SBATCH -o /cosma/home/durham/dc-wils7/data/GAMA4/logs/gold_d8_pipeline.log                                                                                                                            
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
@@ -15,15 +15,15 @@
 #
 
 if [ -z ${DRYRUN+x} ]; then
-  # export DRYRUN=''                                                                                                                                                                               
-  export DRYRUN='--dryrun'
+  export DRYRUN=''                                                                                                                                                                               
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='desi'
-  export SURVEYARG='--survey desi'
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
 else
   export SURVEYARG='--survey '$SURVEY
 
@@ -47,19 +47,21 @@ cd $CODE_ROOT
 
 # source /project/projectdirs/desi/software/desi_environment.sh master
 
-echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
-
-python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
-
-# References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                
-python gen_gold_lf.py $DRYRUN $SURVEYARG --log
-
 # Dependency on randoms bd files, for fillfactor and bound_dist.
 # Hence field argument. 
 echo 'Running gen_ddp_n8.py; logging to logs/'$SURVEY'_ddp_n8.log'
 
 # Defaults to randoms_ddp1.
 python gen_ddp_n8.py $DRYRUN $SURVEYARG --log
+
+# References schechter fn given a ddp n8 catalog (for fill factor).                                                                                                                                        
+# Dependency on ddp file, due to fillfactor completeness requirement.
+python gen_gold_lf.py $DRYRUN $SURVEYARG --log
+
+echo 'Running gen_gold_lf.py; logging to logs/'$SURVEY'_lumfn.log'
+
+# TODO: should also be restricted to fillfactor > 0.8;
+# python lumfn_stepwise.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 echo 'Running gen_gold_lf.py; logging to logs/gama_lumfn_d8_G9/12/15.log'
 

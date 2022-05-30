@@ -16,6 +16,8 @@ from   runtime           import calc_runtime
 from   findfile          import fetch_fields, findfile, overwrite_check
 from   config            import Configuration
 from   volfracs          import volfracs
+from   bitmask           import lumfn_mask, consv_mask, update_bit
+from   params            import fillfactor_threshold
 
 
 parser  = argparse.ArgumentParser(description='Calculate DDP1 N8 for all randoms.')
@@ -61,7 +63,8 @@ opath   = findfile(ftype='randoms_bd_ddp_n8', dryrun=dryrun, field=field, survey
 
 if nooverwrite:
     overwrite_check(opath)
-    
+
+# Should be solid angle and DDP1 z-limit defined randoms.     
 rand    = Table.read(fpath)
 runtime = calc_runtime(start, 'Reading {:.2f}M randoms'.format(len(rand) / 1.e6), xx=rand)
 
@@ -86,7 +89,7 @@ del points
 
 gc.collect()
 
-# Calculate DDP1/2/3 for each random. 
+# Calculate DDP1/2/3 8-sphere counts for each random. 
 for idx in range(3):
     ddp_idx      = idx + 1
 
@@ -112,7 +115,6 @@ ddp3_zmax           = dat.meta['DDP3_ZMAX']
 
 print('Found redshift limits: {:.3f} < z < {:.3f}'.format(ddp1_zmin, ddp1_zmax))
 
-# TODO: IN_DDP column akin to galaxies.
 rand['DDPZLIMS']      = np.zeros(len(rand) * 3, dtype=int).reshape(len(rand), 3)
 
 rand['DDPZLIMS'][:,0] = (rand['Z'].data > ddp1_zmin) & (rand['Z'].data < ddp1_zmax)
@@ -123,19 +125,26 @@ rand['DDP1_DELTA8']   = (rand['DDP1_N8'] / (rand.meta['VOL8'] * dat.meta['DDP1_D
 rand['DDP2_DELTA8']   = (rand['DDP2_N8'] / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8']   = (rand['DDP3_N8'] / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
-rand['DDP1_DELTA8_TIER']        = delta8_tier(rand['DDP1_DELTA8'].data)
+rand['DDP1_DELTA8_TIER']      = delta8_tier(rand['DDP1_DELTA8'].data)
 
+# Same again, but random included in sphere-8 count for volume fractions used within DDP1 magnitude limits.
 rand['DDP1_DELTA8_ZEROPOINT'] = ((1 + rand['DDP1_N8']) / (rand.meta['VOL8'] * dat.meta['DDP1_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP2_DELTA8_ZEROPOINT'] = ((1 + rand['DDP2_N8']) / (rand.meta['VOL8'] * dat.meta['DDP2_DENS']) / rand['FILLFACTOR']) - 1.
 rand['DDP3_DELTA8_ZEROPOINT'] = ((1 + rand['DDP3_N8']) / (rand.meta['VOL8'] * dat.meta['DDP3_DENS']) / rand['FILLFACTOR']) - 1.
 
 rand['DDP1_DELTA8_TIER_ZEROPOINT'] = delta8_tier(rand['DDP1_DELTA8_ZEROPOINT'])
 
+# Meeting sphere-completeness cut.  Ultimately, this will correct VMAX from solid angle and DDP1                                                                                                         
+# redshift limits to that meeting the completeness cut (in volume).                                                                                                                                        
+update_bit(rand['IN_D8LUMFN'], lumfn_mask, 'FILLFACTOR', rand['FILLFACTOR'].data < fillfactor_threshold)
+
+print('Fraction of randoms meeting IN_D8LUMFN cut: {}'.format(np.mean(rand['IN_D8LUMFN'])))
+
 for ii, xx in enumerate(d8_limits):
     rand.meta['D8{}LIMS'.format(ii)] = str(xx)
 
-# TODO:  Handle bitmasks such that cut is not assumed to be fillfactor > 0.8 only.
-rand = volfracs(rand)
+# Single-field values defined in header.
+rand    = volfracs(rand, bitmasks=['IN_D8LUMFN'])
         
 runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=rand)
 

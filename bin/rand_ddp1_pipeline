@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -p cordelia                                                                                                                                                                  
 #SBATCH --mem=120G  
-#SBATCH -t 04:00:00 
+#SBATCH -t 00:30:00 
 #SBATCH -o /cosma/home/durham/dc-wils7/data/GAMA4/randoms/logs/rand_ddp1_pipeline.log                                                                                                                   
 #SBATCH -A durham                                                                                                                                                                                    
 #SBATCH --nodes=1                                                                                                                                                                                    
@@ -16,33 +16,39 @@
 # printenv
 
 if [[ -z "${FIELD}" ]]; then  
-  export FIELD="R1"
+  export FIELD="G12"
   echo  'FIELD NOT FOUND. SETTING TO BE '$FIELD
 else
   echo 'FIELD SET TO BE '$FIELD
 fi
 
 if [ -z ${DRYRUN+x} ]; then
-  # export DRYRUN='' 
-  export DRYRUN='--dryrun'
+  export DRYRUN='' 
+  # export DRYRUN='--dryrun'
 else
   echo 'DRYRUN SET TO BE '$DRYRUN
 fi
 
 if [[ -z "${NOOVERWRITE}" ]]; then
-  export NOOVERWRITE=''                                                                                                                                                                             
-  # export NOOVERWRITE='--nooverwrite'
+  # export NOOVERWRITE=''                                                                                                                                                                             
+  export NOOVERWRITE='--nooverwrite'
 else
   echo  'RESET SET TO BE '$NOOVERWRITE
 fi
 
 if [[ -z "${SURVEY}" ]]; then
-  export SURVEY='desi'
-  export SURVEYARG='--survey desi'
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
 else
   export SURVEYARG='--survey '$SURVEY
 
   echo 'SURVEY SET TO BE '$SURVEY
+fi
+
+if [[ -z "${REALZ}" ]]; then
+  export REALZ=0
+else
+  echo 'REALZ SET TO BE '$REALZ
 fi
 
 export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
@@ -82,15 +88,12 @@ ddp1_zmax=$(echo $ddp1_zmax | cut -d " " -f 9)
 echo 'DDP1_ZMIN:  '$ddp1_zmin
 echo 'DDP1_ZMAX:  '$ddp1_zmax
 
-python randoms.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
+# should match params.oversample_nrealisations
+python randoms.py --realz $REALZ --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 python boundary.py --field $FIELD --prefix randoms_ddp1 --zmin $ddp1_zmin --zmax $ddp1_zmax $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
-# Uses Pool, should be on interactive. 
-python fillfactor.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log
-
-# Uses Pool, should be on interactive.
-python bound_dist.py --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log
+python fillfactor.py --realz $REALZ --field $FIELD --prefix randoms_ddp1 $DRYRUN $NOOVERWRITE $SURVEYARG --log
 
 # TODO:  QA scripts need updated to point to RANDOMS_DIR, GOLD_DIR
 # pytest

@@ -6,7 +6,7 @@ from   scipy.optimize import brentq, minimize
 
 
 def rest_gmr(kcorr_rfunc, kcorr_gfunc, z, gmr):
-     z = np.atleast_1d(z)
+     z   = np.atleast_1d(z)
      gmr = np.atleast_1d(gmr)
      
      def pred_gmr(x):
@@ -27,20 +27,22 @@ def rest_gmr(kcorr_rfunc, kcorr_gfunc, z, gmr):
    
      try:
         # rest color limits.  
-        result = brentq(diff, -1., 2.)
+        result      = brentq(diff, -2.5, 10.0)
 
      except ValueError as VE:
-        warn = 1
+        warn        = 1
+        result      = -99. # np.nan
           
         # Brent method fails, requires sign change across boundaries.
-        result = minimize(absdiff, 0.62)
+        result      = minimize(absdiff, 1.5)
 
         if result.success:
-            result = result.x[0]
+            result  = result.x[0]
+            warn    = 0
 
         else:
-             warn = 2
-             result = -99.
+             warn   = 2
+             result = -99. # np.nan
             
      return  result, warn
 

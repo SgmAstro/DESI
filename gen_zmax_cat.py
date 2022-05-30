@@ -3,19 +3,21 @@ import sys
 import time
 import argparse
 import runtime
-import numpy as np
+import numpy           as     np
 
-from   cosmo import distmod, volcom
-from   smith_kcorr import GAMA_KCorrection
-from   tmr_ecorr import tmr_ecorr
-from   scipy.optimize import brentq, minimize
-from   astropy.table import Table
-from   functools import partial
+from   cosmo           import distmod, volcom
+from   smith_kcorr     import GAMA_KCorrection
+from   tmr_ecorr       import tmr_ecorr
+from   scipy.optimize  import brentq, minimize
+from   astropy.table   import Table
+from   functools       import partial
 from   multiprocessing import Pool
-from   findfile import findfile, overwrite_check, write_desitable, fetch_header
-from   config import Configuration
+from   findfile        import findfile, overwrite_check, write_desitable, fetch_header
+from   config          import Configuration
+from   abs_mag         import abs_mag
 
-kcorr_r = GAMA_KCorrection(band='R')
+
+kcorr_r          = GAMA_KCorrection(band='R')
 
 def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=False):
     z            = np.atleast_1d(z)
@@ -33,23 +35,26 @@ def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
      def absdiff(x):
         return np.abs(diff(x))
 
-     warn = 0
-
      try:
-        result = brentq(diff, 1.e-3, 1.6)
+        result = brentq(diff, 1.e-6, 1.6)
+        warn   = 0
 
      except ValueError as VE:
-        warn = 1
-
         # Brent method fails, requires sign change across boundaries.                                                                                          
-        result = minimize(absdiff, 1.)
+        result = minimize(absdiff, 2.5)
 
         if result.success:
-            result = result.x[0]
+            result  = result.x[0]
+            warn    = 0
 
         else:
-             warn = 2
-             result = -99.
+             try:
+                 result = brentq(diff, 1.3, 3.5)
+                 warn   = 0
+
+             except ValueError as VE:
+                 result = -99
+                 warn   =   1 
 
      return  result, warn
 
@@ -60,21 +65,15 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    if debug:
         print('Solving for zlimit.')
 
-   '''
-   for i, (rest_gmr_0p1, rest_gmr_0p0, theta_z, dr) in enumerate(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs)):
-        interim, warn = solve_theta(rest_gmr_0p1, rest_gmr_0p0, theta_z, dr, aall=aall)
-
-        result.append([interim, warn])
-
-        if (i % 500 == 0) & debug:
-             runtime = (time.time() - start) / 60.
-
-             print('{:.3f}% complete after {:.2f} mins.'.format(100. * i / len(theta_zs), runtime))
-   '''
    with Pool(processes=14) as pool:
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
        result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
    
+       pool.close()
+
+       # https://stackoverflow.com/questions/38271547/when-should-we-call-multiprocessing-pool-join                                                                                                        
+       pool.join()
+
    result = np.array(result)
 
    return  result[:,0], result[:,1]
@@ -97,7 +96,7 @@ if __name__ == '__main__':
     survey    = args.survey.lower()
     theta_def = args.theta_def
 
-    config = Configuration(args.config)
+    config    = Configuration(args.config)
     config.update_attributes('zmax', args)
     config.write()
 
@@ -138,12 +137,12 @@ if __name__ == '__main__':
                        aall=aall,\
                        debug=True)
 
-    dat['ZMAX']      = zmaxs
-    dat['ZMAX_WARN'] = warn
-
-    dat['DELTA_DETMAG_BRIGHT'] = rmax - dat['DETMAG']
+    dat['ZMAX']           = zmaxs
+    dat['ZMAX_WARN']      = warn
 
     print('Solving for {} bounding curve'.format(rmax))
+
+    dat['DELTA_DETMAG_BRIGHT'] = rmax - dat['DETMAG']
     
     zmins, warn = zmax(dat['REST_GMR_0P1'],\
                        dat['REST_GMR_0P0'],\
@@ -152,8 +151,8 @@ if __name__ == '__main__':
                        aall=aall,\
                        debug=True)
 
-    dat['ZMIN']      = zmins
-    dat['ZMIN_WARN'] = warn
+    dat['ZMIN']           = zmins
+    dat['ZMIN_WARN']      = warn
 
     dat.meta['THETA_DEF'] = theta_def
 
@@ -170,6 +169,9 @@ if __name__ == '__main__':
     nwarn   = np.count_nonzero(nwarn)
 
     print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
+
+    towarn  = dat[(dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)]
+    towarn.pprint()
 
     runtime = (time.time() - start) / 60.
 

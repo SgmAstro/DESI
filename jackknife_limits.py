@@ -1,6 +1,9 @@
 import numpy             as np
 import matplotlib.pyplot as plt
+import astropy.io.fits   as fits
+
 from   collections       import OrderedDict
+from   astropy.table     import Table
 
 
 jk_limits = {'JK0': {'ra_min': 129.,  'ra_max': 133.,  'dec_min': -2., 'dec_max': 3.},
@@ -50,7 +53,7 @@ def plot_jackknife(dat):
 
     return fig, ax
 
-def solve_jackknife(rand, ndiv=4):
+def solve_jackknife(rand, ndiv=2):
     '''
     Splits up dat and rand into jackknife areas based on (ra, dec) in (ndiv x ndiv) chunks.
     '''           
@@ -86,6 +89,44 @@ def solve_jackknife(rand, ndiv=4):
     jks = set_jackknife(rand['RANDOM_RA'], rand['RANDOM_DEC'], limits=limits)
 
     return  njack, jk_volfrac, limits, jks
+
+def jackknife_mean(fpath):
+    print('Appending JK mean and error to lumfn. extension.')
+
+    with fits.open(fpath, mode='update') as hdulist:
+        nphi =  0
+        phis = []
+
+        for i, hdu in enumerate(hdulist):
+            # skip primary.                                                                                                                                                                                 
+            if i > 0:
+                phis.append(hdu.data['PHI_IVMAX'])
+
+                nphi += 1
+
+        phis  = np.array(phis)
+
+        mean  = np.mean(phis, axis=0)
+
+        err   =  np.std(phis, axis=0)
+
+        hdr   = hdulist['LUMFN'].header
+
+        lumfn = hdulist['LUMFN'].data
+        lumfn = Table(lumfn, names=lumfn.names)
+
+        lumfn['PHI_IVMAX_JK']       = mean
+        lumfn['PHI_IVMAX_ERROR_JK'] = err
+
+        lumfn.pprint()
+
+        lumfn = fits.BinTableHDU(lumfn, name='LUMFN', header=hdr)
+
+        hdulist[1] = lumfn
+
+        hdulist.flush()
+        hdulist.close()
+
 
 if __name__ == '__main__':
     import pylab as pl

@@ -64,7 +64,10 @@ def gather_cat(fpaths):
     if len(fpaths) == 0:
         return  None
 
-    assert  np.all(np.array([os.path.isfile(x) for x in fpaths]))
+    assert  np.all(np.array([os.path.isfile(x) for x in fpaths])), 'Failed to find {}'.format(fpaths)
+
+    for fpath in fpaths:
+        print(f'\tFetching {fpath}.')
 
     tables      = [Table.read(x) for x in fpaths]
     tables      = vstack(tables)
@@ -83,16 +86,16 @@ def write_desitable(opath, table, test=False):
 
         opath      = './test.fits'
 
-    # HACK TODO: FIX
-    #assert table != None
     assert 'fits' in opath
 
-    table.write(opath, format='fits', overwrite=True)
+    table.write(opath, overwrite=True)
 
     cmds   = []
     cmds.append(f'chgrp desi {opath}')
     cmds.append(f'chmod  700 {opath}')
     
+    print('\n\n')
+
     for cmd in cmds:
         output = subprocess.check_output(cmd, shell=True)
         
@@ -171,6 +174,9 @@ def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False,
 
     if fpath is None:
         fpath = findfile(ftype=ftype, dryrun=dryrun, prefix=prefix, field=field, utier=utier, survey=survey, realz=realz, debug=debug, version=version)
+
+        if debug:
+            print(f'Fetching header of {fpath}')
  
     if name:
         return  getval(fpath, name, ext)
@@ -238,7 +244,9 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
     fields = fetch_fields(survey)
     
     if field != None:
-        assert field in fields, print(f'Requested field {field} is not available in fields {fields}')
+        valid = (field in fields) | ('ALL' in field)
+
+        assert valid, print(f'Requested field {field} is not valid ({fields})')
     
     if dryrun:
         dryrun = '_dryrun'
@@ -255,8 +263,12 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
             return gold_dir + '/logs/' + '{}_ddrp_limit.log'.format(survey)
 
         else:
-            assert ddp_count >= 0
-            return gold_dir + '/ddrp_limits/' + '{}_ddrp_limit_{:d}.fits'.format(survey, ddp_count)
+            fpath = gold_dir + '/ddrp_limits/' + '{}_ddrp_limit_{}.fits'.format(survey, ddp_count)
+            
+            if ddp_count == 'all':
+                fpath = fpath.replace('.fits', '.txt')
+
+        return fpath
                 
     if isinstance(field, list):
         return  [findfile(ftype, dryrun=dryrun, prefix=prefix, field=ff, utier=utier) for ff in field]
@@ -278,14 +290,16 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
         fpath      = parts['dir'] + '/{}_{}{}.fits'.format(parts['id'], parts['ftype'], dryrun)
 
     else: 
-        file_types = {'ddp_n8_d0':          {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
-                      'ddp_n8_d0_vmax':     {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
-                      'ddp_n8_d0_lumfn':    {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
-                      'randoms':            {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
-                      'randoms_n8':         {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
-                      'randoms_bd':         {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
-                      'randoms_bd_ddp_n8':  {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
-                      'boundary':           {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
+        file_types = {'ddp_n8_d0':            {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}'.format(utier)},\
+                      'ddp_n8_d0_vmax':       {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_vmax'.format(utier)},\
+                      'ddp_n8_d0_lumfn':      {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn'.format(utier)},\
+                      'ddp_n8_d0_lumfn_step': {'dir': gold_dir, 'id': f'{survey}_gold',         'ftype': 'ddp_n8_d0_{}_lumfn_step'.format(utier)},\
+                      'randoms':              {'dir': rand_dir, 'id': 'randoms',                'ftype': realz},\
+                      'randoms_n8':           {'dir': rand_dir, 'id': 'randoms_N8',             'ftype': realz},\
+                      'randoms_bd':           {'dir': rand_dir, 'id': 'randoms_bd',             'ftype': realz},\
+                      'randoms_bd_ddp_n8':    {'dir': rand_dir, 'id': 'randoms_bd_ddp_n8',      'ftype': realz},\
+                      'volavg_fillfactor':    {'dir': rand_dir, 'id': 'volavg_fillfactor',      'ftype': '_{}_{}'.format(realz, utier)},\
+                      'boundary':             {'dir': rand_dir, 'id': 'boundary',               'ftype': realz}
                      }
         
         parts      = file_types[ftype]
@@ -296,14 +310,10 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
             oversample = ''
             
         fpath      = f'' + parts['dir'] + '/{}_{}{}_{}{}.fits'.format(parts['id'], field, oversample, parts['ftype'], dryrun)
-
-            
+           
     if prefix != None:
         assert 'randoms' in prefix;
         
-        # HACK TODO: Fix
-        #assert 'randoms' in fpath
-
         dirname = os.path.dirname(fpath)
         fpath   = os.path.basename(fpath)
             
@@ -320,7 +330,7 @@ def findfile(ftype, dryrun=False, prefix=None, field=None, utier='{utier}', surv
 
     if log:
         fpath = os.path.dirname(fpath) + '/logs/' + os.path.basename(fpath).split('.')[0] + '.log'
-
+        
     return  fpath
 
 def supported_files(dryrun=None):        

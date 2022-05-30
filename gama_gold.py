@@ -13,13 +13,10 @@ from   gama_limits      import gama_field
 from   cartesian        import cartesian, rotate
 from   bitmask          import BitMask, lumfn_mask
 from   config           import Configuration
+from   ddp_zlimits      import ddp_zlimits
+
 
 def gama_gold(argset):
-    if argset.dryrun:
-        print('Dryrun gama_gold created on full run; Exiting.')
-
-        return 0
-
     if argset.log:
         logfile = findfile(ftype='gold', dryrun=False, survey='gama', log=True)
 
@@ -31,6 +28,13 @@ def gama_gold(argset):
     fpath  = root + '/TilingCatv46.fits'
 
     opath  = findfile(ftype='gold', dryrun=False, survey='gama')
+
+    if argset.dryrun:
+        dpath = findfile(ftype='gold', dryrun=True, survey='gama')
+
+        if os.path.isfile(dpath):
+            print('Dryrun gama_gold created on full run; Exiting.')
+            return 0
 
     if argset.nooverwrite:
         overwrite_check(opath)
@@ -44,8 +48,7 @@ def gama_gold(argset):
         if x not in ['VERSION', 'DATE']:
             del dat.meta[x]
 
-    specifics        = survey_specifics('gama')
-    dat.meta['AREA'] = specifics['area']
+    dat.meta['AREA'] = 180.
     
     # print(dat.dtype.names)
     dat.rename_column('Z', 'ZGAMA')
@@ -60,15 +63,16 @@ def gama_gold(argset):
 
     # Minimal catalogue.
     dat = dat[minimal_cols]
-    dat.pprint()
 
     # 'SURVEY_CLASS' < 4 for GAMA-II (rpet <= 19.8 by extension.
-    # 0.039 < z < 0.263, DDP1 sample.	
     # r=12 bright cut;
     # 1 cat. per field (G9, 12, 15).
     
+    zlow       = ddp_zlimits['DDP1'][0]
+    zhigh      = ddp_zlimits['DDP1'][1]
+
     sclass_cut = (dat['SURVEY_CLASS'] >= 4)
-    z_cut      = (dat['ZGAMA'] > 0.039) & (dat['ZGAMA'] < 0.263)
+    z_cut      = (dat['ZGAMA'] > zlow) & (dat['ZGAMA'] < zhigh)
     r_cut      = (dat['R_PETRO'] > 12)
     nq_cut     = (dat['NQ'] >= 3)
 
@@ -102,9 +106,12 @@ def gama_gold(argset):
     dat['DETMAG'] = dat['R_PETRO']
     
     '''
+    Note: survey_specifics is deprecated
+
     if argset.in_bgsbright:
         offset             = survey_specifics('desi')['pet_offset']
-        dat['IN_D8LUMFN'] += (dat['DETMAG'].data + offset < 19.5) * lumfn_mask.INBGSBRIGHT
+
+        update_bit(dat['IN_D8LUMFN'], lumfn_mask, 'INBGSBRIGHT', dat['DETMAG'].data + offset < 19.5)
     '''
     
     # Randomise rows.
@@ -113,7 +120,7 @@ def gama_gold(argset):
 
     dat = dat[idx]
 
-    print('Writing {}.'.format(opath))
+    print('Solved for GAMA gold')
 
     if not os.path.isdir(os.environ['GOLD_DIR']):
         print('Creating {}'.format(os.environ['GOLD_DIR']))
@@ -130,6 +137,8 @@ def gama_gold(argset):
                 'RLIM': 19.8,\
                 'RMAX': 12.0,\
                 'MAX_SEP': 70.0} 
+
+    print('Writing {}.'.format(opath))
 
     write_desitable(opath, dat)
     
@@ -169,7 +178,7 @@ def gama_gold(argset):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Gen kE cat.')
+    parser = argparse.ArgumentParser(description='Gen GAMA gold cat.')
     parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--dryrun',       help='Dryrun of 5k galaxies', action='store_true')

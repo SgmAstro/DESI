@@ -187,11 +187,11 @@ if __name__ == '__main__':
     nwarn   = (dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)
     nwarn   = np.count_nonzero(nwarn)
 
-    print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
-
     towarn  = dat[(dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)]
 
     if len(towarn) > 0:
+        print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
+
         towarn.pprint()
 
 

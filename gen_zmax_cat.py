@@ -65,7 +65,7 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
    if debug:
         print('Solving for zlimit.')
 
-   with Pool(processes=14) as pool:
+   with multiprocessing.get_context('spawn').Pool(processes=14) as pool:
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
        result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
    

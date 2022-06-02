@@ -130,7 +130,7 @@ def lumfn_stepwise_eval(vmax, dM, phi_M, phi, phi_Ms, phis, Mcol='MCOLOR_0P0', s
     
     results = []
 
-    with Pool(nproc) as pool:
+    with multiprocessing.get_context('spawn').Pool(nproc) as pool:
         # For this phi_M, per rest frame color list of the stepwise (1/<n>) weight for all galaxies in the vol. limited sample.
         for result in pool.imap(partial(process_one, Mmins=Mmins, Mmaxs=Mmaxs, dM=dM, phi_Ms=phi_Ms, phis=phis), iterable=splits):
             results.append(np.array(result))

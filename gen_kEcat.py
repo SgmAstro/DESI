@@ -93,7 +93,7 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
     # dat     = vstack(dat) 
 
     # --  Multi-processing  --
-    with Pool(nproc) as pool:
+    with multiprocessing.get_context('spawn').Pool(nproc) as pool:
         dat = vstack(pool.map(partial(sub_kE, kcorr_r=kcorr_r, kcorr_g=kcorr_g), dat))
 
         pool.close()

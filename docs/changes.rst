@@ -38,8 +38,8 @@ DESI Change Log
 * Add zmax optimisation refinements, brent with only a guess at bracketing interval and Nelder-Mead (PR `#198`_). 
 
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
-.. _`#196`: https://github.com/SgmAstro/DESI/pull/197
-.. _`#196`: https://github.com/SgmAstro/DESI/pull/198
+.. _`#197`: https://github.com/SgmAstro/DESI/pull/197
+.. _`#198`: https://github.com/SgmAstro/DESI/pull/198
 
 5.0.1 (2022-April-27)
 -------------------

@@ -4,6 +4,7 @@ import  time
 import  tqdm
 import  argparse
 import  numpy           as     np
+import  multiprocessing
 
 from    runtime         import calc_runtime
 from    functools       import partial
@@ -295,19 +296,15 @@ if __name__ == '__main__':
     ddp['ZMIN']            = np.clip(ddp['ZMIN'], zlo, None)
     ddp['ZMAX']            = np.clip(ddp['ZMAX'], None, zhi)
 
-    phi_Ms, phis, nMs      = lumfn_stepwise(ddp)
-
-    result                 = Table(np.c_[phi_Ms, phis, nMs], names=['MID_M', 'PHI_STEPWISE', 'N'])
-
+    result                 = lumfn_stepwise(ddp)
+    '''
     runtime                = calc_runtime(start, 'Writing {}'.format(opath))    
-
-    result.meta['IMMUTABLE'] = 'FALSE'
 
     print(f'Writing {opath}')
     
     write_desitable(opath, result)
-
-    runtime = calc_runtime(start, 'Finished')
+    '''
+    runtime                = calc_runtime(start, 'Finished')
 
     if log:
         sys.stdout.close()

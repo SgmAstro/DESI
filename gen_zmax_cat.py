@@ -4,6 +4,7 @@ import time
 import argparse
 import runtime
 import numpy           as     np
+import multiprocessing
 
 from   cosmo           import distmod, volcom
 from   smith_kcorr     import GAMA_KCorrection

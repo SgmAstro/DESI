@@ -2,7 +2,8 @@ import os
 import sys
 import argparse
 import runtime
-import numpy as np
+import numpy           as     np
+import multiprocessing 
 
 from   astropy.table   import Table, vstack
 from   smith_kcorr     import GAMA_KCorrection

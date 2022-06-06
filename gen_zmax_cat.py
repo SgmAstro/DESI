@@ -1,5 +1,6 @@
 import os
 import sys
+import tqdm
 import time
 import argparse
 import runtime
@@ -9,7 +10,7 @@ import multiprocessing
 from   cosmo           import distmod, volcom
 from   smith_kcorr     import GAMA_KCorrection
 from   tmr_ecorr       import tmr_ecorr
-from   scipy.optimize  import brentq, minimize
+from   scipy.optimize  import brent, minimize, brentq
 from   astropy.table   import Table
 from   functools       import partial
 from   multiprocessing import Pool
@@ -20,55 +21,65 @@ from   abs_mag         import abs_mag
 
 kcorr_r          = GAMA_KCorrection(band='R')
 
-def theta(z, rest_gmr_0p1, rest_gmr_0p0, aall=False):
+def theta(z, rest_gmr_0p1, rest_gmr_0p0, thetaz=None, dr=None, aall=False, absolute=False):
     z            = np.atleast_1d(z)
     rest_gmr_0p1 = np.atleast_1d(rest_gmr_0p1)
     rest_gmr_0p0 = np.atleast_1d(rest_gmr_0p0)
     
     result       = distmod(z) + kcorr_r.k_nonnative_zref(0.0, z, rest_gmr_0p1) + tmr_ecorr(z, rest_gmr_0p0, aall=aall)
 
+    if thetaz != None:
+        result -= thetaz
+        result -= dr
+
+    if absolute:
+        result  = np.abs(result) 
+
     return  result[0]
     
-def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False):
-     def diff(x):
-          return theta(x, rest_gmr_0p1, rest_gmr_0p0, aall=aall) - thetaz - dr
+def solve_theta(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall=False, debug=False, startz=None):
+    if startz == None:
+        startz = 2.5
 
-     def absdiff(x):
-        return np.abs(diff(x))
-
-     try:
-        result = brentq(diff, 1.e-6, 1.6)
+    try:
+        result = brentq(theta, 1.e-6, 1.6, args=(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall, False))
         warn   = 0
+        method = 0
 
-     except ValueError as VE:
+    except ValueError as VE:
+        if debug:
+            print(VE)
+
         # Brent method fails, requires sign change across boundaries.                                                                                          
-        result = minimize(absdiff, 2.5)
+        result = minimize(theta, startz, args=(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall, True), method='Nelder-Mead')
 
         if result.success:
-            result  = result.x[0]
-            warn    = 0
+            result = result.x[0]
+            warn   = 0
+            method = 1
 
         else:
              try:
-                 result = brentq(diff, 1.3, 3.5)
+                 result = brent(theta, brack=(1.e-6, 1.6), args=(rest_gmr_0p1, rest_gmr_0p0, thetaz, dr, aall, True))
                  warn   = 0
+                 method = 2
 
              except ValueError as VE:
                  result = -99
                  warn   =   1 
 
-     return  result, warn
+    return  result, warn, method
 
-def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
+def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True, nproc=14, startz=None):
    result = []
    start  = time.time()
 
    if debug:
         print('Solving for zlimit.')
 
-   with multiprocessing.get_context('spawn').Pool(processes=14) as pool:
+   with multiprocessing.get_context('spawn').Pool(processes=nproc) as pool:
        arglist = list(zip(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs))
-       result  = pool.starmap(partial(solve_theta, aall=aall), arglist)
+       result  = pool.starmap(partial(solve_theta, aall=aall, startz=startz), arglist)
    
        pool.close()
 
@@ -77,14 +88,15 @@ def zmax(rest_gmrs_0p1, rest_gmrs_0p0, theta_zs, drs, aall=False, debug=True):
 
    result = np.array(result)
 
-   return  result[:,0], result[:,1]
+   return  result[:,0], result[:,1], result[:,2]
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Gen zmax cat.')
+    parser  = argparse.ArgumentParser(description='Gen zmax cat.')
     parser.add_argument('--log', help='Create a log file of stdout.', action='store_true')  
     parser.add_argument('-a', '--aall',   help='All Q, no red/blue split.', action='store_true')
     parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+    parser.add_argument('--nproc', type=int, help='Number of processors', default=14)
     parser.add_argument('-s', '--survey', help='Select survey', default='gama')
     parser.add_argument('--theta_def',    help='Specifier for definition of theta', default='Z_THETA_QCOLOR')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
@@ -93,6 +105,7 @@ if __name__ == '__main__':
     args      = parser.parse_args()
     log       = args.log
     aall      = args.aall
+    nproc     = args.nproc 
     dryrun    = args.dryrun
     survey    = args.survey.lower()
     theta_def = args.theta_def
@@ -131,29 +144,34 @@ if __name__ == '__main__':
 
     print('Solving for {} bounding curve'.format(rlim))
     
-    zmaxs, warn = zmax(dat['REST_GMR_0P1'],\
-                       dat['REST_GMR_0P0'],\
-                       dat[theta_def],\
-                       dat['DELTA_DETMAG_FAINT'],\
-                       aall=aall,\
-                       debug=True)
+    zmaxs, warn, method = zmax(dat['REST_GMR_0P1'],\
+                               dat['REST_GMR_0P0'],\
+                               dat[theta_def],\
+                               dat['DELTA_DETMAG_FAINT'],\
+                               aall=aall,\
+                               nproc=nproc,\
+                               debug=True)
 
     dat['ZMAX']           = zmaxs
     dat['ZMAX_WARN']      = warn
+    dat['ZMAX_METHOD']    = method
 
     print('Solving for {} bounding curve'.format(rmax))
 
     dat['DELTA_DETMAG_BRIGHT'] = rmax - dat['DETMAG']
     
-    zmins, warn = zmax(dat['REST_GMR_0P1'],\
-                       dat['REST_GMR_0P0'],\
-                       dat[theta_def],\
-                       dat['DELTA_DETMAG_BRIGHT'],\
-                       aall=aall,\
-                       debug=True)
+    zmins, warn, method = zmax(dat['REST_GMR_0P1'],\
+                               dat['REST_GMR_0P0'],\
+                               dat[theta_def],\
+                               dat['DELTA_DETMAG_BRIGHT'],\
+                               aall=aall,\
+                               nproc=nproc,\
+                               startz=0.1,\
+                               debug=True)
 
     dat['ZMIN']           = zmins
     dat['ZMIN_WARN']      = warn
+    dat['ZMIN_METHOD']    = method
 
     dat.meta['THETA_DEF'] = theta_def
 
@@ -169,10 +187,19 @@ if __name__ == '__main__':
     nwarn   = (dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)
     nwarn   = np.count_nonzero(nwarn)
 
-    print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
-
     towarn  = dat[(dat['ZMAX_WARN'].data > 0) | (dat['ZMIN_WARN'].data > 0)]
-    towarn.pprint()
+
+    if len(towarn) > 0:
+        print(f'WARNING:  zmax/min warnings triggered on {nwarn} galaxies.')
+
+        towarn.pprint()
+
+
+    print(f'\n\nMETHOD\tZMAX\tZMIN')
+
+    for method, name in zip(range(3), ['BRENTQ', 'NELDER', 'BRENT']):
+        print('{}\t{:d}\t{:d}'.format(name, np.count_nonzero(dat['ZMAX_METHOD'] == method), np.count_nonzero(dat['ZMIN_METHOD'] == method)))
+
 
     runtime = (time.time() - start) / 60.
 

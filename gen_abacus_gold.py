@@ -17,16 +17,11 @@ from findfile      import findfile, fetch_fields, overwrite_check, write_desitab
 def abacus_gold():
     
     path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CutSky/BGS/z0.200/"
-
-    # TODO: code in findfile
-    # opath = findfile(ftype='abacus')
-    opath = '/global/cscratch1/sd/ldrm11/desi/abacus/abacus_gold.fits'
+    opath = findfile(ftype='gold', survey='abacus')
 
     f = h5py.File(path+"cutsky_BGS_z0.200_AbacusSummit_base_c000_ph000.hdf5", "r")
 
-
     # TODO: clean up with f['Data'].keys()
-
     stat    = f['Data/STATUS'][...] 
     Mr      = f["Data/abs_mag"][...]
     r       = f["Data/app_mag"][...]
@@ -47,9 +42,6 @@ def abacus_gold():
     
     write_desitable(opath, mock)
 
-    
-    
-    
 
 if __name__ == '__main__':
 

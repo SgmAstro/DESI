@@ -74,10 +74,12 @@ def edge_padding(mock, opath, pad=10):
 
 if __name__ == '__main__':
 
-    # TODO: add findfile
-    fpath = '/global/cscratch1/sd/ldrm11/desi/abacus/abacus_gold.fits'
+    # TODO: change ftype to a later file    
+    fpath = findfile(ftype='gold', survey='abacus')
     opath = fpath.replace('gold.fits', 'gold_padded.fits')
     
+    print('Reading in mock.')
+
     mock = Table.read(fpath)
     
     edge_padding(mock, opath, pad=10)

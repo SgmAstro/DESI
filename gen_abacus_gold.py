@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import h5py
+import argparse
 
 from astropy.table import Table
 
@@ -14,35 +15,56 @@ sys.path.append('{}/DESI'.format(os.environ['HOME']))
 from findfile      import findfile, fetch_fields, overwrite_check, write_desitable
 
 
-def abacus_gold():
+def abacus_gold(dryrun=False):
     
-    path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CutSky/BGS/z0.200/"
+    #path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CutSky/BGS/z0.200/"
+    path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CubicBox/BGS/z0.200/AbacusSummit_base_c000_ph000/"
+
     opath = findfile(ftype='gold', survey='abacus')
 
-    f = h5py.File(path+"cutsky_BGS_z0.200_AbacusSummit_base_c000_ph000.hdf5", "r")
-
+    f = h5py.File(path+"BGS_box_ph000.hdf5", "r")
+    
+    
     # TODO: clean up with f['Data'].keys()
-    stat    = f['Data/STATUS'][...] 
-    Mr      = f["Data/abs_mag"][...]
-    r       = f["Data/app_mag"][...]
-    ra      = f["Data/ra"][...]
-    dec     = f["Data/dec"][...]
-    gmr     = f["Data/g_r"][...]
-    gmr_obs = f["Data/g_r_obs"][...]
-    z_obs   = f["Data/z_obs"][...]
-    z_cos   = f["Data/z_cos"][...]
+    pos = f["Data/pos"][...] # position, in comoving Mpc/h, in range -1000 < x < 1000 Mpc/h
+    #vel = f["Data/vel"][...]
+    abs_mag = f["Data/abs_mag"][...]
+    g_r = f["Data/g_r"][...]
+    #hmass = f["Data/halo_mass"][...]
     galtype = f["Data/galaxy_type"][...]
-    halo    = f["Data/halo_mass"][...]
-
     f.close()
 
-    mock  = Table(np.c_[ra, dec, gmr, gmr_obs, z_obs, r, Mr, stat, galtype, halo], names=['RA', 'DEC', 'G-R', 'G-R_OBS', 'Z_OBS', 'R_MAG', 'M', 'STATUS', 'GALTYPE', 'M_HALO'])
+    abacus_gold = Table([pos[:,0], pos[:,1], pos[:,2], abs_mag, g_r, galtype], names=['CARTESIAN_X', 'CARTESIAN_Y', 'CARTESIAN_Z', 'DETMAG', 'GMR', 'GALTYPE'])
+    
+    
+    # restrict magnitudes
+    abacus_gold.meta['RMAX'] = 12.0
+    abacus_gold.meta['RLIM'] = 19.8
 
+    isin        = (abacus_gold.meta['RMAX'] <= abacus_gold['DETMAG']) & (abacus_gold['DETMAG'] <= abacus_gold.meta['RLIM'])
+    abacus_gold = abacus_gold[isin]
+    
+    
+    if dryrun:
+        isin = (abacus_gold['CARTESIAN_X'] <= 10) & (abacus_gold['CARTESIAN_X'] >= -10) & (abacus_gold['CARTESIAN_Y'] <= 10) & (abacus_gold['CARTESIAN_Y'] >= -10) & (abacus_gold['CARTESIAN_Z'] <= 10) & (abacus_gold['CARTESIAN_Z'] >= -10)
+    
+    # TODO: Add rot?
+    
+    abacus_gold = abacus_gold[isin]
+    
     print('Writing {}.'.format(opath))
     
-    write_desitable(opath, mock)
+    write_desitable(opath, abacus_gold)
 
 
 if __name__ == '__main__':
 
-    abacus_gold()
+    parser  = argparse.ArgumentParser(description='Gen abacus gold.')
+    parser.add_argument('-d', '--dryrun', help='Dryrun.', action='store_true')
+    parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
+            
+    args        = parser.parse_args()
+    dryrun      = args.dryrun
+    nooverwrite = args.nooverwrite
+    
+    abacus_gold(dryrun)

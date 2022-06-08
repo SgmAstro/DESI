@@ -38,20 +38,11 @@ def abacus_gold(dryrun=False):
     
     print(len(abacus_gold))
     
-    
-    # restrict magnitudes
-    '''
-    abacus_gold.meta['RMAX'] = 12.0
-    abacus_gold.meta['RLIM'] = 19.8
-
-    isin        = (abacus_gold.meta['RMAX'] <= abacus_gold['DETMAG']) & (abacus_gold['DETMAG'] <= abacus_gold.meta['RLIM'])
-    abacus_gold = abacus_gold[isin]
-    
-    print(len(abacus_gold))
-    '''
         
     if dryrun:
-        isin = (abacus_gold['CARTESIAN_X'] <= 20) & (abacus_gold['CARTESIAN_X'] >= -20) & (abacus_gold['CARTESIAN_Y'] <= 20) & (abacus_gold['CARTESIAN_Y'] >= -20) &  (abacus_gold['CARTESIAN_Z'] <= 20) & (abacus_gold['CARTESIAN_Z'] >= -20)
+        boundary = 50
+        
+        isin = (abacus_gold['CARTESIAN_X'] <= boundary) & (abacus_gold['CARTESIAN_X'] >= -boundary) & (abacus_gold['CARTESIAN_Y'] <= boundary) & (abacus_gold['CARTESIAN_Y'] >= -boundary) &  (abacus_gold['CARTESIAN_Z'] <= boundary) & (abacus_gold['CARTESIAN_Z'] >= -boundary)
         
         abacus_gold = abacus_gold[isin]
     

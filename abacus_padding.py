@@ -42,8 +42,8 @@ def edge_padding(mock, opath, dryrun, pad=10):
     l_side = mock[mock['CARTESIAN_X'] > boundary-pad]
     r_side = mock[mock['CARTESIAN_X'] < pad-boundary]
 
-    l_side['CARTESIAN_X'] = l_side['CARTESIAN_X'] - boundary
-    r_side['CARTESIAN_X'] = r_side['CARTESIAN_X'] + boundary
+    l_side['CARTESIAN_X'] = l_side['CARTESIAN_X'] - boundary*2
+    r_side['CARTESIAN_X'] = r_side['CARTESIAN_X'] + boundary*2
 
     l_side['REP_GAL'] = 1
     r_side['REP_GAL'] = 1
@@ -57,8 +57,8 @@ def edge_padding(mock, opath, dryrun, pad=10):
     u_side = mock[mock['CARTESIAN_Y'] > boundary-pad]
     d_side = mock[mock['CARTESIAN_Y'] < pad-boundary]
 
-    u_side['CARTESIAN_Y'] = u_side['CARTESIAN_Y'] - boundary
-    d_side['CARTESIAN_Y'] = d_side['CARTESIAN_Y'] + boundary
+    u_side['CARTESIAN_Y'] = u_side['CARTESIAN_Y'] - boundary*2
+    d_side['CARTESIAN_Y'] = d_side['CARTESIAN_Y'] + boundary*2
     
     u_side['REP_GAL'] = 1
     d_side['REP_GAL'] = 1
@@ -72,8 +72,8 @@ def edge_padding(mock, opath, dryrun, pad=10):
     f_side = mock[mock['CARTESIAN_Z'] > boundary-pad]
     b_side = mock[mock['CARTESIAN_Z'] < pad-boundary]
 
-    f_side['CARTESIAN_Z'] = f_side['CARTESIAN_Z'] - boundary
-    b_side['CARTESIAN_Z'] = b_side['CARTESIAN_Z'] + boundary
+    f_side['CARTESIAN_Z'] = f_side['CARTESIAN_Z'] - boundary*2
+    b_side['CARTESIAN_Z'] = b_side['CARTESIAN_Z'] + boundary*2
     
     f_side['REP_GAL'] = 1
     b_side['REP_GAL'] = 1

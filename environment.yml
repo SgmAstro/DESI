@@ -1,5 +1,11 @@
+# First,
 # conda env create -f environment.yml
-name: base
+#
+# then define GOLD_DIR and CODE_ROOT in
+#
+# ~/.conda/envs/lumfn/etc/conda/activate.d/env_vars.sh
+#
+name: lumfn
 channels:
   - defaults
   - conda-forge
@@ -19,4 +25,3 @@ dependencies:
   - coveralls
   - pytest
   - pytest-cov
-  - inflect

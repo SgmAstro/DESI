@@ -54,8 +54,7 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
 
         sys.stdout = open(logfile, 'w')
     
-    if nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, nooverwrite)
 
     call_signature(dryrun, sys.argv)
 

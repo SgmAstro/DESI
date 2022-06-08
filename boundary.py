@@ -77,8 +77,8 @@ config = Configuration(args.config)
 config.update_attributes('boundary', args)
 config.write()
 '''
-if args.nooverwrite:
-    overwrite_check(opath, ext='BOUNDARY')
+
+overwrite_check(opath, eargs.nooverwrite, ext_name='BOUNDARY')
     
 if args.dryrun:
     sampling   = 1000

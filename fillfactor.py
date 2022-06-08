@@ -22,12 +22,12 @@ from   ddp_zlimits         import ddp_zlimits
 from   params              import sphere_radius
 
 
-def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=2):
+def collate_fillfactors(realzs=np.array([1]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=2):
     print('Collating fillfactor realizations into main (realz=0).')
     
     realzs     = np.sort(realzs)
 
-    assert realzs[0] == 0
+    assert realzs[0] == 1
 
     opaths     = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
     opath      = opaths[0] 
@@ -38,6 +38,8 @@ def collate_fillfactors(realzs=np.array([0]), field='G9', survey='gama', dryrun=
         print(f'Fetching {oo}.')
     
     orealzs    = [Table.read(opath) for opath in opaths]
+
+    opath      = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
     mainreal   = orealzs[0]
 
     if len(realzs) == 1:
@@ -126,8 +128,7 @@ def process_one(run, pid=0, start=0.0):
 def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite, debug=False):
     opath    = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz)
 
-    if nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, nooverwrite)
 
     start    = time.time()
 

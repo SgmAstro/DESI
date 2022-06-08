@@ -150,7 +150,7 @@ def overwrite_check(opath, nooverwrite, ext_name=None):
     else:
         exist = False
                 
-    if exist and nooverwrite:
+    if exist:
         if nooverwrite:
             if ext_name == None:
                 print(f'OVERWRITE CHECK: {opath} found on disk and overwrite forbidden (--nooverwrite).')

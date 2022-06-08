@@ -23,6 +23,10 @@ from   params              import sphere_radius
 
 
 def collate_fillfactors(realzs=np.array([1]), field='G9', survey='gama', dryrun=False, prefix=None, write=True, force=False, oversample=2):
+    '''
+    Generate a zeroth realization randoms_n8 catalog by collating all randoms_n8 catalogs with realization number greater than unity. 
+    '''
+
     print('Collating fillfactor realizations into main (realz=0).')
     
     realzs     = np.sort(realzs)
@@ -30,30 +34,21 @@ def collate_fillfactors(realzs=np.array([1]), field='G9', survey='gama', dryrun=
     assert realzs[0] == 1
 
     opaths     = [findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz) for realz in realzs]
-    opath      = opaths[0] 
 
-    assert  np.all(np.array([os.path.isfile(x) for x in opaths])), 'Failed to find {}'.format(opaths)
+    assert  np.all(np.array([os.path.isfile(x) for x in opaths])), 'Failed to find {}'.format('\n'.join(opaths))
     
     for oo in opaths:
         print(f'Fetching {oo}.')
     
     orealzs    = [Table.read(opath) for opath in opaths]
 
-    opath      = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=0)
-    mainreal   = orealzs[0]
+    opath      = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=1)
+    mainreal   = Table.read(opath)
 
-    if len(realzs) == 1:
-        print('Only one realization, nothing to be done. Exiting.')
-        return mainreal
-
-    keys = list(mainreal.meta.keys())
+    keys       = list(mainreal.meta.keys())
 
     for key in keys:
         print(key, mainreal.meta[key])
-
-    if ('COLLATE' in keys) and (not force):
-        print('Results have already been collated to zeroth realization. Exiting')
-        return mainreal
     
     for col in ['FILLFACTOR', 'RAND_N8']:
         print(f'Solving for {col}')
@@ -315,7 +310,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--survey', help='Select survey.', default='gama')
     parser.add_argument('--prefix', help='filename prefix', default='randoms')
     parser.add_argument('--nproc', help='nproc', default=12, type=int)
-    parser.add_argument('--realz', help='Realization number', default=0, type=np.int32)
+    parser.add_argument('--realz', help='Realization number', default=1, type=np.int32)
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--oversample',   help='Oversampling factor for fillfactor counting.', default=2, type=int)
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
@@ -349,5 +344,6 @@ if __name__ == '__main__':
     config.write()
     '''
     assert field in fields, 'Error: Field not in fields'
-
+    assert realz > 0, 'Realization number should be greater than zero.'
+    
     fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, nooverwrite, debug)

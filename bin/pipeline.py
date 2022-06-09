@@ -14,63 +14,66 @@ from    utils      import run_command
 from    params     import oversample_nrealisations
 
 '''
-# --log                                                                                                                                                                                                                                                                                                                                     
-# Sbatch:  python3 pipeline.py --survey gama --use_sbatch --queue cosma --reset                                                                                                                                                                                                                                                             
-# Head:    python3 pipeline.py --survey desi --dryrun                                                                                                                                                                                                                                                                                       
-#                                                                                                                                                                                                                                                                                                                                           
-# Note:    use sinfo to see available nodes to each queue.                                                                                                                                                                                                                                                                                  
-'''
+# --log                                                                                                                                                                                              
+# Sbatch:  python3 pipeline.py --survey gama --use_sbatch --queue cosma --reset                                                                                                                            # Head:    python3 pipeline.py --survey desi --dryrun                                                                                                                                                      #                                                                                                                                                                                                          # Note:    use sinfo to see available nodes to each queue.                                                                                                                                                 '''
 
 def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, log=False, custom=True, comments=None, stages=None):
-    if custom & (args != None):
-        customise_script(args)
+    '''
+    Launcher of the lumfn pipeline.
 
-        custom = '/custom/'
-
-    else:
-        custom = ''
-
+      --use_sbatch   submit to the queue
+      --reset        first tidy up $GOLD_DIR
+      --nooverwrite  if a output file exists, do not rerun the step.
+      --dryrun       run on a small test subset, survey dependent definition. 
+      --survey       survey to solve for, one of [gama, abacus_gama] (desi).
+      --freshclone   clone main under ~/tmp/ and run off that. 
+      --log          individidual steps are written to log files, e.g. random creation.  Triggers logging of pipeline.py output. 
+      --custom       customise submission scripts with memory, queue, username etc.
+      --comments     text string to be added to run configuration summary, e.g. with motivation for run.   
+      --stages       unsupported.
+    '''
     if reset & nooverwrite:
         raise  ValueError('No overwrite and reset are incompatible.')
 
-    if dryrun:
-        dryrun  = '--dryrun' 
-    
-    else:
-        dryrun  = ''
-    
-    if nooverwrite:
-        nooverwrite = '--nooverwrite'
-    else:
-        nooverwrite = ''
-
+    # Logging output of pipeline.py; Note: individual pipeline steps are logged separately. 
     if log:
-        sys.stdout  = open('pipeline.log', 'w')
+        sys.stdout = open('pipeline.log', 'w')
 
+    # Clean a (subset) of the files and logs in $GOLD_DIR. 
     if reset:
         print('\n\n>>>>>  TRASHING GOLD_DIR AND RANDOMS  <<<<<\n\n')
 
         cmds = []
+        root = os.environ['GOLD_DIR']
+        
+        for dirpath in [root, root + '/randoms/']:
+            cmds.append('rm -f {}/logs/*.log'.format(dirpath))
+            cmds.append('rm -f {}/*_dryrun.fits'.format(dirpath))
 
-        for root in [os.environ['GOLD_DIR'], os.environ['RANDOMS_DIR']]:
-            cmds.append('rm -f {}/logs/*.log'.format(root))
-            cmds.append('rm -f {}/*_dryrun.fits'.format(root))
-
-        cmds.append('rm -f {}/*.fits'.format(os.environ['RANDOMS_DIR']))
+        # Exits on $GOLD_DIR/randoms/ (fragile).
+        cmds.append('rm -f {}/*.fits'.format(dirpath))
 
         for cmd in cmds:
             print(cmd)
 
             os.system(cmd)
 
+        # IMMUTABLE=TRUE defines files those files which should be immune to a safe_reset. 
         if survey == 'desi':
             safe_reset(supported=True, printonly=True)
 
             raise  NotImplementedError('Full reset unsupported for desi')
+
+    # Customise submission scripts with memory, queue, etc. 
+    if custom:
+        customise_script(args)
+
+    custom      = '/custom/'      if custom else ''
+    dryrun      = '--dryrun'      if dryrun else ''
+    nooverwrite = '--nooverwrite' if nooverwrite else ''
         
     if reset:
         os.environ['RESET']   = str(1)
-
     else:
         os.environ['RESET']   = str(0)
 
@@ -85,6 +88,9 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     print('Assuming $NOOVERWRITE={}\n\n'.format(nooverwrite))
 
     #  ----  Total of eight jobs, with correct dependency logic  ----                                                                                                                                    
+
+    # Individual pipeline scripts, e.g. bin/rand_pipeline are capable of their own reset.
+    # This is not required given a reset has already happened (or not).
     os.environ['RESET'] = '0'
 
     #  ---------------------------------------------
@@ -92,13 +98,13 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
     os.chdir(f'{home}')
 
+    # Set up a fresh clone of main under ~/tmp/DESI/ to run off. 
     if freshclone:
         cmds = []
 
         cmds.append('rm -rf {}/tmp'.format(os.environ['HOME']))
         cmds.append('mkdir -p {}/tmp'.format(os.environ['HOME']))
         cmds.append('git clone --branch main https://github.com/SgmAstro/DESI.git {}/tmp/DESI'.format(os.environ['HOME']))
-
    
         for cmd in cmds:    
             out = run_command(cmd, noid=True)
@@ -115,7 +121,7 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
         os.environ['PYTHONPATH'] = code_root + '/:' + os.environ['PYTHONPATH']
 
     Path(os.environ['GOLD_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
-    Path(os.environ['RANDOMS_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
+    Path(os.environ['GOLD_DIR'] + '/randoms/logs/').mkdir(parents=True, exist_ok=True)
 
     if stages == None:
        # TODO:  difficulty is handing the dependency jobids.
@@ -127,33 +133,50 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
                   'gold_d8']
 
     #  ---------------------------------------------
-    # Generate all steps up to reference LF. 
-    cmd        = 'serialorparallel -n {} -p {:d} -e DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -s gold_pipeline -c {}'.format('gold_pipeline', int(use_sbatch), dryrun, int(reset), nooverwrite, survey, code_root)
+    # Generate all gold_pipeline steps: gold definition, k&E, zmax, ddp_limits, ddp cat. 
+    cmd        = 'serialorparallel -n {} -p {:d} -e DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -s gold_pipeline -c {}'.format('gold_pipeline',\
+                                                                                                                                 int(use_sbatch),\
+                                                                                                                                 dryrun,\
+                                                                                                                                 int(reset),\
+                                                                                                                                 nooverwrite,\
+                                                                                                                                 survey,\
+                                                                                                                                 code_root)
     gold_jobid = run_command(cmd)
 
     print('\n>>>>> GOLD JOB ID <<<<<')
     print(gold_jobid)
     print('\n\n')
 
+    exit(0)
+    
     #
     # https://slurm.schedmd.com/sbatch.html
     #
-
     fields          = fetch_fields(survey=survey)
     
     rand_jobids     = {}
     rand_ddp_jobids = {}
-    
+
+    # Run the randoms pipeline: randoms, boundary (0th), fillfactor for each field.
+    # Note:  we generate multiple realizations of oversampled randoms such that the 0th
+    #        realization is a stack of the n8 counts (thereby circumventing memory constraints).
+    #
     for field in fields:
         rand_jobids[field] = []
 
         for realz in np.arange(oversample_nrealisations):
-            # 0th realization reserved for the stack.
-            realz  += 1
-
-            # No dependency.  Generate all steps up to random fill factor and bound_dist.      
+            # 0th realization generates an x1 oversampling, otherwise oversampling randoms such that 0th realization randoms_n8 (fillfactor) is reserved for the stack.
+            # No dependency.
             cmd         = 'serialorparallel -n {} -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={},REALZ={} -s rand_pipeline -c {}'
-            cmd         = cmd.format(f'rand_pipeline_{field}_{realz}', int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, realz, code_root)
+            cmd         = cmd.format(f'rand_pipeline_{field}_{realz}',\
+                                     int(use_sbatch),\
+                                     field,\
+                                     dryrun,\
+                                     int(reset),\
+                                     nooverwrite,\
+                                     survey,\
+                                     realz,\
+                                     code_root)
 
             jobid       = run_command(cmd)
 
@@ -161,17 +184,24 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
         rand_jobids[field] = ','.join(rand_jobids[field])
 
+    # Same again, but we lift the ddp redshift limits for the header of the gold ddp catalog. 
     for field in fields:
         rand_ddp_jobids[field] = []
 
-        for realz in np.arange(oversample_nrealisations):
-            # 0th realization reserved for the stack.
-            realz  += 1
-            
+        for realz in np.arange(oversample_nrealisations):            
             # Dependency on $GOLD_JOBID (gold ddp cat generated by gold_pipeline). 
             # Generate ddp1 randoms limited to ddp1 z limits - with corresponding fillfactors, bound_dist etc. 
             cmd                    = 'serialorparallel -n {} -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={},REALZ={} -d {} -s rand_ddp1_pipeline -c {}'
-            cmd                    = cmd.format(f'rand_ddp1_pipeline_{field}_{realz}', int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, realz, gold_jobid, code_root)
+            cmd                    = cmd.format(f'rand_ddp1_pipeline_{field}_{realz}',\
+                                                int(use_sbatch),\
+                                                field,\
+                                                dryrun,\
+                                                int(reset),\
+                                                nooverwrite,\
+                                                survey,\
+                                                realz,\
+                                                gold_jobid,\
+                                                code_root)
             
             jobid                  = run_command(cmd)
             
@@ -187,19 +217,40 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     rand_d8_jobids     = {}
     rand_ddp_d8_jobids = {}
 
+    # Runs bound_dist and d8 calculation for the randoms.  Bound_dist as only for the 0th realization, as rand_pipeline runs for many. 
     for field in fields:
         # Requires ddp cat, & randoms; no reset required. 
-        rand_jobid = rand_jobids[field]
+        rand_jobid     = rand_jobids[field]
 
-        cmd = 'serialorparallel -n {} -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_d8_pipeline -c {}'        
-        cmd = cmd.format(f'rand_d8_pipeline_{field}', int(use_sbatch), field, dryrun, int(reset), nooverwrite, survey, gold_jobid, rand_jobid, code_root)
+        cmd            = 'serialorparallel -n {} -p {:d} -e FIELD={},DRYRUN={},RESET={:d},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_d8_pipeline -c {}'        
+        cmd            = cmd.format(f'rand_d8_pipeline_{field}',\
+                                    int(use_sbatch),\
+                                    field,\
+                                    dryrun,\
+                                    int(reset),\
+                                    nooverwrite,\
+                                    survey,\
+                                    gold_jobid,\
+                                    rand_jobid,\
+                                    code_root)
 
         rand_d8_jobids[field] = run_command(cmd)        
 
         rand_ddp_jobid        = rand_ddp_jobids[field]
-    
+
+        # Same again for ddp1.
+        # TODO:  remove the need for rand_ddp1_d8 script, which replicates rand_d8 except for the --prefix argument. 
         cmd = 'serialorparallel -n {} -p {:d} -e FIELD={},DRYRUN={},NOOVERWRITE={},SURVEY={} -d {},{} -s rand_ddp1_d8_pipeline -c {}'
-        cmd = cmd.format(f'rand_ddp1_d8_pipeline_{field}', int(use_sbatch), field, dryrun, nooverwrite, survey, gold_jobid, rand_ddp_jobid, code_root)
+        cmd = cmd.format(f'rand_ddp1_d8_pipeline_{field}',\
+                         int(use_sbatch),\
+                         field,\
+                         dryrun,\
+                         nooverwrite,\
+                         survey,\
+                         gold_jobid,\
+                         rand_ddp_jobid,\
+                         code_root)
+
         rand_ddp_d8_jobids[field] = run_command(cmd)
 
     print('\n\n>>>>> RANDOM D8 JOB IDS <<<<<')
@@ -211,9 +262,16 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
     # Note: runs all fields simultaneously.  
     dependencies = ','.join(str(rand_ddp_d8_jobids[field]) for field in fields)
     
-    # possibly missing RESET=$RESET
+    # TODO:  possibly missing RESET=$RESET
     cmd           = 'serialorparallel -n {} -p {:d} -e DRYRUN={},NOOVERWRITE={},SURVEY={} -d {} -s gold_d8_pipeline -c {}'
-    cmd           = cmd.format('gold_d8_pipeline', int(use_sbatch), dryrun, nooverwrite, survey, dependencies, code_root)
+    cmd           = cmd.format('gold_d8_pipeline',\
+                               int(use_sbatch),\
+                               dryrun,\
+                               nooverwrite,\
+                               survey,\
+                               dependencies,\
+                               code_root)
+    
     gold_d8_jobid = run_command(cmd)
         
     print('\n\n>>>>>  GOLD D8 JOB IDS  <<<<<')
@@ -258,6 +316,7 @@ if __name__ == '__main__':
     config      = args.config
     log         = args.log
 
+    # Define a configuration file for a summary of assumptions. 
     config      = Configuration(config)
     config.update_attributes('pipeline', args)
 

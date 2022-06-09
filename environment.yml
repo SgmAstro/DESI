@@ -5,6 +5,10 @@
 #
 # ~/.conda/envs/lumfn/etc/conda/activate.d/env_vars.sh
 #
+# conda activate lumfn
+#
+# export PYTHONPATH=../$CODE_ROOT:$PYTHONPATH (pseudo code).
+#
 name: lumfn
 channels:
   - defaults

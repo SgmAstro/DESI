@@ -77,8 +77,8 @@ config = Configuration(args.config)
 config.update_attributes('boundary', args)
 config.write()
 '''
-if args.nooverwrite:
-    overwrite_check(opath, ext='BOUNDARY')
+
+overwrite_check(opath, args.nooverwrite, ext_name='BOUNDARY')
     
 if args.dryrun:
     sampling   = 1000
@@ -86,7 +86,7 @@ if args.dryrun:
 call_signature(dryrun, sys.argv)
 
 ##  ras and decs.                                                                                                                                                              
-if survey == 'gama':    
+if survey in ['gama', 'abacus_gama']:    
     area       = 60. 
 
     ra_min     = gama_limits[field]['ra_min']

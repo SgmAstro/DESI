@@ -1,7 +1,6 @@
 import os
 import sys
 import yaml
-import inflect
 import contextlib
 import numpy as np
 
@@ -70,10 +69,9 @@ class Configuration:
             raise NotImplementedError()
 
         self.fpath = os.environ['GOLD_DIR'] + '/configs/config.yaml'
-            
+    
     def update_comments(self, comments):
-        p  = inflect.engine()
-        ps = [p.ordinal(i) for i in range(1, 50, 1)] 
+        ps = ['#{}'.format(i) for i in range(1, 50, 1)] 
         ps = [str(p) for p in ps if p not in self.attributes['comments'].keys()]
 
         for p, comment in zip(ps, comments):        

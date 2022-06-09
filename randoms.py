@@ -10,7 +10,7 @@ from   astropy.table     import Table
 from   cartesian         import cartesian, rotate
 from   runtime           import calc_runtime
 from   desi_randoms      import desi_randoms
-from   findfile          import fetch_fields, findfile, overwrite_check, call_signature
+from   findfile          import fetch_fields, findfile, overwrite_check, call_signature, write_desitable
 from   gama_limits       import gama_limits, gama_field
 from   ddp_zlimits       import ddp_zlimits
 from   config            import Configuration
@@ -23,11 +23,10 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
     fields  = fetch_fields(survey)
 
     assert  field in fields, f'Provided {field} field is not compatible with those available for {survey} survey ({fields})'
-
+    
     opath   = findfile(ftype='randoms', dryrun=dryrun, field=field, survey=survey, prefix=prefix, realz=realz, oversample=oversample)
 
-    if args.nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, args.nooverwrite)
 
     if seed == None:
         seed = seed + realz + 50 * oversample
@@ -37,9 +36,9 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
     call_signature(dryrun, sys.argv)
 
     print('Solving for redshift limits: {} < z < {}.'.format(zmin, zmax))
-
+    
     ##  ras and decs.                                                                                                                                                              
-    if survey == 'gama':    
+    if survey in ['gama', 'abacus_gama']:    
         Area       = 60.
 
         ra_min     = gama_limits[field]['ra_min']
@@ -130,7 +129,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
         os.makedirs(rand_dir)
 
     print('Volume [1e6]: {:.2f}; oversample: {:.2f};  density: {:.2e}; nrand [1e6]: {:.2f}'.format(vol/1.e6, oversample, density, nrand / 1.e6))
-
+    
     zs       = np.arange(0.0, zmax+dz, dz)
     Vs       = volcom(zs, Area) 
 
@@ -207,7 +206,7 @@ def randoms(field='G9', survey='gama', density=1., zmin=ddp_zlimits['DDP1'][0], 
 
     runtime = calc_runtime(start, 'Writing {}'.format(opath), xx=randoms)
 
-    randoms.write(opath, format='fits', overwrite=True)
+    write_desitable(opath, randoms)    
 
     runtime = calc_runtime(start, 'Finished'.format(opath))
 
@@ -260,7 +259,14 @@ if __name__ == '__main__':
     config.update_attributes('randoms', args)
     config.write()
     '''
-    for xx in [1, oversample]:        
+
+    if realz == 0:
+        runs = [1]
+
+    else:
+        runs = [oversample]
+    
+    for xx in runs:
         seed      = seed
 
         # only generate independent realizations for oversample.

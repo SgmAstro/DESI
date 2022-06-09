@@ -35,17 +35,22 @@ def process_one(run, pid=0):
 
     return  dd.tolist(), ii.tolist()
 
-def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, collate=True):
+def bound_dist(log, field, dryrun, prefix, survey, nproc, nooverwrite, collate=True):
     start  = time.time()
 
     if collate:
+        if dryrun:
+            realzs=np.arange(1, 6, 1)
+        else:
+            realzs=np.arange(1, 1 + oversample_nrealisations, 1)
+        
         # Collate multiple n8 measurements from N>1 oversampled realizations into the 0th realization. 
         # Note: null op if already applied.
-        collate_fillfactors(realzs=np.arange(oversample_nrealisations), field=field, survey=survey, dryrun=dryrun, prefix=prefix, write=True)
+        collate_fillfactors(realzs=realzs, field=field, survey=survey, dryrun=dryrun, prefix=prefix, write=True)
     
     # https://www.dur.ac.uk/icc/cosma/cosma5/
-    fpath  = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
-    opath  = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    fpath = findfile(ftype='randoms_n8', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
+    opath = findfile(ftype='randoms_bd', dryrun=dryrun, field=field, survey=survey, prefix=prefix)
 
     if log:
         logfile = findfile(ftype='randoms_bd', dryrun=False, field=field, survey=survey, prefix=prefix, log=True)
@@ -54,8 +59,7 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
 
         sys.stdout = open(logfile, 'w')
     
-    if nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, nooverwrite)
 
     call_signature(dryrun, sys.argv)
 
@@ -188,7 +192,6 @@ if __name__ == '__main__':
     parser.add_argument('--nooverwrite',  help='Do not overwrite outputs if on disk', action='store_true')
     parser.add_argument('--config',       help='Path to configuration file', type=str, default=findfile('config'))
     parser.add_argument('--nproc', type=int, help='Number of processors', default=12)
-    parser.add_argument('--realz', type=int, help='Realisation', default=0)
 
     args        = parser.parse_args()
     log         = args.log
@@ -197,7 +200,6 @@ if __name__ == '__main__':
     prefix      = args.prefix
     survey      = args.survey.lower()
     nproc       = args.nproc
-    realz       = args.realz
     nooverwrite = args.nooverwrite
 
     '''                                                                                                                                                                                                 
@@ -206,4 +208,4 @@ if __name__ == '__main__':
     config.write()                                                                                                                                                                                        
     '''
     
-    bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite)
+    bound_dist(log, field, dryrun, prefix, survey, nproc, nooverwrite)

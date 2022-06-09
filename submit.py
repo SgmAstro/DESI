@@ -1,8 +1,40 @@
 import os
 import argparse
+import subprocess
 import numpy as np
 
 
+def customise_serialorparallel():
+    root       = os.environ['CODE_ROOT'] + '/bin/'
+
+    sorp       = root + '/serialorparallel'
+
+    ff         = open(f'/{sorp}')
+    ff         = ff.read()
+    ff         = ff.split('\n')
+    ff         = [x.rstrip() for x in ff]
+
+    shebang    = subprocess.check_output(['which', 'bash'])
+    shebang    = shebang.rstrip().decode('utf-8')
+    shebang    = r'#!{}'.format(shebang)
+
+    hostname   = subprocess.check_output(['hostname'])
+    hostname   = hostname.rstrip().decode('utf-8')
+    hostname   = '# Customised for {} system'.format(hostname)
+    
+    ff         = [shebang, '#', hostname, '#'] + ff[1:]
+    
+    opath      = root + '/custom/serialorparallel'
+
+    print(f'Writing to {opath}')
+    
+    with open(opath, 'w') as f:
+        for line in ff:
+            f.write(line)
+            f.write('\n')
+
+    f.close()
+    
 def customise_script(args, debug=False):
     script     = args.script
     queue      = args.queue
@@ -120,16 +152,25 @@ def customise_script(args, debug=False):
             print(xx)
 
 
-    opath = root + '/custom/' + os.path.basename(script).split('.')[0]
-            
+    opath   = root + '/custom/' + os.path.basename(script).split('.')[0]
+
+    shebang = subprocess.check_output(['which', 'bash'])
+    shebang = shebang.rstrip().decode('utf-8')
+
+    hostname = subprocess.check_output(['hostname'])
+    hostname = hostname.rstrip().decode('utf-8')
+    hostname = '# Customised for {} system'.format(hostname)
+    
     with open(opath, 'w') as f:
         rest.remove('#!/bin/bash')
         
         to_write = custom + rest
 
-        f.write('#!/bin/bash')
-        f.write('\n')
-
+        f.write(f'#!{shebang}')
+        f.write('\n#\n')
+        f.write(f'{hostname}')
+        f.write('\n\n')
+        
         for line in custom + rest:
             f.write(line)
             f.write('\n')
@@ -140,7 +181,6 @@ def customise_script(args, debug=False):
 
 
 if __name__ == '__main__':
-    # /cosma/home/durham/dc-wils7/DESI/bin/gold_pipeline                                                                                                                                                 
     parser    = argparse.ArgumentParser(description='Customise pipeline submission scripts.')
     parser.add_argument('-s', '--script',  help='Script to customise.',    type=str, default=None)
     parser.add_argument('-q', '--queue',   help='Queue for submission.',   type=str, default=None)
@@ -153,6 +193,8 @@ if __name__ == '__main__':
     args      = parser.parse_args()
     script    = args.script
 
-    customise_script(args)
+    # customise_script(args)
 
+    customise_serialorparallel()
+    
     print('\n\nDone.\n\n')

@@ -104,7 +104,7 @@ def write_desitable(opath, table, test=False):
 def fetch_fields(survey):
     assert survey in ['desi', 'gama', 'abacus_cube', 'abacus_gama'], f'Fields for {survey} survey are not supported.'
     
-    if survey == 'abacus':
+    if (survey == 'abacus_cube') or (survey == 'abacus_gama'):
         return None
     
     else:

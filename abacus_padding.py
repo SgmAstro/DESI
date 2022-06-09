@@ -21,8 +21,8 @@ def edge_padding(mock, opath, dryrun, pad=10):
     boundary = 1000 # upper bound on x, y, z
     
     if dryrun:
-        pad = 5
-        boundary = 20
+        pad = 10
+        boundary = 50
     
     if not dryrun:
         min_x, max_x = min(mock['CARTESIAN_X']), max(mock['CARTESIAN_X'])
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     
     
     # TODO: change ftype to a later file    
-    fpath = findfile(ftype='gold', survey='abacus', dryrun=dryrun)
+    fpath = findfile(ftype='gold', survey='abacus_cube', dryrun=dryrun)
     
     opath = fpath.replace('gold', 'gold_padded')
     

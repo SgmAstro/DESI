@@ -20,7 +20,7 @@ def abacus_gold(dryrun=False):
     #path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CutSky/BGS/z0.200/"
     path = "/project/projectdirs/desi/cosmosim/FirstGenMocks/AbacusSummit/CubicBox/BGS/z0.200/AbacusSummit_base_c000_ph000/"
 
-    opath = findfile(ftype='gold', survey='abacus', dryrun=dryrun)
+    opath = findfile(ftype='gold', survey='abacus_cube', dryrun=dryrun)
 
     f = h5py.File(path+"BGS_box_ph000.hdf5", "r")
     

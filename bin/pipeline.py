@@ -64,8 +64,11 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
 
             raise  NotImplementedError('Full reset unsupported for desi')
 
-    # Customise submission scripts with memory, queue, etc. 
     if custom:
+        # System dependent shebangs. 
+        customise_serialorparallel()
+
+        # Customise submission scripts with memory, queue, etc. 
         customise_script(args)
 
     custom      = '/custom/'      if custom else ''

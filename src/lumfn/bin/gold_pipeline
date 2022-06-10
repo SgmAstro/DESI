@@ -1,0 +1,94 @@
+#!/bin/bash                                                                                                               
+#SBATCH -p cordelia
+#SBATCH --mem=20G                                                                                                    
+#SBATCH -t 02:00:00 
+#SBATCH -o /cosma/home/durham/dc-wils7/data/GAMA4/logs/gold_pipeline.log
+#SBATCH -A durham 
+#SBATCH --nodes=1                                                                                                          
+#SBATCH --ntasks-per-node=1                                                                                               
+#SBATCH --open-mode=append
+
+# projects: hpcicc, durham, analyse, dp004, do010
+
+# Submit with:  sbatch gold_pipeline                                                                                        
+# to qos of [debug, regular]
+#
+# See status with e.g. squeue -u mjwilson                                                                                        
+#
+
+if [[ -z "${RESET}" ]]; then
+  export RESET=0
+else
+  echo 'RESET SET TO BE '$RESET
+fi
+
+if [ -z ${DRYRUN+x} ]; then
+  # export DRYRUN=''                                                                                                                                                                               
+  export DRYRUN='--dryrun'
+else
+  echo 'DRYRUN SET TO BE '$DRYRUN
+fi
+
+if [ -z ${NOOVERWRITE+x} ]; then
+  export NOOVERWRITE=''                                                                                                                                                                             
+else
+  echo 'NOOVERWRITE SET TO BE '$NOOVERWRITE
+fi
+
+if [[ -z "${SURVEY}" ]]; then
+  export SURVEY='gama'
+  export SURVEYARG='--survey gama'
+else
+  export SURVEYARG='--survey '$SURVEY
+
+  echo 'SURVEY SET TO BE '$SURVEY
+fi
+
+export PATH=$HOME/.conda/envs/lumfn/bin/:$CODE_ROOT/bin/:$PATH
+export PYTHONPATH=$CODE_ROOT:$PYTHONPATH
+
+echo
+echo 'Environment:'
+echo
+echo 'Code: '$CODE_ROOT
+echo 'Gold output dir.: '$GOLD_DIR
+echo 'Randoms output dir: '$RANDOMS_DIR
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+echo 'Running gold pipeline (with bin:'$SCRIPT_DIR')'
+
+cd $CODE_ROOT
+
+# source /project/projectdirs/desi/software/desi_environment.sh master
+
+if (( $RESET > 0 )); then
+    echo '>>>>>  TRASHING GOLD_DIR  <<<<<.'
+
+    rm -f $GOLD_DIR/*.fits
+fi
+
+
+echo 'Running gold pipeline; logging to '$GOLD_DIR'/logs/'$SURVEY'_gold.log'
+
+python3 -u gen_gold.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
+
+echo 'Running gen_kEcat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_kE.log'
+
+python3 -u gen_kEcat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
+
+echo 'Running gen_zmax_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_zama.log'
+
+python3 -u gen_zmax_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
+
+echo 'Running ddp_limits.py; logging to '$GOLD_DIR'/logs/ddp_limits.log'
+
+python3 -u ddp_limits.py $NOOVERWRITE $SURVEYARG --log
+
+echo 'Running gen_ddp_cat.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_ddp.log'
+
+python3 -u gen_ddp_cat.py $DRYRUN $NOOVERWRITE $SURVEYARG --log
+
+echo 'Running gen_gold_lf.py; logging to '$GOLD_DIR'/logs/'$SURVEY'_lumfn.log'
+echo
+echo 'Done.'

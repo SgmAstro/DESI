@@ -1,0 +1,76 @@
+
+ fitsdiff: 5.0
+ a: /cosma5/data/durham/dc-wils7//v4/gama_gold_G15_ddp_n8_d0_3.fits
+ b: /cosma5/data/durham/dc-wils7//v3/gama_gold_G15_ddp_n8_d0_3.fits
+ Maximum number of different data values to be reported: 10
+ Relative tolerance: 1e-06, Absolute tolerance: 1e-06
+
+Extension HDU 1 (TilingCat, 1):
+
+   Headers contain differences:
+     Headers have different number of cards:
+      a: 250
+      b: 246
+     Extra keyword 'GOLD_NGAL' in a: 113687
+     Extra keyword 'TMR_DDP1' in a: '[-21.8, -20.1]'
+     Extra keyword 'TMR_DDP2' in a: '[-20.6, -19.3]'
+     Extra keyword 'TMR_DDP3' in a: '[-21.8, -20.1]'
+     Keyword DDP1_DENS has different values:
+        a> 0.006042196899455394
+        b> 0.005383528919866887
+     Keyword DDP1_NGAL has different values:
+        a> 45889
+        b> 34732
+     Keyword DDP1_VZ  has different values:
+        a> 7594754.153764196
+        b> 6451530.309761721
+     Keyword DDP1_ZMAX has different values:
+        a> 0.2629899978637695
+        b> 0.2483299970626831
+     Keyword DDP2_DENS has different values:
+        a> 0.01035841825568372
+        b> 0.009928035902084681
+     Keyword DDP2_NGAL has different values:
+        a> 32698
+         ? -
+        b> 26598
+         ?   +
+     Keyword DDP2_VZ  has different values:
+        a> 3156659.558717707
+        b> 2679079.755786839
+     Keyword DDP2_ZMAX has different values:
+        a> 0.1937000006437302
+        b> 0.1830800026655197
+     Keyword DDP3_DENS has different values:
+        a> 0.01910797832470021
+        b> 0.01839618589233126
+     Keyword DDP3_NGAL has different values:
+        a> 8748
+        b> 7954
+     Keyword DDP3_VZ  has different values:
+        a> 457819.2340050841
+        b> 432372.2344703938
+     Keyword DDP3_ZMAX has different values:
+        a> 0.1015800014138222
+        b> 0.09973999857902527
+     Keyword NAXIS2   has different values:
+        a> 5087
+        b> 5417
+     Keyword RPATH_0  has different values:
+        a> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_ddp1_bd_G9_0.fits
+         ?                                                         -----
+        b> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G9_0.fits
+     Keyword RPATH_1  has different values:
+        a> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_ddp1_bd_G12_0.fits
+         ?                                                         -----
+        b> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G12_0.fits
+     Keyword RPATH_2  has different values:
+        a> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_ddp1_bd_G15_0.fits
+         ?                                                         -----
+        b> /cosma/home/durham/dc-wils7/data/GAMA4/randoms//randoms_bd_G15_0.fits
+
+   Data contains differences:
+     Table rows differ:
+      a: 5087
+      b: 5417
+     No further data comparison performed.

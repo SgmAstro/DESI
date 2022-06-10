@@ -1,0 +1,43 @@
+
+ fitsdiff: 5.0
+ a: /cosma5/data/durham/dc-wils7//v4/gama_gold.fits
+ b: /cosma5/data/durham/dc-wils7//v3/gama_gold.fits
+ Maximum number of different data values to be reported: 10
+ Relative tolerance: 1e-06, Absolute tolerance: 1e-06
+
+Extension HDU 1 (TilingCat, 1):
+
+   Data contains differences:
+     Column CARTESIAN_X data differs in row 0:
+        a> -245.24125652386456
+        b> -416.3638800831448
+     Column CARTESIAN_X data differs in row 1:
+        a> -719.9340667453704
+        b> -467.602574452899
+     Column CARTESIAN_X data differs in row 2:
+        a> -438.3880940653836
+        b> -738.6550286481652
+     Column CARTESIAN_X data differs in row 3:
+        a> -325.9851692787255
+        b> -195.84689476342496
+     Column CARTESIAN_X data differs in row 4:
+        a> -409.30744566436306
+        b> -466.4207431903221
+     Column CARTESIAN_X data differs in row 5:
+        a> -612.8576499598569
+        b> -141.48973957719082
+     Column CARTESIAN_X data differs in row 6:
+        a> -233.93801379220335
+        b> -347.93860112325126
+     Column CARTESIAN_X data differs in row 7:
+        a> -390.5412315651098
+        b> -706.2935144496544
+     Column CARTESIAN_X data differs in row 8:
+        a> -352.97464017087464
+        b> -200.3255895999648
+     Column CARTESIAN_X data differs in row 9:
+        a> -305.6064005417072
+        b> -510.6153805522818
+     ...2078414 additional difference(s) found.
+     ...
+     2078424 different table data element(s) found (91.41% different).

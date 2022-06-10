@@ -7,7 +7,6 @@ from   tidyup             import tidyup
 from   findfile           import fetch_fields
 from   pathlib            import Path
 
-
 def test_allnbs(survey='gama', no_qa=False):
     '''
     See https://docs.pytest.org/en/6.2.x/  
@@ -17,15 +16,12 @@ def test_allnbs(survey='gama', no_qa=False):
     if 'GITHUB_ACTIONS' in os.environ:
         os.environ['USER']         = 'Hal'
         os.environ['GOLD_DIR']     = 'GAMA4/'
-        os.environ['GOLD_LOGS']    = 'GAMA4/logs/'
-        os.environ['RANDOMS_DIR']  = 'GAMA4/randoms/'
-        os.environ['RANDOMS_LOGS'] = 'GAMA4/randoms/logs/'
 
         os.environ['PATH']         = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
         os.environ['PYTHONPATH']   = os.environ['GITHUB_WORKSPACE'] + ':' + os.environ['GITHUB_WORKSPACE'] + '/bin:' + os.environ['PATH']
 
-        Path(os.environ['GOLD_LOGS']).mkdir(parents=True, exist_ok=True)
-        Path(os.environ['RANDOMS_LOGS']).mkdir(parents=True, exist_ok=True)
+        Path(os.environ['GOLD_DIR'] + '/logs/').mkdir(parents=True, exist_ok=True)
+        Path(os.environ['GOLD_DIR'] + '/randoms/logs/').mkdir(parents=True, exist_ok=True)
 
     if no_qa | ('GITHUB_ACTIONS' in os.environ):
         pipeline(use_sbatch=False, reset=False, nooverwrite=False, dryrun=True, survey='gama', freshclone=False, args=None)

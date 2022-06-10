@@ -103,7 +103,7 @@ def pipeline(args, use_sbatch=False, reset=False, nooverwrite=False, dryrun=True
         for cmd in cmds:    
             out = run_command(cmd, noid=True)
 
-        code_root = os.environ['CODE_ROOT'] = '{}/tmp/DESI/'.format(os.environ['HOME'])
+        code_root = '{}/tmp/DESI/'.format(os.environ['HOME'])
 
         os.environ['PATH'] = f':{code_root}/bin/{custom}:' + os.environ['PATH']
         os.environ['PYTHONPATH'] = f'{code_root}/:' + os.environ['PYTHONPATH']

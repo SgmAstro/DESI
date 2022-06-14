@@ -231,7 +231,7 @@ def fillfactor(log, field, dryrun, prefix, survey, oversample, nproc, realz, noo
     done_nsplit = 1
 
     # maxtasksperchild:  restart process after max tasks to contain resource leaks;
-    with Pool(nproc, maxtasksperchild=4) as pool:
+    with multiprocessing.get_context('spawn').Pool(nproc, maxtasksperchild=4) as pool:
         total   = (nchunk-1)
 
         with tqdm.tqdm(total=total) as pbar:

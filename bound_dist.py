@@ -117,7 +117,8 @@ def bound_dist(log, field, dryrun, prefix, survey, nproc, realz, nooverwrite, co
 
     runtime = calc_runtime(start, 'POOL:  Expected runtime of {:.3f}.'.format(nchunk * split_time))
 
-    with Pool(nproc) as pool:
+    # https://britishgeologicalsurvey.github.io/science/python-forking-vs-spawn/
+    with multiprocessing.get_context('spawn').Pool(nproc) as pool:
         for result in tqdm.tqdm(pool.imap(process_one, iterable=runs[1:]), total=len(runs[1:])):
             results.append(result)
 

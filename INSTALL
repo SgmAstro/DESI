@@ -1,0 +1,4 @@
+conda activate lumfn
+
+
+pip install -i https://test.pypi.org/simple/ lumfn==0.0.2 --user

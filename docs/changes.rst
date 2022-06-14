@@ -36,10 +36,12 @@ DESI Change Log
 * Params file for sphere radius and oversample realisation number (PR `#196`_).
 * Add 'spawn' context to prevent pool hangs. TBD if effective (PR `#197`_).
 * Add zmax optimisation refinements, brent with only a guess at bracketing interval and Nelder-Mead (PR `#198`_). 
-
+* (Test-pypi) package build (PR `#203`_).
+  
 .. _`#196`: https://github.com/SgmAstro/DESI/pull/196
 .. _`#197`: https://github.com/SgmAstro/DESI/pull/197
 .. _`#198`: https://github.com/SgmAstro/DESI/pull/198
+.. _`#203`: https://github.com/SgmAstro/DESI/pull/203
 
 5.0.1 (2022-April-27)
 -------------------

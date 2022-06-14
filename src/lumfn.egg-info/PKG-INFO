@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: lumfn
+Version: 0.0.2
+Summary: A package for luminosity function and environment estimation
+Home-page: https://github.com/SgmAstro/DESI
+Author: M. J. Wilson
+Author-email: 
+Project-URL: Bug Tracker, https://github.com/SgmAstro/DESI/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+
+# DESI
+[![Python Package using Conda](https://github.com/SgmAstro/DESI/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/SgmAstro/DESI/actions/workflows/python-package-conda.yml)
+
+
+Place for PhD Work Code

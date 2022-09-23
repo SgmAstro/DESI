@@ -60,8 +60,8 @@ for ll, ff, cc in zip(ls, fs, cs):
 
     stack[ll] = {'central': median, 'wave': wave, 'response': response}
     
-# pl.legend(frameon=False, ncol=2)
-# pl.show()
+pl.legend(frameon=False, ncol=2)
+pl.show()
 
 # print(stack.keys())
 
@@ -70,10 +70,13 @@ def similarity(obs_filter='decam r', rest_filter='sdss r', ttype='correlation'):
     obs = stack[obs_filter]
     rest = stack[rest_filter]
 
-    obs = interp1d(obs['wave'] - obs['central'], obs['response'], kind='linear', axis=-1, copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
-    rest = interp1d(rest['wave'] - rest['central'], rest['response'], kind='linear', axis=-1, copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
-
-    wave = np.arange(-1.e4, 1.e4, 1.)
+    # print(obs['wave'] / obs['central'])
+    # print(rest['wave'] / rest['central'])
+    
+    obs = interp1d(obs['wave'] / obs['central'], obs['response'], kind='linear', axis=-1, copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    rest = interp1d(rest['wave'] / rest['central'], rest['response'], kind='linear', axis=-1, copy=True, bounds_error=False, fill_value=0.0, assume_sorted=False)
+    
+    wave = np.arange(-2, 2, 1.e-6)
 
     obs = obs(wave)
     rest = rest(wave)
@@ -84,6 +87,7 @@ def similarity(obs_filter='decam r', rest_filter='sdss r', ttype='correlation'):
     result /= np.sqrt(np.sum(rest**2.) / len(rest)) 
 
     return result
+
 
 f = open('data/filters.txt', 'w')
 

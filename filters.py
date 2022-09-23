@@ -9,8 +9,10 @@ from   scipy.interpolate import interp1d
 def central(wave, response):
     return np.sum(wave * response) / np.sum(response)
 
+
 zref    = 0.1
 
+# TODO:  import from speclite.
 bass_g  = np.loadtxt('bass-g.txt')
 bass_r  = np.loadtxt('bass-r.txt')
 
@@ -83,7 +85,7 @@ def similarity(obs_filter='decam r', rest_filter='sdss r', ttype='correlation'):
 
     return result
 
-f = open('filters.txt', 'w')
+f = open('data/filters.txt', 'w')
 
 f.write('# obs_filter\trest_filter\tobs_central\trest_central\tbeta\t\tsimilarity\n')
 

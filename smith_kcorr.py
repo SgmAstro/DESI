@@ -72,36 +72,65 @@ class GAMA_KCorrection(object):
         
         return X_interpolator, Y_interpolator
 
-    def __A(self, colour):
-        # coefficient of the z**4 term
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
-        return self.__A_interpolator(colour_clipped)
+    def A(self, colour, clip=False):
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
 
-    def __B(self, colour):
+        else:
+            colour_clipped = colour
+        
+        return self.__A_interpolator(colour_clipped)
+    
+    def B(self, colour, clip=False):
         # coefficient of the z**3 term
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        else:
+            colour_clipped = colour
+            
         return self.__B_interpolator(colour_clipped)
 
-    def __C(self, colour):
+    def C(self, colour, clip=False):
         # coefficient of the z**2 term
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        else:
+            colour_clipped = colour
+            
         return self.__C_interpolator(colour_clipped)
 
-    def __D(self, colour):
+    def D(self, colour, clip=False):
         # coefficient of the z**1 term
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        else:
+            colour_clipped = colour
+
         return self.__D_interpolator(colour_clipped)
 
-    def __X(self, colour):
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+    def X(self, colour, clip=False):
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+
+        else:
+            colour_clipped = colour
+
         return self.__X_interpolator(colour_clipped)
 
-    def __Y(self, colour):
-        colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+    def Y(self, colour, clip=False):
+        if clip:
+            colour_clipped = np.clip(colour, self.colour_min, self.colour_max)
+        else:
+            colour_clipped = colour
+
         return self.__Y_interpolator(colour_clipped)
 
-
-    def k(self, redshift, restframe_colour, median=False):
+    def k(self, redshift, restframe_colour, median=False, clip=False):
         """
         Polynomial fit to the GAMA K-correction for z<0.5
         The K-correction is extrapolated linearly for z>0.5
@@ -121,14 +150,14 @@ class GAMA_KCorrection(object):
             # Fig. 13 of https://arxiv.org/pdf/1701.06581.pdf
             restframe_colour = 0.603 * np.ones_like(restframe_colour)
 
-        K[idx] = self.__A(restframe_colour[idx])*(redshift[idx]-self.z0)**4 + \
-                 self.__B(restframe_colour[idx])*(redshift[idx]-self.z0)**3 + \
-                 self.__C(restframe_colour[idx])*(redshift[idx]-self.z0)**2 + \
-                 self.__D(restframe_colour[idx])*(redshift[idx]-self.z0) + self.__E 
+        K[idx] = self.A(restframe_colour[idx], clip=clip)*(redshift[idx]-self.z0)**4 + \
+                 self.B(restframe_colour[idx], clip=clip)*(redshift[idx]-self.z0)**3 + \
+                 self.C(restframe_colour[idx], clip=clip)*(redshift[idx]-self.z0)**2 + \
+                 self.D(restframe_colour[idx], clip=clip)*(redshift[idx]-self.z0) + self.__E 
 
         idx = redshift > 0.5
         
-        K[idx] = self.__X(restframe_colour[idx])*redshift[idx] + self.__Y(restframe_colour[idx])
+        K[idx] = self.X(restframe_colour[idx], clip=clip)*redshift[idx] + self.Y(restframe_colour[idx], clip=clip)
         
         return  K    
 
@@ -137,6 +166,12 @@ class GAMA_KCorrection(object):
         
         return  self.k(redshift, restframe_colour, median=median) - self.k(refzs, restframe_colour, median=median) - 2.5 * np.log10(1. + refz)
 
+    def k_bandshift_zref(self, redshift, restframe_colour, beta, median=False, clip=False):
+        eff_redshift = ((1. + redshift) / beta) - 1.
+        zeropoint = -2.5 * np.log10(beta)
+        
+        return self.k(eff_redshift, restframe_colour, median=median, clip=clip) + zeropoint
+    
     def rest_gmr_index(self, rest_gmr, kcoeff=False):
         bins = np.array([-100., 0.18, 0.35, 0.52, 0.69, 0.86, 1.03, 100.])
         idx  = np.digitize(rest_gmr, bins=bins)

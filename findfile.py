@@ -102,10 +102,15 @@ def write_desitable(opath, table, test=False):
         print(cmd, output)
 
 def fetch_fields(survey):
-    assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
-
-    fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
-    fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
+    assert survey in ['desi', 'gama', 'abacus_cube', 'abacus_gama'], f'Fields for {survey} survey are not supported.'
+    
+    if (survey == 'abacus_cube') or (survey == 'abacus_gama'):
+        return None
+    
+    else:
+        #fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
+        fpath = os.environ['HOME'] + f'/DESI/data/{survey}_fields.txt'
+        fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
 
     return fields
 

@@ -2,8 +2,8 @@ import os
 import sys
 import argparse
 import runtime
+import multiprocessing
 import numpy           as     np
-import multiprocessing 
 
 from   astropy.table   import Table, vstack
 from   smith_kcorr     import GAMA_KCorrection
@@ -71,8 +71,7 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
 
         sys.stdout = open(logfile, 'w')
 
-    if args.nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, args.nooverwrite)
 
     fields    = fetch_fields(survey)
 
@@ -81,7 +80,7 @@ def gen_kE(log, dryrun, survey, nooverwrite, nproc=12):
   
     dat       = Table.read(fpath)
     dat.pprint()
-
+    
     kcorr_r   = GAMA_KCorrection(band='R')
     kcorr_g   = GAMA_KCorrection(band='G')
 

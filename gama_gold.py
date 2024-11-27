@@ -24,9 +24,13 @@ def gama_gold(argset):
 
         sys.stdout = open(logfile, 'w')
 
-    root   = os.environ['TILING_CATDIR']
+    root   = os.environ['GOLD_DIR']
+    root   = os.path.dirname(root) # up a directory.
+    
     fpath  = root + '/TilingCatv46.fits'
 
+    assert  os.path.exists(fpath), f'{fpath} does not exist.'
+    
     opath  = findfile(ftype='gold', dryrun=False, survey='gama')
 
     if argset.dryrun:
@@ -36,8 +40,7 @@ def gama_gold(argset):
             print('Dryrun gama_gold created on full run; Exiting.')
             return 0
 
-    if argset.nooverwrite:
-        overwrite_check(opath)
+    overwrite_check(opath, args.nooverwrite)
 
     dat     = Table.read(fpath)
     dat     = Table(dat, masked=False)
@@ -84,13 +87,13 @@ def gama_gold(argset):
     dat = dat[sclass_cut & z_cut & r_cut & nq_cut]
 
     dat['ZSURV']     = dat['ZGAMA']
-    dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZGAMA'].data)
-    dat['DISTMOD'] = distmod(dat['ZGAMA'].data)
+    dat['LUMDIST'] = cosmo.luminosity_distance(dat['ZSURV'].data)
+    dat['DISTMOD'] = distmod(dat['ZSURV'].data)
     dat['FIELD']   = gama_field(dat['RA'], dat['DEC'])
     dat['IN_D8LUMFN'] = np.zeros_like(dat['FIELD'], dtype=int)
     dat['CONSERVATIVE'] = np.zeros_like(dat['FIELD'], dtype=int)
     
-    xyz = cartesian(dat['RA'], dat['DEC'], dat['ZGAMA'])
+    xyz = cartesian(dat['RA'], dat['DEC'], dat['ZSURV'])
     
     dat['CARTESIAN_X'] = xyz[:,0]
     dat['CARTESIAN_Y'] = xyz[:,1]

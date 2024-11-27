@@ -71,7 +71,7 @@ if __name__ == '__main__':
     args     = parser.parse_args()
     log      = args.log
     survey   = args.survey.lower()
-    
+
     config   = Configuration(args.config)
     config.update_attributes('ddp_limits', args)
     config.write()

@@ -120,8 +120,7 @@ if __name__ == '__main__':
         fpath  = findfile(ftype='ddp_n8', dryrun=dryrun, survey=survey)
         opath  = findfile(ftype='vmax',   dryrun=dryrun, survey=survey)
 
-        if args.nooverwrite:
-            overwrite_check(opath)
+        overwrite_check(opath, args.nooverwrite)
 
         print(f'Reading: {fpath}')
         print(f'Writing: {opath}')

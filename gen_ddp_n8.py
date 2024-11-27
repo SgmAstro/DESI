@@ -49,8 +49,7 @@ if log:
         
     sys.stdout = open(logfile, 'w')
 
-if args.nooverwrite:
-    overwrite_check(opath)
+overwrite_check(opath, args.nooverwrite)
     
 # Read ddp cat.    
 dat           = Table.read(fpath)
@@ -68,7 +67,13 @@ kd_tree_all  = KDTree(points)
 prefix           = 'randoms_ddp1'
 dat['RAND_N8']   = 0.
 
-for realz in np.arange(oversample_nrealisations):
+if dryrun:
+    realzs = np.arange(1, 6, 1)
+    
+else:
+    realzs = np.arange(1, oversample_nrealisations + 1, 1)
+
+for realz in realzs:
     print(f'\n\nSolving for galaxy fillfactors with oversampled realization {realz}.')
 
     rpaths       = [findfile(ftype='randoms', dryrun=dryrun, field=ff, survey=survey, prefix=prefix, oversample=oversample, realz=realz) for ff in fields]

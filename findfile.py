@@ -102,10 +102,12 @@ def write_desitable(opath, table, test=False):
         print(cmd, output)
 
 def fetch_fields(survey):
-    assert survey in ['desi', 'gama'], f'Fields for {survey} survey are not supported.'
+    assert survey in ['desi', 'gama', 'abacus_gama'], f'Fields for {survey} survey are not supported.'
 
-    fpath  = resource_filename('DESI', f'data/{survey}_fields.txt')
-    fields = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
+    _survey = survey.split('_')[-1]
+    
+    fpath   = resource_filename('DESI', f'data/{_survey}_fields.txt')
+    fields  = np.loadtxt(fpath, comments="#", delimiter=",", unpack=False, dtype=str)
 
     return fields
 
@@ -123,14 +125,15 @@ def release_dir(user=os.environ['USER'], survey='gama', version=None):
     else:
         return '/cosma/home/durham/{}/data/GAMA4/'.format(user)
 
-def overwrite_check(opath, ext=None):
+def overwrite_check(opath, nooverwrite, ext_name=None):
     if os.path.isfile(opath):
-        exist     = True
+        exist = True
 
-        if ext != None:
-            hdul  = fits.open(opath)
+        if ext_name != None:
             exist = False
 
+            hdul  = fits.open(opath)
+            
             # print(ext)
             # print(hdul.info())
 
@@ -138,21 +141,31 @@ def overwrite_check(opath, ext=None):
                 hdr = hdu.header
 
                 try:
-                    if hdr['EXTNAME'] == 'BOUNDARY':
+                    if hdr['EXTNAME'] == f'{ext_name}':
                         exist = True
-
-                        print(f'WARNING:  Found existing BOUNDARY extension to {opath} and overwrite forbidden (--nooverwrite).')
                         
                 except KeyError as E:
                     pass
 
-        else:
-            print(f'{opath} found on disk and overwrite forbidden (--nooverwrite).')
+    else:
+        exist = False
+                
+    if exist:
+        if nooverwrite:
+            if ext_name == None:
+                print(f'OVERWRITE CHECK: {opath} found on disk and overwrite forbidden (--nooverwrite).')
 
-        if exist:
-            exit(0)
+            else:
+                print(f'OVERWRITE CHECK: {opath} with extension {ext_name} found on disk and overwrite forbidden (--nooverwrite).')
         
+            exit(0)
 
+        else:
+            print(f'OVERWRITE CHECK: {opath} found on disk.')
+            
+    else:
+        print(f'OVERWRITE CHECK: {opath} not found on disk, safe to write.')
+            
 def fetch_header(ftype=None, name=None, ext=1, allsupported=False, dryrun=False, prefix=None, field=None, utier='{utier}', survey=None, realz=0, debug=False, version=None, fpath=None):
     if allsupported:
         result  = OrderedDict()
